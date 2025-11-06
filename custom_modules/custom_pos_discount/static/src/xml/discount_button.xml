@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+  <!-- Extend POS Control Buttons -->
+  <t t-name="pos_delete_orderline.ControlButtons"
+     t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+     
+    <xpath expr="//OrderlineNoteButton" position="after">
+      
+      <t t-if="!this.showDiscountInput">
+        <button class="control-button btn btn-light text-bg-primary rounded-0 fw-bolder"
+                t-on-click="() => this.togglePercentInput(true)">
+          <i class="fa fa-dollar"/>
+        </button>
+      </t>
+
+      <t t-else="">
+        <input type="number" min="0" step="0.01"
+               t-ref="percentInput"
+               placeholder="Amount"
+               class="form-control text-center fw-bolder"
+               t-on-blur="() => this.togglePercentInput(false)"
+               t-on-keydown="(ev) => this.onPercentKey(ev)"/>
+      </t>
+
+    </xpath>
+  </t>
+</templates>

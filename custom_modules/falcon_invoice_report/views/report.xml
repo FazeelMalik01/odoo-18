@@ -1,0 +1,203 @@
+<odoo>
+    <template id="falcon_invoice_report">
+        <t t-call="web.external_layout">
+            <style>
+                @font-face {
+                    font-family: 'Montserrat';
+                    src: url('/falcon_invoice_report/static/src/fonts/Montserrat-Regular.ttf') format('truetype');
+                    font-weight: normal;
+                    font-style: normal;
+                }
+                body, main, div, p, span, td, th {
+                    font-family: 'Montserrat', sans-serif !important;
+                }
+            </style>
+            <main>
+                <t t-foreach="docs" t-as="o">
+                    <table class="table table-borderless" style="width: 100%; margin-bottom: 20px;">
+                        <tr>
+                            <!-- ✅ Left side (QR Code) -->
+                            <td style="width: 150px; vertical-align: top; text-align: left; line-height: 1.6; font-size: 16px;">
+                                <t t-set="show_qr" t-value="o.display_qr_code and o.amount_residual > 0"/>
+                                <div t-if="not show_qr" name="qr_code_placeholder" class="oe_structure"></div>
+                                <div id="qrcode" class="avoid-page-break-inside" t-else="">
+                                    <t t-set="qr_code_url" t-value="o._generate_qr_code(silent_errors=True)"/>
+                                    <p t-if="qr_code_url" class="position-relative mb-0">
+                                        <img t-att-src="qr_code_url" style="max-width:120px;"/>
+                                        <img src="/account/static/src/img/Odoo_logo_O.svg"
+                         id="qrcode_odoo_logo"
+                         class="top-50 start-50 position-absolute bg-white border border-white border-3 rounded-circle"
+                         style="width:30px; height:30px;"/>
+                                    </p>
+                                </div>
+                            </td>
+                            <!-- ✅ Right side (Company Info) -->
+                            <td style="text-align: right; vertical-align: top; line-height: 1.6; font-size: 16px; padding-left: 20px;">
+                                <div>(الشركة الوطنية لخدمات كفاءة الطاقة(ترشيد</div>
+                                <div>طريق الامير تركي بن عبد العزيز الاول</div>
+                                <div>حي النخيل</div>
+                                <div>RUH الرياض</div>
+                                <div>المملكة العربية السعودية</div>
+                                <div>رقم تسجيل ضريبة القيمة المضافة: 310168554600003</div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class='table table-borderless' style="width:100%; margin:20px 0;">
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <h2 style="margin:0; color: #000000;">Tax Invoice</h2>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <h2 style="margin:0;">
+                                    <span style="color: #000000;" t-field="o.name"/>
+                                </h2>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <h2 style="margin:0; color: #000000;">فاتورة ضريبية</h2>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class='table table-borderless' style="width:45%; margin:20px 0; float:right;">
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <h6 style="margin:0; color: #23AEB1;">Invoice Date:</h6>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <h6 style="margin:0;">
+                                    <span t-field="o.invoice_date"/>
+                                </h6>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <h6 style="margin:0; color: #23AEB1;">:تاريخ الفاتورة</h6>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <h6 style="margin:0; color: #23AEB1;">Due Date:</h6>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <h6 style="margin:0;">
+                                    <span t-field="o.invoice_date_due"/>
+                                </h6>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <h6 style="margin:0; color: #23AEB1;">:تاريخ الاستحقاق</h6>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <h6 style="margin:0; color: #23AEB1;">Delivery Date:</h6>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <h6 style="margin:0;">
+                                    <span t-field="o.delivery_date"/>
+                                </h6>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <h6 style="margin:0; color: #23AEB1;">:تاريخ التوريد</h6>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="table table-bordered" style="width:100%; margin-top:20px; text-align:center; direction: rtl;">
+                        <thead>
+                            <tr>
+                                <th style="width:10%; text-align: center;">Description  الوصف</th>
+                                <th style="width:10%; text-align: center;">Quantity  الكمية</th>
+                                <th style="width:10%; text-align: center;">Unit Price   سعرالوحدة</th>
+                                <th style="width:10%; text-align: center;">Taxes  الضرائب</th>
+                                <th style="width:8%; text-align: center;">Amount  مبلغ</th>
+                                <th style="width:10%; text-align: center;">VAT Amount  قيمةالضريبة</th>
+                                <th style="width:10%; text-align: center;">Total  السعرالاجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.invoice_line_ids" t-as="line">
+                                <td>
+                                    <span t-field="line.product_id.display_name"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.quantity"/>
+                                </td>
+                                <td>
+                                    <span t-field="line.price_unit"  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td>
+                                    <span> Sales Tax 15% </span>
+                                </td>
+                                <td>
+                                    <span t-esc="line.quantity * line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td>
+                                    <span t-esc="line.price_total - line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td>
+                                    <span t-field="line.price_total"  t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Totals Summary Table -->
+                    <table class="table table-bordered" style="width:45%; margin-top:10px; float:left; text-align:left; direction:ltr;">
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center;">
+                                    <span t-esc="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td style="text-align: right;">
+                                    <strong style="color: #56628F; padding-right: 3px" >Subtotal / الإجمالي الفرعي</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;">
+                                    <span t-esc="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td  style="text-align: right;">
+                                    <strong style= "padding-right: 3px">Tax 15%</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;">
+                                    <span t-esc="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td style="text-align: right;">
+                                    <strong style= "padding-right: 3px">Total / المجموع</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class='table table-borderless' style="width:100%; margin:20px 0;">
+                        <tr>
+                            <td style="text-align:left; width:33%;">
+                                <h6 style="margin:0;">Payment Reference:</h6>
+                            </td>
+                            <td style="text-align:center; width:34%; ">
+                                <h6 style="margin:0;">
+                                    <span t-field="o.payment_reference"/>
+                                </h6>
+                            </td>
+                            <td style="text-align:right; width:33%;">
+                                <h6 style="margin:0;">:الدفعة إشارة رق</h6>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+            </main>
+        </t>
+    </template>
+    <!-- Paperformat -->
+    <record id="paperformat_falcon_invoice" model="report.paperformat">
+        <field name="name">Falcon Invoice Format</field>
+        <field name="default" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_height">297</field>
+        <field name="page_width">210</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">25</field>
+        <field name="margin_bottom">45</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">25</field>
+        <field name="dpi">90</field>
+    </record>
+</odoo>

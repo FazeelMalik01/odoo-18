@@ -1,0 +1,24 @@
+<odoo>
+    <record id="view_analytic_account_form_inherit_custom" model="ir.ui.view">
+        <field name="name">analytic.account.form.inherit.custom</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+        <field name="arch" type="xml">
+            <!-- Target the existing name field -->
+            <field name="name" position="attributes">
+                <attribute name="string">المشروع</attribute>
+            </field>
+            
+            <!-- Add new tab for PO Lines -->
+            <notebook position="inside">
+                <page string="Purchase Orders">
+                    <field name="po_line_ids" nolabel="1">
+                        <list editable="bottom">
+                            <field name="po_text"/>
+                        </list>
+                    </field>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>

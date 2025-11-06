@@ -1,0 +1,36 @@
+<odoo>
+  <data>
+    <!-- Extend POS Configuration View -->
+    <record id="pos_config_view_form_inherit" model="ir.ui.view">
+      <field name="name">pos.config.view.form.inherit.pos.receipt.type</field>
+      <field name="model">pos.config</field>
+      <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//setting[@id='other_devices']" position="after">
+          <!-- ✅ Add Receipt Logo upload field -->
+          <setting>
+            <div style="display:flex; align-items:center; gap:20px;">
+              <div>
+                <label for="receipt_logo">
+                  <b>Receipt Logo</b>
+                </label>
+                <br/>
+                <span class="text-muted">Upload a custom logo for POS receipts</span>
+              </div>
+              <field name="receipt_logo" widget="image"
+           options="{'size': [80, 80]}"/>
+            </div>
+            <!-- Company / Store Name -->
+            <div style="margin-top: 5px">
+              <label for="company_name">
+                <b>Store / Company Name</b>
+              </label>
+              <br/>
+              <field name="company_name" placeholder="Enter store name to appear on receipts"/>
+            </div>
+          </setting>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>

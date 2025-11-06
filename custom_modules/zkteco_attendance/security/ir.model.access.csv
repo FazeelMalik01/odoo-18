@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+zkteco_attendance.access_zkteco_attendance_zkteco_attendance,access_zkteco_attendance_zkteco_attendance,zkteco_attendance.model_zkteco_attendance,base.group_user,1,1,1,1

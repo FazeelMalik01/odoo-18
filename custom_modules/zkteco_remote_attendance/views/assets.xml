@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <!-- <template id="custom_portal_header_button" inherit_id="portal.frontend_layout">
+        <xpath expr="//div[contains(@class, 'o_main_nav container')]" position="inside">
+            <t t-if="request.env.user and request.env.user.has_group('base.group_portal')">
+                <t t-set="employee" t-value="request.env['hr.employee'].sudo().search([('user_id', '=', request.env.user.id)], limit=1)"/>
+                <t t-set="attendance" t-value="request.env['hr.attendance'].sudo().search([('employee_id', '=', employee.id), ('check_out', '=', False)], limit=1)"/>
+
+                <t t-if="employee and attendance">
+                    <button style='border: none; background: none;'><i class="fa fa-circle text-success"></i></button>
+                </t>
+                <t t-elif="employee">
+                    <button style='border: none; background: none;'><i class="fa fa-circle text-danger"></i></button> 
+                </t>
+            </t>
+        </xpath>
+    </template> -->
+
+</odoo>
+
+

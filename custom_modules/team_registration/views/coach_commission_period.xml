@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_coach_period_commission_track" model="ir.actions.act_window">
+        <field name="name">User Commissions</field>
+        <field name="res_model">user.commission.track</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('user_id.is_coach', '=', True)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Track user commissions here. Only coaches can have commission tracks.
+            </p>
+        </field>
+    </record>
+
+    <!-- Tree/List View -->
+    <record id="view_user_commission_track_list" model="ir.ui.view">
+        <field name="name">user.commission.track.list</field>
+        <field name="model">user.commission.track</field>
+        <field name="arch" type="xml">
+            <list string="User Commissions">
+                <field name="user_id" />
+                <field name="seq" />
+                <field name="status" />
+                <field name="start_date" />
+                <field name="close_date" />
+                <field name="direct_purchase" />
+                <field name="indirect_purchase" />
+                <field name="total_purchase" />
+                <field name="commission" />
+                <field name="commission_rate" />
+                <field name="currency_id" />
+            </list>
+        </field>
+    </record>
+
+    <!-- Optional form view for editing/viewing a single record -->
+    <record id="view_user_commission_track_form" model="ir.ui.view">
+        <field name="name">user.commission.track.form</field>
+        <field name="model">user.commission.track</field>
+        <field name="arch" type="xml">
+            <form string="User Commission">
+                <sheet>
+                    <group>
+                        <field name="user_id" />
+                        <field name="seq" />
+                        <field name="status" />
+                        <field name="start_date" />
+                        <field name="close_date" />
+                    </group>
+                    <group>
+                        <field name="direct_purchase" />
+                        <field name="indirect_purchase" />
+                        <field name="total_purchase" />
+                        <field name="commission" />
+                        <field name="commission_rate" />
+                        <field name="currency_id" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

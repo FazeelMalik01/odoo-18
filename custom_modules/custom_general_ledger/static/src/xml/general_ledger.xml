@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="custom_general_ledger.falcon_general_ledger_template">
+        <div class="o_falcon_ledger_container">
+            <!-- Header Buttons -->
+            <div class="o_falcon_header d-flex align-items-center justify-content-between mb-3 p-3" style="background-color: #fff;">
+                <div class="d-flex">
+                    <button class="btn btn-sm btn-primary me-2" t-on-click="generatePDF">PDF</button>
+                    <button class="btn btn-sm btn-secondary me-3" t-on-click="generateExcel">XLSX</button>
+                    <h4 style="margin-left:5px;">General Ledger</h4>
+                </div>
+                <div>
+                    <input type="text" class="form-control me-2" placeholder="Search..." style="max-width: 220px;" />
+                </div>
+                <div>
+                    <!-- Date Button -->
+                    <button class="btn btn-light me-2"
+                            t-on-click="toggleDatePicker">
+                        <i class="fa fa-calendar"></i>
+                        <t t-esc="state.dateText"/>
+                    </button>
+                    <!-- Date Picker Dropdown -->
+                    <t t-if="state.showDatePicker">
+                        <div class="dropdown-menu show p-2" style="min-width: 250px; position:absolute; right:0; z-index:1050;">
+                            <button class="dropdown-item" t-on-click="selectThisMonth">This Month</button>
+                            <button class="dropdown-item" t-on-click="selectLastMonth">Last Month</button>
+                            <button class="dropdown-item" t-on-click="selectThisQuarter">This Quarter</button>
+                            <button class="dropdown-item" t-on-click="selectThisYear">This Year</button>
+                            <div class="dropdown-divider"></div>
+
+                            <!-- Custom Date Range -->
+                            <label class="form-label mt-2">Custom Range:</label>
+                            <input id="custom-start-date" type="date" class="form-control mb-2"/>
+                            <input id="custom-end-date" type="date" class="form-control mb-2"/>
+                            <button class="btn btn-primary w-100" t-on-click="handleCustomDateSelect">
+                                Apply
+                            </button>
+                        </div>
+                    </t>
+
+                    <button id="projects-btn" class="btn btn-light me-2">
+                        <i class="fa fa-book"></i> Projects
+                    </button>
+                    <button id="partners-btn" class="btn btn-light me-2">
+                        <i class="fa fa-filter"></i> Partners
+                    </button>
+                    <!-- Hidden selects initially -->
+                    <select id="projects-input" class="form-select mt-2" style="display:none; max-width:220px;">
+                        <option value="">Select Project</option>
+                    </select>
+                    <select id="partners-input" class="form-select mt-2" style="display:none; max-width:220px;">
+                        <option value="">Select Partner</option>
+                        <!-- Options will be loaded dynamically from API -->
+                    </select>
+                </div>
+            </div>
+            <!-- Ledger Table -->
+            <div class="table-responsive" style="width:100%; display:flex; justify-content:center;">
+                <table id="ledger-table" class="table table-bordered text-center align-middle" style="width:80%; table-layout: fixed;">
+                    <thead class="table-light">
+                        <tr>
+                            <th colspan="9" class="text-center" t-esc="state.dateText">October 2025</th>
+                        </tr>
+                        <tr id="header-row">
+                            <th>Date</th>
+                            <th>Communication</th>
+                            <th>Partner</th>
+                            <t t-if="state.selectedProject or state.selectedPartner">
+                                <th>Project</th>
+                            </t>
+                            <th>Vendor</th>
+                            <th>Currency</th>
+                            <th>Debit</th>
+                            <th>Credit</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="journal-table-body">
+                        <t t-if="state.isLoading">
+                            <tr><td colspan="9" class="text-center">Loading...</td></tr>
+                        </t>
+                        <t t-elif="state.tableData.length === 0">
+                            <tr><td colspan="9" class="text-center">Select a Partner/Project to load Journal Entries</td></tr>
+                        </t>
+                        <t t-else="">
+                            <t t-foreach="state.tableData" t-as="item" t-key="item.id">
+                                <tr>
+                                    <td t-esc="item.date or ''"/>
+                                    <td t-esc="item.move_name or item.name or ''"/>
+                                    <td t-esc="item.partner_id ? item.partner_id[1] : '—'"/>
+                                    <t t-if="state.selectedProject or state.selectedPartner">
+                                        <td t-esc="item.project_id ? item.project_id[1] : '—'"/>
+                                    </t>
+                                    <td t-esc="item.vendor_name or '—'"/>
+                                    <td t-esc="item.currency_id ? item.currency_id[1] : ''"/>
+                                    <td t-esc="item.debit || 0"/>
+                                    <td t-esc="item.credit || 0"/>
+                                    <td t-esc="item.balance !== undefined ? item.balance : (item.debit || 0) - (item.credit || 0)"/>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+</templates>

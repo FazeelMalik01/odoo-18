@@ -1,0 +1,44 @@
+<odoo>
+    <template id="custom_header">
+        <div class="header">
+            <div class="text-center">
+                <img src='/falcon_invoice_report/static/src/img/header_blue.png' style="width:100%;"/>
+            </div>
+        </div>
+    </template>
+    <template id="external_layout_standard" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_boxed" inherit_id="web.external_layout_boxed">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_bold" inherit_id="web.external_layout_bold">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="xternal_layout_striped" inherit_id="web.external_layout_striped">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_bubble" inherit_id="web.external_layout_bubble">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_wave" inherit_id="web.external_layout_wave">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_folder" inherit_id="web.external_layout_folder">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+</odoo>

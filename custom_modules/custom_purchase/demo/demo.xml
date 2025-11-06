@@ -1,0 +1,9 @@
+<odoo>
+    <!-- <data>
+        <record id="demo_purchase_request" model="purchase.request">
+            <field name="pr_ref">FSC-PR-0001</field>
+            <field name="serving_client">Demo Client</field>
+            <field name="po_project">Demo Project</field>
+        </record>
+    </data> -->
+</odoo>

@@ -1,0 +1,11 @@
+<odoo>
+    <!-- <template id="falcon_general_ledger_template" name="Falcon General Ledger Page">
+        <t t-call="web.webclient_bootstrap">
+            <t t-set="title">Falcon General Ledger</t>
+            <div class="o_falcon_ledger_container">
+                <h2>Falcon General Ledger Report</h2>
+                <p>This is a custom QWeb page loaded from menu.</p>
+            </div>
+        </t>
+    </template> -->
+</odoo>

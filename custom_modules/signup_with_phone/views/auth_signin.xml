@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inherit and extend the login form to support mobile login -->
+    <template id="login_mobile" inherit_id="auth_signup.login" name="Mobile Login Extension">
+        <!-- Toggle link: Switch between email and mobile login -->
+        <xpath expr="//p" position="after">
+            <div class="text-center mt-2">
+                <t t-if="mobile_login">
+                    <a href="/web/login?mobile_login=false" class="btn btn-link btn-sm">
+                        Login With System User / Coach
+                    </a>
+                </t>
+                <t t-if="not mobile_login">
+                    <a href="/web/login?mobile_login=true" class="btn btn-link btn-sm">
+                        Login With Ecommerce
+                    </a>
+                </t>
+            </div>
+        </xpath>
+
+        <!-- Mobile login fields -->
+        <xpath expr="//div[contains(@class, 'field-login')]" position="after">
+            <t t-if="mobile_login">
+                <!-- Country code input (will be set by intl-tel-input) -->
+                <div class="form-group field-country o_hidden">
+                    <label for="countrycode" class="control-label">Country Code</label>
+                    <input type="number" name="countrycode" id="countrycode" class="form-control" />
+                </div>
+
+                <!-- Mobile input field -->
+                <div class="form-group field-mobile">
+                    <label for="mobile" class="control-label">Mobile</label>
+                    <input type="tel" name="mobile" id="mobile" class="form-control" />
+                    <div class="mt-1">
+                        <span id="valid-msg" class="o_hidden text-success">✓ Valid</span>
+                        <span id="error-msg" class="o_hidden text-danger"></span>
+                    </div>
+                </div>
+                <!-- Hidden field to control JS behavior -->
+                <input type="hidden" name="signin_field_set" id="signin_field_set" value="true" />
+            </t>
+        </xpath>
+    </template>
+
+    <template id="custom_login" inherit_id="web.login" name="Custom Login Label">
+        <xpath expr="//label[@for='login']" position="replace">
+            <label for="login" class="form-label d-flex justify-content-between">Email/Mobile</label>
+        </xpath>
+    </template>
+
+
+    <template id="custom_auth_signin_view" inherit_id="auth_signup.login">
+        <xpath expr="//p[contains(@class, 'mt-2')]//a[@t-if='signup_enabled']" position="replace">
+            <a t-if="signup_enabled" href="/web/signup?mobile_field=true"
+                class="btn btn-link btn-sm">
+                Don't have an account?
+            </a>
+        </xpath>
+    </template>
+
+
+</odoo>

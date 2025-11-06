@@ -1,0 +1,38 @@
+<odoo>
+  <template id="wt_website_product_lazy_load_button" inherit_id="website_sale.products" active="False">
+    <xpath expr="//div[hasclass('products_pager')]" position="replace">
+      <div class="products_pager text-center py-4">
+        <button type="button" class="btn btn-primary wt-lazy-load-button">
+          <span class="spinner-grow spinner-grow-sm d-none me-2" role="status"></span>
+          Load More Products
+        </button>
+      </div>
+    </xpath>
+  </template>
+  <template id="wt_website_product_lazy_load_mouse_scroll" inherit_id="website_sale.products" active="False">
+    <xpath expr="//div[hasclass('products_pager')]" position="replace">
+      <div class="products_pager text-center py-4">
+        <div class="wt_website_product_lazy_load_scroll d-none">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden"></span>
+          </div>
+          <p class="mt-2 text-muted"></p>
+        </div>
+      </div>
+    </xpath>
+  </template>
+  <!-- Added CSS for better visibility -->
+  <template id="lazy_load_css" inherit_id="website.layout" priority="50">
+    <xpath expr="//head" position="inside">
+      <style>
+        .wt-lazy-load-button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+        .wt_website_product_lazy_load_scroll {
+          transition: opacity 0.3s ease;
+        }
+      </style>
+    </xpath>
+  </template>
+</odoo>

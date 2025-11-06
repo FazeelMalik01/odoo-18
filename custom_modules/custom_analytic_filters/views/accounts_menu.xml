@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <record id="action_analytic_projects_list" model="ir.actions.act_window">
+        <field name="name">المشاريع</field>
+        <field name="res_model">account.analytic.account</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_analytic_projects_main"
+        name="المشاريع"
+        parent="account.menu_account_root"
+        sequence="60"
+        action="action_analytic_projects_list"
+        web_icon="account,static/description/icon.png"
+    /> -->
+</odoo>

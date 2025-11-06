@@ -1,0 +1,13 @@
+<odoo>
+    <record id="view_partner_form_inherit_country_code" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.country.code</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Insert the Country Code dropdown just before the Phone field -->
+            <xpath expr="//field[@name='phone']" position="before">
+                <field name="country_dial_code" placeholder="Select code"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

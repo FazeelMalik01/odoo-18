@@ -1,0 +1,11 @@
+<odoo>
+    <template id="team_thank_you_template" name="Thank You Page">
+    <t t-call="website.layout">
+      <div class="container text-center" style="padding: 100px 0;">
+        <h1 class="mb-3 text-success">Thank You!</h1>
+        <p class="lead">Your registration has been submitted successfully.<br/>We’ll review your information and contact you soon.</p>
+        <a href="/" class="btn btn-primary mt-4">Back to Home</a>
+      </div>
+    </t>
+  </template>
+</odoo>

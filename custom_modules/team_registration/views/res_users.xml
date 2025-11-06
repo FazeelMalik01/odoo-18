@@ -1,0 +1,41 @@
+<odoo>
+    <record id="view_users_form_inherit" model="ir.ui.view">
+        <field name="name">view.users.form.inherit</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//notebook" position="inside">
+                <page name="team_details" string="Team Details">
+
+                    <separator/>
+                    <group name="team_details">
+                        <group name="referrals" string="Referrals">
+                            <field name="referred_by"/>
+                            <field name="referral_link" widget="url"/>
+                           
+                        </group>
+
+                        <group name="team_roles" string="Team Roles">
+                            <field name="is_coach"/>
+                            <field name="is_nutritionist"/>
+                            <field name="is_owner"/>
+                        </group>
+                    </group>
+                    <separator/>
+
+                    <field name="referred_users" widget="one2many">
+                        <list>
+                            <field name="name"/>
+                            <field name="login"/>
+                            <field name="email"/>
+                            
+                        </list>
+                    </field>
+                </page>
+
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

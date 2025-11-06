@@ -1,0 +1,15 @@
+<odoo>
+    <record id="res_users_view_form_new" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.new</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <div class="text-center o_form_header o_hidden">
+                    <strong>A password reset link</strong>
+                    <field name="custom_signup_url" widget="url"/>
+                </div>
+             </xpath>
+        </field>
+    </record>
+</odoo>

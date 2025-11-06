@@ -1,0 +1,74 @@
+TEAM REGISTRATION MODULE - ODOO 18 ENTERPRISE
+=============================================
+
+MODULE NAME:
+------------
+team_registration
+
+Author:
+------------
+Majed Mohammed
+
+Phone:
+------------
++962787510196
+
+Email:
+------------
+majidmohammed1096@gmail.com
+
+OVERVIEW:
+---------
+This module allows external users to register on the website to become sales team members (Coach, Nutritionist, or Owner). Submissions are reviewed by Head Sales users. Upon approval, a new user and CRM Team are created automatically.
+
+WORKFLOW:
+---------
+1. User opens the public registration form on the website.
+2. User fills in their details (name, email, role, experience, etc.).
+3. A new `team.registration` record is created in **Draft** state.
+4. Users with the **Head Sales** group are notified via `mail.activity` to review it.
+5. Head Sales user opens the record and clicks the **"Approve"** button.
+6. On approval:
+   - A new user (`res.users`) is created.
+   - Flags (`is_coach`, `is_nutritionist`, `is_owner`) are set on that user.
+   - A new CRM Team (`crm.team`) is created with all info.
+   - The user is added as member if they were referred by another user.
+   - The invitation link is generated and saved.
+   - A confirmation wizard pops up asking if the user wants to view the new team.
+
+SMART BUTTONS:
+--------------
+- On the **Team Registration** form:
+  - "Sales Man" button (only visible when state is `approved`) opens the related CRM Team.
+
+- On the **CRM Team** form:
+  - "Registration" button (only visible if linked to a `team.registration`) opens the origin registration form.
+
+ACCESS RIGHTS:
+--------------
+- Public:
+  - Can access the website registration form.
+
+- Internal User:
+  - Can view team registrations only if allowed.
+
+- Head Sales (group_team_head_sales):
+  - Can approve registrations.
+  - Can view and manage all `team.registration` records.
+  - Gets activity notifications when new registrations are submitted.
+
+EXTRA FIELDS:
+-------------
+- On `res.users`:
+  - `is_coach`, `is_nutritionist`, `is_owner`: Booleans set based on registration role.
+
+- On `crm.team`:
+  - `registration_id`: Links the team to its origin `team.registration`.
+  - `invitation_link`: Auto-generated referral link.
+
+NOTES:
+------
+- The system avoids duplicate CRM team creation.
+- Invitation links contain the user ID to allow tracking referrals.
+- The wizard ensures the approving user has a chance to open the newly created team directly.
+

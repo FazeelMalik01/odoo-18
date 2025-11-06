@@ -1,0 +1,35 @@
+<odoo>
+  <record id="view_order_line_form_readonly_inherit_serial" model="ir.ui.view">
+    <field name="name">sale.order.line.form.readonly.inherit.serial</field>
+    <field name="model">sale.order.line</field>
+    <field name="inherit_id" ref="sale.sale_order_line_view_form_readonly"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='name']" position="after">
+        <field name="serial"/>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_order_line_tree_inherit_serial" model="ir.ui.view">
+    <field name="name">sale.order.line.tree.inherit.serial</field>
+    <field name="model">sale.order.line</field>
+    <field name="inherit_id" ref="sale.view_order_line_tree"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='name']" position="after">
+        <field name="serial"/>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_order_form_inherit_serial_on_lines" model="ir.ui.view">
+    <field name="name">sale.order.form.inherit.serial.on.lines</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='order_line']/form//field[@name='name']" position="after">
+        <field name="serial"  domain="[('product_id', '=', product_id)]"/>
+      </xpath>
+      <xpath expr="//field[@name='order_line']/list//field[@name='name']" position="after">
+        <field name="serial" optional="show"/>
+      </xpath>
+    </field>
+  </record>
+</odoo>

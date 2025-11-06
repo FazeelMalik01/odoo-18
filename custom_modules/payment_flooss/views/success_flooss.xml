@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Thank You Page Template -->
+    <template id="payment_thank_you_template" name="Payment Thank You Page">
+        <t t-call="website.layout">
+            <t t-set="title" t-value="page_title or 'Thank You'"/>
+            <t t-set="additional_title" t-value="'Payment Successful'"/>
+
+            <div id="wrap" class="oe_structure oe_empty">
+                <div class="container mt-3 mb-3">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="card border-success shadow">
+
+                                <!-- Header -->
+                                <div class="card-header bg-success text-white text-center py-3">
+                                    <i class="fa fa-check-circle fa-2x mb-2"></i>
+                                    <h3 class="mb-1">Thank You! </h3>
+                                    <h6 class="mb-0 opacity-90">Your payment request has been sent to Flooss, and your sale order will be confirmed shortly once Flooss approves it. </h6>
+                                </div>
+
+                                <!-- Body -->
+                                <div class="card-body p-3">
+                                    <!-- Payment Amount Display -->
+                                    <t t-if="amount">
+                                        <div class="text-center mb-3">
+                                            <div class="alert alert-success border-success p-2" style="font-size: 1em;">
+                                                <i class="fa fa-money-bill-wave me-2 text-success"></i>
+                                                <span class="fw-bold text-success">Amount:</span>
+                                                <span class="text-success">
+                                                    <t t-esc="currency"/>
+                                                    <t t-esc="amount"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </t>
+
+                                    <!-- Order Information -->
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <h6 class="border-bottom pb-2 mb-3">
+                                                <i class="fa fa-info-circle me-1"></i>Order Information
+                                            </h6>
+                                            <div class="row">
+                                                <t t-if="order_number">
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="card bg-light">
+                                                            <div class="card-body text-center p-2">
+                                                                <i class="fa fa-shopping-cart text-primary mb-1"></i>
+                                                                <div class="small text-muted">Order Number</div>
+                                                                <div class="fw-bold text-primary">
+                                                                    <t t-esc="order_number"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </t>
+
+                                                <t t-if="payment_method">
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="card bg-light">
+                                                            <div class="card-body text-center p-2">
+                                                                <i class="fa fa-credit-card text-info mb-1"></i>
+                                                                <div class="small text-muted">Payment Method</div>
+                                                                <div class="fw-bold text-info">
+                                                                    <t t-esc="payment_method"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </t>
+
+                                                <t t-if="tx_reference">
+                                                    <div class="col-md-12 mb-2">
+                                                        <div class="card bg-light">
+                                                            <div class="card-body text-center p-2">
+                                                                <i class="fa fa-barcode text-secondary mb-1"></i>
+                                                                <div class="small text-muted">Transaction Reference</div>
+                                                                <code class="text-secondary">
+                                                                    <t t-esc="tx_reference"/>
+                                                                </code>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Customer Details -->
+                                    <t t-if="order_details and order_details.get('partner')">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <h6 class="border-bottom pb-2 mb-3">
+                                                    <i class="fa fa-user me-1"></i>Customer Details
+                                                </h6>
+                                                <div class="row small">
+                                                    <div class="col-md-6">
+                                                        <strong>Name:</strong>
+                                                        <t t-esc="order_details['partner'].name"/>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <strong>Email:</strong>
+                                                        <t t-esc="order_details['partner'].email or 'N/A'"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+
+                                    <!-- Order Items -->
+                                    <t t-if="order_details and order_details.get('order_lines')">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <h6 class="border-bottom pb-2 mb-2">
+                                                    <i class="fa fa-list me-1"></i>Items Purchased
+                                                </h6>
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm table-hover">
+                                                        <thead class="table-light small">
+                                                            <tr>
+                                                                <th>Product</th>
+                                                                <th class="text-center">Qty</th>
+                                                                <th class="text-end">Unit Price</th>
+                                                                <th class="text-end">Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="small">
+                                                            <t t-foreach="order_details['order_lines']" t-as="line">
+                                                                <tr>
+                                                                    <td>
+                                                                        <strong>
+                                                                            <t t-esc="line.product_id.name"/>
+                                                                        </strong>
+                                                                        <t t-if="line.product_id.default_code">
+                                                                            <br/>
+                                                                            <small class="text-muted">[<t t-esc="line.product_id.default_code"/>]</small>
+                                                                        </t>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <span class="badge bg-primary">
+                                                                            <t t-esc="int(line.product_uom_qty)"/>
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class="text-end">
+                                                                        <t t-esc="line.currency_id.symbol"/>
+                                                                        <t t-esc="'{:,.2f}'.format(line.price_unit)"/>
+                                                                    </td>
+                                                                    <td class="text-end fw-bold">
+                                                                        <t t-esc="line.currency_id.symbol"/>
+                                                                        <t t-esc="'{:,.2f}'.format(line.price_subtotal)"/>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </tbody>
+                                                        <tfoot class="table-light small">
+                                                            <tr>
+                                                                <td colspan="3" class="text-end fw-bold">Total:</td>
+                                                                <td class="text-end fw-bold text-success">
+                                                                    <t t-esc="currency"/>
+                                                                    <t t-esc="amount"/>
+                                                                </td>
+                                                            </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+
+                                    <!-- Confirmation Message -->
+                                    <div class="text-center mb-3 small">
+                                        <div class="alert alert-info p-2 border-0">
+                                            <i class="fa fa-envelope me-1"></i>
+                                            <strong>Confirmation email sent! 📧</strong>
+                                            <br/>
+                                            Receipt has been sent to your email.
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="text-center">
+                                        <div style="margin-bottom:3px;">
+                                             <button id="checkPaymentStatus" class="btn btn-outline-info btn-sm">
+                                                <i class="fa fa-search me-1"></i>Check Payment Status
+                                            </button>
+                                        </div>
+
+                                        <div class="d-flex justify-content-center gap-2 flex-wrap mb-2">
+                                            <a href="/shop" class="btn btn-primary btn-sm">
+                                                <i class="fa fa-shopping-cart me-1"></i>Continue Shopping
+                                            </a>
+                                            <a href="/my/orders" class="btn btn-outline-primary btn-sm">
+                                                <i class="fa fa-list-alt me-1"></i>My Orders
+                                            </a>
+                                            <t t-if="order_details and order_details.get('order')">
+                                                <a t-attf-href="/my/orders/#{order_details['order'].id}"
+                                                   class="btn btn-outline-success btn-sm">
+                                                    <i class="fa fa-file-download me-1"></i>Download Receipt
+                                                </a>
+                                            </t>
+                                        </div>
+
+                                        <!-- Print & Share -->
+                                        <div class="mt-2">
+                                            <button onclick="window.print()"
+                                                    class="btn btn-outline-secondary btn-sm me-1">
+                                                <i class="fa fa-print me-1"></i>Print
+                                            </button>
+                                            <button onclick="sharePage()" class="btn btn-outline-secondary btn-sm">
+                                                <i class="fa fa-share me-1"></i>Share
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="card-footer bg-light text-center py-2 small">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-1">
+                                            <small class="text-muted">
+                                                <i class="fa fa-shield-alt text-success me-1"></i>
+                                                Secure payment 🔒
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6 mb-1">
+                                            <small class="text-muted">
+                                                <i class="fa fa-heart text-danger me-1"></i>
+                                                Thank you! ❤️
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Complete JavaScript Section -->
+            <script>
+                // Check Payment Status functionality for Thank You page
+                document.addEventListener('DOMContentLoaded', function() {
+                    const checkStatusBtn = document.getElementById('checkPaymentStatus');
+
+                    if (checkStatusBtn) {
+                        checkStatusBtn.onclick = async function() {
+                            await checkPaymentStatus();
+                        };
+                    }
+                });
+
+                async function checkPaymentStatus() {
+                    const checkStatusBtn = document.getElementById('checkPaymentStatus');
+
+                    if (!checkStatusBtn) return;
+
+                    // Show loading state
+                    const originalContent = checkStatusBtn.innerHTML;
+                    checkStatusBtn.disabled = true;
+                    checkStatusBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-1"></i>Checking...';
+
+                    try {
+                        // Get transaction reference from URL parameters
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const txReference = urlParams.get('tx_ref');
+
+                        if (!txReference) {
+                            showStatusAlert('Error: No transaction reference found in URL ❌', 'error');
+                            return;
+                        }
+
+                        // Make RPC call to check status
+                        const response = await fetch('/payment/flooss/check_status', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {
+                                    tx_reference: txReference
+                                }
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.error) {
+                            showStatusAlert(`Error: ${result.error.message || result.error} ❌`, 'error');
+                        } else if (result.result) {
+                            if (result.result.error) {
+                                showStatusAlert(`Error: ${result.result.error} ❌`, 'error');
+                            } else if (result.result.message) {
+                                showStatusAlert(`${result.result.message} ✅😊`, 'success');
+                            } else {
+                                showStatusAlert('Payment status checked successfully ✅😊', 'success');
+                            }
+                        } else {
+                            showStatusAlert('Unknown response from server ⚠️', 'warning');
+                        }
+
+                    } catch (error) {
+                        console.error('Check status error:', error);
+                        showStatusAlert(`Error: ${error.message || 'Failed to check payment status'} ❌`, 'error');
+                    } finally {
+                        // Reset button state
+                        checkStatusBtn.disabled = false;
+                        checkStatusBtn.innerHTML = originalContent;
+                    }
+                }
+
+                function showStatusAlert(message, type = 'info') {
+                    // Create and show a Bootstrap alert modal
+                    const alertModal = createStatusModal(message, type);
+                    const modal = new bootstrap.Modal(alertModal);
+                    modal.show();
+
+                    // Auto-remove modal from DOM after it's hidden
+                    alertModal.addEventListener('hidden.bs.modal', function() {
+                        alertModal.remove();
+                    });
+                }
+
+                function createStatusModal(message, type) {
+                    // Remove existing modal if any
+                    const existingModal = document.getElementById('paymentStatusModal');
+                    if (existingModal) {
+                        existingModal.remove();
+                    }
+
+                    // Create modal HTML with enhanced styling
+                    const modalHtml = `
+                        <div class="modal fade" id="paymentStatusModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content border-${getBootstrapTypeForAlert(type)}">
+                                    <div class="modal-header bg-${getBootstrapTypeForAlert(type)} text-white">
+                                        <h5 class="modal-title">
+                                            <i class="fa ${getIconForType(type)} me-2"></i>
+                                            Payment Status
+                                        </h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <div class="alert alert-${getBootstrapTypeForAlert(type)} mb-0" role="alert">
+                                            <div class="mb-2">
+                                                <i class="fa ${getIconForType(type)} fa-3x"></i>
+                                            </div>
+                                            <div>${message}</div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer justify-content-center">
+                                        <button type="button" class="btn btn-${getBootstrapTypeForAlert(type)}" data-bs-dismiss="modal">
+                                            <i class="fa fa-check me-1"></i>OK
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Add modal to DOM
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
+                    return document.getElementById('paymentStatusModal');
+                }
+
+                function getIconForType(type) {
+                    const icons = {
+                        'success': 'fa-check-circle',
+                        'error': 'fa-exclamation-circle',
+                        'warning': 'fa-exclamation-triangle',
+                        'info': 'fa-info-circle'
+                    };
+                    return icons[type] || icons['info'];
+                }
+
+                function getBootstrapTypeForAlert(type) {
+                    const types = {
+                        'success': 'success',
+                        'error': 'danger',
+                        'warning': 'warning',
+                        'info': 'info'
+                    };
+                    return types[type] || types['info'];
+                }
+
+                function sharePage() {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'Payment Successful 🎉',
+                            text: 'My payment was processed successfully! 😊',
+                            url: window.location.href
+                        });
+                    } else {
+                        navigator.clipboard.writeText(window.location.href).then(() => {
+                            alert('Link copied to clipboard! 📋✅');
+                        }).catch(() => {
+                            // Fallback for older browsers
+                            const textArea = document.createElement('textarea');
+                            textArea.value = window.location.href;
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            alert('Link copied to clipboard! 📋✅');
+                        });
+                    }
+                }
+            </script>
+        </t>
+    </template>
+
+    <!-- Simple Fallback Template -->
+    <template id="payment_thank_you_simple" name="Simple Thank You Page">
+        <t t-call="website.layout">
+            <t t-set="title" t-value="'Thank You'"/>
+
+            <div id="wrap" class="oe_structure oe_empty">
+                <div class="container mt-5 mb-5">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6 col-md-8">
+                            <div class="text-center">
+                                <i class="fa fa-check-circle text-success mb-4" style="font-size: 100px;"></i>
+
+                                <h1 class="text-success mb-3">Thank You!</h1>
+                                <h4 class="mb-4">Your payment request has been sent to Flooss, and your sale order will be confirmed shortly once Flooss approves it.</h4>
+
+                                <t t-if="error_occurred">
+                                    <div class="alert alert-warning mb-4">
+                                        <i class="fa fa-exclamation-triangle me-2"></i>
+                                        <t t-esc="error_message"/> ⚠️
+                                    </div>
+                                </t>
+
+                                <t t-if="amount">
+                                    <div class="alert alert-success mb-4">
+                                        <h5 class="mb-0">
+                                            <i class="fa fa-money-bill-wave me-2"></i>
+                                            <t t-esc="currency"/>
+                                            <t t-esc="amount"/>
+                                            paid successfully ✅
+                                        </h5>
+                                    </div>
+                                </t>
+
+                                <t t-if="order_number">
+                                    <p class="mb-4">
+                                        <strong>Order Number:</strong>
+                                        <span class="text-primary">
+                                            <t t-esc="order_number"/>
+                                        </span>
+                                        📦
+                                    </p>
+                                </t>
+
+                                <div class="mb-4">
+                                    <a href="/shop" class="btn btn-primary btn-lg me-3">
+                                        <i class="fa fa-shopping-cart me-2"></i>Continue Shopping
+                                    </a>
+                                    <a href="/my/orders" class="btn btn-outline-primary btn-lg me-3">
+                                        <i class="fa fa-list me-2"></i>My Orders
+                                    </a>
+                                    <!-- Check Payment Status Button -->
+                                    <button id="checkPaymentStatus" class="btn btn-outline-info btn-lg">
+                                        <i class="fa fa-search me-2"></i>Check Payment Status
+                                    </button>
+                                </div>
+
+                                <p class="text-muted">
+                                    <i class="fa fa-envelope me-1"></i>
+                                    Confirmation email has been sent 📧
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JavaScript for Simple Template -->
+            <script>
+                // Check Payment Status functionality for Simple Thank You page
+                document.addEventListener('DOMContentLoaded', function() {
+                    const checkStatusBtn = document.getElementById('checkPaymentStatus');
+
+                    if (checkStatusBtn) {
+                        checkStatusBtn.onclick = async function() {
+                            await checkPaymentStatusSimple();
+                        };
+                    }
+                });
+
+                async function checkPaymentStatusSimple() {
+                    const checkStatusBtn = document.getElementById('checkPaymentStatus');
+
+                    if (!checkStatusBtn) return;
+
+                    // Show loading state
+                    const originalContent = checkStatusBtn.innerHTML;
+                    checkStatusBtn.disabled = true;
+                    checkStatusBtn.innerHTML = '<i class="fa fa-spinner fa-spin me-2"></i>Checking...';
+
+                    try {
+                        // Get transaction reference from URL parameters
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const txReference = urlParams.get('tx_ref');
+
+                        if (!txReference) {
+                            alert('Error: No transaction reference found in URL ❌');
+                            return;
+                        }
+
+                        // Make RPC call to check status
+                        const response = await fetch('/payment/flooss/check_status', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {
+                                    tx_reference: txReference
+                                }
+                            })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.error) {
+                            alert(`Error: ${result.error.message || result.error} ❌`);
+                        } else if (result.result) {
+                            if (result.result.error) {
+                                alert(`Error: ${result.result.error} ❌`);
+                            } else if (result.result.message) {
+                                alert(`Success: ${result.result.message} ✅😊`);
+                            } else {
+                                alert('Payment status checked successfully ✅😊');
+                            }
+                        } else {
+                            alert('Unknown response from server ⚠️');
+                        }
+
+                    } catch (error) {
+                        console.error('Check status error:', error);
+                        alert(`Error: ${error.message || 'Failed to check payment status'} ❌`);
+                    } finally {
+                        // Reset button state
+                        checkStatusBtn.disabled = false;
+                        checkStatusBtn.innerHTML = originalContent;
+                    }
+                }
+            </script>
+        </t>
+    </template>
+</odoo>

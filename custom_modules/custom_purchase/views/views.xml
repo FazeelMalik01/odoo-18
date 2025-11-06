@@ -1,0 +1,105 @@
+<odoo>
+    <!-- Menu + Action -->
+    <menuitem id="menu_falcon_pr_root"
+              name="Falcon Purchase"
+              parent="purchase.menu_purchase_root"
+              sequence="5"
+    />
+    <record id="action_purchase_request" model="ir.actions.act_window">
+        <field name="name">Purchase Requests</field>
+        <field name="res_model">purchase.request</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_falcon_pr"
+              name="Purchase Requests"
+              parent="menu_falcon_pr_root"
+              action="action_purchase_request"
+              sequence="10"
+    />
+    <!-- List View-->
+    <record id="view_purchase_request_tree" model="ir.ui.view">
+        <field name="name">purchase.request.tree</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <list string="Purchase Requests">
+                <field name="pr_ref"/>
+                <field name="date"/>
+                <field name="requested_by_id"/>
+                <field name="vendor_id"/>
+                <field name="amount_total"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_purchase_request_form" model="ir.ui.view">
+        <field name="name">purchase.request.form</field>
+        <field name="model">purchase.request</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Request">
+                <sheet>
+                    <group string="Request Info" col="2">
+                        <!-- Left Column -->
+                        <group>
+                            <field name="pr_ref"/>
+                            <field name="requested_by_id"/>
+                            <field name="to_department_id"/>
+                        </group>
+                        <!-- Right Column -->
+                        <group>
+                            <field name="date"/>
+                            <field name="email"/>
+                            <field name="title_id"/>
+                        </group>
+                    </group>
+                    <group col="2" string="Project Info">
+                        <field name="serving_client"/>
+                        <field name="po_project"/>
+                    </group>
+                    <group col="4" string="Purchase Contact">
+                        <field name="to_be_purchased_by_id"/>
+                        <field name="to_title_id"/>
+                        <field name="to_email"/>
+                        <field name="to_mobile"/>
+                    </group>
+                    <group col="2" string="Vendor Info">
+                        <field name="vendor_id"/>
+                        <field name="vendor_ref"/>
+                    </group>
+                    <notebook>
+                        <page string="Products" name="products">
+                            <field name="order_line_ids" widget="product_label_section_and_note_field_o2m" mode="list,kanban">
+                                <list string="Purchase Request Lines" editable="bottom">
+                                    <control>
+                                        <create name="add_product" string="Add a product"/>
+                                        <create name="add_section" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note" string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                    </control>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="display_type" column_invisible="True"/>
+                                    <field name="product_id" optional="show" context="{'company_id': parent.company_id}"/>
+                                    <field name="name" widget="section_and_note_text" optional="show"/>
+                                    <field name="product_uom"/>
+                                    <field name="price_unit"/>
+                                    <field name="product_qty"/>
+                                    <field name="taxes_id" widget="many2many_tags" optional="hide"/>
+                                    <field name="price_subtotal" string="Total Price"/>
+                                </list>
+                            </field>
+                            <!-- Totals at bottom -->
+                            <group class="oe_subtotal_footer" style="margin-top:5px; float:right; width:20%;">
+                                <group>
+                                    <field name="amount_total" readonly="1" string="Total Price with VAT"/>
+                                </group>
+                            </group>
+                        </page>
+                        <!-- Add Other Information page like in default purchase order -->
+                        <page string="Other Information" name="other_information">
+                                <group name="other_info">
+                                    <!-- <field name="notes" /> -->
+                                </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

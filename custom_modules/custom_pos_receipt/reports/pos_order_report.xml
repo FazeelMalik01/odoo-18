@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="pos_order_report_template">
+        <t t-foreach="docs" t-as="doc">
+            <html>
+                <head>
+                    <meta charset="utf-8"/>
+                    <style>
+                        /* Reset all default margins and padding */
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                        }
+                        
+                        @media print {
+                            @page {
+                                size: 148mm 170mm;
+                                margin: 0;
+                            }
+                            body {
+                                font-family: Arial, sans-serif;
+                                font-size: 12px;
+                                line-height: 1.4;
+                                margin: 0;
+                                padding: 0;
+                                position: relative;
+                            }
+                            .page {
+                                width: 100%;
+                                height: auto;
+                                display: block;
+                                padding-bottom: 50px;
+                                padding-left: 20px;
+                                padding-right: 20px;
+                                padding-top: 70px;
+                                box-sizing: border-box;
+                                position: relative;
+                            }
+                            .fixed-footer {
+                                position: fixed;
+                                bottom: 0;
+                                left: 0;
+                                right: 0;
+                                height: 40px;
+                                background: white;
+                                border-top: 1px solid #ccc;
+                                padding: 10px;
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                font-size: 11px;
+                            }
+                        }
+                        
+                        @media screen {
+                            body {
+                                font-family: Arial, sans-serif;
+                                font-size: 12px;
+                                line-height: 1.4;
+                                background-color: #f5f5f5;
+                                margin: 0;
+                                padding: 0;
+                            }
+                            .page {
+                                width: 148mm;
+                                height: 170mm;
+                                background: white;
+                                ppadding-bottom: 20px;
+                                padding-left: 20px;
+                                padding-right: 20px;
+                                padding-top: 70px;
+                                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                                display: block;
+                                box-sizing: border-box;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="page">
+                        <div>
+                            <!-- Custom Header -->
+                            <!-- <div>
+                                <div style="flex: 0 0 auto;">
+                                    <t t-if="doc.company_id.logo">
+                                        <img t-att-src="'data:image/png;base64,%s' % doc.company_id.logo.decode()" 
+                                        style="max-height: 80px; max-width: 200px;"/>
+                                    </t>
+                                </div>
+                            </div> -->
+                            
+                            <!-- Order Information -->
+                            <div style='display:flex; justify-content: center; width:100%; margin-bottom: 15px; text-align:center;'>
+                                <h2>Tax Invoice</h2>
+                            </div>
+                            <!-- Selected Partner Information -->
+                            <div style="width:100%; display:flex; justify-content:space-between; align-items:flex-start;">
+                                <!-- Left Side: POS Reference -->
+                                <div style="display: flex; justify-content: start; flex-direction: column;">
+                                    <div>
+                                        <t style="font-size: 12px;" t-if="doc.pos_reference">
+                                            <strong style="font-size: 12px;">#</strong>
+                                            <t style="font-size: 12px;" t-esc="doc.pos_reference"/>
+                                        </t>
+                                    </div>
+                                    <div style="display:flex;">
+                                        <t t-if="doc.session_id and doc.session_id.employee_id">
+                                            <strong style="font-size: 12px;">Cashier:</strong>
+                                            <t style="font-size: 12px;" t-esc="doc.session_id.employee_id.name"/>
+                                        </t>
+                                    </div>
+                                </div>
+                                <!-- Right Side: Customer Info -->
+                                <t t-if="selected_partner">
+                                    <div style="background-color: #f8f9fa;  margin-bottom: 20px;">
+                                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                                            <div>
+                                                <strong style="font-size: 12px;">Customer:</strong>
+                                                <t style="font-size: 12px;" t-esc="selected_partner.name"/>
+                                            </div>
+                                            <t t-if="selected_partner and selected_partner.email">
+                                                <div>
+                                                    <strong style="font-size: 12px;">Email:</strong>
+                                                    <t style="font-size: 12px;" t-esc="selected_partner.email"/>
+                                                </div>
+                                            </t>
+                                            <t t-if="selected_partner and selected_partner.phone">
+                                                <div>
+                                                    <strong style="font-size: 12px;">Phone:</strong>
+                                                    <t style="font-size: 12px;" t-esc="selected_partner.phone"/>
+                                                </div>
+                                            </t>
+                                             <t t-if="selected_partner and selected_partner.mobile">
+                                                <div>
+                                                    <strong style="font-size: 12px;">Mobile:</strong>
+                                                    <t style="font-size: 12px;" t-esc="selected_partner.mobile"/>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                            <div style="border-top: 1px solid #ccc; margin: 20px 0;"></div>
+                            <!-- Order Lines -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="table table-bordered" style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background-color: #f8f9fa;">
+                                                <th style="border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 12px;">Product</th>
+                                                <th style="border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 12px;">Qty</th>
+                                                <th style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">Unit Price</th>
+                                                <th style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">Discount</th>
+                                                <th style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">VAT %</th>
+                                                <th style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">VAT Amount</th>
+                                                <th style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="doc.lines" t-as="line">
+                                                <tr>
+                                                    <td style="border: 1px solid #ccc; padding: 8px; font-size: 12px;">
+                                                        <t t-esc="line.product_id.name"/>
+                                                        <t t-if="line.product_id.default_code">
+                                                            <br/>
+                                                            <small style="color: #666;">Reference:
+                                                                <t t-esc="line.product_id.default_code"/>
+                                                            </small>
+                                                        </t>
+                                                         <t t-if="line.pack_lot_ids">
+                                                            <t t-foreach="line.pack_lot_ids" t-as="lot">
+                                                                <br/>
+                                                                <small style="color: #666;">Serial:
+                                                                    <t t-esc="lot.lot_name"/>
+                                                                </small>
+                                                            </t>
+                                                        </t>
+                                                        <t t-if="line.customer_note">
+                                                            <br/>
+                                                            <small style="color: #666;">Note:
+                                                                <t t-esc="line.customer_note"/>
+                                                            </small>
+                                                        </t>
+                                                    </td>
+                                                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-size: 12px;">
+                                                        <t t-esc="line.qty"/>
+                                                    </td>
+                                                    <td style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">
+                                                        <t t-esc="doc.currency_id.symbol or ''"/><t t-esc="'{:.2f}'.format(line.price_unit)"/>
+                                                    </td>
+                                                     <td style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">
+                                                        <t t-if="line.discount_amount and line.discount_amount > 0">
+                                                            <t t-esc="doc.currency_id.symbol or ''"/><t t-esc="line.discount_amount"/>
+                                                        </t>
+                                                        <t t-elif="line.discount and line.discount > 0">
+                                                            <t t-esc="'{:.1f}'.format(line.discount)"/>%
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                     <td style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">
+                                                        <t t-if="line.tax_ids">
+                                                            <t t-foreach="line.tax_ids" t-as="tax">
+                                                                <t t-esc="'{:.1f}'.format(tax.amount)"/>%
+                                                                <t t-if="not tax_last">, </t>
+                                                            </t>
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                    <td style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">
+                                                        <t t-if="line.price_subtotal_incl != line.price_subtotal">
+                                                            <t t-esc="doc.currency_id.symbol or ''"/><t t-esc="'{:.2f}'.format(line.price_subtotal_incl - line.price_subtotal)"/>
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                    <td style="border: 1px solid #ccc; padding: 8px; text-align: right; font-size: 12px;">
+                                                        <t t-esc="doc.currency_id.symbol or ''"/><t t-esc="'{:.2f}'.format(line.price_subtotal)"/>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Totals -->
+                            <div class="row">
+                                <div class="col-6 offset-6">
+                                    <table style="width: 100%; margin-top: 20px;">
+                                        <tr>
+                                            <td style="text-align: right; padding: 5px; font-size: 12px;">
+                                                <strong>Subtotal:</strong>
+                                            </td>
+                                            <td style="text-align: right; padding: 5px; font-size: 12px;">
+                                                <t t-esc="doc.currency_id.symbol or ''"/><t t-esc="'{:.2f}'.format(sum(line.price_subtotal for line in doc.lines))"/>
+                                            </td>
+                                        </tr>
+                                        <t t-if="doc.amount_tax > 0">
+                                            <tr>
+                                                <td style="text-align: right; padding: 5px; font-size: 12px;">
+                                                    <strong>VAT:</strong>
+                                                </td>
+                                                <td style="text-align: right; padding: 5px; font-size: 12px;">
+                                                    <t t-esc="doc.currency_id.symbol or ''"/><t t-esc="'{:.2f}'.format(doc.amount_tax)"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr style="border-top: 2px solid #000;">
+                                            <td style="text-align: right; padding: 5px; font-size: 12px;">
+                                                <strong>Total:</strong>
+                                            </td>
+                                            <td style="text-align: right; padding: 5px; font-size: 12px;">
+                                                <strong>
+                                                    <t t-esc="doc.currency_id.symbol or ''"/><t t-esc="'{:.2f}'.format(doc.amount_total)"/>
+                                                </strong>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <!-- Payment Information -->
+                            <t t-if="doc.payment_ids">
+                                <div style="border-top: 1px solid #ccc; margin: 30px 0 20px 0; padding-top: 20px;">
+                                    <h3 style="font-size: 14px; margin-bottom: 15px;">Payment Information</h3>
+                                    <table style="width: 100%;">
+                                        <t t-foreach="doc.payment_ids" t-as="payment">
+                                            <tr>
+                                                <td style="padding: 5px; font-size: 12px;">
+                                                    <t t-esc="payment.payment_method_id.name"/>
+                                                </td>
+                                                <td style="text-align: right; padding: 5px; font-size: 12px;">
+                                                    <t t-esc="doc.currency_id.symbol or ''"/><t t-esc="'{:.2f}'.format(payment.amount)"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <t t-if="doc.amount_return > 0">
+                                            <tr style="border-top: 1px solid #ccc;">
+                                                <td style="padding: 5px; font-size: 14px;">
+                                                    <strong>Change:</strong>
+                                                </td>
+                                                <td style="text-align: right; padding: 5px; font-size: 12px;">
+                                                    <strong>
+                                                        <t t-esc="doc.currency_id.symbol or ''"/><t t-esc="'{:.2f}'.format(doc.amount_return)"/>
+                                                    </strong>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </table>
+                                </div>
+                            </t>
+                        </div>
+                        <!-- Footer Section -->
+                    </div>
+                    
+                    <!-- Fixed Footer -->
+                    <div class="fixed-footer">
+                        <div style="display: flex; align-items: center; flex-direction:column;">
+                            <t t-if="selected_partner">
+                                <div>
+                                    <strong style="font-size: 12px;">Customer:</strong>
+                                    <t style="font-size: 12px;" t-esc="selected_partner.name"/>
+                                </div>
+                            </t>
+                            <t t-if="selected_partner and selected_partner.phone">
+                                <div>
+                                    <strong style="font-size: 12px;">Phone:</strong>
+                                    <t style="font-size: 12px;" t-esc="selected_partner.phone"/>
+                                </div>
+                            </t>
+                        </div>
+                        <div>
+                            <t t-if="doc.pos_reference">
+                                <strong style="font-size: 12px;">POS Reference:</strong>
+                                <t style="font-size: 12px;" t-esc="doc.pos_reference"/>
+                            </t>
+                        </div>
+                    </div>
+                </body>
+            </html>
+        </t>
+    </template>
+    <!-- Report Action -->
+    <record id="action_pos_order_report" model="ir.actions.report">
+        <field name="name">POS Order Receipt</field>
+        <field name="model">pos.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_pos_receipt.pos_order_report_template</field>
+        <field name="report_file">custom_pos_receipt.pos_order_report_template</field>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_type">report</field>
+    </record>
+    <!-- Paperformat -->
+    <!-- <record id="pos_order_report_paperformat" model="report.paperformat">
+        <field name="name">POS Receipt Format</field>
+        <field name="default" eval="False"/>
+        <field name="format">custom</field>
+        <field name="page_height">297</field>
+        <field name="page_width">210</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record> -->
+</odoo>

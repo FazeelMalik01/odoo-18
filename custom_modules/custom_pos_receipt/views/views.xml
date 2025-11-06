@@ -1,0 +1,17 @@
+<odoo>
+  <data>
+    <!-- Extend POS Configuration View -->
+    <record id="pos_config_view_form_inherit" model="ir.ui.view">
+      <field name="name">pos.config.view.form.inherit.pos.receipt.type</field>
+      <field name="model">pos.config</field>
+      <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//setting[@id='other_devices']" position="after">
+          <setting string="Receipt Type" help="Select the type of receipt format to use for this POS configuration">
+            <field name="receipt_type"/>
+          </setting>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>

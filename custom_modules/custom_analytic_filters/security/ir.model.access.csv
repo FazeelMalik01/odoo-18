@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_analytic_po_line_user,access.analytic.po.line.user,model_analytic_po_line,base.group_user,1,1,1,1

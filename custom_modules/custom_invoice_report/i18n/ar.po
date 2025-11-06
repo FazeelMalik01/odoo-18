@@ -1,0 +1,131 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* custom_invoice_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-25 10:22+0000\n"
+"PO-Revision-Date: 2025-08-25 10:22+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.custom_footer
+msgid ""
+"<i class=\"fa fa-building\" style=\"color: #1765AB;\"/>\n"
+"                    <span style=\"margin-left: 5px;\">Swifieh, Amman - Jordan</span>"
+msgstr ""
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.custom_footer
+msgid ""
+"<i class=\"fa fa-globe\" style=\"color: #1765AB;\"/>\n"
+"                    <span style=\"margin-left: 5px;\">www.peptidat.com</span>"
+msgstr ""
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.custom_footer
+msgid ""
+"<i class=\"fa fa-linkedin\" style=\"color:#1765AB;\"/>\n"
+"                    <span style=\"margin-left: 5px;\">linkedin: peptidat-nutrition</span>"
+msgstr ""
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.custom_footer
+msgid ""
+"<i class=\"fa fa-map-marker\" style=\"color: #1765AB;\"/>\n"
+"                    <span style=\"margin-left: 5px;\">Jordan-Al-Salt - Industrial Area</span>"
+msgstr "الأردن - السلط - المدينة الصناعية"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.custom_footer
+msgid ""
+"<i class=\"fa fa-mobile\" style=\"color: #1765AB;\"/>\n"
+"                    <span style=\"margin-left: 5px;\">+962 79 1010655</span>"
+msgstr ""
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.custom_footer
+msgid ""
+"<i class=\"fa fa-phone\" style=\"color: #1765AB;\"/>\n"
+"                    <span style=\"margin-left: 5px;\">+962 (06)4014974</span>"
+msgstr ""
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.custom_header
+msgid ""
+"<strong>\n"
+"                        PEPTIDAT Company for Functional Food Manufacturing\n"
+"                    </strong>"
+msgstr "شركة بيبتيدات لصناعة الأغذية الوظيفية"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "<strong>NO</strong>"
+msgstr "الرقم"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "<strong>PRICE</strong>"
+msgstr "السعر"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "<strong>PRODUCT</strong>"
+msgstr "المنتج"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "<strong>QTY</strong>"
+msgstr "الكمية"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "<strong>TOTAL</strong>"
+msgstr "الإجمالي"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.custom_header
+msgid "Logo"
+msgstr "شعار"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "Notes"
+msgstr "ملاحظات"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "ORDER"
+msgstr "الطلب"
+
+#. module: custom_invoice_report
+#: model:ir.actions.report,name:custom_invoice_report.peptidat_invoice_report_action
+msgid "PEPTIDAT Invoice"
+msgstr "فاتورة بيبتيدات"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "TAX"
+msgstr "الضريبة"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "Total"
+msgstr "الإجمالي"
+
+#. module: custom_invoice_report
+#: model_terms:ir.ui.view,arch_db:custom_invoice_report.peptidat_invoice_report
+msgid "Untaxed Amount"
+msgstr "الإجمالي قبل الضريبة"

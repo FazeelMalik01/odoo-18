@@ -1,0 +1,91 @@
+<odoo>
+    <template id="website_sale_address_custom_inherit" inherit_id="website_sale.address">
+
+        <!-- CSS to freeze the country dropdown -->
+        <xpath expr="//form[@action='/shop/address/submit']" position="before">
+            <t t-raw="0">
+                <style>
+                    select.readonly-country {
+                    pointer-events: none;
+                    background-color: #e9ecef;
+                    }
+                </style>
+            </t>
+        </xpath>
+
+        <!-- Simplified checkout address form -->
+        <xpath expr="//form[contains(@action, '/shop/address')]/div[contains(@class, 'row')]"
+            position="replace">
+            <div class="row">
+
+                <!-- Full Name -->
+                <div id="div_name" class="col-lg-12 mb-2">
+                    <label class="col-form-label" for="o_name">Name</label>
+                    <input id="o_name" type="text" name="name"
+                        t-att-value="partner_sudo.name or request.env.user.partner_id.name or ''"
+                        class="form-control" required="required" />
+                </div>
+
+                <!-- Street / District / Building -->
+                <div id="div_street" class="col-lg-12 mb-2">
+                    <label class="col-form-label" for="o_street">Street</label>
+                    <input id="o_street" type="text" name="street" class="form-control"
+                        t-att-value="partner_sudo.street" required="required" />
+                </div>
+
+                <!-- City (visible for client, required by JS) -->
+                <div id="div_city" class="col-lg-12 mb-2">
+                    <label class="col-form-label" for="o_city">City</label>
+                    <input id="o_city" type="text" name="city" class="form-control"
+                        t-att-value="partner_sudo.city or 'Amman'" required="required" />
+                </div>
+                <!-- Country -->
+                <t t-set="jordan"
+                    t-value="request.env['res.country'].sudo().search([('code','=','JO')], limit=1)" />
+                <div id="div_country" class="col-lg-12 mb-2">
+                    <label class="col-form-label" for="o_country_id">Country</label>
+                    <select id="o_country_id" name="country_id" class="form-select readonly-country"
+                        required="required">
+                        <option t-att-value="jordan.id" selected="selected" t-esc="jordan.name" />
+                    </select>
+                </div>
+
+                <!-- Mobile Number -->
+                <div id="div_phone" class="col-lg-12 mb-2">
+                    <label class="col-form-label" for="o_phone">Mobile Number</label>
+                    <input id="o_phone" type="tel" name="phone"
+                        t-attf-value="+#{partner_sudo.mobile or request.env.user.partner_id.mobile or '962'}"
+                        class="form-control"
+                        required="required"
+                        pattern="^\+962[0-9]{9}$"
+                        title="Mobile number must start with +962 and contain 9 digits after the country code" />
+                </div>
+
+
+                <!-- State / Province (hidden but required by JS) -->
+                <div id="div_state" style="position:absolute; left:-9999px;">
+                    <label class="col-form-label" for="o_state_id">State / Province</label>
+                    <select id="o_state_id" name="state_id" class="form-select">
+                        <option t-att-value="1739" selected="selected">Amman</option>
+                    </select>
+                </div>
+
+                <!-- Zip (hidden but required by JS) -->
+                <div id="div_zip" style="position:absolute; left:-9999px;">
+                    <label class="col-form-label" for="o_zip">Zip</label>
+                    <input id="o_zip" type="text" name="zip" class="form-control"
+                        t-att-value="'11118'" />
+                </div>
+
+                <!-- Email (hidden but required by JS) -->
+                <div id="div_email" style="position:absolute; left:-9999px;">
+                    <label class="col-form-label" for="o_email">Email</label>
+                    <input id="o_email" type="email" name="email" class="form-control"
+                        t-att-value="'none@example.com'" />
+                </div>
+
+            </div>
+        </xpath>
+
+    </template>
+</odoo>

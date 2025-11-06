@@ -1,0 +1,48 @@
+<odoo>
+
+    <template id="portal_my_team_template" name="My Team Page">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">My Team</t>
+            <div class="container my-4">
+                <h3 class="mb-4">My Team</h3>
+                <t t-if="team_data">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
+                                <th>Total Purchases</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="team_data" t-as="member">
+                                <td t-out="member['name']"/>
+                                <td>
+                                    <t t-if="member.get('email')">
+                                        <t t-out="member['email']"/>
+                                    </t>
+                                    <t t-else="">–</t>
+                                </td>
+                                <td>
+                                    <t t-if="member.get('mobile')">
+                                        <t t-out="member['mobile']"/>
+                                    </t>
+                                    <t t-else="">–</t>
+                                </td>
+                                <td>
+                                    <t t-if="member.get('total_purchase')">
+                                        <strong t-out="'%.2f' % member['total_purchase']"/>
+                                        <strong t-out="currency.symbol"/>
+                                    </t>
+                                    <t t-else="">0.00 <t t-out="currency.symbol"/></t>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+
+            </div>
+        </t>
+    </template>
+</odoo>

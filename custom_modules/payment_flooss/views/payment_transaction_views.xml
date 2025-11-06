@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_transaction_form_flooss" model="ir.ui.view">
+        <field name="name">Flooss Transaction Form</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='provider_reference']" position="after">
+                
+
+                <field name="flooss_type"
+                    readonly="1"
+                    invisible="provider_code != 'flooss'"
+                />
+                <field name="flooss_reference_id"
+                    readonly="1"
+                    invisible="provider_code != 'flooss'"
+                />
+                <field name="flooss_created_at"
+                    readonly="1"
+                    invisible="provider_code != 'flooss'"
+                />
+                <field name="flooss_payment_status"
+                    readonly="1"
+                    invisible="provider_code != 'flooss'"
+                />
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button string="Online Checkout Notification"
+                    type="object" name="action_online_checkout" class="btn-primary"
+                />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

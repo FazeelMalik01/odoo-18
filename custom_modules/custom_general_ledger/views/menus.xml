@@ -1,0 +1,20 @@
+<odoo>
+    <record id="action_falcon_general_ledger_client" model="ir.actions.client">
+        <field name="name">Falcon General Ledger</field>
+        <field name="tag">falcon_general_ledger_tag</field>
+        <field name="target">main</field>
+    </record>
+
+    <!-- Menu Heading -->
+    <menuitem id="menu_falcon_reports_heading"
+              name="Falcon Reports"
+              parent="account.menu_finance_reports"
+              sequence="6"/>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_falcon_general_ledger"
+              name="Falcon General Ledger"
+              parent="menu_falcon_reports_heading"
+              sequence="7"
+              action="custom_general_ledger.action_falcon_general_ledger_client"/>
+</odoo>

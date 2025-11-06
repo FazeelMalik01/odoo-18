@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="portal_my_home_commission" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_category') and hasclass('row') and hasclass('g-2')]"
+            position="before">
+            <t
+                t-if="user_id.is_coach">
+                <div class="o_portal_category row mt-3 "
+                    style="padding-right: calc(var(--gutter-x) * 0.6); padding-left: calc(var(--gutter-x) * 0.6);">
+                    <a t-att-href="'/my/commission-details'"
+                        class="commission-card d-flex align-items-start p-3 rounded text-decoration-none"
+                        style="width: 51%; background-color: #F8F9FA; transition: background-color 0.2s ease-in-out;"
+                        onmouseover="this.style.backgroundColor='#dae0e5';"
+                        onmouseout="this.style.backgroundColor='#F8F9FA';">
+                        <img src="/team_registration/static/description/commission.png" alt="Commission Details"
+                            class="me-3" width="64" height="64" />
+                        <div>
+                            <h5 class="mt-0 mb-1 fs-5 fw-normal" style="color:black;">Commissions Details</h5>
+                            <p class="mb-0 opacity-75" style="color: #212529;">Follow your commissions</p>
+                        </div>
+                    </a>
+                </div>
+
+                <style>
+                    @media (max-width: 767.98px) {
+                    .commission-card {
+                    width: 510px !important;
+                    height: 82px !important;
+                    }
+                    }
+                </style>
+            </t>
+        </xpath>
+    </template>
+</odoo>

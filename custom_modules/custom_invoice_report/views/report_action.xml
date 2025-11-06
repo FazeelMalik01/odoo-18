@@ -1,0 +1,11 @@
+<odoo>
+    <record id="peptidat_invoice_report_action" model="ir.actions.report">
+        <field name="name">EPSON Form</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_invoice_report.peptidat_invoice_report</field>
+        <field name="report_file">custom_invoice_report.peptidat_invoice_report</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

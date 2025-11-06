@@ -1,0 +1,12 @@
+<odoo>
+    <record id="falcon_invoice_report_action" model="ir.actions.report">
+        <field name="name">Falcon Systems Invoice</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">falcon_invoice_report.falcon_invoice_report</field>
+        <field name="report_file">falcon_invoice_report.falcon_invoice_report</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <!-- <field name="paperformat_id" ref="falcon_invoice_report.paperformat_falcon_invoice"/> -->
+    </record>
+</odoo>

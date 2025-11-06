@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_provider_form_flooss" model="ir.ui.view">
+        <field name="name">Flooss Provider Form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form" />
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position='inside'>
+                <group invisible="code != 'flooss'">
+                    <field
+                        name="flooss_merchant_email"
+                        string="Merchant Email"
+                        required="code == 'flooss' and state != 'disabled'"
+                    />
+                    <field
+                        name="flooss_merchant_password"
+                        string="Merchant Password"
+                        password="True"
+                        required="code == 'flooss' and state != 'disabled'"
+                    />
+
+                    <field
+                        name="flooss_merchant_id"
+                        string="Merchant Id"
+                        password="True"
+                        required="code == 'flooss' and state != 'disabled'"
+                    />
+
+                    <field
+                        name="flooss_client_id"
+                        string="Client ID"
+                        required="code == 'flooss' and state != 'disabled'"
+                    />
+                    <field
+                        name="flooss_client_secret"
+                        string="Client Secret"
+                        password="True"
+                        required="code == 'flooss' and state != 'disabled'"
+                    />
+                    <label for="flooss_webhook_id" string="Webhook ID" />
+                    <div class="o_row" col="2">
+                        <field name="flooss_webhook_id" />
+                    </div>
+                    <widget
+                        name="documentation_link"
+                        path="/applications/finance/payment_providers/flooss.html"
+                        label="How to configure your Flooss account?"
+                        colspan="2"
+                    />
+                </group>
+            </group>
+        </field>
+    </record>
+
+
+</odoo>

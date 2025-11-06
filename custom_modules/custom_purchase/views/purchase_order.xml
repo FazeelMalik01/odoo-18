@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_order_form_inherit_vendor_shipping" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.vendor.shipping</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add after Products tab -->
+            <xpath expr="//page[@name='products']" position="after">
+                <page string="Vendor &amp; Shipping Info" name="vendor_shipping_info" invisible="state != 'purchase'">
+
+                    <!-- VENDOR INFORMATION -->
+                    <group string="Vendor Information" col="2">
+                        <field name="partner_id"/>  <!-- CHANGED: removed readonly="1" -->
+                        <field name="vendor_no"/>
+                        <field name="vendor_contact"/>
+                        <field name="vendor_address_display" widget="html"/>
+                        <field name="vendor_phone"/>
+                        <field name="vendor_email"/>
+                    </group>
+
+                    <!-- SHIPPING DETAILS -->
+                    <group string="Shipping Details" col="2">
+                        <field name="ship_to"/>
+                        <field name="ship_employee_id"/>
+                        <field name="ship_address_display" widget="html"/>
+                        <field name="ship_phone"/>
+                        <field name="ship_email"/>
+                    </group>
+
+                    <!-- BILLING DETAILS -->
+                    <group string="Billing Details" col="2">
+                        <field name="bill_to"/>
+                        <field name="bill_employee_id"/>
+                        <field name="bill_address_display" widget="html"/>
+                        <field name="bill_phone"/>
+                        <field name="bill_email"/>
+                    </group>
+
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

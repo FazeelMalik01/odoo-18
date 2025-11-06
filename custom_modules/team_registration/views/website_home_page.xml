@@ -1,0 +1,17 @@
+<odoo>
+    <template id="homepage_signup_banner" inherit_id="website.homepage">
+    <xpath expr="//div[@id='wrap']" position="inside">
+        <section class="s_text_block" style="padding: 60px 0;">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-md-10 text-center" style="background: linear-gradient(to right, #cb60ff, #00dbde); padding: 40px; border-radius: 12px;">
+                        <h2 style="color: white; font-size: 30px;">Create Your Free Account Today &amp; Start Earning Rewards!</h2>
+                        <a href="/team/register" class="btn btn-dark mt-3" style="padding: 10px 25px; border-radius: 25px;">Signup Now!</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </xpath>
+</template>
+
+</odoo>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template inherit_id="auth_signup.signup" id="auth_signup_otp" name="Sign up login otp">
+        <xpath expr="//form//div" position="before">
+            <t t-if="mobile_field">
+                <div class=" o_hidden alert alert-danger" id="danger-alert" style="display:show;">
+                    <button type="button" class="close" data-dismiss="alert">x</button>
+                  The OTP entered is incorrect.
+                </div>
+                <div class="o_hidden alert alert-success" id="success-alert-signup" style="display:show;">
+                    <button type="button" class="close" data-dismiss="alert">x</button>
+                  OTP has been sent on registered mobile number.
+                </div>
+                <div class="o_hidden alert alert-success" id="success-alert-timmer-otp" style="display:show;">
+                    <button type="button" class="close" data-dismiss="alert">x</button>
+                    Generate and User should not able to login.
+                </div>
+                <div>
+                    <input id="submit-hidden" type="submit" style="display: none" />
+                    <button id="otp-verify-btn" class="btn btn-primary otp-verify o_hidden btn-signup">Sign Up</button>
+                    <button class="btn-primary verify-signup o_hidden btn-signup">Verify</button>
+                    <div id="demo" style="text-align:center;"></div>
+                </div>
+            </t>
+        </xpath>
+        <xpath expr="//div[hasclass('oe_login_buttons')]//a[hasclass('btn-link')]" position="before">
+            <div class ="o_hidden signup-resend-otp" style="text-align:right;">
+                <a href="javascript:void(0);" onclick="document.getElementById('otp').value = ''" id="signup-resend-otp-link">Resend OTP</a>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('oe_login_buttons')]/button" position="attributes">
+            <attribute name="class" add="btn-signup-user" separator=' '/>
+        </xpath>
+    </template>
+
+    <template inherit_id="auth_signup.reset_password" id="auth_signup_reset_password_otp" name="Reset">
+        <xpath expr="//div[hasclass('field-login')]" position="before">
+            <div class="mb-1">
+                <label >Reset Your Password </label>
+                <input id="reset_number" name="reset_number" value="true" type="hidden" />
+            </div>
+            <div class="o_hidden">
+                <label class="radio-inline">
+                    <input type="radio"  name="selectAll" class="mobile-radio" value="mobile" checked="checked"/> Your Mobile
+                </label>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('field-login')]" position="after">
+            <div class="form-group field-country o_hidden">
+                <label for="country" class="control-label">country code</label>
+                <input type="number" name="countrycode" id="countrycode" class="form-control"/>
+            </div>
+            <div class="form-group field-mobile">
+                <input type="tel" name="mobile" id="mobile" class="form-control"/>
+                <span id="valid-msg" class="o_hidden text-success">✓ Valid</span>
+                <span id="error-msg" class="o_hidden text-danger"></span>
+            </div>
+            <div class="form-group reset-otp-field o_hidden">
+                <label for="reset-otp" class="control-label">OTP</label>
+                <input type="number" name="reset-otp" id="reset-otp-field" class="form-control"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[hasclass('field-login')]" position="attributes">
+            <attribute name="class" add="o_hidden" separator=" "/>
+        </xpath>
+        <xpath expr="//div[hasclass('oe_login_buttons')]//div" position="before">
+            <div class="alert alert-danger o_hidden" id="success-alert" style="display:show;">
+              <button type="button" class="close" data-dismiss="alert">x</button>
+              The OTP entered is incorrect.
+            </div>
+            <div class="alert alert-danger o_hidden" id="danger-alert-partner" style="display:show;">
+              <button type="button" class="close" data-dismiss="alert">x</button>
+              There is no user registered with this mobile number<br/> Please try again with registered mobile number.
+            </div>
+            <div class="alert alert-success o_hidden" id="success-alert-partner" style="display:show;">
+              <button type="button" class="close" data-dismiss="alert">x</button>
+              OTP has been sent on registered mobile number.
+            </div>
+            <button class="btn btn-primary btn-block reset-otp o_hidden">Confirm</button>
+            <button class="btn btn-primary btn-block reset-otp-verify o_hidden">Verify</button>
+            <div id="demo" style="text-align:center;"></div>
+        </xpath>
+        <xpath expr="//div[hasclass('oe_login_buttons')]//div[  hasclass('justify-content-between')]" position="inside">
+            <div class ="o_hidden reset-resend-otp" style="text-align:right;">
+                <a href="javascript:void(0);" id="reset-resend-otp-link">Resend OTP</a>
+            </div>
+        </xpath>
+
+        <xpath expr="//t[@t-if='token and not invalid_token']//t[@t-call='auth_signup.fields']" position="after">
+
+            <div>
+                <input id="reset_password_page" name="reset_password_with_Token" value="true" type="hidden" />
+            </div>
+            <div class="form-group field-mobile">
+                <label for="mobile" class="control-label">Mobile</label>
+                <input type="text" name="mobile" id="mobile" class="form-control"/>
+            </div>
+
+            <div class="form-group field-email">
+                <label for="email" class="control-label">Email</label>
+                <input type="email" name="email" id="email" class="form-control"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,13 @@
+<odoo>
+    <template id="user_already_exists_template" name="User Already Exists Page">
+        <t t-call="website.layout">
+            <div class="container text-center" style="padding: 100px 0;">
+                <h1 class="mb-3 text-danger">User Already Exists</h1>
+                <p class="lead"> A registration with this email or phone number already exists.<br />
+                    Please try registering with a different email or phone number. </p>
+                <a href="/team/submit" class="btn btn-primary mt-4">Try Again</a>
+            </div>
+        </t>
+    </template>
+
+</odoo>

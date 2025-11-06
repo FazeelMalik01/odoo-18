@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="payment_flooss_otp_modal" inherit_id="payment.submit_button">
+        <xpath expr="//button[@name='o_payment_submit_button']" position="after">
+            <!-- OTP Modal -->
+            <div class="modal fade" id="floossOtpModal" tabindex="-1"
+                aria-labelledby="floossOtpLabel" aria-hidden="true">
+                <div class="modal-dialog" style="margin-top: 100px;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="floossOtpLabel">Pay With Flooss</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                            <!-- Info from API -->
+                            <div class="alert alert-info d-none" id="floossOtpInfo"></div>
+
+                            <!-- OTP input (hidden by default) -->
+                            <div class="mb-3 d-none">
+                                <label for="floossOtpInput" class="form-label">OTP</label>
+                                <input type="text" class="form-control" id="floossOtpInput"
+                                    placeholder="Enter OTP" />
+                            </div>
+
+                            <!-- Error box (hidden by default) -->
+                            <div id="floossOtpError" class="alert alert-danger d-none"></div>
+
+                            <!-- Success box (hidden by default) -->
+                            <div id="floossOtpSuccess" class="alert alert-success d-none"></div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                            <!-- Submit button hidden by default -->
+                            <button type="button" id="floossOtpSubmit"
+                                class="btn btn-success d-none">
+                                Verify Pay
+                            </button>
+                            <button type="button" id="floossOtpTryAgain"
+                                class="btn btn-warning d-none">
+                                Try Again
+                            </button>
+
+                            <button type="button" id="floossProceedPayment"
+                                class="btn btn-primary d-none">
+                                Proceed Payment
+                            </button>
+
+                            <button type="button" id="floossCancelPayment"
+                                class="btn btn-danger d-none" data-bs-dismiss="modal">
+                                Cancel Payment
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

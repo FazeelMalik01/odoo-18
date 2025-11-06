@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="custom_my_account_heading" inherit_id="portal.portal_layout">
+    <xpath expr="//h3[contains(@class, 'my-3')]" position="after">
+      <t t-if="user_id.referral_link and (user_id.is_coach or user_id.is_nutritionist or user_id.is_owner )">
+        <div class="d-flex align-items-center gap-2 my-1">
+
+          <!-- Link Container -->
+          <div class="px-3 py-1 rounded-pill" style="background-color: #ececec;">
+            <a t-att-href="user_id.referral_link" class="text-decoration-none small" style="color: #2ca2fd;" target="_blank">
+              <t t-out="user_id.referral_link" />
+            </a>
+          </div>
+
+          <!-- Copy Button Container -->
+          <div class="rounded-circle d-flex align-items-center justify-content-center" style="background-color: #ececec; width: 30px; height: 30px;">
+            <button type="button" class="btn p-0 border-0" t-att-data-link="user_id.referral_link" onclick="copyReferralLink(this)" title="Copy link" style="background: none;">
+              <i class="fa fa-link small copy-icon" style="color: #2ca2fd;"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Icon Rotate Animation CSS -->
+        <style>
+          @keyframes rotateOnce {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+          }
+
+          .rotate-animation {
+          animation: rotateOnce 0.5s ease-in-out;
+          }
+        </style>
+
+        <!-- JavaScript for Copy and Rotate -->
+        <script type="text/javascript">
+          <![CDATA[
+    function copyReferralLink(button) {
+        const link = button.getAttribute("data-link");
+        if (!link) return;
+
+        const icon = button.querySelector(".copy-icon");
+        if (!icon) return;
+
+        navigator.clipboard.writeText(link).then(function () {
+            icon.classList.add("rotate-animation");
+            setTimeout(() => {
+                icon.classList.remove("rotate-animation");
+            }, 500); // duration must match animation duration
+        }).catch(function (err) {
+            console.error("Failed to copy: ", err);
+        });
+    }
+    ]]>
+        </script>
+      </t>
+
+
+    </xpath>
+  </template>
+  <template id="portal_my_home_commission_dashboard" inherit_id="portal.portal_my_home">
+
+    <xpath expr="//div[hasclass('o_portal_docs') and hasclass('row') and hasclass('g-2')]" position="before">
+      <t t-if="user_id.has_group('base.group_portal') and (user_id.is_coach or user_id.is_nutritionist or user_id.is_owner)">
+
+
+        <style>
+          <![CDATA[
+        body {
+          font-family: 'Inter', sans-serif;
+          margin: 0;
+          padding: 0;
+          background: #f5f5f5;
+        }
+        h3, .card-title, .team-box, .commission-boxes > div, .circle-content {
+          font-weight: bold;
+          font-family: 'Inter', sans-serif;
+          font-size: 22px;
+          color: #9A9A9B;
+        }
+        .dashboard-container {
+          display: grid;
+          grid-template-areas:
+            "balance balance balance"
+            "rate earnings overview"
+            "levels levels overview"
+            "team team team";
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 15px;
+          max-width: 1300px;
+          margin: auto;
+        }
+        .card {
+          background: #fff;
+          border-radius: 10px;
+          padding: 25px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .current-balance {
+          grid-area: balance;
+          grid-column: 1 / -1;
+          text-align: center;
+          padding: 10px 0;  
+        }
+
+        .balance-title {
+          margin: 0 0 5px 0;  
+          font-size: 16px;
+        }
+
+        .balance-amount {
+          font-size: 20px;    
+          font-weight: bold;  
+          line-height: 1.2;
+        }
+        .commission-rate { grid-area: rate; }
+        .earnings { grid-area: earnings; }
+        .overview {
+          grid-area: overview;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          color: #000;
+        }
+        .levels { grid-area: levels; }
+        .team { grid-area: team; }
+
+        .progress-container {
+          background: #e0e0e0;
+          border-radius: 6px;
+          overflow: hidden;
+          height: 20px;
+          margin: 10px 0;
+        }
+        .progress-bar {
+          min-width:50px;
+          height: 100%;
+          text-align: right;
+          padding-right: 5px;
+          color: white;
+          font-weight: bold;
+          background: #15c13d;
+        }
+
+        .commission-boxes {
+          display: flex;
+          justify-content: space-between;
+          gap: 10px;
+          margin-top: 10px;
+        }
+        .commission-boxes > div {
+          flex: 1;
+          border-radius: 8px;
+          padding: 15px;
+          text-align: center;
+          font-size: 13px;
+          position: relative;
+          border: 2px solid transparent;
+          transition: all 0.3s ease;
+          color: #000000;
+        }
+
+        .commission-active {
+          background: #15c13d !important;
+          color: white !important;  
+          box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+          border-color: #15c13d !important;
+        }
+        .commission-complete {
+          opacity: 0.2;
+          background: none !important;
+          border-color: #bababa !important;
+          color: #fff;
+        }
+        .commission-future {
+          opacity: 0.40;
+          background: #f5f5f5 !important;
+          
+          border-color: #5089c6 !important;
+        }
+        .arrow-indicator {
+          position: absolute;
+          top: -15px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 18px;
+          color: #10b981;
+        }
+
+        .svg-wrapper {
+          width: 180px;
+          height: 180px;
+          position: relative;
+        }
+        .svg-wrapper svg {
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+        .svg-wrapper .circle-content {
+          position: relative;
+          top: 75px;
+          text-align: center;
+          font-size: 22px;
+          font-weight: bold;
+          z-index: 1;
+        }
+
+        .team-box {
+          background: #f3f4f6;
+          padding: 12px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: bold;
+          text-align: left;
+        }
+
+        @media (max-width: 1400px) {
+          .dashboard-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 10px;
+          }
+          .commission-boxes {
+            flex-direction: column;
+          }
+          .commission-boxes > div {
+            width: 100%;
+          }
+          .team-box {
+            flex: 1 1 100% !important;
+          }
+        }
+
+        /* Success Modal Styles */
+        .modal {
+          position: fixed;
+          z-index: 1000;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-content {
+          background-color: #fff;
+          margin: 5% auto;
+          padding: 0;
+          border-radius: 15px;
+          width: 90%;
+          max-width: 512px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+          animation: slideIn 0.3s ease-out;
+        }
+
+        .modal-header {
+          background: #6badde;
+          color: white;
+          padding: 20px;
+          border-radius: 15px 15px 0 0;
+          position: relative;
+        }
+
+        .modal-header h2 {
+          margin: 0;
+          font-size: 24px;
+          font-weight: bold;
+        }
+
+        .close {
+          position: absolute;
+          right: 20px;
+          top: 20px;
+          font-size: 28px;
+          font-weight: bold;
+          cursor: pointer;
+          color: white;
+          opacity: 0.8;
+          transition: opacity 0.3s;
+        }
+
+        .close:hover {
+          opacity: 1;
+        }
+
+        .modal-body {
+          padding: 30px;
+          text-align: center;
+        }
+
+        .success-icon {
+          font-size: 48px;
+          margin-bottom: 15px;
+          animation: bounce 0.6s ease-in-out;
+        }
+
+        .modal-body p {
+          font-size: 18px;
+          color: #333;
+          margin-bottom: 25px;
+          font-weight: 500;
+        }
+
+        .success-details {
+          background: #f4f9fd;
+          border-radius: 10px;
+          padding: 20px;
+          margin-top: 20px;
+        }
+
+        .detail-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px 0;
+          border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-item:last-child {
+          border-bottom: none;
+        }
+
+        .detail-item .label {
+          font-weight: 500;
+          color: #666;
+        }
+
+        .detail-item .value {
+          font-weight: bold;
+          color: #28a745;
+          font-size: 16px;
+        }
+
+        .modal-footer {
+          padding: 20px;
+          text-align: center;
+          border-top: 1px solid #e9ecef;
+        }
+
+        .btn-success {
+          background: #6badde;
+          color: white;
+          border: none;
+          padding: 12px 30px;
+          border-radius: 25px;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(107, 173, 222, 0.3);
+        }
+
+        .btn-success:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(107, 173, 222, 0.4);
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+          from { 
+            opacity: 0;
+            transform: translateY(-50px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes bounce {
+          0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+          40% { transform: translateY(-10px); }
+          60% { transform: translateY(-5px); }
+        }
+
+        /* No Balance Modal Styles */
+        .no-balance-modal-dialog {
+          margin-top: 100px;
+        }
+
+        .no-balance-alert {
+          background: #f4f9fd;
+          border: none;
+        }
+
+        .no-balance-btn {
+          background: #6badde;
+          border: none;
+        }
+        ]]>
+        </style>
+
+
+        <div class="dashboard-container">
+          <div id="commission-data" t-att-data-direct="direct_purchase or 0" t-att-data-indirect="indirect_purchase or 0" t-att-data-slices="','.join(request.env['commission.slices'].sudo().search([], order='slice_seq asc').mapped(lambda s: str(int(s.from_amount or 0)) + ':' + str(int(s.to_amount or 0)) + ':' + str(int((s.commission_percentage or 0) * 100))))" style="display:none;"></div>
+
+          <div class="card current-balance p-3">
+            <div class="row text-center align-items-center" style="font-weight:bold; font-size:18px;">
+              <div class="col-8">
+      Wallet Balance: <span id="wallet-balance">
+                <t t-out="'%.2f' % (wallet_balance or 0)" />
+              </span> JOD
+            </div>
+            <div class="col-4" style="display:none;">
+      Current Balance: <span id="commission-balance">
+              <t t-out="'%.2f' % (current_balance or 0)" />
+            </span> JOD
+          </div>
+          <div class="col-4">
+            <button style="height: 35px;" type="button" class="btn btn-primary btn-sm " t-att-data-user="user_id.id" t-att-data-amount="current_balance or 0"  onclick="topUpWallet(this)" data-bs-placement="top">
+    Update Wallet
+            </button>
+          </div>
+
+
+        </div>
+      </div>
+
+
+      <!-- Success Popup Modal -->
+      <div id="successModal" class="modal" style="display: none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span class="close" onclick="closeSuccessModal()">×</span>
+            <h2>✅ Balance Updated</h2>
+          </div>
+          <div class="modal-body">
+            <div class="success-icon">🎉</div>
+            <p id="successMessage">Wallet updated successfully!</p>
+            <div class="success-details">
+              <div class="detail-item">
+                <span class="label">Amount Transferred:</span>
+                <span id="transferredAmount" class="value">0.00 JOD</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">Wallet:</span>
+                <span id="walletBalance" class="value">0.00 JOD</span>
+              </div>
+              <div class="detail-item" style="display:none;">
+                <span class="label">Current Balance:</span>
+                <span id="newBalance" class="value">0.00 JOD</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-success" onclick="closeSuccessModal()">Okay!</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Balance Modal -->
+      <div class="modal fade" id="noBalanceModal" tabindex="-1" aria-labelledby="noBalanceLabel" aria-hidden="true">
+        <div class="modal-dialog no-balance-modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="noBalanceLabel">✅ Balance Updated</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              <div class="alert alert-warning no-balance-alert">
+          You don't have new commission balances to be processed!
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-warning no-balance-btn" data-bs-dismiss="modal">
+          Okay
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="card commission-rate">
+        <h3>Commission Rate</h3>
+        <div style="font-size: 40px;">
+          <div id="commissionRateValue" style="display: inline-block; font-weight: bold;">
+            <t t-out="(commission_rate or 0) * 100" />
+          </div>
+          <div style="display: inline-block; font-weight: bold;">%</div>
+        </div>
+      </div>
+
+      <div class="card earnings">
+        <h3>Available Balanace</h3>
+        <div id="yourEarningsOutput" style="display: inline-block; font-size: 40px; font-weight: bold;">
+          <t t-out="(commission or 0) * 100" />
+        </div>
+        <div style="display: inline-block; font-size: 20px; font-weight: bold;">JOD</div>
+      </div>
+
+      <div class="card overview">
+        <h3>Progress Rate to Best Commission 👑</h3>
+        <div class="svg-wrapper">
+          <svg width="180" height="180">
+            <circle cx="90" cy="90" r="70" stroke="#e5e7eb" stroke-width="15" fill="none"></circle>
+            <circle id="progressCircle" cx="90" cy="90" r="70" stroke="#15c13d" stroke-width="15" fill="none" stroke-dasharray="440" stroke-dashoffset="440" transform="rotate(-90 90 90)"></circle>
+          </svg>
+          <div class="circle-content" id="progressText">0%</div>
+        </div>
+
+        <div class="text-start">
+          <p class="mb-0 text-muted">
+            <i class="fa fa-chart-line" />
+ Total Purchase: <span id="yourPurchasesTotal">
+            <strong id="purchaseValue" t-out="'%.2f' % (total_purchase or 0)" />
+            <strong id="currencySymbol" t-out="user_id.company_id.currency_id.symbol or ''" />
+          </span>
+        </p>
+        <p class="mb-0 text-muted">
+          <i class="fa fa-dollar-sign" />
+ Your Purchase: <strong t-esc="'%.2f' % (direct_purchase or 0)" />
+        <strong t-out="user_id.company_id.currency_id.symbol or ''" />
+      </p>
+      <p class="mb-0 text-muted">
+        <i class="fa fa-dollar-sign" />
+ Team Purchase: <strong t-out="'%.2f' % (indirect_purchase or 0)" />
+      <strong t-out="user_id.company_id.currency_id.symbol or ''" />
+    </p>
+    <p class="mb-0 text-muted">
+      <i class="fa fa-coins" />
+ Commission: <strong t-out="'%.2f' % (commission or 0) " />
+    <strong t-out="user_id.company_id.currency_id.symbol or ''" />
+  </p>
+</div>
+
+</div>
+
+<t t-set="icons" t-value="['💪', '🚀', '🏆', '👑']" />
+<t t-set="slices" t-value="request.env['commission.slices'].sudo().search([], order='slice_seq asc')[:4]" />
+
+<div class="card levels">
+<h3>Commission Levels</h3>
+<div class="progress-container">
+  <div id="progressBarInner" class="progress-bar" style="width:0%">0%</div>
+</div>
+<div class="commission-boxes">
+  <t t-set="index" t-value="0" />
+  <t t-foreach="slices" t-as="slice">
+    <div t-att="{'id': 'levelBox%d' % (index + 1)}">
+      <t t-out="icons[index]" />
+      <br />
+ Amount: <t t-esc="int(slice.from_amount or 0)" />
+                  JOD<br />
+  <strong>
+    <t t-esc="int((slice.commission_percentage or 0) * 100)" />
+%
+                  Commission</strong>
+  <br />
+  <br />
+</div>
+<t t-set="index" t-value="index + 1" />
+</t>
+</div>
+</div>
+
+</div>
+
+<script type="text/javascript">
+<![CDATA[
+  function updateDashboard() {
+    const data = document.getElementById("commission-data");
+    if (!data) return;
+    const direct = parseFloat(data.dataset.direct || "0");
+    const indirect = parseFloat(data.dataset.indirect || "0");
+    const total = direct + indirect;
+    const slicesRaw = (data.dataset.slices || "")
+      .split(',')
+      .map(slice => {
+        const [min, max, rate] = slice.split(':').map(Number);
+        return { min, max: max === 0 ? Infinity : max, rate };
+      });
+    let commissionRate = 0;
+    let progressPercent = 0;
+
+    for (let i = 0; i < 4; i++) {
+      const slice = slicesRaw[i];
+      const box = document.getElementById(`levelBox${i + 1}`);
+      if (!box) continue;
+      box.classList.remove("commission-active", "commission-complete", "commission-future");
+
+      box.innerHTML = (i === 0 ? "💪" : i === 1 ? "🚀" : i === 2 ? "🏆" : "👑") +
+        `<br>Amount: ${slice.min} JOD<br><strong>${slice.rate}% Commission</strong>`;
+
+      if (total >= slice.max) {
+        box.classList.add("commission-complete");
+      } else if (total >= slice.min && total < slice.max) {
+        commissionRate = slice.rate;
+        box.classList.add("commission-active");
+        progressPercent = ((total - slice.min) / (slice.max - slice.min)) * 100;
+      } else {
+        box.classList.add("commission-future");
+      }
+    }
+
+    const earnings = (total * commissionRate / 100).toFixed(2);
+    document.getElementById("yourEarningsOutput").innerText = earnings + " JOD";
+    document.getElementById("commissionRateValue").innerText = commissionRate;
+    document.getElementById("purchaseValue").innerText = total.toFixed(2);
+    document.getElementById("currencySymbol").innerText = " ";
+
+
+    const bar = document.getElementById("progressBarInner");
+    bar.style.width = progressPercent + "%";
+    bar.innerText = Math.round(progressPercent) + "%";
+    bar.style.background = progressPercent === 0 ? "#e0e0e0" : "#15c13d";
+    
+    
+
+    let finalTarget = slicesRaw[slicesRaw.length - 1].max;
+    if (!finalTarget || finalTarget === 0 || finalTarget === Infinity) {
+      finalTarget = 1;
+    }
+
+    let performanceProgress = Math.min((total / finalTarget) * 100, 100);
+    if (isNaN(performanceProgress)) {
+      performanceProgress = 0;
+    }
+
+    const circleOffset = 440 - (440 * performanceProgress / 100);
+    const circle = document.getElementById("progressCircle");
+    circle.setAttribute("stroke-dashoffset", circleOffset);
+    circle.setAttribute("stroke", performanceProgress === 0 ? "#e5e7eb" : "#15c13d");
+
+    document.getElementById("progressText").innerText = Math.round(performanceProgress) + "%";
+  }
+
+  document.addEventListener("DOMContentLoaded", updateDashboard);
+
+  // Success Modal Functions
+  function showSuccessModal(amount, newBalance, walletBalance) {
+    document.getElementById('transferredAmount').textContent = amount.toFixed(2) + ' JOD';
+    document.getElementById('newBalance').textContent = newBalance.toFixed(2) + ' JOD';
+    document.getElementById('walletBalance').textContent = walletBalance.toFixed(2) + ' JOD';
+    document.getElementById('successModal').style.display = 'block';
+  }
+
+  function closeSuccessModal() {
+    document.getElementById('successModal').style.display = 'none';
+  }
+
+  // Close modal when clicking outside of it
+  window.onclick = function(event) {
+    var modal = document.getElementById('successModal');
+    if (event.target == modal) {
+      closeSuccessModal();
+    }
+  }
+function showNoBalanceModal() {
+    $('#noBalanceModal').modal('show');
+}
+
+function closeNoBalanceModal() {
+    document.getElementById("noBalanceModal").style.display = "none";
+}
+
+
+
+  ]]>
+</script>
+</t>
+
+</xpath>
+</template>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <!-- Inherit OrderWidget to add total quantity display -->
+    <t t-name="custom_pos_discount.OrderWidget" 
+       t-inherit="point_of_sale.OrderWidget" 
+       t-inherit-mode="extension">
+        <xpath expr="//div[@class='d-flex justify-content-between w-100 fs-2']" position="before">
+            <div class="d-flex justify-content-between w-100 fs-6 text-muted">
+                Total Quantity
+                <span t-esc="getTotalQuantity()" class="total-quantity"/>
+            </div>
+        </xpath>
+    </t>
+    <!-- Inherit OrderReceipt to add total quantity in receipt -->
+    <t t-name="point_of_sale.OrderReceipt" 
+       t-inherit="point_of_sale.OrderReceipt" 
+       t-inherit-mode="extension">
+        <xpath expr="//div[@class='pos-receipt-amount receipt-total']" position="before">
+            <div style="font-size: 15px;">
+                <span>Total Quantity</span>
+                <span t-esc="getTotalQuantity()" class="pos-receipt-right-align"/>
+            </div>
+        </xpath>
+    </t>
+</templates>

@@ -1,0 +1,14 @@
+<odoo>
+<!--    <template id="custom_purchase_template" inherit_id="web.layout">-->
+<!--        <xpath expr="//main" position="inside">-->
+<!--            <section class="oe_structure">-->
+<!--                <div class="text-center">-->
+<!--                    <h1>Falcon Purchase Request Module</h1>-->
+<!--                    <p>This module adds a Purchase Request form under the Falcon PR menu.</p>-->
+<!--                </div>-->
+<!--            </section>-->
+<!--        </xpath>-->
+<!--    </template>-->
+</odoo>
+
+

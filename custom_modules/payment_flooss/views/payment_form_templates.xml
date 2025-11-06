@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Flooss Payment Method Form: Add Flooss-specific inline form values and color -->
+    <template id="payment_flooss.method_form" inherit_id="payment.method_form">
+        <input name="o_payment_radio" position="attributes">
+            <attribute name="t-att-data-flooss-inline-form-values">
+                provider_sudo._flooss_get_inline_form_values(currency)
+            </attribute>
+            <attribute name="t-att-data-flooss-color">
+                "'green' if provider_code == 'flooss' else ''"
+            </attribute>
+            <!-- Add the is-flooss attribute to the radio button -->
+            <attribute name="t-att-data-is-flooss">
+                provider_code == 'flooss'
+            </attribute>
+        </input>
+
+        <!-- Ensure the label is properly clickable -->
+        <label position="attributes">
+            <attribute name="style">cursor: pointer;</attribute>
+        </label>
+    </template>
+
+    <!-- Flooss Submit Button: Insert Flooss buttons and loading spinner before submit button -->
+    <template id="payment_flooss_submit_button_inherit" inherit_id="payment.submit_button">
+        <xpath expr="//button[@name='o_payment_submit_button']" position="before">
+            <!-- Only show Flooss buttons when Flooss is selected -->
+            <div
+                id="o_flooss_button_container"
+                class="d-none"
+                style="margin-bottom: 15px;"
+            >
+                <!-- Enabled Flooss Button -->
+                <button
+                    id="o_flooss_enabled_button"
+                    type="button"
+                    class="btn btn-success w-100 d-none"
+                    style="margin-bottom: 10px;"
+                >
+                    <i class="fa fa-mobile me-2"></i>Pay with Flooss
+                </button>
+                <button
+                    id="o_flooss_disabled_button"
+                    type="button"
+                    class="btn btn-secondary w-100 d-none"
+                    disabled="disabled"
+                    style="margin-bottom: 10px;"
+                >
+                    <i class="fa fa-mobile me-2"></i>Pay with Flooss
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="o_flooss_loading" class="d-flex justify-content-center align-items-center d-none" style="margin-bottom: 15px;">
+                <div class="spinner-border text-primary me-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <span>Processing Flooss payment...</span>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Remove this entire template - it's changing the button classes -->
+    <!--
+    <template id="payment_flooss_hide_submit" inherit_id="payment.submit_button">
+        <button name="o_payment_submit_button" position="attributes">
+            <attribute name="t-att-class">
+                "'btn btn-primary btn-lg w-100 o_payment_submit_button' + (' d-none' if provider_code == 'flooss' else '')"
+            </attribute>
+        </button>
+    </template>
+    -->
+</odoo>

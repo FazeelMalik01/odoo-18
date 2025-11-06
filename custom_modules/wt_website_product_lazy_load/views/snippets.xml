@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="snippet_options" inherit_id="website_sale.snippet_options" name="Pagination Snippet Options">
+    <xpath expr="//we-select[hasclass('o_wsale_sort_submenu')]" position="after">
+      <we-select string="Pagination" data-no-preview="true" data-reload="/">
+        <we-button data-customize-website-views="" data-name="grid_view_opt">Default</we-button>
+        <we-button data-customize-website-views="wt_website_product_lazy_load.wt_website_product_lazy_load_button">Button</we-button>
+        <we-button data-customize-website-views="wt_website_product_lazy_load.wt_website_product_lazy_load_mouse_scroll">Scroll</we-button>
+      </we-select>
+    </xpath>
+  </template>
+</odoo>

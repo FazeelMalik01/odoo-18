@@ -1,0 +1,8 @@
+.button.disabled {
+    opacity: 0.65;
+ cursor: not-allowed;
+}
+.btn-signup {
+    width: 268px;
+    margin-top: 20px;
+}

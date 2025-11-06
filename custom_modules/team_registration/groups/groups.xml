@@ -1,0 +1,10 @@
+<odoo>
+    <record id="group_team_registration_manager" model="res.groups">
+        <field name="name">Team Registration Manager</field>
+        <field name="category_id" ref="base.module_category_hidden"/> <!-- or create your own category -->
+    </record>
+    <record id="group_commission_slices_manager" model="res.groups">
+        <field name="name">Commission Slices Manager</field>
+        <field name="category_id" ref="base.module_category_hidden"/> <!-- or create your own category -->
+    </record>
+</odoo>

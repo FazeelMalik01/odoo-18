@@ -1,0 +1,63 @@
+<odoo>
+    <!-- Form View -->
+    <record id="view_commission_slices_form" model="ir.ui.view">
+        <field name="name">commission.slices.form</field>
+        <field name="model">commission.slices</field>
+        <field name="arch" type="xml">
+            <form string="Commission Slices">
+                <header>
+                    <!--                    <field name="state" widget="statusbar"/>-->
+                    <!--                    <button name="action_approve"-->
+                    <!--                            string="Approve"-->
+                    <!--                            type="object"-->
+                    <!--                            groups="team_registration.group_team_registration_manager"-->
+                    <!--                            invisible="state != 'draft'"-->
+                    <!--                            class="btn btn-primary"-->
+                    <!--                            style="background-color: purple; border-color: purple; color: white;"/>-->
+
+                    <!--                    <button name="action_cancel" type="object"-->
+                    <!--                            string="Cancel" class="btn btn-secondary"-->
+                    <!--                            invisible="state != 'draft'"/>-->
+
+                </header>
+
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="slice_seq"/>
+                        <field name="from_amount"/>
+                        <field name="to_amount"/>
+                        <field name="commission_percentage" widget="percentage"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_commission_slices_list" model="ir.ui.view">
+        <field name="name">commission.slices.list</field>
+        <field name="model">commission.slices</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="slice_seq"/>
+                <field name="from_amount"/>
+                <field name="to_amount"/>
+                <field name="commission_percentage" widget="percentage"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_commission_slices" model="ir.actions.act_window">
+        <field name="name">Commission Slices</field>
+        <field name="res_model">commission.slices</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register new Commission Slice.
+            </p>
+        </field>
+    </record>
+
+</odoo>

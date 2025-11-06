@@ -1,0 +1,44 @@
+<odoo>
+  <record id="view_move_form_inherit_custom" model="ir.ui.view">
+    <field name="name">account.move.form.inherit.custom.analytic</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+      <!-- Add fields right after partner_shipping_id -->
+      <field name="partner_shipping_id" position="after">
+        <field name="analytic_account_id"/>
+        <field name="analytic_po_line_id"/>
+            </field>
+    </field>
+  </record>
+  <record id="view_move_form_inherit_custom_analytic" model="ir.ui.view">
+    <field name="name">account.move.form.inherit.custom.analytic</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_move_form"/>
+    <field name="arch" type="xml">
+      <!-- Add Purchase Orders field after Analytic Distribution in Invoice Lines -->
+      <xpath expr="//page[@id='invoice_tab']//field[@name='invoice_line_ids']/list/field[@name='analytic_distribution']" position="after">
+        <field name="analytic_po_line_id" string="Purchase Orders"/>
+      </xpath>
+    </field>
+  </record>
+  <record id="view_account_invoice_filter_inherit_custom_analytic" model="ir.ui.view">
+    <field name="name">account.invoice.select.inherit.custom.analytic</field>
+    <field name="model">account.move</field>
+    <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+    <field name="arch" type="xml">
+      <!-- Add analytic filters before the first separator -->
+      <xpath expr="//search/separator[1]" position="before">
+        <field name="analytic_account_id" string="المشاريع"/>
+        <field name="analytic_po_line_id" string="Purchase Orders"/>
+      </xpath>
+      <!-- Add to the last <group> element (Group By section) -->
+      <xpath expr="//search/group[last()]" position="inside">
+        <filter string="المشاريع" name="group_by_analytic_account"
+                context="{'group_by': 'analytic_account_id'}"/>
+        <filter string="Purchase Orders" name="group_by_analytic_po_line"
+                context="{'group_by': 'analytic_po_line_id'}"/>
+      </xpath>
+    </field>
+  </record>
+</odoo>

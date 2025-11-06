@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="portal_commission_details_template" name="Commission Details">
+        <t t-call="portal.frontend_layout">
+            <t t-set="title">Commission Details</t>
+            <t t-set="body_class">o_portal_wrap</t>
+            
+            <div class="container mt-3">
+                <!-- Header Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h2 class="mb-0">Commission Details</h2>
+                            <a href="/my/home" class="btn btn-outline-secondary">
+                                <i class="fa fa-arrow-left me-2"></i>Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Total Commission</h6>
+                                        <h4 class="mb-0">
+                                            <t t-out="'%.2f' % total_commission" />
+                                            <t t-out="currency.symbol" />
+                                        </h4>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-coins fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Transferred</h6>
+                                        <h4 class="mb-0">
+                                            <t t-out="'%.2f' % total_transferred" />
+                                            <t t-out="currency.symbol" />
+                                        </h4>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-wallet fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Available Balance</h6>
+                                        <h4 class="mb-0">
+                                            <t t-out="'%.2f' % available_balance" />
+                                            <t t-out="currency.symbol" />
+                                        </h4>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-money-bill-wave fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Wallet Balance</h6>
+                                        <h4 class="mb-0">
+                                            <t t-out="'%.2f' % wallet_balance" />
+                                            <t t-out="currency.symbol" />
+                                        </h4>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fa fa-credit-card fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs Navigation -->
+                <div class="card" style="margin-bottom:50px">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="commissionTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="period-details-tab" data-bs-toggle="tab" data-bs-target="#period-details" type="button" role="tab" aria-controls="period-details" aria-selected="true">
+                                    <i class="fa fa-calendar-alt me-2"></i>Period Details
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="payment-details-tab" data-bs-toggle="tab" data-bs-target="#payment-details" type="button" role="tab" aria-controls="payment-details" aria-selected="false">
+                                    <i class="fa fa-credit-card me-2"></i>Payment Details
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="tab-content" id="commissionTabsContent">
+                        <!-- Period Details Tab -->
+                        <div class="tab-pane fade show active" id="period-details" role="tabpanel" aria-labelledby="period-details-tab">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Period #</th>
+                                                <th>Status</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Direct Purchase</th>
+                                                <th>Team Purchase</th>
+                                                <th>Total Purchase</th>
+                                                <th>Commission Rate</th>
+                                                <th>Commission Earned</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-if="tracks">
+                                                <t t-foreach="tracks" t-as="track">
+                                                    <tr>
+                                                        <td>
+                                                            <span class="badge bg-secondary">
+                                                                <t t-out="track.seq" />
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="track.status == 'active'">
+                                                                <span class="badge bg-success">Active</span>
+                                                            </t>
+                                                            <t t-elif="track.status == 'closed'">
+                                                                <span class="badge bg-primary">Closed</span>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="badge bg-secondary">Inactive</span>
+                                                            </t>
+                                                        </td>
+                                                        <td>
+                                                            <t t-out="track.start_date" />
+                                                        </td>
+                                                        <td>
+                                                            <t t-out="track.close_date" />
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <t t-out="'%.2f' % track.direct_purchase" />
+                                                            <t t-out="currency.symbol" />
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <t t-out="'%.2f' % track.indirect_purchase" />
+                                                            <t t-out="currency.symbol" />
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <strong>
+                                                                <t t-out="'%.2f' % track.total_purchase" />
+                                                                <t t-out="currency.symbol" />
+                                                            </strong>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="badge bg-info">
+                                                                <t t-out="'%.1f' % track.commission_rate" />%
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-end">
+                                                            <strong class="text-success">
+                                                                <t t-out="'%.2f' % track.commission" />
+                                                                <t t-out="currency.symbol" />
+                                                            </strong>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-if="not tracks or len(tracks) == 0">
+                                                <tr>
+                                                    <td colspan="9" class="text-center py-4">
+                                                        <div class="text-muted">
+                                                            <i class="fa fa-info-circle fa-2x mb-2"></i>
+                                                            <p class="mb-0">No commission periods found.</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Details Tab -->
+                        <div class="tab-pane fade" id="payment-details" role="tabpanel" aria-labelledby="payment-details-tab">
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th style="width: 45%">Description</th>
+                                                <th>Order</th>
+                                                <th>Date</th>
+                                                <th class="text-end">Used</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-if="loyalty_history">
+                                                <t t-foreach="loyalty_history" t-as="lh">
+                                                    <tr>
+                                                        <td>
+                                                            <t t-out="lh.description" />
+                                                        </td>
+                                                        <td>
+                                                            <t t-if="lh.order_model and lh.order_id">
+                                                                <t t-out="lh._get_order_description() or ''" />
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="text-muted">-</span>
+                                                            </t>
+                                                        </td>
+                                                        <td>
+                                                            <t t-out="lh.create_date and lh.create_date.strftime('%Y-%m-%d %H:%M') or ''" />
+                                                        </td>
+                                                        
+                                                        <td class="text-end">
+                                                            <strong class="text-danger">
+                                                                <t t-out="'%.2f' % (lh.used or 0.0)" />
+                                                            </strong>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-if="not loyalty_history or len(loyalty_history) == 0">
+                                                <tr>
+                                                    <td colspan="5" class="text-center py-4">
+                                                        <div class="text-muted">
+                                                            <i class="fa fa-info-circle fa-2x mb-2"></i>
+                                                            <p class="mb-0">No payment details found.</p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <t t-if="total_pages > 1">
+                        <div class="card-footer">
+                            <nav aria-label="Commission periods pagination">
+                                <ul class="pagination justify-content-center mb-0">
+                                    <li class="page-item" t-att-class="'disabled' if not has_prev else ''">
+                                        <a class="page-link" t-att-href="'/my/commission-details?page=%s&amp;status=%s' % (prev_page, status_filter)" t-if="has_prev">
+                                            <i class="fa fa-chevron-left"></i> Previous
+                                        </a>
+                                        <span class="page-link" t-if="not has_prev">
+                                            <i class="fa fa-chevron-left"></i> Previous
+                                        </span>
+                                    </li>
+                                    
+                                    <t t-foreach="range(1, total_pages + 1)" t-as="page_num">
+                                        <li class="page-item" t-att-class="'active' if page_num == current_page else ''">
+                                            <a class="page-link" t-att-href="'/my/commission-details?page=%s&amp;status=%s' % (page_num, status_filter)" t-if="page_num != current_page">
+                                                <t t-out="page_num" />
+                                            </a>
+                                            <span class="page-link" t-if="page_num == current_page">
+                                                <t t-out="page_num" />
+                                            </span>
+                                        </li>
+                                    </t>
+                                    
+                                    <li class="page-item" t-att-class="'disabled' if not has_next else ''">
+                                        <a class="page-link" t-att-href="'/my/commission-details?page=%s&amp;status=%s' % (next_page, status_filter)" t-if="has_next">
+                                            Next <i class="fa fa-chevron-right"></i>
+                                        </a>
+                                        <span class="page-link" t-if="not has_next">
+                                            Next <i class="fa fa-chevron-right"></i>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <!-- Include the commission topup JavaScript -->
+            <script type="text/javascript" src="/team_registration/static/src/js/commission_topup.js"></script>
+            
+            <!-- Custom Styles -->
+            <style>
+                .commission-card {
+                    transition: all 0.3s ease;
+                    border: 1px solid #e9ecef;
+                }
+                
+                .commission-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                }
+                
+                .table th {
+                    background-color: #f8f9fa;
+                    border-top: none;
+                    font-weight: 600;
+                    color: #495057;
+                }
+                
+                .badge {
+                    font-size: 0.75em;
+                }
+                
+                .btn-sm {
+                    padding: 0.25rem 0.5rem;
+                    font-size: 0.875rem;
+                }
+                
+                .pagination .page-link {
+                    color: #007bff;
+                    border-color: #dee2e6;
+                }
+                
+                .pagination .page-item.active .page-link {
+                    background-color: #007bff;
+                    border-color: #007bff;
+                }
+                
+                .pagination .page-link:hover {
+                    color: #0056b3;
+                    background-color: #e9ecef;
+                    border-color: #dee2e6;
+                }
+                
+                .text-success {
+                    color: #28a745 !important;
+                }
+                
+                .text-muted {
+                    color: #6c757d !important;
+                }
+                
+                @media (max-width: 768px) {
+                    .table-responsive {
+                        font-size: 0.875rem;
+                    }
+                    
+                    .btn-sm {
+                        padding: 0.2rem 0.4rem;
+                        font-size: 0.8rem;
+                    }
+                }
+            </style>
+        </t>
+    </template>
+</odoo>

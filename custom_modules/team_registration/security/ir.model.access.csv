@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_team_registration_manager,access.team.registration.manager,model_team_registration,team_registration.group_team_registration_manager,1,1,1,1
+access_commission_slices_manager,access.commission.slices.manager,model_commission_slices,team_registration.group_commission_slices_manager,1,1,1,1
+access_commission_slices_website_group_website_designer,access.commission.slices.public,model_commission_slices,,1,0,0,0
+access_coach_commission_period,access_coach_commission_period,model_user_commission_track,team_registration.group_commission_slices_manager,1,1,1,1

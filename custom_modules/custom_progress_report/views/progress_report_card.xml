@@ -1,0 +1,19 @@
+<odoo>
+    <template id="portal_my_home_inherit_progress_report" inherit_id="portal.portal_my_home" name="Portal My Home: Progress Report">
+        <!-- Add Progress Report card inside the portal_client_category container -->
+        <xpath expr="//div[@id='portal_client_category']" position="inside">
+            <div class="o_portal_index_card col-md-6 order-2">
+                <a t-attf-href="/my/progress_reports"
+                   class="d-flex gap-2 gap-md-3 py-3 pe-md-3 px-md-3 h-100 rounded text-decoration-none bg-100">
+                    <div class="o_portal_index_card_icon">
+                        <i class="fa fa-tasks text-primary fa-2x"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-1 fw-normal">Progress Report</h5>
+                        <p class="text-muted mb-0">Submit and view your daily project reports.</p>
+                    </div>
+                </a>
+            </div>
+        </xpath>
+    </template>
+</odoo>

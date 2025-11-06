@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_order_form_inherit_rfq" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.rfq</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page[@name='products']" position="after">
+                <page string="RFQ Details" name="rfq_contacts" invisible="state not in ['draft', 'sent']">
+                    <group>
+                        <group col="2">
+                            <field name="contact_person_1_id"/>
+                            <field name="title_1_id"/>
+                            <field name="mobile_1"/>
+                        </group>
+                        <group col="2">
+                            <field name="contact_person_2_id"/>
+                            <field name="title_2_id"/>
+                            <field name="email_2"/>
+                            <field name="mobile_2"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

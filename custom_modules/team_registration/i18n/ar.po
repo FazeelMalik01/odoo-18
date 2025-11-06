@@ -1,0 +1,1286 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* team_registration
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-10-02 12:43+0000\n"
+"PO-Revision-Date: 2025-10-02 12:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid ""
+"%\n"
+"                  Commission"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_team_template
+msgid "0.00"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "7XXXXXXXX"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid ""
+"<br/>\n"
+" Amount:"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "<i class=\"fa fa-arrow-left me-2\"/>Back to Dashboard"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "<i class=\"fa fa-calendar-alt me-2\"/>Period Details"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid ""
+"<i class=\"fa fa-chart-line\"/>\n"
+" Total Purchase:"
+msgstr "مجموع المشتريات"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "<i class=\"fa fa-chevron-left\"/> Previous"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid ""
+"<i class=\"fa fa-coins\"/>\n"
+" Commission:"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "<i class=\"fa fa-credit-card me-2\"/>Payment Details"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid ""
+"<i class=\"fa fa-dollar-sign\"/>\n"
+" Team Purchase:"
+msgstr "مشتريات الفريق"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid ""
+"<i class=\"fa fa-dollar-sign\"/>\n"
+" Your Purchase:"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_side_content_inherit_referrals
+msgid "<i class=\"fa fa-user-circle\"/> Referred by:"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_side_content_inherit_referrals
+msgid "<i class=\"fa fa-users\"/> My Team"
+msgstr "فريقي"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid ""
+"<select name=\"city\" class=\"form-select\" required=\"required\">\n"
+"                  <option value=\"\">Select your city</option>\n"
+"                  <option value=\"Amman\">Amman</option>\n"
+"                  <option value=\"Zarqa\">Zarqa</option>\n"
+"                  <option value=\"Irbid\">Irbid</option>\n"
+"                  <option value=\"Balqa\">Balqa</option>\n"
+"                  <option value=\"Madaba\">Madaba</option>\n"
+"                  <option value=\"Mafraq\">Mafraq</option>\n"
+"                  <option value=\"Jerash\">Jerash</option>\n"
+"                  <option value=\"Ajloun\">Ajloun</option>\n"
+"                  <option value=\"Karak\">Karak</option>\n"
+"                  <option value=\"Tafilah\">Tafilah</option>\n"
+"                  <option value=\"Ma'an\">Ma'an</option>\n"
+"                  <option value=\"Aqaba\">Aqaba</option>\n"
+"                </select>"
+msgstr ""
+"<select name=\"city\" class=\"form-select\" required=\"required\">\n"
+"            <option value=\"\" translate=\"yes\">Select your city</option>\n"
+"            <option value=\"Amman\" translate=\"yes\">Amman</option>\n"
+"            <option value=\"Zarqa\" translate=\"yes\">Zarqa</option>\n"
+"            <option value=\"Irbid\" translate=\"yes\">Irbid</option>\n"
+"            <option value=\"Balqa\" translate=\"yes\">Balqa</option>\n"
+"            <option value=\"Madaba\" translate=\"yes\">Madaba</option>\n"
+"            <option value=\"Mafraq\" translate=\"yes\">Mafraq</option>\n"
+"            <option value=\"Jerash\" translate=\"yes\">Jerash</option>\n"
+"            <option value=\"Ajloun\" translate=\"yes\">Ajloun</option>\n"
+"            <option value=\"Karak\" translate=\"yes\">Karak</option>\n"
+"            <option value=\"Tafilah\" translate=\"yes\">Tafilah</option>\n"
+"            <option value=\"Ma'an\" translate=\"yes\">Ma'an</option>\n"
+"            <option value=\"Aqaba\" translate=\"yes\">Aqaba</option>\n"
+"          </select>"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid ""
+"<select name=\"degree\" class=\"form-select\">\n"
+"                  <option value=\"high_school\">High School</option>\n"
+"                  <option value=\"bachelor\">Bachelor</option>\n"
+"                  <option value=\"master\">Master</option>\n"
+"                  <option value=\"phd\">PhD</option>\n"
+"                </select>"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid ""
+"<small class=\"text-muted\">Attach a certificate of practicing the profession or\n"
+"                  anything related to it.</small>"
+msgstr "يرجى ارفاق شهادة الاعتماد او اي وثيقة مدعمة"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "<span class=\"badge bg-primary\">Closed</span>"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "<span class=\"badge bg-secondary\">Inactive</span>"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "<span class=\"badge bg-success\">Active</span>"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "<span class=\"close\" onclick=\"closeSuccessModal()\">×</span>"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "<span class=\"input-group-text\">+962</span>"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid ""
+"<span class=\"label\">Amount Transferred:</span>\n"
+"                <span id=\"transferredAmount\" class=\"value\">0.00 JOD</span>"
+msgstr "الرصيد المحول"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid ""
+"<span class=\"label\">Current Balance:</span>\n"
+"                <span id=\"newBalance\" class=\"value\">0.00 JOD</span>"
+msgstr "الرصيد المتوفر"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid ""
+"<span class=\"label\">Wallet:</span>\n"
+"                <span id=\"walletBalance\" class=\"value\">0.00 JOD</span>"
+msgstr "رصيد المحفظة"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "<span class=\"text-muted\">-</span>"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.user_already_exists_template
+msgid ""
+"A registration with this email or phone number already exists.<br/>\n"
+"                    Please try registering with a different email or phone number."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Academic degree"
+msgstr "الدرجة العلمية"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__user_commission_track__status__active
+msgid "Active"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__address
+msgid "Address"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Address / st. *"
+msgstr "العنوان"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid "Amman"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Applicant's description *"
+msgstr "نوع الحساب"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.view_team_registration_form
+msgid "Approve"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__state__approved
+msgid "Approved"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid ""
+"Are you passionate about health, fitness, and innovation?<br/> PEPTIDAT Nutrition\n"
+"                is looking for talented individuals to join our growing team!"
+msgstr ""
+"هل لديك الشغف بالصحة واللياقة البدنية والابتكار؟ تبحث شركة بيبتيدات للتغذية "
+"عن أفراد موهوبين للانضمام إلى فريقنا المتنامي!"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Available Balanace"
+msgstr "الرصيد المتاح"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Available Balance"
+msgstr "الرصيد المتاح"
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__degree__bachelor
+msgid "Bachelor"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_thank_you_template
+msgid "Back to Home"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.view_team_registration_form
+msgid "Cancel"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__state__cancelled
+msgid "Cancelled"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__cert_filename
+msgid "Cert Filename"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__cert_file
+msgid "Certificate of Practice"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Certificate of practice *"
+msgstr "شهادة المزاولة"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__city
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid "City"
+msgstr "المدينة"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "City *"
+msgstr "المدينة"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Close"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__close_date
+msgid "Close Date"
+msgstr "الى تاريخ"
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__user_commission_track__status__closed
+msgid "Closed"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__role__coach
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Coach"
+msgstr "مدرب"
+
+#. module: team_registration
+#: model:ir.ui.menu,name:team_registration.menu_commission_coach_period
+msgid "Coach Periods"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__commission_percentage
+msgid "Commission %"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_company__commission_cycle_days
+msgid "Commission Cycle (days)"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission
+msgid "Commission Details"
+msgstr "تفاصيل العمولات"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Commission Earned"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Commission Levels"
+msgstr "مستويات العمولة"
+
+#. module: team_registration
+#: model:ir.model,name:team_registration.model_commission_slices
+msgid "Commission Plan"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Commission Rate"
+msgstr "نسبة العمولة"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__commission_rate
+msgid "Commission Rate (%)"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.actions.act_window,name:team_registration.action_commission_slices
+#: model_terms:ir.ui.view,arch_db:team_registration.view_commission_slices_form
+msgid "Commission Slices"
+msgstr ""
+
+#. module: team_registration
+#: model:res.groups,name:team_registration.group_commission_slices_manager
+msgid "Commission Slices Manager"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.actions.server,name:team_registration.ir_cron_commission_tracks_rollover_ir_actions_server
+msgid "Commission Tracks Rollover"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Commission periods pagination"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.actions.server,name:team_registration.ir_cron_commission_auto_topup_ir_actions_server
+msgid "Commission: Automatic Wallet Top-up"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.ui.menu,name:team_registration.menu_commission_slices_sub
+msgid "Commissions"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission
+msgid "Commissions Details"
+msgstr "تفاصيل العمولات"
+
+#. module: team_registration
+#: model:ir.model,name:team_registration.model_res_company
+msgid "Companies"
+msgstr "الشركات"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Confirm Password *"
+msgstr "تأكيد كلمة السر"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.custom_my_account_heading
+msgid "Copy link"
+msgstr ""
+
+#. module: team_registration
+#. odoo-python
+#: code:addons/team_registration/controllers/main.py:0
+msgid "Could not create a new account."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid "Country"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.homepage_signup_banner
+msgid "Create Your Free Account Today &amp; Start Earning Rewards!"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__user_id
+msgid "Created User"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__create_uid
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__create_uid
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__create_date
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__create_date
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__current_balance
+msgid "Current Balance"
+msgstr "الرصيد المتوفر"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Current Balance:"
+msgstr "الرصيد المتوفر"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Date"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__degree
+msgid "Degree"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Description"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__direct_purchase
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Direct Purchase"
+msgstr "مشتريات مباشرة"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_company__discount_value
+msgid "Discount"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__display_name
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__display_name
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__state__draft
+msgid "Draft"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__commission
+msgid "Earned Commission"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__email
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_team_template
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid "Email"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "End Date"
+msgstr "الى تاريخ"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Enter only a number..."
+msgstr "الرجاء ادخال ارقام فقط"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__fitness_center
+msgid "Fitness Center"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission
+msgid "Follow your commissions"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_team_registration__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__from_amount
+msgid "From Amount"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__name
+msgid "Full Name"
+msgstr "الاسم"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Full Name *"
+msgstr "الاسم"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__degree__high_school
+msgid "High School"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__id
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__id
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__id
+msgid "ID"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_team_registration__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "If Accepted What is your password preferred? *"
+msgstr "إذا تم القبول، ما هو كلمة المرور المفضلة لديك؟ *"
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_team_registration__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_team_registration__message_has_error
+#: model:ir.model.fields,help:team_registration.field_team_registration__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__user_commission_track__status__inactive
+msgid "Inactive"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__invitation_link
+msgid "Invitation Link"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_users__is_coach
+msgid "Is Coach"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_users__is_nutritionist
+msgid "Is Nutritionist"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_users__is_owner
+msgid "Is Owner"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "JOD"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "JOD<br/>"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Join the PEPTIDAT team"
+msgstr "انضم لفريقنا في بيبتيدات"
+
+#. module: team_registration
+#: model:ir.model,name:team_registration.model_account_move
+msgid "Journal Entry"
+msgstr "قيد اليومية"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__write_uid
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__write_uid
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__write_date
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__write_date
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_company__loaylty_pointer_per_purchase_amount
+msgid "Loyalty point per JOD"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__degree__master
+msgid "Master"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_company__minimum_points_required
+msgid "Minimum Loyalty Points Required for Discount"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_team_template
+msgid "Mobile"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid "Mobile Number"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid ""
+"Mobile number must start with +962 and contain 9 digits after the country "
+"code"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_team_template
+msgid "My Team"
+msgstr "فريقي"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__name
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_team_template
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid "Name"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Name of Fitness / Nutrition Center"
+msgstr "اسم المركز"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__x_studio_related_field_8ir_1j6d6fo55
+msgid "New Related Field"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Next <i class=\"fa fa-chevron-right\"/>"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "No commission periods found."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "No payment details found."
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_team_registration__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_team_registration__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__role__nutritionist
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Nutritionist"
+msgstr "اخصائي تغذية"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Okay"
+msgstr "موافق"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Okay!"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_res_company__test_today
+msgid "Optional date to override today for testing"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Order"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__role__owner
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Owner"
+msgstr "صاحب مركز لياقة"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__password
+msgid "Password"
+msgstr "كلمة السر"
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_commission_slices__commission_percentage
+msgid "Percentage commission for this slice"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Period #"
+msgstr "الفترات"
+
+#. module: team_registration
+#: model:ir.model.fields.selection,name:team_registration.selection__team_registration__degree__phd
+msgid "PhD"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__phone
+msgid "Phone"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Phone Number *"
+msgstr "رقم الموبايل"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Phone number must start with 7 and be 9 digits long"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Please write the full name as it appears on the national ID."
+msgstr "يرجى ادخال الاسم كما هو في البطاقة الشخصية"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Progress Rate to Best Commission 👑"
+msgstr "معدل التقدم نحو أعلى عمولة"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__rating_ids
+msgid "Ratings"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_users__referral_link
+msgid "Referral Link"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.view_users_form_inherit
+msgid "Referrals"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_users__referred_by
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__referred_by
+msgid "Referred By"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_users__referred_users
+msgid "Referred Users"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_side_content_inherit_referrals
+msgid ""
+"Referred by: <strong>Some\n"
+"                    very long fake referred T</strong>"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.actions.act_window,help:team_registration.action_commission_slices
+msgid "Register new Commission Slice."
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_users__role
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__role
+msgid "Role"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model,name:team_registration.model_sale_order
+msgid "Sales Order"
+msgstr "أمر البيع"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__seq
+msgid "Sequence"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_company__show_coach
+msgid "Show Coach?"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_company__show_team
+msgid "Show Team?"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.homepage_signup_banner
+msgid "Signup Now!"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__slice_seq
+msgid "Slice Sequence"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__start_date
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Start Date"
+msgstr "من تاريخ"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__state
+msgid "State"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid "State / Province"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__status
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Status"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_team_registration__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid "Street"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.ui.menu,name:team_registration.menu_team_registration_sub
+msgid "Submissions"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Submit"
+msgstr "تقديم"
+
+#. module: team_registration
+#: model_terms:ir.actions.act_window,help:team_registration.action_team_registration
+msgid "Submit your team registrations here."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Sweileh, King Husain st, Build NO.23"
+msgstr "صويلح، شارع الملك حسين، بناية 23"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_payslips
+msgid "Team"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.view_users_form_inherit
+msgid "Team Details"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.view_company_form_inherit
+msgid "Team Flags"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_payslips
+msgid "Team Information"
+msgstr "معلومات الفريق:"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__indirect_purchase
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Team Purchase"
+msgstr "مشتريات الفريق"
+
+#. module: team_registration
+#: model:ir.actions.act_window,name:team_registration.action_team_registration
+#: model:ir.model,name:team_registration.model_team_registration
+#: model:ir.ui.menu,name:team_registration.menu_team_registration_root
+#: model_terms:ir.ui.view,arch_db:team_registration.view_team_registration_form
+msgid "Team Registration"
+msgstr ""
+
+#. module: team_registration
+#: model:res.groups,name:team_registration.group_team_registration_manager
+msgid "Team Registration Manager"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.view_users_form_inherit
+msgid "Team Roles"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_res_company__test_today
+msgid "Test Today"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_thank_you_template
+msgid "Thank You!"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_commission_slices__to_amount
+msgid "To Amount"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Total Commission"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__total_purchase
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Total Purchase"
+msgstr "مجموع المشتريات"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_team_template
+msgid "Total Purchases"
+msgstr "مجموع المشتريات"
+
+#. module: team_registration
+#: model_terms:ir.actions.act_window,help:team_registration.action_coach_period_commission_track
+msgid "Track user commissions here. Only coaches can have commission tracks."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Transferred"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__commission_transferred
+msgid "Transferred to Wallet"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.user_already_exists_template
+msgid "Try Again"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_team_registration__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Update Wallet"
+msgstr "تحديث الرصيد"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Used"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model,name:team_registration.model_res_users
+#: model:ir.model.fields,field_description:team_registration.field_user_commission_track__user_id
+msgid "User"
+msgstr "المستخدم"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.user_already_exists_template
+msgid "User Already Exists"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.view_user_commission_track_form
+msgid "User Commission"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model,name:team_registration.model_user_commission_track
+msgid "User Commission Tracking"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.actions.act_window,name:team_registration.action_coach_period_commission_track
+#: model_terms:ir.ui.view,arch_db:team_registration.view_user_commission_track_list
+msgid "User Commissions"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_res_company__minimum_points_required
+msgid ""
+"User must have at least this number of points to apply a loyalty discount."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.view_company_form_inherit
+msgid "Visibility Options"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "Wallet Balance"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Wallet Balance:"
+msgstr "رصيد المحفظة"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "Wallet updated successfully!"
+msgstr "تم تحديث الرصيد بنجاح"
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,help:team_registration.field_team_registration__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: team_registration
+#: model:ir.model.fields,field_description:team_registration.field_team_registration__years_experience
+msgid "Years Experience"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Years of experience"
+msgstr "سنوات الخبرة"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "You don't have new commission balances to be processed!"
+msgstr "لا يوجد ارصدة عمولات مستحقة"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "Your Email"
+msgstr "الايميل"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_payslips
+msgid "Your Team"
+msgstr "فريقك:"
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_thank_you_template
+msgid ""
+"Your registration has been submitted successfully.<br/>We’ll review your "
+"information and contact you soon."
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.website_sale_address_custom_inherit
+msgid "Zip"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.team_form_template
+msgid "example@email.com"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_commission_details_template
+msgid "o_portal_wrap"
+msgstr ""
+
+#. module: team_registration
+#: model_terms:ir.ui.view,arch_db:team_registration.portal_my_home_commission_dashboard
+msgid "✅ Balance Updated"
+msgstr "تحديث الرصيد"

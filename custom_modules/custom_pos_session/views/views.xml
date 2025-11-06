@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="inherit_pos_session_sales_details" inherit_id="point_of_sale.pos_session_sales_details">
+        <xpath expr="//t[@t-if='session_name']" position="after">
+            <t t-if="config_names and len(config_names) == 1">
+                <br/>Point of Sale:
+                <span t-out="config_names[0]"/>
+            </t>
+        </xpath>
+        
+        <!-- Hide individual product rows - Only show category totals -->
+        <xpath expr="//tr[@t-foreach=&quot;category['products']&quot;]" position="replace"/>
+    </template>
+</odoo>

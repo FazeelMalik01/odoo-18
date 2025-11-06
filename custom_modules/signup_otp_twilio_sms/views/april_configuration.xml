@@ -1,0 +1,41 @@
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form_inherit_for_smsapril" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.smsapril</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='invite_users']" position="after">
+                    <h2 class="mt32">SMSApril Settings</h2>
+                    <div class="row mt16 o_settings_container">
+                        <!-- Checkbox -->
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="smsapril_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="smsapril_enabled"/>
+                                <div class="text-muted">Enable AprilSMS as the SMS provider</div>
+                            </div>
+                        </div>
+
+                        <!-- Fields visible only if checkbox is enabled -->
+                        <div class="col-12 col-lg-6 o_setting_box"
+                             invisible="not smsapril_enabled">
+                            <div class="o_setting_right_pane">
+                                <span class="o_form_label">Username</span>
+                                <div><field name="smsapril_username"/></div>
+
+                                <span class="o_form_label">Password</span>
+                                <div><field name="smsapril_password" password="True"/></div>
+
+                                <span class="o_form_label">Sender Name</span>
+                                <div><field name="smsapril_sender"/></div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

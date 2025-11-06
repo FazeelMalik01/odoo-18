@@ -1,0 +1,82 @@
+<odoo>
+    <template id="portal_tasks_list_inherit" inherit_id="project.portal_tasks_list" name="Portal Tasks List Inherit">
+        <!-- Add new columns -->
+        <xpath expr="//thead/tr/th[last()]" position="after">
+            <th class="text-end">Total Done Qty</th>
+            <th class="text-end">Planned Qty</th>
+            <th class="text-end">Progress Rate</th>
+        </xpath>
+
+        <!-- Add per-task computed values -->
+        <xpath expr="//t[@t-foreach='tasks']/tr/td[last()]" position="after">
+            <td class="text-end">
+                <t t-set="task_total_done" t-value="0.0"/>
+                <t t-set="task_planned_qty" t-value="0.0"/>
+                <t t-foreach="request.env['custom.progress.report'].sudo().search([('task_name', '=', task.id)])" t-as="rep">
+                    <t t-set="task_total_done" t-value="float(task_total_done) + float(rep.done_quantity)"/>
+                    <t t-if="float(task_planned_qty) == 0.0">
+                        <t t-set="task_planned_qty" t-value="float(rep.planned_quantity)"/>
+                    </t>
+                </t>
+                <t t-esc="task_total_done"/>
+            </td>
+
+            <td class="text-end">
+                <t t-esc="task_planned_qty"/>
+            </td>
+
+            <td class="text-end">
+                <t t-set="task_progress_rate" t-value="(float(task_total_done) / float(task_planned_qty) * 100.0) if float(task_planned_qty) > 0.0 else 0.0"/>
+                <span t-attf-class="badge #{'bg-success' if task_progress_rate >= 90 else ('bg-warning' if task_progress_rate >= 50 else 'bg-danger')}">
+                    <t t-esc="'%.2f' % task_progress_rate"/>%
+                </span>
+            </td>
+        </xpath>
+
+        <!-- Ensure project group header spans new columns so background covers full width -->
+        <xpath expr="//t[@t-set='number_of_header']" position="replace">
+            <t t-set="number_of_header" t-value="11"/>
+        </xpath>
+
+        <!-- 🧮 Add total row after all tasks -->
+        <xpath expr="//tbody" position="after">
+            <t t-set="total_done" t-value="0.0"/>
+            <t t-set="total_planned" t-value="0.0"/>
+
+            <t t-foreach="tasks" t-as="tsk">
+                <t t-foreach="request.env['custom.progress.report'].sudo().search([('task_name', '=', tsk.id)])" t-as="rpt">
+                    <t t-set="total_done" t-value="float(total_done) + float(rpt.done_quantity)"/>
+                    <t t-if="float(rpt.planned_quantity) > 0.0">
+                        <t t-set="total_planned" t-value="float(total_planned) + float(rpt.planned_quantity)"/>
+                    </t>
+                </t>
+            </t>
+
+            <t t-set="total_progress" t-value="(float(total_done)/float(total_planned)*100.0) if float(total_planned) > 0.0 else 0.0"/>
+
+            <tr class="fw-bold" style=" border-top: 2px solid #dee2e6;">
+                <td colspan="99" class="text-end py-3">
+                    <div class="d-inline-flex align-items-center gap-4 me-2">
+<!--                        <div class="px-3 py-2 bg-light rounded shadow-sm border">-->
+<!--                            <i class="fa fa-check-circle text-success me-1"></i>-->
+<!--                            Total Done Qty:-->
+<!--                            <span class="text-primary"><t t-esc="total_done"/></span>-->
+<!--                        </div>-->
+<!--                        <div class="px-3 py-2 bg-light rounded shadow-sm border">-->
+<!--                            <i class="fa fa-tasks text-info me-1"></i>-->
+<!--                            Planned Qty:-->
+<!--                            <span class="text-primary"><t t-esc="total_planned"/></span>-->
+<!--                        </div>-->
+                        <div class="px-3 py-2 bg-light rounded shadow-sm border">
+                            <i class="fa fa-chart-line text-muted me-1"></i>
+                            Overall Progress Rate:
+                            <span t-attf-class="badge ms-2 fs-6 #{'bg-success' if total_progress >= 90 else ('bg-warning' if total_progress >= 50 else 'bg-danger')}">
+                                <t t-esc="'%.2f' % total_progress"/>%
+                            </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </xpath>
+    </template>
+</odoo>

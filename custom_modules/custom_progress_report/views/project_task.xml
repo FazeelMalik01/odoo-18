@@ -1,0 +1,28 @@
+<odoo>
+    <record id="view_task_form2" model="ir.ui.view">
+        <field name="name">project.task.form.inherit.progress</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='date_deadline_and_recurring_task']" position="after">
+                <group>
+                    <field name="planned_quantity"/>
+                    <field name="unit"/>
+                </group>
+            </xpath>
+            <xpath expr="//page[@name='extra_info']" position="after">
+                <page name="daily_progress" string="Daily Progress">
+                    <field name="progress_report_ids" readonly="0">
+                        <list editable="bottom">
+                            <field name="date"/>
+                            <field name="task_name"/>
+                            <field name="unit"/>
+                            <field name="done_quantity"/>
+                            <field name="progress_rate"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

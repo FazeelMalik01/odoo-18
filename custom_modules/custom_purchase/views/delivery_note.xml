@@ -1,0 +1,85 @@
+<odoo>
+    <record id="action_delivery_note" model="ir.actions.act_window">
+        <field name="name">Delivery Note</field>
+        <field name="res_model">delivery.note</field>
+        <field name="view_mode">list,form</field>
+    </record>
+    <menuitem id="menu_falcon_delivery_note"
+              name="Delivery Note"
+              parent="menu_falcon_pr_root"
+              action="action_delivery_note"
+              sequence="30"
+    />
+    <record id="view_delivery_note_list" model="ir.ui.view">
+        <field name="name">delivery.note.list</field>
+        <field name="model">delivery.note</field>
+        <field name="arch" type="xml">
+            <list string="Delivery Notes">
+                <field name="name"/>
+                <field name="delivery_date"/>
+                <field name="coordinated_by"/>
+                <field name="title"/>
+                <field name="email"/>
+                <field name="mobile"/>
+                <field name="delivered_to"/>
+                <field name="buyer_name"/>
+                <field name="buyer_email"/>
+            </list>
+        </field>
+    </record>
+    <!-- ✅ Form View with 2-column layout -->
+    <record id="view_delivery_note_form" model="ir.ui.view">
+        <field name="name">delivery.note.form</field>
+        <field name="model">delivery.note</field>
+        <field name="arch" type="xml">
+            <form string="Delivery Note">
+                <sheet>
+                    <group>
+                        <group string="Delivery Information">
+                            <field name="name"/>
+                            <field name="delivery_date"/>
+                            <field name="coordinated_by"/>
+                            <field name="title"/>
+                            <field name="email"/>
+                            <field name="mobile"/>
+                        </group>
+                        <group string="Buyer Info">
+                            <field name="delivered_to"/>
+                            <field name="buyer_name"/>
+                            <field name="buyer_email"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Delivery Items">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="item"/>
+                                    <field name="description"/>
+                                    <field name="uom"/>
+                                    <field name="quantity"/>
+                                    <field name="notes"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Other Information">
+                            <group>
+                                <field name="customer_notes_line_ids" nolabel="1">
+                                    <list editable="bottom">
+                                        <field name="note" string="Customer Note"/>
+                                    </list>
+                                </field>
+                            </group>
+                            <group>
+                                <field name="delivery_terms_line_ids" nolabel="1">
+                                    <list editable="bottom">
+                                        <field name="term" string="Delivery Term"/>
+                                    </list>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

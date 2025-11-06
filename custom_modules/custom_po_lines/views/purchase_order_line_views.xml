@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit purchase order form view to add barcode field -->
+        <record id="purchase_order_form_inherit_barcode" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit.barcode</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <!-- Add barcode field before product_id in the list view -->
+                <xpath expr="//field[@name='product_id']" position="before">
+                    <field name="barcode" string="Barcode" optional="show" 
+                           widget="barcode" 
+                           readonly="state in ('purchase', 'to approve', 'done', 'cancel') or is_downpayment"
+                           context="{'partner_id':parent.partner_id, 'quantity':product_qty, 'company_id': parent.company_id}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit purchase order line form view to add barcode field -->
+        <record id="purchase_order_line_form_inherit_barcode" model="ir.ui.view">
+            <field name="name">purchase.order.line.form.inherit.barcode</field>
+            <field name="model">purchase.order.line</field>
+            <field name="inherit_id" ref="purchase.purchase_order_line_form2"/>
+            <field name="arch" type="xml">
+                <!-- Add barcode field before product_id in the form view -->
+                <xpath expr="//field[@name='product_id']" position="before">
+                    <field name="barcode" string="Barcode" 
+                           widget="barcode"
+                           readonly="state in ('purchase', 'to approve', 'done', 'cancel')"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Inherit purchase order line tree view to add barcode field -->
+        <record id="purchase_order_line_tree_inherit_barcode" model="ir.ui.view">
+            <field name="name">purchase.order.line.tree.inherit.barcode</field>
+            <field name="model">purchase.order.line</field>
+            <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
+            <field name="arch" type="xml">
+                <!-- Add barcode field before product_id in the tree view -->
+                <xpath expr="//field[@name='product_id']" position="before">
+                    <field name="barcode" string="Barcode" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

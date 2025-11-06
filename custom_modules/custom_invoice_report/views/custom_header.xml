@@ -1,0 +1,59 @@
+<odoo>
+    <template id="custom_header">
+    <t t-if="not hide_header">
+        <div t-attf-class="header o_company_#{company.id}_layout"
+             style="padding-bottom: 10px; border-top:15px solid #1765AB; margin:0 -20px; width:calc(100% + 40px);">
+            <div class="d-flex justify-content-between"
+                 style="border-bottom:2px solid black; align-items: center; margin-left:60px; margin-right:25px;">
+                <div class="d-flex align-items-center"
+                 style="text-align: right; align-items: center; margin-bottom:3px; margin-left:10px; margin-top: 5px;">
+                    <img t-if="company.logo" class="o_company_logo_big"
+                     t-att-src="image_data_uri(company.logo)"
+                     alt="Logo"
+                     style="max-height:90px;"/>
+                </div>
+                <div style="font-size: 14px; line-height: 1.6; margin-top:60px; margin-right:15px;">
+                    <strong>
+                        PEPTIDAT Company for Functional Food Manufacturing
+                    </strong>
+                </div>
+            </div>
+        </div>
+    </t>
+    </template>
+    <template id="external_layout_standard" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="custom_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_boxed" inherit_id="web.external_layout_boxed">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="custom_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_bold" inherit_id="web.external_layout_bold">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="custom_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="xternal_layout_striped" inherit_id="web.external_layout_striped">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="custom_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_bubble" inherit_id="web.external_layout_bubble">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="custom_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_wave" inherit_id="web.external_layout_wave">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="custom_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+    <template id="external_layout_folder" inherit_id="web.external_layout_folder">
+        <xpath expr="//div[contains(@t-attf-class,'header')]" position="replace">
+            <t t-call="custom_invoice_report.custom_header"/>
+        </xpath>
+    </template>
+</odoo>

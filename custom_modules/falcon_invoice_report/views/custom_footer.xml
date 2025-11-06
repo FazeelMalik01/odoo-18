@@ -1,0 +1,88 @@
+<odoo>
+    <template id="custom_footer">
+        <style>
+            @font-face {
+                    font-family: 'Montserrat';
+                    src: url('/falcon_invoice_report/static/src/fonts/Montserrat-Regular.ttf') format('truetype');
+                    font-weight: normal;
+                    font-style: normal;
+                }
+                body, main, div, p, span, td, th, span {
+                    font-family: 'Montserrat', sans-serif !important;
+                }
+        </style>
+        <div t-attf-class="footer o_company_#{company.id}_layout custom-footer"
+             style="margin:0 -20px; width:calc(100% + 40px);
+                    border-top:2px solid black; padding:10px 0 5px 0; margin-top:60px;">
+            <div>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span style="font-weight:700;">Address:</span>
+                    <span style="font-weight:400;">Riyadh Street, Al-Aqrabiyah District, Al Khobar, KSA</span>
+                    <span style="font-weight:700;">P.O Box:</span>7132
+                </div>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span style="font-weight:700;">VAT:</span>  302006377100003 &#160;-&#160;
+                    <span style="font-weight:700;">CR:</span> 2050209890 &#160;-&#160;
+                    <span style="font-weight:700;">Phone:</span> +966 (0) 53 333 1315
+                </div>
+                <div class="d-flex flex-column justify-content-center align-items-center">
+                    <span style="font-weight:700;">Bank Account:</span> SNB Account No: 96900000382109
+                    <span style="font-weight:700;">IBAN:</span> SA4610000069600000382109
+                </div>
+                <div class="d-flex justify-content-center align-items-center">
+                    <span style="font-weight:700;">Contact Info:</span>
+                    <span style="color: #23AEB1;">info@falconsysco.com</span> &#160;-&#160;
+                    <span style="font-weight:700;">Website:</span>
+                    <span style="color: #23AEB1;">https://falconsysco.com</span>
+                </div>
+                <!-- Page number section -->
+                <div class="d-flex justify-content-center align-items-center mt-2">
+                    <p>
+                الصفحة:
+                        <span class="page"></span> /
+                        <span class="topage"></span>
+                    </p>
+                </div>
+                <div class="d-flex justify-content-center align-items-center mt-2">
+                    <t t-esc="datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')"/>
+                </div>
+            </div>
+        </div>
+    </template>
+    <!-- Footer replacements for all external layouts -->
+    <template id="external_layout_standard_footer" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_footer"/>
+        </xpath>
+    </template>
+    <template id="external_layout_boxed_footer" inherit_id="web.external_layout_boxed">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_footer"/>
+        </xpath>
+    </template>
+    <template id="external_layout_bold_footer" inherit_id="web.external_layout_bold">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_footer"/>
+        </xpath>
+    </template>
+    <template id="external_layout_striped_footer" inherit_id="web.external_layout_striped">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_footer"/>
+        </xpath>
+    </template>
+    <template id="external_layout_bubble_footer" inherit_id="web.external_layout_bubble">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_footer"/>
+        </xpath>
+    </template>
+    <template id="external_layout_wave_footer" inherit_id="web.external_layout_wave">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_footer"/>
+        </xpath>
+    </template>
+    <template id="external_layout_folder_footer" inherit_id="web.external_layout_folder">
+        <xpath expr="//div[contains(@t-attf-class,'footer')]" position="replace">
+            <t t-call="falcon_invoice_report.custom_footer"/>
+        </xpath>
+    </template>
+</odoo>
