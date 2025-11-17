@@ -22,6 +22,20 @@ class PosOrderLine(models.Model):
             fields.append('discount_amount')
         return fields
 
+class AccountTax(models.Model):
+    _inherit = 'account.tax'
+    
+    @api.model
+    def _load_pos_data_fields(self, config_id):
+        """Add invoice_label and type_tax_use to POS loaded fields"""
+        fields = super()._load_pos_data_fields(config_id)
+        # Add invoice_label and type_tax_use if not already present
+        if 'invoice_label' not in fields:
+            fields.append('invoice_label')
+        if 'type_tax_use' not in fields:
+            fields.append('type_tax_use')
+        return fields
+
 class PosConfig(models.Model):
     _inherit = 'pos.config'
 

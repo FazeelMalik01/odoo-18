@@ -1,82 +1,378 @@
 <odoo>
     <template id="portal_tasks_list_inherit" inherit_id="project.portal_tasks_list" name="Portal Tasks List Inherit">
-        <!-- Add new columns -->
-        <xpath expr="//thead/tr/th[last()]" position="after">
-            <th class="text-end">Total Done Qty</th>
-            <th class="text-end">Planned Qty</th>
-            <th class="text-end">Progress Rate</th>
-        </xpath>
-
-        <!-- Add per-task computed values -->
-        <xpath expr="//t[@t-foreach='tasks']/tr/td[last()]" position="after">
-            <td class="text-end">
-                <t t-set="task_total_done" t-value="0.0"/>
-                <t t-set="task_planned_qty" t-value="0.0"/>
-                <t t-foreach="request.env['custom.progress.report'].sudo().search([('task_name', '=', task.id)])" t-as="rep">
-                    <t t-set="task_total_done" t-value="float(task_total_done) + float(rep.done_quantity)"/>
-                    <t t-if="float(task_planned_qty) == 0.0">
-                        <t t-set="task_planned_qty" t-value="float(rep.planned_quantity)"/>
+        <!-- Replace the table with nested accordions -->
+        <xpath expr="//t[@t-call='portal.portal_table']" position="replace">
+            <!-- Nested Accordion Structure: Project -> Main Task -> Subtasks -->
+            <div class="accordion" id="projectsAccordion">
+                <t t-set="processed_projects" t-value="[]"/>
+                
+                <!-- First pass: collect all unique projects from all tasks -->
+                <t t-foreach="grouped_tasks" t-as="task_group">
+                    <t t-if="task_group and len(task_group) > 0">
+                        <t t-foreach="task_group" t-as="task">
+                            <t t-if="task">
+                                <t t-set="proj_id" t-value="0"/>
+                                <t t-if="task.project_id">
+                                    <t t-set="proj_id" t-value="task.project_id.id"/>
+                                </t>
+                                <t t-elif="task.sudo().project_id">
+                                    <t t-set="proj_id" t-value="task.sudo().project_id.id"/>
+                                </t>
+                                <t t-if="proj_id != 0 and proj_id not in processed_projects">
+                                    <t t-set="processed_projects" t-value="processed_projects + [proj_id]"/>
+                                </t>
+                            </t>
+                        </t>
                     </t>
                 </t>
-                <t t-esc="task_total_done"/>
-            </td>
-
-            <td class="text-end">
-                <t t-esc="task_planned_qty"/>
-            </td>
-
-            <td class="text-end">
-                <t t-set="task_progress_rate" t-value="(float(task_total_done) / float(task_planned_qty) * 100.0) if float(task_planned_qty) > 0.0 else 0.0"/>
-                <span t-attf-class="badge #{'bg-success' if task_progress_rate >= 90 else ('bg-warning' if task_progress_rate >= 50 else 'bg-danger')}">
-                    <t t-esc="'%.2f' % task_progress_rate"/>%
-                </span>
-            </td>
-        </xpath>
-
-        <!-- Ensure project group header spans new columns so background covers full width -->
-        <xpath expr="//t[@t-set='number_of_header']" position="replace">
-            <t t-set="number_of_header" t-value="11"/>
-        </xpath>
-
-        <!-- 🧮 Add total row after all tasks -->
-        <xpath expr="//tbody" position="after">
-            <t t-set="total_done" t-value="0.0"/>
-            <t t-set="total_planned" t-value="0.0"/>
-
-            <t t-foreach="tasks" t-as="tsk">
-                <t t-foreach="request.env['custom.progress.report'].sudo().search([('task_name', '=', tsk.id)])" t-as="rpt">
-                    <t t-set="total_done" t-value="float(total_done) + float(rpt.done_quantity)"/>
-                    <t t-if="float(rpt.planned_quantity) > 0.0">
-                        <t t-set="total_planned" t-value="float(total_planned) + float(rpt.planned_quantity)"/>
+                
+                <!-- Second pass: render each project -->
+                <t t-foreach="processed_projects" t-as="proj_id">
+                    <t t-set="project_tasks_list" t-value="[]"/>
+                    <t t-set="project_name_val" t-value="'No Project'"/>
+                    <t t-set="show_project" t-value="True"/>
+                    
+                    <!-- Get project name directly from project record and check visibility -->
+                    <t t-if="proj_id != 0">
+                        <t t-set="project_record" t-value="request.env['project.project'].sudo().browse(proj_id)"/>
+                        <t t-if="project_record.exists()">
+                            <t t-set="project_name_val" t-value="project_record.name"/>
+                            <!-- Only show projects with privacy_visibility='portal' (Invited portal users and all internal users) -->
+                            <!-- Hide projects with privacy_visibility='followers' (Invited internal users) or 'employees' (All internal users) -->
+                            <t t-set="project_visibility" t-value="project_record.privacy_visibility"/>
+                            <t t-if="project_visibility != 'portal'">
+                                <t t-set="show_project" t-value="False"/>
+                            </t>
+                        </t>
                     </t>
-                </t>
-            </t>
-
-            <t t-set="total_progress" t-value="(float(total_done)/float(total_planned)*100.0) if float(total_planned) > 0.0 else 0.0"/>
-
-            <tr class="fw-bold" style=" border-top: 2px solid #dee2e6;">
-                <td colspan="99" class="text-end py-3">
-                    <div class="d-inline-flex align-items-center gap-4 me-2">
-<!--                        <div class="px-3 py-2 bg-light rounded shadow-sm border">-->
-<!--                            <i class="fa fa-check-circle text-success me-1"></i>-->
-<!--                            Total Done Qty:-->
-<!--                            <span class="text-primary"><t t-esc="total_done"/></span>-->
-<!--                        </div>-->
-<!--                        <div class="px-3 py-2 bg-light rounded shadow-sm border">-->
-<!--                            <i class="fa fa-tasks text-info me-1"></i>-->
-<!--                            Planned Qty:-->
-<!--                            <span class="text-primary"><t t-esc="total_planned"/></span>-->
-<!--                        </div>-->
-                        <div class="px-3 py-2 bg-light rounded shadow-sm border">
-                            <i class="fa fa-chart-line text-muted me-1"></i>
-                            Overall Progress Rate:
-                            <span t-attf-class="badge ms-2 fs-6 #{'bg-success' if total_progress >= 90 else ('bg-warning' if total_progress >= 50 else 'bg-danger')}">
-                                <t t-esc="'%.2f' % total_progress"/>%
-                            </span>
+                    
+                    <!-- Collect all top-level tasks for this project (tasks that are not children of other tasks) -->
+                    <t t-foreach="grouped_tasks" t-as="task_group">
+                        <t t-if="task_group and len(task_group) > 0">
+                            <t t-foreach="task_group" t-as="task">
+                                <t t-if="task">
+                                    <t t-set="task_proj_id" t-value="0"/>
+                                    <t t-if="task.project_id">
+                                        <t t-set="task_proj_id" t-value="task.project_id.id"/>
+                                    </t>
+                                    <t t-elif="task.sudo().project_id">
+                                        <t t-set="task_proj_id" t-value="task.sudo().project_id.id"/>
+                                    </t>
+                                    <t t-if="task_proj_id == proj_id">
+                                        <!-- Only include tasks that don't have a parent (are top-level tasks) -->
+                                        <t t-set="is_subtask" t-value="task.parent_id"/>
+                                        <t t-if="not is_subtask">
+                                            <t t-set="project_tasks_list" t-value="project_tasks_list + [task]"/>
+                                        </t>
+                                    </t>
+                                </t>
+                            </t>
+                        </t>
+                    </t>
+                    
+                    <!-- Calculate project overall progress rate (average of all main tasks in this project) -->
+                    <t t-set="project_main_task_progress_sum" t-value="0.0"/>
+                    <t t-set="project_main_task_count" t-value="0"/>
+                    <t t-foreach="project_tasks_list" t-as="proj_task">
+                        <t t-set="is_main_task_in_proj" t-value="proj_task.child_ids and len(proj_task.child_ids) > 0"/>
+                        <t t-if="is_main_task_in_proj">
+                            <t t-set="proj_subtask_progress_sum" t-value="0.0"/>
+                            <t t-set="proj_subtask_count" t-value="0"/>
+                            <t t-foreach="proj_task.child_ids" t-as="proj_subtask">
+                                <!-- Process all subtasks -->
+                                <t t-set="proj_subtask_planned" t-value="0.0"/>
+                                <t t-set="proj_subtask_done" t-value="0.0"/>
+                                <t t-set="proj_subtask_planned_set" t-value="False"/>
+                                <t t-foreach="request.env['custom.progress.report'].sudo().search([('task_name', '=', proj_subtask.id)])" t-as="proj_rep">
+                                    <t t-set="proj_subtask_done" t-value="float(proj_subtask_done) + float(proj_rep.done_quantity)"/>
+                                    <t t-if="not proj_subtask_planned_set">
+                                        <t t-set="proj_subtask_planned" t-value="float(proj_rep.planned_quantity)"/>
+                                        <t t-set="proj_subtask_planned_set" t-value="True"/>
+                                    </t>
+                                </t>
+                                <t t-if="proj_subtask_planned_set">
+                                    <t t-if="float(proj_subtask_planned) > 0.0">
+                                        <t t-set="proj_subtask_progress" t-value="(float(proj_subtask_done) / float(proj_subtask_planned) * 100.0)"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-set="proj_subtask_progress" t-value="0.0"/>
+                                    </t>
+                                    <t t-set="proj_subtask_progress_sum" t-value="float(proj_subtask_progress_sum) + float(proj_subtask_progress)"/>
+                                    <t t-set="proj_subtask_count" t-value="proj_subtask_count + 1"/>
+                                </t>
+                            </t>
+                            <t t-if="proj_subtask_count > 0">
+                                <t t-set="proj_main_task_progress_rate" t-value="float(proj_subtask_progress_sum) / float(proj_subtask_count)"/>
+                            </t>
+                            <t t-else="">
+                                <t t-set="proj_main_task_progress_rate" t-value="0.0"/>
+                            </t>
+                            <t t-set="project_main_task_progress_sum" t-value="float(project_main_task_progress_sum) + float(proj_main_task_progress_rate)"/>
+                            <t t-set="project_main_task_count" t-value="project_main_task_count + 1"/>
+                        </t>
+                    </t>
+                    <t t-if="project_main_task_count > 0">
+                        <t t-set="project_overall_progress" t-value="float(project_main_task_progress_sum) / float(project_main_task_count)"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="project_overall_progress" t-value="0.0"/>
+                    </t>
+                    
+                    <!-- Only render project if visibility allows it (portal visibility) -->
+                    <t t-if="show_project">
+                        <!-- Project Level Accordion -->
+                        <div class="accordion-item mb-2">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" 
+                                    data-bs-toggle="collapse" 
+                                    t-attf-data-bs-target="#projectCollapse#{proj_id}"
+                                    t-attf-aria-controls="projectCollapse#{proj_id}"
+                                    aria-expanded="false">
+                                <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                    <strong><t t-esc="project_name_val"/></strong>
+                                    <span t-attf-class="badge ms-2 #{'bg-success' if project_overall_progress >= 90 else ('bg-warning' if project_overall_progress >= 50 else 'bg-danger')}">
+                                        Overall Progress Rate: <t t-esc="'%.2f' % project_overall_progress"/>%
+                                    </span>
+                                </div>
+                            </button>
+                        </h2>
+                        <div t-attf-id="projectCollapse#{proj_id}" 
+                             class="accordion-collapse collapse" 
+                             data-bs-parent="#projectsAccordion">
+                            <div class="accordion-body p-0">
+                                <div class="accordion" t-attf-id="mainTasksAccordion#{proj_id}">
+                                    <!-- Main Tasks within Project -->
+                                    <t t-foreach="project_tasks_list" t-as="main_task">
+                                        <t t-set="has_children" t-value="main_task.child_ids and len(main_task.child_ids) > 0"/>
+                                        
+                                        <!-- Calculate main task progress rate -->
+                                        <t t-set="main_task_progress_rate" t-value="0.0"/>
+                                        
+                                        <!-- If task has subtasks, calculate from all subtasks -->
+                                        <t t-if="has_children">
+                                            <t t-set="subtask_progress_sum" t-value="0.0"/>
+                                            <t t-set="subtask_count" t-value="0"/>
+                                            <t t-foreach="main_task.child_ids" t-as="subtask">
+                                                <!-- Process all subtasks -->
+                                                <t t-set="subtask_planned" t-value="0.0"/>
+                                                <t t-set="subtask_done" t-value="0.0"/>
+                                                <t t-set="subtask_planned_set" t-value="False"/>
+                                                <t t-foreach="request.env['custom.progress.report'].sudo().search([('task_name', '=', subtask.id)])" t-as="rep">
+                                                    <t t-set="subtask_done" t-value="float(subtask_done) + float(rep.done_quantity)"/>
+                                                    <t t-if="not subtask_planned_set">
+                                                        <t t-set="subtask_planned" t-value="float(rep.planned_quantity)"/>
+                                                        <t t-set="subtask_planned_set" t-value="True"/>
+                                                    </t>
+                                                </t>
+                                                <t t-if="subtask_planned_set">
+                                                    <t t-if="float(subtask_planned) > 0.0">
+                                                        <t t-set="subtask_progress" t-value="(float(subtask_done) / float(subtask_planned) * 100.0)"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <t t-set="subtask_progress" t-value="0.0"/>
+                                                    </t>
+                                                    <t t-set="subtask_progress_sum" t-value="float(subtask_progress_sum) + float(subtask_progress)"/>
+                                                    <t t-set="subtask_count" t-value="subtask_count + 1"/>
+                                                </t>
+                                            </t>
+                                            <t t-if="subtask_count > 0">
+                                                <t t-set="main_task_progress_rate" t-value="float(subtask_progress_sum) / float(subtask_count)"/>
+                                            </t>
+                                        </t>
+                                        <!-- If task has no subtasks, calculate progress from main task itself -->
+                                        <t t-else="">
+                                            <t t-set="main_task_planned" t-value="0.0"/>
+                                            <t t-set="main_task_done" t-value="0.0"/>
+                                            <t t-set="main_task_planned_set" t-value="False"/>
+                                            <t t-foreach="request.env['custom.progress.report'].sudo().search([('task_name', '=', main_task.id)])" t-as="main_rep">
+                                                <t t-set="main_task_done" t-value="float(main_task_done) + float(main_rep.done_quantity)"/>
+                                                <t t-if="not main_task_planned_set">
+                                                    <t t-set="main_task_planned" t-value="float(main_rep.planned_quantity)"/>
+                                                    <t t-set="main_task_planned_set" t-value="True"/>
+                                                </t>
+                                            </t>
+                                            <t t-if="main_task_planned_set">
+                                                <t t-if="float(main_task_planned) > 0.0">
+                                                    <t t-set="main_task_progress_rate" t-value="(float(main_task_done) / float(main_task_planned) * 100.0)"/>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        
+                                        <!-- Main Task Accordion -->
+                                        <div class="accordion-item">
+                                                <h2 class="accordion-header">
+                                                    <button class="accordion-button collapsed" type="button"
+                                                            data-bs-toggle="collapse"
+                                                            t-attf-data-bs-target="#mainTaskCollapse#{proj_id}#{main_task.id}"
+                                                            t-attf-aria-controls="mainTaskCollapse#{proj_id}#{main_task.id}"
+                                                            aria-expanded="false">
+                                                        <div class="d-flex justify-content-between align-items-center w-100 me-3">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <a t-attf-href="/my/tasks/#{main_task.id}" onclick="event.stopPropagation();" class="text-decoration-none">
+                                                                    <span>#<t t-esc="main_task.id"/> - <t t-esc="main_task.name"/></span>
+                                                                </a>
+                                                                <span class="text-muted">
+                                                                    <t t-if="main_task.allocated_hours > 0">
+                                                                        Time Spent: <t t-esc="main_task.effective_hours" t-options='{"widget": "float_time"}'/> / <t t-esc="main_task.allocated_hours" t-options='{"widget": "float_time"}'/>
+                                                                    </t>
+                                                                    <t t-else="">
+                                                                        Time Spent: 00:00
+                                                                    </t>
+                                                                </span>
+                                                            </div>
+                                                            <span t-attf-class="badge ms-2 #{'bg-success' if main_task_progress_rate >= 90 else ('bg-warning' if main_task_progress_rate >= 50 else 'bg-danger')}">
+                                                                Overall: <t t-esc="'%.2f' % main_task_progress_rate"/>%
+                                                            </span>
+                                                        </div>
+                                                    </button>
+                                                </h2>
+                                                <div t-attf-id="mainTaskCollapse#{proj_id}#{main_task.id}"
+                                                     class="accordion-collapse collapse"
+                                                     t-attf-data-bs-parent="#mainTasksAccordion#{proj_id}">
+                                                    <div class="accordion-body p-0">
+                                                        <!-- Subtasks Table (only show if task has subtasks) -->
+                                                        <t t-if="has_children">
+                                                            <div class="table-responsive">
+                                                                <table class="table table-sm table-striped mb-0">
+                                                                    <thead class="table-light">
+                                                                        <tr>
+                                                                            <th>#</th>
+                                                                            <th>Name</th>
+                                                                            <th>Assignees</th>
+                                                                            <th class="text-end">Stage</th>
+                                                                            <th class="text-end">Total Done Qty</th>
+                                                                            <th class="text-end">Planned Qty</th>
+                                                                            <th class="text-end">Progress Rate</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <t t-foreach="main_task.child_ids" t-as="subtask">
+                                                                            <!-- Show all subtasks -->
+                                                                            <!-- Calculate subtask data -->
+                                                                            <t t-set="subtask_total_done" t-value="0.0"/>
+                                                                            <t t-set="subtask_planned_qty" t-value="0.0"/>
+                                                                            <t t-foreach="request.env['custom.progress.report'].sudo().search([('task_name', '=', subtask.id)])" t-as="rep">
+                                                                                <t t-set="subtask_total_done" t-value="float(subtask_total_done) + float(rep.done_quantity)"/>
+                                                                                <t t-if="float(subtask_planned_qty) == 0.0">
+                                                                                    <t t-set="subtask_planned_qty" t-value="float(rep.planned_quantity)"/>
+                                                                                </t>
+                                                                            </t>
+                                                                            <t t-set="subtask_progress_rate" t-value="(float(subtask_total_done) / float(subtask_planned_qty) * 100.0) if float(subtask_planned_qty) > 0.0 else 0.0"/>
+                                                                            
+                                                                            <tr>
+                                                                                <td>#<t t-esc="subtask.id"/></td>
+                                                                                <td>
+                                                                                    <a t-attf-href="/my/tasks/#{subtask.id}"><t t-esc="subtask.name"/></a>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <t t-set="assignees" t-value="subtask.sudo().user_ids"/>
+                                                                                    <div t-if="assignees" class="d-flex align-items-center">
+                                                                                        <img class="rounded o_portal_contact_img me-2" t-attf-src="#{image_data_uri(assignees[:1].avatar_128)}" alt="User" style="width: 20px; height: 20px;"/>
+                                                                                        <span t-att-title="'\n'.join(assignees.mapped('name'))">
+                                                                                            <span t-field="assignees[:1].name"/><span t-if="len(assignees) > 1" class="badge ms-1 rounded-pill bg-light">+<t t-esc="len(assignees) - 1"/></span>
+                                                                                        </span>
+                                                                                    </div>
+                                                                                </td>
+                                                                                <td class="text-end">
+                                                                                    <span class="fw-normal" t-attf-title="#{subtask.stage_id.name}" t-out="subtask.stage_id.name"/>
+                                                                                </td>
+                                                                                <td class="text-end">
+                                                                                    <t t-esc="'%.2f' % subtask_total_done"/>
+                                                                                </td>
+                                                                                <td class="text-end">
+                                                                                    <t t-esc="'%.2f' % subtask_planned_qty"/>
+                                                                                </td>
+                                                                                <td class="text-end">
+                                                                                    <span t-attf-class="badge #{'bg-success' if subtask_progress_rate >= 90 else ('bg-warning' if subtask_progress_rate >= 50 else 'bg-danger')}">
+                                                                                        <t t-esc="'%.2f' % subtask_progress_rate"/>%
+                                                                                    </span>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </t>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <div class="p-3 text-muted text-center">
+                                                                <p class="mb-0">No subtasks for this task.</p>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </td>
-            </tr>
+                    </t>
+                </t>
+            </div>
+            
+            <!-- Overall Progress Rate Footer -->
+            <div class="mt-4">
+                <t t-set="main_task_progress_sum" t-value="0.0"/>
+                <t t-set="main_task_count" t-value="0"/>
+                <t t-foreach="grouped_tasks" t-as="task_group">
+                    <t t-foreach="task_group" t-as="tsk">
+                        <!-- Only process top-level tasks (tasks that are not children of other tasks) -->
+                        <t t-set="is_subtask" t-value="tsk.parent_id and tsk.parent_id.id"/>
+                        <t t-set="is_main_tsk" t-value="tsk.child_ids and len(tsk.child_ids) > 0 and not is_subtask"/>
+                        <t t-if="is_main_tsk">
+                            <!-- Process all main tasks -->
+                            <t t-set="subtask_progress_sum" t-value="0.0"/>
+                            <t t-set="subtask_count" t-value="0"/>
+                            <t t-foreach="tsk.child_ids" t-as="subtask">
+                                <!-- Process all subtasks -->
+                                <t t-set="subtask_planned" t-value="0.0"/>
+                                <t t-set="subtask_done" t-value="0.0"/>
+                                <t t-set="subtask_planned_set" t-value="False"/>
+                                <t t-foreach="request.env['custom.progress.report'].sudo().search([('task_name', '=', subtask.id)])" t-as="rep">
+                                    <t t-set="subtask_done" t-value="float(subtask_done) + float(rep.done_quantity)"/>
+                                    <t t-if="not subtask_planned_set">
+                                        <t t-set="subtask_planned" t-value="float(rep.planned_quantity)"/>
+                                        <t t-set="subtask_planned_set" t-value="True"/>
+                                    </t>
+                                </t>
+                                <t t-if="subtask_planned_set">
+                                    <t t-if="float(subtask_planned) > 0.0">
+                                        <t t-set="subtask_progress" t-value="(float(subtask_done) / float(subtask_planned) * 100.0)"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-set="subtask_progress" t-value="0.0"/>
+                                    </t>
+                                    <t t-set="subtask_progress_sum" t-value="float(subtask_progress_sum) + float(subtask_progress)"/>
+                                    <t t-set="subtask_count" t-value="subtask_count + 1"/>
+                                </t>
+                            </t>
+                            <t t-if="subtask_count > 0">
+                                <t t-set="main_tsk_progress_rate" t-value="float(subtask_progress_sum) / float(subtask_count)"/>
+                            </t>
+                            <t t-else="">
+                                <t t-set="main_tsk_progress_rate" t-value="0.0"/>
+                            </t>
+                            <t t-set="main_task_progress_sum" t-value="float(main_task_progress_sum) + float(main_tsk_progress_rate)"/>
+                            <t t-set="main_task_count" t-value="main_task_count + 1"/>
+                        </t>
+                    </t>
+                </t>
+                <t t-if="main_task_count > 0">
+                    <t t-set="total_progress" t-value="float(main_task_progress_sum) / float(main_task_count)"/>
+                </t>
+                <t t-else="">
+                    <t t-set="total_progress" t-value="0.0"/>
+                </t>
+            </div>
         </xpath>
     </template>
+
+    <!-- Hide Filter By dropdown and Search form on tasks page -->
+    <template id="portal_searchbar_hide_filter_by" inherit_id="portal.portal_searchbar" name="Hide Filter By and Search" priority="20">
+        <!-- Hide the main filter div using its ID -->
+        <xpath expr="//div[@id='o_portal_navbar_content']" position="attributes">
+            <attribute name="style">display: none !important;</attribute>
+        </xpath>
+    </template>
+
 </odoo>

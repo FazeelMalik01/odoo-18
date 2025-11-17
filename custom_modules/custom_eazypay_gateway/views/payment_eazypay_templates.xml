@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="payment_eazypay_redirect_form" name="EazyPay Payment Form">
+        <form t-att-action="payment_url" method="get" id="eazypay_payment_form">
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn btn-primary">
+                    <span>Redirecting to EazyPay...</span>
+                </button>
+            </div>
+            <script type="text/javascript">
+                document.getElementById("eazypay_payment_form").submit();
+            </script>
+        </form>
+    </template>
+</odoo>
+

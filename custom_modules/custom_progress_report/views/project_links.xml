@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Override project links to route to /all/task instead of /my/projects -->
+    <template id="portal_my_projects_link_override" name="Projects Link Override" inherit_id="project.portal_my_projects" priority="50">
+        <xpath expr="//td/a[span[@t-field='project.name']]" position="replace">
+            <a t-attf-href="/all/task?project_id=#{project.id}"><span t-field="project.name"/></a>
+        </xpath>
+    </template>
+</odoo>
+

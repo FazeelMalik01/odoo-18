@@ -18,7 +18,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'point_of_sale', 'accountant'],
+    'depends': ['base', 'point_of_sale', 'account', 'analytic', 'stock_account'],
 
     # always loaded
     'data': [

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ACTION -->
+    <record id="action_service_request" model="ir.actions.act_window">
+        <field name="name">Service Requests</field>
+        <field name="res_model">service.request</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create the first service request
+            </p>
+        </field>
+    </record>
+
+    <!-- MENU -->
+    <menuitem id="menu_service_request_root" name="Service Requests" sequence="50"/>
+    <menuitem id="menu_service_request" name="Service Requests" parent="menu_service_request_root" action="action_service_request"/>
+
+    <!-- LIST VIEW -->
+    <record id="view_service_request_list" model="ir.ui.view">
+        <field name="name">service.request.list</field>
+        <field name="model">service.request</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="requested_appointment"/>
+                <field name="service_location"/>
+                <field name="state"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- FORM VIEW -->
+    <record id="view_service_request_form" model="ir.ui.view">
+        <field name="name">service.request.form</field>
+        <field name="model">service.request</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_create_quotation"
+                            type="object"
+                            string="Create Quotation"
+                            class="btn-primary"
+                            invisible="sale_order_id != False"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="draft,submitted,in_progress,completed,cancelled"/>
+                </header>
+                <sheet>
+                    <group string="Customer Information" colspan="2">
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="customer_id" readonly="1"/>
+                            <field name="company_partner_id" readonly="1"/>
+                            <field name="service_address" readonly="1"/>
+                            <field name="city" readonly="1"/>
+                            <field name="state_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="zip" readonly="1"/>
+                            <field name="primary_phone" readonly="1"/>
+                            <field name="email" readonly="1"/>
+                            <field name="preferred_contact_method" readonly="1"/>
+                            <field name="requested_appointment" readonly="1"/>
+                            <field name="service_location" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description Details">
+                            <group colspan="2">
+                                <group>
+                                    <field name="description" readonly="1"/>
+                                    <field name="gate_code" readonly="1"/>
+                                    <field name="pets_on_site" readonly="1"/>
+                                    <field name="technician_notes" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="billing_address" readonly="1"/>
+                                    <field name="state" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+
+                        <page string="Service Types">
+                            <field name="order_line" nolabel="1">
+                                <list editable="bottom" string="Products">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="name" placeholder="Product Description"/>
+                                    <field name="product_uom_qty" string="Quantity"/>
+                                    <field name="product_uom_id" string="UoM" groups="uom.group_uom"/>
+                                    <field name="price_unit" string="Unit Price"/>
+                                    <field name="tax_id" widget="many2many_tags" string="Taxes" options="{'no_create': True}"/>
+                                    <field name="price_subtotal" string="Subtotal" sum="Total"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_total" widget="monetary" options="{'currency_field': 'currency_id'}" class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Other Service Type">
+                            <group>
+                                <field name="service_type_other_details" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

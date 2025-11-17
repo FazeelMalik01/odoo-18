@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_service_request_user,service.request user,model_service_request,base.group_portal,1,0,1,0
+access_service_request_manager,service.request manager,model_service_request,,1,1,1,1
+access_service_request_line_user,service.request.line user,model_service_request_line,base.group_portal,1,0,1,0
+access_service_request_line_manager,service.request.line manager,model_service_request_line,,1,1,1,1

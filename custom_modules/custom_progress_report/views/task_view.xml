@@ -2,6 +2,7 @@
 <odoo>
     <template id="portal_task_progress_inherit" inherit_id="project.portal_my_task">
         <xpath expr="//div[@id='card_body']" position="after">
+            
             <div class="accordion mt-5" id="dailyReportsAccordion">
                 <h4 class="mb-3">Submitted Progress Reports</h4>
                 <t t-if="grouped_reports">
@@ -41,9 +42,22 @@
                                                 <tr>
                                                     <td>
                                                         <span class="d-inline-flex align-items-center gap-2">
-                                                            <t t-if="line.task_image">
-                                                                <img t-att-src="'data:%s;base64,%s' % ((line.task_image_mimetype or 'image/jpeg'), (line.task_image.decode('utf-8') if isinstance(line.task_image, (bytes, bytearray)) else line.task_image))" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" class="o_portal_contact_img rounded o_object_fit_cover"/>
-                                                            </t>
+                                                            <div class="d-flex align-items-center gap-1">
+                                                                <t t-if="line.task_image_ids">
+                                                                    <t t-foreach="line.task_image_ids[:3]" t-as="img">
+                                                                        <img t-att-src="'data:%s;base64,%s' % (
+                                                                            (img.image_mimetype or 'image/jpeg'),
+                                                                            (img.image.decode('utf-8') if isinstance(img.image, (bytes, bytearray)) else img.image)
+                                                                        )" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" class="o_portal_contact_img rounded o_object_fit_cover" title="Image"/>
+                                                                    </t>
+                                                                    <t t-if="len(line.task_image_ids) > 3">
+                                                                        <span class="badge bg-secondary">+<t t-esc="len(line.task_image_ids) - 3"/></span>
+                                                                    </t>
+                                                                </t>
+                                                                <t t-elif="line.task_image">
+                                                                    <img t-att-src="'data:%s;base64,%s' % ((line.task_image_mimetype or 'image/jpeg'), (line.task_image.decode('utf-8') if isinstance(line.task_image, (bytes, bytearray)) else line.task_image))" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" class="o_portal_contact_img rounded o_object_fit_cover"/>
+                                                                </t>
+                                                            </div>
                                                             <span><t t-esc="line.task_name.name"/></span>
                                                         </span>
                                                     </td>
@@ -78,48 +92,41 @@
                 </t>
             </div>
             
-            <!-- Total Progress Summary Section -->
             <div class="mt-4 d-flex justify-content-end">
                 <div class="card shadow-sm" style="width: 400px;">
                     <div class="card-header bg-primary text-white">
                         <h5 class="mb-0">Total Progress Summary</h5>
                     </div>
                     <div class="card-body">
-                        <t t-if="grouped_reports">
-                            <t t-set="total_done" t-value="0.0"/>
-                            <t t-set="planned_qty" t-value="0.0"/>
-                            <t t-set="task_name_val" t-value="''"/>
-                            <t t-set="unit_val" t-value="''"/>
-                            
-                            <!-- Calculate totals from all reports -->
-                            <t t-foreach="grouped_reports" t-as="grp">
-                                <t t-foreach="grp['records']" t-as="line">
-                                    <t t-set="total_done" t-value="float(total_done) + float(line.done_quantity)"/>
-                                    <t t-if="float(planned_qty) == 0.0">
-                                        <t t-set="planned_qty" t-value="float(line.planned_quantity)"/>
-                                        <t t-set="task_name_val" t-value="line.task_name.name"/>
-                                        <t t-set="unit_val" t-value="line.unit"/>
-                                    </t>
-                                </t>
+                        <t t-if="summary_data">
+                            <t t-if="summary_data['is_main_task']">
+                                <div class="mb-3">
+                                    <strong>Task:</strong> <t t-esc="summary_data['task_name']"/>
+                                </div>
+                                <div class="mb-0">
+                                    <strong>Overall Progress Rate:</strong>
+                                    <span t-attf-class="badge #{'bg-success' if summary_data['progress_rate'] >= 90 else ('bg-warning' if summary_data['progress_rate'] >= 50 else 'bg-danger')} ms-2 fs-6">
+                                        <t t-esc="'%.2f' % summary_data['progress_rate']"/>%
+                                    </span>
+                                </div>
                             </t>
-                            
-                            <t t-set="total_progress_rate" t-value="(float(total_done) / float(planned_qty) * 100.0) if float(planned_qty) > 0.0 else 0.0"/>
-                            
-                            <div class="mb-3">
-                                <strong>Task:</strong> <t t-esc="task_name_val"/>
-                            </div>
-                            <div class="mb-3">
-                                <strong>Planned Quantity:</strong> <t t-esc="planned_qty"/>%
-                            </div>
-                            <div class="mb-3">
-                                <strong>Total Done Quantity:</strong> <t t-esc="total_done"/>%
-                            </div>
-                            <div class="mb-0">
-                                <strong>Progress Rate:</strong>
-                                <span t-attf-class="badge #{'bg-success' if total_progress_rate >= 90 else ('bg-warning' if total_progress_rate >= 50 else 'bg-danger')} ms-2 fs-6">
-                                    <t t-esc="'%.2f' % total_progress_rate"/>%
-                                </span>
-                            </div>
+                            <t t-else="">
+                                <div class="mb-3">
+                                    <strong>Task:</strong> <t t-esc="summary_data['task_name']"/>
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Planned Quantity:</strong> <t t-esc="summary_data['planned_qty']"/>%
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Total Done Quantity:</strong> <t t-esc="summary_data['total_done']"/>%
+                                </div>
+                                <div class="mb-0">
+                                    <strong>Progress Rate:</strong>
+                                    <span t-attf-class="badge #{'bg-success' if summary_data['progress_rate'] >= 90 else ('bg-warning' if summary_data['progress_rate'] >= 50 else 'bg-danger')} ms-2 fs-6">
+                                        <t t-esc="'%.2f' % summary_data['progress_rate']"/>%
+                                    </span>
+                                </div>
+                            </t>
                         </t>
                         <t t-else="">
                             <p class="text-muted mb-0">No data available</p>

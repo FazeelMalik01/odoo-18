@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Add "Service Request" Card to Portal Home -->
+    <template id="portal_my_home_inherit_service_request" inherit_id="portal.portal_my_home" name="Service Request Portal Card">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <div class="o_portal_category row g-2 mt-3" id="portal_service_request_category">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/service_request_portal/static/src/img/service-request.svg'"/>
+                    <t t-set="title">Service Requests</t>
+                    <t t-set="text">Manage your service requests</t>
+                    <t t-set="url" t-value="'/my/service_requests'"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Service Request Form -->
+    <template id="portal_service_request_form" name="Portal Service Request Form">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_wrap container my-5">
+                <div class="card shadow-sm p-4">
+                    <h2 class="mb-4">Service Request Form</h2>
+
+                    <form action="/my/service_requests/submit" method="post" class="needs-validation" novalidate="novalidate">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                        <!-- Customer Info -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Name</label>
+                                <input type="text" name="name" class="form-control" t-att-value="partner.name" readonly="readonly"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Company</label>
+                                <input type="text" name="company_partner_id" class="form-control" t-att-value="company_name" readonly="1"/>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Service Address</label>
+                                 <textarea name="service_address" class="form-control" rows="2" readonly="1" t-att-value="service_address"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">City</label>
+                                 <input type="text" name="city" class="form-control" readonly="1" t-att-value="city"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">State</label>
+                                <input type="text" name="state_name" class="form-control" readonly="1" t-att-value="state_name"/>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">ZIP</label>
+                                <input type="text" name="zip" class="form-control" readonly="1" t-att-value="zip_code"/>
+                            </div>
+                        </div>
+
+                        <hr class="my-4"/>
+
+                        <!-- Contact Details -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Primary Phone</label>
+                                <input type="text" name="primary_phone" class="form-control" readonly="1" t-att-value="primary_phone"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Email</label>
+                                <input type="email" name="email" class="form-control" readonly="1" t-att-value="email"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Requested Appointment</label>
+                                <input type="datetime-local" name="requested_appointment" class="form-control"/>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Preferred Contact Method</label>
+                                <select name="preferred_contact_method" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="text">Text</option>
+                                    <option value="email">Email</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="my-4"/>
+
+                        <!-- Service Type -->
+                        <div class="mb-4">
+                            <h5 class="fw-semibold">Service Type</h5>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Product</label>
+                                <select name="product_id" class="form-select">
+                                    <option value="">Select Product</option>
+                                    <t t-foreach="request.env['product.product'].search([('sale_ok','=',True)])" t-as="prod">
+                                        <option t-att-value="prod.id" t-esc="prod.display_name"/>
+                                    </t>
+                                </select>
+                            </div>
+                            <input type="text" name="service_type_other_details" class="form-control mt-2" placeholder="Other service details"/>
+                        </div>
+
+                        <hr class="my-4"/>
+
+                        <!-- Service Location -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Service Location</label>
+                                <select name="service_location" class="form-select">
+                                    <option value="">Select</option>
+                                    <option value="residential">Residential</option>
+                                    <option value="commercial">Commercial</option>
+                                    <option value="industrial">Industrial</option>
+                                    <option value="government">Government / Restricted Facility</option>
+                                </select>
+                            </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Description of Issue or Request</label>
+                            <textarea name="description" class="form-control" rows="4"></textarea>
+                        </div>
+
+                        <!-- Access Instructions -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Gate Code / Access Details</label>
+                            <input type="text" name="gate_code" class="form-control"/>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" name="pets_on_site" id="pets_on_site"/>
+                            <label for="pets_on_site" class="form-check-label">Dogs / Pets on site?</label>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Technician Notes</label>
+                            <textarea name="technician_notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <!-- Billing Address -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Billing Address</label>
+                            <textarea name="billing_address" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <hr class="my-4"/>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fa fa-paper-plane me-2"></i>Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Thank You Page -->
+    <template id="portal_service_request_thankyou" name="Service Request Thank You">
+        <t t-call="portal.portal_layout">
+            <div class="o_portal_wrap container my-5 text-center">
+                <div class="card shadow-sm p-5">
+                    <i class="fa fa-check-circle fa-4x text-success mb-3"></i>
+                    <h2>Thank you!</h2>
+                    <p>Your service request has been submitted successfully.</p>
+                    <a href="/my" class="btn btn-outline-primary mt-3">
+                        Back to My Account
+                    </a>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

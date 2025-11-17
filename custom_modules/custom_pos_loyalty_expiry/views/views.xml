@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="custom_pos_loyalty_expiry.list">
+      <field name="name">custom_pos_loyalty_expiry list</field>
+      <field name="model">custom_pos_loyalty_expiry.custom_pos_loyalty_expiry</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </list>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="custom_pos_loyalty_expiry.action_window">
+      <field name="name">custom_pos_loyalty_expiry window</field>
+      <field name="res_model">custom_pos_loyalty_expiry.custom_pos_loyalty_expiry</field>
+      <field name="view_mode">list,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="custom_pos_loyalty_expiry.action_server">
+      <field name="name">custom_pos_loyalty_expiry server</field>
+      <field name="model_id" ref="model_custom_pos_loyalty_expiry_custom_pos_loyalty_expiry"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "list,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="custom_pos_loyalty_expiry" id="custom_pos_loyalty_expiry.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="custom_pos_loyalty_expiry.menu_1" parent="custom_pos_loyalty_expiry.menu_root"/>
+    <menuitem name="Menu 2" id="custom_pos_loyalty_expiry.menu_2" parent="custom_pos_loyalty_expiry.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="custom_pos_loyalty_expiry.menu_1_list" parent="custom_pos_loyalty_expiry.menu_1"
+              action="custom_pos_loyalty_expiry.action_window"/>
+    <menuitem name="Server to list" id="custom_pos_loyalty_expiry" parent="custom_pos_loyalty_expiry.menu_2"
+              action="custom_pos_loyalty_expiry.action_server"/>
+-->
+  </data>
+</odoo>

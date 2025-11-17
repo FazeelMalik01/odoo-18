@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payment_method_eazypay" model="payment.method">
+        <field name="name">EazyPay</field>
+        <field name="code">eazypay</field>
+        <field name="sequence">10</field>
+        <field name="support_tokenization">False</field>
+        <field name="support_express_checkout">False</field>
+        <field name="support_refund">none</field>
+    </record>
+
+</odoo>
+

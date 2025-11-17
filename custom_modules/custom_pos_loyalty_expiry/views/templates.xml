@@ -1,0 +1,16 @@
+<odoo>
+    <record id="loyalty_card_view_form_inherit_expiry" model="ir.ui.view">
+        <field name="name">loyalty.card.view.form.inherit.expiry</field>
+        <field name="model">loyalty.card</field>
+        <field name="inherit_id" ref="loyalty.loyalty_card_view_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add expiry_date after the field create_date on the main form -->
+            <xpath expr="//field[@name='create_date']" position="after">
+                <field name="expiry_date"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Security group used in field definition -->
+        <record id="group_service_secure_notes" model="res.groups">
+            <field name="name">Service: Secure Notes</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+
+        <!-- Add Service Request tab to Project Task form -->
+        <record id="view_task_form_inherit_service_request" model="ir.ui.view">
+            <field name="name">project.task.form.service.request.tab</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Service Request" name="page_service_request_custom">
+                        <group>
+                            <group string="Estimate / Links" colspan="2">
+                                <field name="service_request_id" options="{'no_open': True}"/>
+<!--                                <field name="sale_order_id" options="{'no_open': True}"/>-->
+                                <field name="estimate_id" options="{'no_open': True}" string="Sale Order" readonly="1"/>
+                            </group>
+
+                            <group string="Secure Notes" colspan="2">
+                                <!-- Removed invisible; security is controlled via groups in model -->
+                                <field name="secure_notes" widget="textarea"/>
+                            </group>
+
+                            <group string="Photos">
+                                <field name="photo_ids" widget="many2many_binary"/>
+                            </group>
+
+                            <group string="Communication">
+                                <field name="sms_thread"/>
+                            </group>
+
+                            <group string="Deposit &amp; Gating">
+                                <field name="deposit_status"/>
+                                <field name="gating_status"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

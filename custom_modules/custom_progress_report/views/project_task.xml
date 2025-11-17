@@ -4,25 +4,63 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
-            <xpath expr="//div[@id='date_deadline_and_recurring_task']" position="after">
-                <group>
-                    <field name="planned_quantity"/>
-                    <field name="unit"/>
-                </group>
-            </xpath>
             <xpath expr="//page[@name='extra_info']" position="after">
                 <page name="daily_progress" string="Daily Progress">
-                    <field name="progress_report_ids" readonly="0">
-                        <list editable="bottom">
+                    <field name="all_progress_report_ids">
+                        <list>
                             <field name="date"/>
                             <field name="task_name"/>
                             <field name="unit"/>
                             <field name="done_quantity"/>
+                            <field name="planned_quantity"/>
                             <field name="progress_rate"/>
                         </list>
                     </field>
                 </page>
             </xpath>
+            <!-- Locate subtask list -->
+            <xpath expr="//page[@name='sub_tasks_page']//field[@name='child_ids']//list/field[@name='user_ids']" position="after">
+                <field name="planned_quantity" string="Planned Qty"/>
+                <field name="unit"/>
+            </xpath>
+            <!-- <xpath expr="//field[@name='tag_ids']" position="after">
+                    <field name="time_ratio" readonly="1"/>
+            </xpath> -->
         </field>
     </record>
+
+    <!-- Separate view to add Time Spent (Days) to Timesheets tab footer -->
+    <!-- This inherits from hr_timesheet view so we can access the project_hours group -->
+    <record id="view_task_form2_timesheet_footer" model="ir.ui.view">
+        <field name="name">project.task.form.timesheet.footer</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited"/>
+        <field name="arch" type="xml">
+            <!-- Add Time Spent (Days) to Timesheets tab footer after Time Remaining -->
+            <xpath expr="//group[@name='project_hours']//field[@name='remaining_hours']" position="after">
+                <span class="o_td_label float-start my-1" invisible="allocated_hours == 0.0">
+                    <label class="fw-bold" for="time_ratio_display" string="Time Spent (Days) ?"/>
+                </span>
+                <field name="time_ratio_display" widget="text" class="oe_subtotal_footer_separator"
+                       invisible="allocated_hours == 0.0" nolabel="1" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Add Time Spent (Days) to Portal Timesheet Table -->
+    <!-- This will appear after Time Remaining on SO if it exists, otherwise after Time Remaining -->
+    <template id="portal_timesheet_table_time_ratio" inherit_id="hr_timesheet.portal_timesheet_table">
+        <!-- Add after the last row in the summary table (after Time Remaining on SO if it exists) -->
+        <xpath expr="//table[@class='table table-sm']/tr[last()]" position="after">
+            <tr t-if="task.allocated_hours > 0">
+                <td><strong>Time Spent (Days) ?: </strong></td>
+                <td class="text-end">
+                    <t t-set="eff_hours" t-value="task.effective_hours or 0.0"/>
+                    <t t-set="eff_days" t-value="round(eff_hours / 8.0, 2)"/>
+                    <t t-set="alloc_days" t-value="round(task.allocated_hours / 8.0, 2)"/>
+                    <span><t t-esc="'%.0f' % eff_days"/> / <t t-esc="'%.0f' % alloc_days"/> days</span>
+                </td>
+            </tr>
+        </xpath>
+    </template>
 </odoo>

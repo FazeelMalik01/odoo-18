@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_provider_form_eazypay" model="ir.ui.view">
+        <field name="name">EazyPay Provider Form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <group name="eazypay_credentials"
+                       invisible="code != 'eazypay'">
+                    <field name="eazypay_app_id"
+                           string="App ID"
+                           placeholder="60008171"
+                           required="code == 'eazypay' and state != 'disabled'"/>
+                    <field name="eazypay_secret_key"
+                           string="Secret Key"
+                           placeholder="Your secret key"
+                           required="code == 'eazypay' and state != 'disabled'"
+                           password="True"/>
+                    <field name="eazypay_payment_methods"
+                           string="Payment Methods"
+                           placeholder="BENEFITGATEWAY,CREDITCARD,APPLEPAY"
+                           required="code == 'eazypay' and state != 'disabled'"/>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>
+

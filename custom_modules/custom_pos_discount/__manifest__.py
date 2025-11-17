@@ -12,7 +12,7 @@ This module provides additional discount functionality in Point of Sale.
     "version": "0.1",
 
     # Dependencies
-    "depends": ["base", "point_of_sale"],
+    "depends": ["base", "point_of_sale", "account"],
 
     # Data files loaded always
     "data": [
@@ -25,6 +25,8 @@ This module provides additional discount functionality in Point of Sale.
     "assets": {
         "point_of_sale._assets_pos": [
             "custom_pos_discount/static/src/js/discount.js",
+            "custom_pos_discount/static/src/js/orderline_tax_label.js",
+            "custom_pos_discount/static/src/js/order_widget.js",
             "custom_pos_discount/static/src/xml/discount_button.xml",
             "custom_pos_discount/static/src/xml/orderline_ui.xml",
             "custom_pos_discount/static/src/xml/receipt_template.xml",

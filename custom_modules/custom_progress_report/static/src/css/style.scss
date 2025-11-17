@@ -1,0 +1,55 @@
+/* Hide Edit icon from chatter messages on portal task view */
+
+/* Target edit buttons within portal chatter messages */
+.o_portal_chatter .o-mail-Message button[name="edit"],
+.o_portal_chatter .o-mail-Message button[title="Edit"],
+.o_portal_chatter .o-mail-Message-actions button[name="edit"],
+.o_portal_chatter .o-mail-Message-actions button[title="Edit"] {
+    display: none !important;
+}
+
+/* Fallback: Target edit buttons in mail messages (portal context) */
+.o-mail-Message button[name="edit"][title="Edit"],
+.o-mail-Message-actions button[name="edit"][title="Edit"] {
+    display: none !important;
+}
+
+/* Target the pencil icon within edit buttons */
+.o_portal_chatter button[name="edit"] .fa-pencil,
+.o_portal_chatter button[title="Edit"] .fa-pencil,
+.o_portal_chatter button[name="edit"] i.fa-lg,
+.o_portal_chatter button[title="Edit"] i.fa-lg {
+    display: none !important;
+}
+
+/* Hide Edit option from chatter messages dropdown on portal task view */
+
+/* Target edit option within portal chatter messages dropdown */
+.o_portal_chatter .o-mail-Message-moreMenu span[title="Edit"],
+.o_portal_chatter .o-mail-Message-moreMenu .o-dropdown-item[title="Edit"],
+.o_portal_chatter .o-mail-Message .o-dropdown-item[title="Edit"] {
+    display: none !important;
+}
+
+/* Fallback: Target edit option in mail messages dropdown (portal context) */
+.o-mail-Message-moreMenu span[title="Edit"],
+.o-mail-Message-moreMenu .o-dropdown-item[title="Edit"],
+.o-mail-Message .o-dropdown-item[title="Edit"] {
+    display: none !important;
+}
+
+/* Hide Delete option from chatter messages on portal task view */
+
+/* Target delete option within portal chatter messages dropdown */
+.o_portal_chatter .o-mail-Message-moreMenu span[title="Delete"],
+.o_portal_chatter .o-mail-Message-moreMenu .o-dropdown-item.text-danger[title="Delete"],
+.o_portal_chatter .o-mail-Message .o-dropdown-item[title="Delete"] {
+    display: none !important;
+}
+
+/* Fallback: Target delete option in mail messages dropdown (portal context) */
+.o-mail-Message-moreMenu span[title="Delete"],
+.o-mail-Message-moreMenu .o-dropdown-item.text-danger[title="Delete"],
+.o-mail-Message .o-dropdown-item[title="Delete"] {
+    display: none !important;
+}
