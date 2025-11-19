@@ -30,16 +30,21 @@ tasks in the backend for review and tracking.
 
     # Data files loaded at installation
     'data': [
+        'security/groups.xml',
         'security/ir.model.access.csv',
+        'views/progress_report_views.xml',
+        'views/progress_root_menu.xml',
         'views/progress_report_card.xml',
         'views/progress_list_view.xml',
+        'views/progress_report_view.xml',
         'views/project_task.xml',
         'views/task_view.xml',
         'views/task_list_view.xml',
         'views/project_field.xml',
         'views/portal_home_card.xml',
         'views/all_task_view.xml',
-        'views/project_links.xml'
+        'views/project_links.xml',
+        'views/timesheet_update.xml'
     ],
 
     # Assets

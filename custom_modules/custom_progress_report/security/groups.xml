@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_daily_report_reviewer" model="res.groups">
+            <field name="name">Daily Report Reviewer</field>
+            <field name="category_id" ref="base.module_category_project"/>
+            <field name="comment">Users in this group can review daily progress reports.</field>
+        </record>
+    </data>
+</odoo>
+

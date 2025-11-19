@@ -35,31 +35,27 @@
                                                 <th>Done Qty</th>
                                                 <th>Unit</th>
                                                 <th>Progress Rate (%)</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <t t-foreach="grp['records']" t-as="line">
-                                                <tr>
+                                            <t t-foreach="grp['records']" t-as="line" t-foreach-index="line_idx">
+                                                <t t-set="line_id" t-value="'line-%s-%s-%s' % (batch_id, idx, line_idx)"/>
+                                                <t t-set="all_images_data" t-value="[]"/>
+                                                <t t-if="line.task_image_ids">
+                                                    <t t-foreach="line.task_image_ids" t-as="img">
+                                                        <t t-set="img_data" t-value="img.image.decode('utf-8') if isinstance(img.image, (bytes, bytearray)) else img.image"/>
+                                                        <t t-set="all_images_data" t-value="all_images_data + [{'image': img_data, 'mimetype': img.image_mimetype or 'image/jpeg'}]"/>
+                                                    </t>
+                                                </t>
+                                                <t t-elif="line.task_image">
+                                                    <t t-set="img_data" t-value="line.task_image.decode('utf-8') if isinstance(line.task_image, (bytes, bytearray)) else line.task_image"/>
+                                                    <t t-set="all_images_data" t-value="[{'image': img_data, 'mimetype': line.task_image_mimetype or 'image/jpeg'}]"/>
+                                                </t>
+                                                <t t-set="images_json_str" t-value="str(all_images_data).replace(chr(39), chr(34))"/>
+                                                <tr t-att-data-images="images_json_str">
                                                     <td>
-                                                        <span class="d-inline-flex align-items-center gap-2">
-                                                            <div class="d-flex align-items-center gap-1">
-                                                                <t t-if="line.task_image_ids">
-                                                                    <t t-foreach="line.task_image_ids[:3]" t-as="img">
-                                                                        <img t-att-src="'data:%s;base64,%s' % (
-                                                                            (img.image_mimetype or 'image/jpeg'),
-                                                                            (img.image.decode('utf-8') if isinstance(img.image, (bytes, bytearray)) else img.image)
-                                                                        )" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" class="o_portal_contact_img rounded o_object_fit_cover" title="Image"/>
-                                                                    </t>
-                                                                    <t t-if="len(line.task_image_ids) > 3">
-                                                                        <span class="badge bg-secondary">+<t t-esc="len(line.task_image_ids) - 3"/></span>
-                                                                    </t>
-                                                                </t>
-                                                                <t t-elif="line.task_image">
-                                                                    <img t-att-src="'data:%s;base64,%s' % ((line.task_image_mimetype or 'image/jpeg'), (line.task_image.decode('utf-8') if isinstance(line.task_image, (bytes, bytearray)) else line.task_image))" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" class="o_portal_contact_img rounded o_object_fit_cover"/>
-                                                                </t>
-                                                            </div>
-                                                            <span><t t-esc="line.task_name.name"/></span>
-                                                        </span>
+                                                        <span><t t-esc="line.task_name.name"/></span>
                                                     </td>
                                                     <td>
                                                         <t t-esc="line.task_description"/>
@@ -77,6 +73,16 @@
                                                         <span t-attf-class="badge #{'bg-success' if line.progress_rate >= 90 else ('bg-warning' if line.progress_rate >= 50 else 'bg-danger')}">
                                                             <t t-esc="'%.2f' % line.progress_rate"/>%
                                                         </span>
+                                                    </td>
+                                                    <td>
+                                                        <t t-if="(line.task_image_ids and len(line.task_image_ids) > 0) or line.task_image">
+                                                            <button type="button" class="btn btn-sm btn-info view-task-images-btn" t-attf-data-line-id="#{line_id}">
+                                                                <i class="fa fa-image"></i> View Images
+                                                            </button>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="text-muted">No images</span>
+                                                        </t>
                                                     </td>
                                                 </tr>
                                             </t>
@@ -134,6 +140,201 @@
                     </div>
                 </div>
             </div>
+        </xpath>
+    </template>
+    
+    <!-- Separate template for script and modal -->
+    <template id="portal_task_progress_script" inherit_id="project.portal_my_task">
+        <xpath expr="//div[@id='card_body']" position="after">
+            <!-- Images Modal -->
+            <div class="modal fade" id="taskImagesModal" tabindex="-1" aria-labelledby="taskImagesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="taskImagesModalLabel">Task Images</h5>
+                            <button type="button" class="btn-close close-task-modal-btn" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="taskImagesModalBody">
+                            <div class="row" id="taskImagesContainer">
+                                <!-- Images will be inserted here -->
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary close-task-modal-btn">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <t>
+                <script type="text/javascript">
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Handle View Images button click
+                    document.querySelectorAll('.view-task-images-btn').forEach(function(btn) {
+                        btn.addEventListener('click', function() {
+                            var row = this.closest('tr');
+                            var imagesDataStr = row.getAttribute('data-images');
+                            
+                            // Parse images data from data attribute
+                            var images = [];
+                            try {
+                                if (imagesDataStr) {
+                                    var parsed = JSON.parse(imagesDataStr.replace(/'/g, '"'));
+                                    if (Array.isArray(parsed)) {
+                                        parsed.forEach(function(img) {
+                                            images.push({
+                                                src: 'data:' + (img.mimetype || 'image/jpeg') + ';base64,' + (img.image || ''),
+                                                mimetype: img.mimetype || 'image/jpeg'
+                                            });
+                                        });
+                                    }
+                                }
+                            } catch(e) {
+                                console.error('Error parsing images data:', e);
+                                // Fallback: get images from visible thumbnails
+                                var imageElements = row.querySelectorAll('img.o_portal_contact_img');
+                                imageElements.forEach(function(img) {
+                                    images.push({
+                                        src: img.src,
+                                        mimetype: img.src.split(';')[0].split(':')[1] || 'image/jpeg'
+                                    });
+                                });
+                            }
+                            
+                            // Clear previous images
+                            var container = document.getElementById('taskImagesContainer');
+                            container.innerHTML = '';
+                            
+                            if (images.length === 0) {
+                                container.innerHTML = '&lt;div class="col-12 text-center text-muted"&gt;&lt;p&gt;No images available for this task.&lt;/p&gt;&lt;/div&gt;';
+                            } else {
+                                images.forEach(function(img) {
+                                    var colDiv = document.createElement('div');
+                                    colDiv.className = 'col-md-6 col-lg-4 mb-3';
+                                    
+                                    var imgElement = document.createElement('img');
+                                    imgElement.src = img.src;
+                                    imgElement.className = 'img-fluid rounded';
+                                    imgElement.style.cursor = 'pointer';
+                                    imgElement.style.width = '100%';
+                                    imgElement.style.height = '250px';
+                                    imgElement.style.objectFit = 'cover';
+                                    imgElement.style.objectPosition = 'center';
+                                    imgElement.title = 'Click to view full size';
+                                    
+                                    // Handle image load error
+                                    imgElement.onerror = function() {
+                                        console.error('Failed to load image');
+                                        this.style.display = 'none';
+                                    };
+                                    
+                                    // Make image clickable to view full size
+                                    imgElement.addEventListener('click', function() {
+                                        var fullSizeModalEl = document.getElementById('taskFullSizeImageModal');
+                                        if (!fullSizeModalEl) {
+                                            fullSizeModalEl = createTaskFullSizeModal();
+                                        }
+                                        var fullSizeImg = document.getElementById('taskFullSizeImage');
+                                        if (fullSizeImg) {
+                                            fullSizeImg.src = this.src;
+                                            if (typeof $ !== 'undefined') {
+                                                $(fullSizeModalEl).modal('show');
+                                            } else {
+                                                fullSizeModalEl.classList.add('show');
+                                                fullSizeModalEl.style.display = 'block';
+                                                fullSizeModalEl.setAttribute('aria-hidden', 'false');
+                                                document.body.classList.add('modal-open');
+                                            }
+                                        }
+                                    });
+                                    
+                                    colDiv.appendChild(imgElement);
+                                    container.appendChild(colDiv);
+                                });
+                            }
+                            
+                            // Show modal using jQuery or manual method
+                            var modalEl = document.getElementById('taskImagesModal');
+                            if (typeof $ !== 'undefined') {
+                                $(modalEl).modal('show');
+                            } else {
+                                modalEl.classList.add('show');
+                                modalEl.style.display = 'block';
+                                modalEl.setAttribute('aria-hidden', 'false');
+                                document.body.classList.add('modal-open');
+                                var existingBackdrop = document.getElementById('taskModalBackdrop');
+                                if (existingBackdrop) {
+                                    existingBackdrop.remove();
+                                }
+                                var backdrop = document.createElement('div');
+                                backdrop.className = 'modal-backdrop fade show';
+                                backdrop.id = 'taskModalBackdrop';
+                                document.body.appendChild(backdrop);
+                            }
+                        });
+                    });
+                    
+                    // Handle modal close buttons
+                    function closeTaskModal(modalEl) {
+                        if (typeof $ !== 'undefined') {
+                            $(modalEl).modal('hide');
+                        } else {
+                            modalEl.classList.remove('show');
+                            modalEl.style.display = 'none';
+                            modalEl.setAttribute('aria-hidden', 'true');
+                            document.body.classList.remove('modal-open');
+                            var backdrop = document.getElementById('taskModalBackdrop');
+                            if (backdrop) {
+                                backdrop.remove();
+                            }
+                        }
+                    }
+                    
+                    // Add close handlers to modal buttons
+                    document.addEventListener('click', function(e) {
+                        if (e.target.classList.contains('close-task-modal-btn')) {
+                            var modal = e.target.closest('.modal');
+                            if (modal) {
+                                closeTaskModal(modal);
+                            }
+                        }
+                    });
+                    
+                    // Close modal when clicking backdrop
+                    var taskImagesModalEl = document.getElementById('taskImagesModal');
+                    if (taskImagesModalEl) {
+                        taskImagesModalEl.addEventListener('click', function(e) {
+                            if (e.target === this) {
+                                closeTaskModal(this);
+                            }
+                        });
+                    }
+                    
+                    // Create full size image modal if it doesn't exist
+                    function createTaskFullSizeModal() {
+                        var modalDiv = document.createElement('div');
+                        modalDiv.className = 'modal fade';
+                        modalDiv.id = 'taskFullSizeImageModal';
+                        modalDiv.innerHTML = '&lt;div class="modal-dialog modal-fullscreen"&gt;&lt;div class="modal-content bg-dark"&gt;&lt;div class="modal-header border-0"&gt;&lt;button type="button" class="btn-close btn-close-white close-task-fullsize-modal" aria-label="Close"&gt;&lt;/button&gt;&lt;/div&gt;&lt;div class="modal-body d-flex align-items-center justify-content-center p-0"&gt;&lt;img id="taskFullSizeImage" class="img-fluid" style="max-height: 100vh; max-width: 100%; object-fit: contain;" /&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;';
+                        document.body.appendChild(modalDiv);
+                        
+                        // Add close handler for full size modal
+                        modalDiv.querySelector('.close-task-fullsize-modal').addEventListener('click', function() {
+                            closeTaskModal(modalDiv);
+                        });
+                        
+                        // Close on backdrop click
+                        modalDiv.addEventListener('click', function(e) {
+                            if (e.target === modalDiv) {
+                                closeTaskModal(modalDiv);
+                            }
+                        });
+                        
+                        return modalDiv;
+                    }
+                });
+                </script>
+            </t>
         </xpath>
     </template>
 </odoo>

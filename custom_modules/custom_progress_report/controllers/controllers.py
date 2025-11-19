@@ -5,6 +5,9 @@ from odoo.http import request
 from odoo.osv import expression
 import uuid
 import base64
+import logging
+
+_logger = logging.getLogger(__name__)
 
 from odoo.addons.project.controllers.portal import ProjectCustomerPortal
 
@@ -14,8 +17,9 @@ class PortalProgressReport(ProjectCustomerPortal):
     @http.route(['/my/progress_reports'], type='http', auth='user', website=True)
     def portal_my_progress_reports(self, **kw):
         Progress = request.env['custom.progress.report'].sudo()
-        # Allow specific users to see all reports, others see only their own
-        if request.env.user.email in ['saleh.hassouna@gmail.com', 'saleh@abuhayan.com']:
+        # Allow Daily Report Reviewer group and specific users to see all reports, others see only their own
+        has_reviewer_access = request.env.user.has_group('custom_progress_report.group_daily_report_reviewer')
+        if has_reviewer_access or request.env.user.email in ['saleh.hassouna@gmail.com', 'saleh@abuhayan.com']:
             domain = []
         else:
             domain = [('user_id', '=', request.env.user.id)]
@@ -47,20 +51,51 @@ class PortalProgressReport(ProjectCustomerPortal):
     @http.route(['/my/progress_reports/create'], type='http', auth='user', website=True, methods=['POST'])
     def create_progress_report(self, **post):
         task_ids = request.httprequest.form.getlist('task_ids[]')
+        main_task_ids = request.httprequest.form.getlist('main_task_ids[]')
         planned_quantities = request.httprequest.form.getlist('planned_quantities[]')
         done_quantities = request.httprequest.form.getlist('done_quantities[]')  # ✅ new
         units = request.httprequest.form.getlist('units[]')
         task_descriptions = request.httprequest.form.getlist('task_descriptions[]')
+        
+        # Timesheet data
+        timesheet_dates = request.httprequest.form.getlist('timesheet_dates[]')
+        timesheet_employee_ids = request.httprequest.form.getlist('timesheet_employee_ids[]')
+        timesheet_hours = request.httprequest.form.getlist('timesheet_hours[]')
+        timesheet_workers = request.httprequest.form.getlist('timesheet_workers[]')
+        timesheet_descriptions = request.httprequest.form.getlist('timesheet_descriptions[]')
+        
         # We'll fetch files per row index: task_images_0, task_images_1, ...
 
+        # Get single project_id and date (shared for all tasks)
+        project_id = post.get('project_id')
         date = post.get('date')
         user_id = request.env.user.id
 
         batch_id = str(uuid.uuid4())
+        
+        # Get project for timesheet creation
+        project = None
+        if project_id:
+            project = request.env['project.project'].sudo().browse(int(project_id))
 
-        for i, task_id in enumerate(task_ids):
-            if not task_id:
+        # Process all rows (handle both main tasks and subtasks)
+        max_rows = max(len(task_ids), len(main_task_ids))
+        
+        for i in range(max_rows):
+            # Get task_id (subtask) and main_task_id for this row
+            task_id = task_ids[i] if i < len(task_ids) else None
+            main_task_id = main_task_ids[i] if i < len(main_task_ids) else None
+            
+            # Determine which task to use for progress report and timesheet
+            # If subtask is selected, use subtask; otherwise use main task
+            report_task_id = task_id if task_id else main_task_id
+            
+            if not report_task_id:
                 continue
+            
+            # Determine which task to use for timesheet
+            # Logic: If subtask is selected, add timesheet to subtask; if only main task, add to main task
+            timesheet_task_id = task_id if task_id else main_task_id
 
             # Handle multiple images (up to 10) for this task row
             image_records = []
@@ -94,7 +129,7 @@ class PortalProgressReport(ProjectCustomerPortal):
                 first_image_mimetype = image_records[0]['image_mimetype']
 
             progress_report = request.env['custom.progress.report'].sudo().create({
-                'task_name': int(task_id),
+                'task_name': int(report_task_id),
                 'task_description': task_descriptions[i] if i < len(task_descriptions) else '',
                 'date': date,
                 'done_quantity': done_quantities[i] if i < len(done_quantities) else 0.0,
@@ -115,15 +150,292 @@ class PortalProgressReport(ProjectCustomerPortal):
                         'image_mimetype': img_data['image_mimetype'],
                         'sequence': img_data['sequence'],
                     })
+            
+            # Create timesheet entry if timesheet data is provided
+            if timesheet_task_id and i < len(timesheet_dates) and timesheet_dates[i]:
+                timesheet_date = timesheet_dates[i]
+                timesheet_employee_id = timesheet_employee_ids[i] if i < len(timesheet_employee_ids) else None
+                timesheet_hour = timesheet_hours[i] if i < len(timesheet_hours) else None
+                timesheet_worker = timesheet_workers[i] if i < len(timesheet_workers) else 1
+                timesheet_desc = timesheet_descriptions[i] if i < len(timesheet_descriptions) else ''
+                
+                # Only create timesheet if required fields are present
+                if timesheet_date and timesheet_employee_id and timesheet_hour and float(timesheet_hour) > 0:
+                    try:
+                        # Convert days to hours (1 day = 8 working hours)
+                        timesheet_hours_value = float(timesheet_hour) * 8.0
+                        
+                        timesheet_vals = {
+                            'task_id': int(timesheet_task_id),
+                            'project_id': project.id if project else None,
+                            'date': timesheet_date,
+                            'employee_id': int(timesheet_employee_id),
+                            'unit_amount': timesheet_hours_value,
+                            'name': timesheet_desc or '',
+                            'no_of_workers': int(timesheet_worker) if timesheet_worker else 1,
+                        }
+                        request.env['account.analytic.line'].sudo().create(timesheet_vals)
+                    except Exception as e:
+                        _logger.error("Error creating timesheet: %s", str(e))
+                        # Continue even if timesheet creation fails
 
         return request.redirect('/my/progress_reports')
 
+    @http.route(['/my/progress_reports/view/<string:batch_id>'], type='http', auth='user', website=True)
+    def view_progress_report(self, batch_id, **kw):
+        """View details of a specific progress report batch"""
+        Progress = request.env['custom.progress.report'].sudo()
+        
+        # Allow Daily Report Reviewer group and specific users to see all reports, others see only their own
+        has_reviewer_access = request.env.user.has_group('custom_progress_report.group_daily_report_reviewer')
+        if has_reviewer_access or request.env.user.email in ['saleh.hassouna@gmail.com', 'saleh@abuhayan.com']:
+            domain = [('report_batch_id', '=', batch_id)]
+        else:
+            domain = [('report_batch_id', '=', batch_id), ('user_id', '=', request.env.user.id)]
+        
+        records = Progress.search(domain, order='id')
+        
+        if not records:
+            return request.redirect('/my/progress_reports')
+        
+        # Read records with image fields to ensure binary data is loaded
+        records = records.read(['task_name', 'task_description', 'date', 'done_quantity', 
+                                'planned_quantity', 'task_image', 'task_image_mimetype', 
+                                'task_image_ids', 'report_batch_id'])
+        
+        # Prepare report data
+        report_data = []
+        for record_data in records:
+            # Get the actual record object to access related fields
+            record = Progress.browse(record_data['id'])
+            task = record.task_name
+            project_name = task.project_id.name if task and task.project_id else 'N/A'
+            main_task_name = ''
+            subtask_name = ''
+            
+            if task:
+                if task.parent_id:
+                    # It's a subtask
+                    main_task_name = task.parent_id.name
+                    subtask_name = task.name
+                else:
+                    # It's a main task
+                    main_task_name = task.name
+                    subtask_name = ''
+            
+            # Prepare images data - same approach as task_view.xml
+            images_data = []
+            # Access image records from the record object (not record_data)
+            if record.task_image_ids:
+                for img in record.task_image_ids:
+                    # Read the image binary field to get base64 data
+                    img_data = img.read(['image', 'image_mimetype'])[0]
+                    image_data = img_data.get('image', '')
+                    if image_data:
+                        # Handle image data same way as in task_view.xml
+                        # image_data from read() is already base64 encoded string
+                        if isinstance(image_data, (bytes, bytearray)):
+                            image_data = image_data.decode('utf-8')
+                        images_data.append({
+                            'image': image_data,
+                            'mimetype': img_data.get('image_mimetype') or 'image/jpeg',
+                        })
+            elif record_data.get('task_image'):
+                # Backward compatibility with old task_image field
+                image_data = record_data.get('task_image', '')
+                if image_data:
+                    if isinstance(image_data, (bytes, bytearray)):
+                        image_data = image_data.decode('utf-8')
+                    images_data.append({
+                        'image': image_data,
+                        'mimetype': record_data.get('task_image_mimetype') or 'image/jpeg',
+                    })
+            
+            # Convert date to string for JSON serialization
+            date_value = record_data.get('date')
+            date_str = date_value.strftime('%Y-%m-%d') if date_value else ''
+            
+            report_data.append({
+                'id': record_data['id'],
+                'index': len(report_data),  # Add index for JavaScript
+                'project_name': project_name,
+                'main_task_name': main_task_name,
+                'subtask_name': subtask_name,
+                'date': date_str,
+                'done_quantity': record_data.get('done_quantity', 0),
+                'planned_quantity': record_data.get('planned_quantity', 0),
+                'description': record_data.get('task_description') or '',
+                'images': images_data,
+                'task_id': task.id if task else None,  # Add task_id for timesheet button
+            })
+        
+        # Convert images data to JSON string for JavaScript
+        images_json = json.dumps(report_data)
+        
+        # Get report date and submitted by email from first record
+        report_date = ''
+        submitted_by_email = ''
+        first_record_obj = None
+        if records:
+            first_record_obj = Progress.browse(records[0]['id'])
+            # Ensure access_token exists (portal.mixin generates it automatically on create, but ensure it's set for existing records)
+            if not first_record_obj.access_token:
+                first_record_obj.access_token = first_record_obj._portal_ensure_token()
+            report_date = first_record_obj.date if first_record_obj.date else ''
+            if first_record_obj.user_id:
+                submitted_by_email = first_record_obj.user_id.email or first_record_obj.user_id.name or 'N/A'
+        
+        return request.render('custom_progress_report.portal_view_progress_report', {
+            'report_data': report_data,
+            'report_data_json': images_json,
+            'batch_id': batch_id,
+            'report_date': report_date,
+            'submitted_by_email': submitted_by_email,
+            'report_record': first_record_obj,  # Pass record object for chatter
+            'object': first_record_obj,  # Also pass as 'object' for portal.message_thread template
+            'token': first_record_obj.access_token if first_record_obj and first_record_obj.access_token else '',  # Pass token directly
+        })
+    
+    @http.route(['/my/progress_reports/timesheets/<int:task_id>'], type='json', auth='user', website=True, methods=['POST'])
+    def get_task_timesheets(self, task_id, **kw):
+        """Fetch timesheet data for a specific task and its parent main task"""
+        try:
+            Task = request.env['project.task'].sudo()
+            task = Task.browse(task_id)
+            
+            # Check access - user must have access to the task
+            if not task.exists():
+                return {'error': 'Task not found'}
+            
+            # Get parent task if this is a subtask
+            parent_task = None
+            if task.parent_id:
+                parent_task = task.parent_id
+            
+            Timesheet = request.env['account.analytic.line'].sudo()
+            
+            # Check if UOM is days
+            is_uom_day = False
+            if hasattr(Timesheet, '_is_timesheet_encode_uom_day'):
+                try:
+                    is_uom_day = Timesheet._is_timesheet_encode_uom_day()
+                except:
+                    pass
+            
+            # Helper function to format time
+            def format_time(hours, is_day=False):
+                if is_day:
+                    try:
+                        # Convert hours to days format using model method
+                        days = Timesheet._convert_hours_to_days(hours)
+                        return f"{days:.2f}"
+                    except:
+                        # Fallback to hours if conversion fails
+                        h = int(hours)
+                        m = int((hours - h) * 60)
+                        return f"{h:02d}:{m:02d}"
+                else:
+                    # Format as hours (HH:MM format)
+                    h = int(hours)
+                    m = int((hours - h) * 60)
+                    return f"{h:02d}:{m:02d}"
+            
+            # Helper function to prepare timesheet data
+            def prepare_timesheet_data(timesheets):
+                timesheet_data = []
+                for ts in timesheets:
+                    # Format date using Odoo's date formatting
+                    date_str = ''
+                    if ts.date:
+                        # Use Odoo's format_date for proper locale formatting
+                        try:
+                            date_str = request.env['ir.qweb.field.date'].value_to_html(ts.date, {})
+                        except:
+                            # Fallback to standard format
+                            date_str = ts.date.strftime('%m/%d/%Y')
+                    
+                    # Format time spent
+                    time_spent_formatted = format_time(ts.unit_amount or 0.0, is_uom_day)
+                    
+                    timesheet_data.append({
+                        'date': date_str,
+                        'date_raw': ts.date.strftime('%Y-%m-%d') if ts.date else '',  # Keep raw for sorting
+                        'employee': ts.employee_id.name if ts.employee_id else '',
+                        'description': ts.name or '',
+                        'time_spent': ts.unit_amount or 0.0,
+                        'time_spent_formatted': time_spent_formatted,
+                        'no_of_workers': ts.no_of_workers if hasattr(ts, 'no_of_workers') else 1,
+                    })
+                return timesheet_data
+            
+            # Helper function to get task summary
+            def get_task_summary(task_obj):
+                total_time = task_obj.effective_hours if hasattr(task_obj, 'effective_hours') else 0.0
+                allocated = task_obj.allocated_hours if hasattr(task_obj, 'allocated_hours') else 0.0
+                remaining = task_obj.remaining_hours if hasattr(task_obj, 'remaining_hours') else 0.0
+                
+                # Calculate days spent (assuming 8 hours per day)
+                eff_days = round(total_time / 8.0, 2) if total_time else 0.0
+                alloc_days = round(allocated / 8.0, 2) if allocated > 0 else 0.0
+                
+                return {
+                    'task_name': task_obj.name if task_obj else '',
+                    'total_time_spent': total_time,
+                    'total_time_spent_formatted': format_time(total_time, is_uom_day),
+                    'allocated_hours': allocated,
+                    'allocated_hours_formatted': format_time(allocated, is_uom_day) if allocated > 0 else '',
+                    'remaining_hours': remaining,
+                    'remaining_hours_formatted': format_time(remaining, is_uom_day) if allocated > 0 else '',
+                    'is_uom_day': is_uom_day,
+                    'eff_days': int(eff_days),
+                    'alloc_days': int(alloc_days),
+                }
+            
+            # Get timesheets for subtask
+            subtask_timesheets = Timesheet.search([
+                ('task_id', '=', task_id),
+                ('project_id', '!=', False)
+            ], order='date desc')
+            
+            subtask_data = prepare_timesheet_data(subtask_timesheets)
+            subtask_summary = get_task_summary(task)
+            
+            # Get timesheets for main task if this is a subtask
+            main_task_data = []
+            main_task_summary = None
+            if parent_task:
+                main_task_timesheets = Timesheet.search([
+                    ('task_id', '=', parent_task.id),
+                    ('project_id', '!=', False)
+                ], order='date desc')
+                main_task_data = prepare_timesheet_data(main_task_timesheets)
+                main_task_summary = get_task_summary(parent_task)
+            
+            return {
+                'success': True,
+                'subtask': {
+                    'task_name': task.name,
+                    'timesheets': subtask_data,
+                    'summary': subtask_summary,
+                },
+                'main_task': {
+                    'task_name': parent_task.name if parent_task else None,
+                    'timesheets': main_task_data,
+                    'summary': main_task_summary,
+                } if parent_task else None,
+            }
+        except Exception as e:
+            import logging
+            _logger = logging.getLogger(__name__)
+            _logger.error("Error fetching timesheets for task %s: %s", task_id, str(e))
+            return {'error': str(e)}
+
     @http.route(['/my/progress_reports/delete/<string:batch_id>'], type='json', auth='user', website=True, methods=['POST'])
     def delete_progress_report(self, batch_id, **kw):
-        """Delete all progress reports with the given batch_id. Admin user can delete any user's reports."""
+        """Delete all progress reports with the given batch_id. Only saleh@abuhayan.com can delete reports."""
         try:
-            # Only allow deletion for specific user emails
-            if request.env.user.email not in ['saleh.hassouna@gmail.com', 'saleh@abuhayan.com']:
+            # Only allow deletion for specific user email
+            if request.env.user.email != 'saleh@abuhayan.com':
                 return {'success': False, 'error': 'You do not have permission to delete reports.'}
             
             Progress = request.env['custom.progress.report'].sudo()

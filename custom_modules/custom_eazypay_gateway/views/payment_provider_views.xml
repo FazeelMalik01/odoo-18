@@ -10,7 +10,7 @@
                        invisible="code != 'eazypay'">
                     <field name="eazypay_app_id"
                            string="App ID"
-                           placeholder="60008171"
+                           placeholder="123456"
                            required="code == 'eazypay' and state != 'disabled'"/>
                     <field name="eazypay_secret_key"
                            string="Secret Key"

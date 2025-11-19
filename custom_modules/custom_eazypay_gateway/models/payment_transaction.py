@@ -5,6 +5,7 @@ import pprint
 
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
+from odoo.fields import Command
 
 _logger = logging.getLogger(__name__)
 
@@ -145,9 +146,33 @@ class PaymentTransaction(models.Model):
         return_url = f"{base_url}/payment/eazypay/return/EAZY_GLOBAL_TRN_ID"
         webhook_url = f"{base_url}/payment/eazypay/webhook"
         
+        # Generate unique invoice ID for EazyPay
+        # EazyPay requires unique invoice IDs, so we append transaction ID and timestamp
+        # Format: {reference}-{transaction_id}-{timestamp}
+        # This ensures uniqueness even if the same sale order is paid multiple times
+        import time
+        import re
+        
+        # Sanitize reference to only alphanumeric and dashes (remove special characters)
+        clean_reference = re.sub(r'[^a-zA-Z0-9-]', '', str(self.reference))
+        
+        timestamp = int(time.time() * 1000)  # Milliseconds timestamp
+        unique_invoice_id = f"{clean_reference}-{self.id}-{timestamp}"
+        
+        # EazyPay might have length restrictions, so truncate if needed (max 50 chars typically)
+        # But keep it readable by keeping the reference first
+        if len(unique_invoice_id) > 50:
+            # Keep reference and transaction ID, truncate timestamp if needed
+            max_timestamp_len = 50 - len(clean_reference) - len(str(self.id)) - 2  # -2 for dashes
+            if max_timestamp_len > 0:
+                unique_invoice_id = f"{clean_reference}-{self.id}-{str(timestamp)[-max_timestamp_len:]}"
+            else:
+                # Fallback: use just reference and transaction ID
+                unique_invoice_id = f"{clean_reference}-{self.id}"
+        
         payload = {
             'appId': self.provider_id.eazypay_app_id,
-            'invoiceId': self.reference,
+            'invoiceId': unique_invoice_id,
             'currency': self.currency_id.name,
             'amount': amount_str,
             'paymentMethod': self.provider_id.eazypay_payment_methods,
@@ -214,10 +239,32 @@ class PaymentTransaction(models.Model):
         if not tx:
             invoice_id = notification_data.get('invoiceId')
             if invoice_id:
+                # The invoice ID from EazyPay might be in format: {reference}-{transaction_id}-{timestamp}
+                # Try exact match first
                 tx = self.search([
                     ('provider_code', '=', 'eazypay'),
                     ('reference', '=', invoice_id),
                 ], limit=1)
+                
+                # If not found, try to match by extracting reference from invoice ID
+                if not tx and '-' in invoice_id:
+                    # Extract reference part (before first dash)
+                    base_reference = invoice_id.split('-')[0]
+                    tx = self.search([
+                        ('provider_code', '=', 'eazypay'),
+                        ('reference', '=', base_reference),
+                    ], limit=1)
+                    
+                    # If still not found, try matching by transaction ID (second part)
+                    if not tx and len(invoice_id.split('-')) >= 2:
+                        try:
+                            transaction_id = int(invoice_id.split('-')[1])
+                            tx = self.search([
+                                ('provider_code', '=', 'eazypay'),
+                                ('id', '=', transaction_id),
+                            ], limit=1)
+                        except (ValueError, IndexError):
+                            pass
         
         return tx
 
@@ -233,6 +280,212 @@ class PaymentTransaction(models.Model):
 
         # Query payment status from EazyPay
         self._eazypay_query_payment_status()
+
+    def _post_process(self):
+        """ Override of `payment` to ensure invoices are created and posted for EazyPay transactions.
+        
+        This ensures that when a payment is successful:
+        1. The sale order is confirmed (handled by sale module)
+        2. Invoices are created automatically (always for EazyPay)
+        3. Invoices are posted (set to 'posted' state)
+        """
+        # For EazyPay transactions, handle post-processing specially to avoid account_payment errors
+        if self.provider_code == 'eazypay' and self.state == 'done':
+            # Step 1: Confirm the sale order FIRST - this is critical
+            confirmed_orders = self.env['sale.order']  # Initialize empty recordset
+            if hasattr(self, '_check_amount_and_confirm_order'):
+                confirmed_orders = self._check_amount_and_confirm_order()
+                _logger.info(
+                    "Confirmed %d order(s) for EazyPay transaction %s: %s",
+                    len(confirmed_orders), self.reference, confirmed_orders.mapped('name') if confirmed_orders else 'None'
+                )
+            
+            # Refresh to get updated order state
+            self.invalidate_recordset(['sale_order_ids'])
+            # Get all orders linked to this transaction
+            all_orders = self.sale_order_ids
+            # If no orders were confirmed yet, try to confirm them
+            if not confirmed_orders and all_orders:
+                for order in all_orders.filtered(lambda so: so.state in ('draft', 'sent')):
+                    if order._is_confirmation_amount_reached():
+                        order.with_context(send_email=True).action_confirm()
+                        confirmed_orders |= order
+                        _logger.info(
+                            "Confirmed order %s for EazyPay transaction %s",
+                            order.name, self.reference
+                        )
+            
+            # Get confirmed orders
+            confirmed_orders = self.sale_order_ids.filtered(lambda so: so.state == 'sale')
+            
+            if not confirmed_orders:
+                _logger.warning(
+                    "No confirmed orders found for EazyPay transaction %s. Orders: %s",
+                    self.reference, self.sale_order_ids.mapped('name')
+                )
+            
+            # Step 2: Create invoices for confirmed orders
+            if confirmed_orders:
+                if not self.invoice_ids:
+                    _logger.info(
+                        "Creating invoices for EazyPay transaction %s (orders: %s)",
+                        self.reference, confirmed_orders.mapped('name')
+                    )
+                    
+                    # Force all lines to be invoiceable
+                    confirmed_orders._force_lines_to_invoice_policy_order()
+                    
+                    # Create final invoices for all confirmed orders
+                    invoices = confirmed_orders.with_context(
+                        raise_if_nothing_to_invoice=False
+                    )._create_invoices(final=True)
+                    
+                    if invoices:
+                        # Link invoices to the transaction
+                        self.invoice_ids = [Command.set(invoices.ids)]
+                        
+                        # Setup access token for portal access
+                        for invoice in invoices:
+                            invoice._portal_ensure_token()
+                        
+                        _logger.info(
+                            "Created %d invoice(s) for transaction %s: %s",
+                            len(invoices), self.reference, invoices.mapped('name')
+                        )
+                    else:
+                        _logger.warning(
+                            "No invoices created for EazyPay transaction %s",
+                            self.reference
+                        )
+                
+                # Step 3: Post all invoices that are in draft state
+                for invoice in self.invoice_ids.filtered(lambda inv: inv.state == 'draft'):
+                    try:
+                        invoice.action_post()
+                        _logger.info(
+                            "Posted invoice %s for transaction %s",
+                            invoice.name, self.reference
+                        )
+                    except Exception as e:
+                        _logger.exception(
+                            "Error posting invoice %s for transaction %s: %s",
+                            invoice.name, self.reference, e
+                        )
+            
+            # Step 4: Create and post account payment (only once)
+            # Ensure payment is created, posted, and reconciled with invoice
+            if (
+                self.operation != 'validation'
+                and not self.payment_id
+                and not any(child.state in ['done', 'cancel'] for child in self.child_transaction_ids)
+            ):
+                try:
+                    # Try to create payment using standard method
+                    payment = self.with_company(self.company_id)._create_payment()
+                    if payment:
+                        if payment.state == 'posted':
+                            _logger.info(
+                                "Created and posted payment %s for EazyPay transaction %s",
+                                payment.name, self.reference
+                            )
+                        else:
+                            # If payment was created but not posted, post it
+                            payment.action_post()
+                            _logger.info(
+                                "Created and posted payment %s for EazyPay transaction %s",
+                                payment.name, self.reference
+                            )
+                except ValidationError as e:
+                    # Check if a draft payment was created before the error
+                    # If so, delete it to prevent duplicates
+                    draft_payments = self.env['account.payment'].search([
+                        ('payment_transaction_id', '=', self.id),
+                        ('state', '=', 'draft')
+                    ])
+                    if draft_payments:
+                        draft_payments.unlink()
+                        _logger.info(
+                            "Removed %d draft payment(s) for EazyPay transaction %s before creating new one",
+                            len(draft_payments), self.reference
+                        )
+                    # If payment method line is missing, create payment manually
+                    if "payment method line" in str(e):
+                        _logger.warning(
+                            "Payment method line missing for EazyPay transaction %s. Creating payment manually.",
+                            self.reference
+                        )
+                        
+                        journal = self.provider_id.journal_id
+                        payment_method_line = journal.inbound_payment_method_line_ids[:1]
+                        
+                        if payment_method_line:
+                            reference = (f'{self.reference} - '
+                                       f'{self.partner_id.display_name or ""} - '
+                                       f'{self.provider_reference or ""}')
+                            
+                            payment_values = {
+                                'amount': abs(self.amount),
+                                'payment_type': 'inbound' if self.amount > 0 else 'outbound',
+                                'currency_id': self.currency_id.id,
+                                'partner_id': self.partner_id.commercial_partner_id.id,
+                                'partner_type': 'customer',
+                                'journal_id': journal.id,
+                                'company_id': self.provider_id.company_id.id,
+                                'payment_method_line_id': payment_method_line.id,
+                                'payment_transaction_id': self.id,
+                                'memo': reference,
+                                'invoice_ids': self.invoice_ids,
+                            }
+                            
+                            # Create payment and immediately link to transaction to prevent duplicates
+                            payment = self.env['account.payment'].create(payment_values)
+                            # Link to transaction BEFORE posting to prevent duplicate creation
+                            self.payment_id = payment
+                            # Now post the payment
+                            payment.action_post()
+                            
+                            # Reconcile with invoices
+                            if self.invoice_ids:
+                                invoices = self.invoice_ids.filtered(lambda inv: inv.state == 'posted')
+                                if invoices:
+                                    payment_lines = payment.move_id.line_ids.filtered(
+                                        lambda line: line.account_id.account_type in ('asset_receivable', 'liability_payable')
+                                        and not line.reconciled
+                                    )
+                                    invoice_lines = invoices.line_ids.filtered(
+                                        lambda line: line.account_id.account_type in ('asset_receivable', 'liability_payable')
+                                        and not line.reconciled
+                                    )
+                                    all_lines = payment_lines + invoice_lines
+                                    if all_lines:
+                                        all_lines.reconcile()
+                                        _logger.info(
+                                            "Reconciled payment %s with invoices for EazyPay transaction %s",
+                                            payment.name, self.reference
+                                        )
+                            
+                            _logger.info(
+                                "Created and posted payment %s manually for EazyPay transaction %s",
+                                payment.name, self.reference
+                            )
+                    else:
+                        _logger.warning(
+                            "No payment method line in journal %s. Payment not created for EazyPay transaction %s",
+                            journal.name if 'journal' in locals() else 'Unknown', self.reference
+                        )
+                    # Don't re-raise - payment creation is optional
+                except Exception as payment_error:
+                    _logger.exception(
+                        "Error creating payment for EazyPay transaction %s: %s",
+                        self.reference, payment_error
+                    )
+                    # Don't fail the whole process if payment creation fails
+            
+            # Mark as post-processed
+            self.is_post_processed = True
+        else:
+            # For non-EazyPay transactions, use standard post-processing
+            super()._post_process()
 
     def _eazypay_query_payment_status(self):
         """ Query the payment status from EazyPay API.

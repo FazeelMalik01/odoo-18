@@ -11,6 +11,7 @@ class ProgressReportImage(models.Model):
 
 class ProgressReport(models.Model):
     _name = 'custom.progress.report'
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'portal.mixin']
     _description = 'Daily Progress Report'
 
     task_name = fields.Many2one('project.task', string="Task Name")

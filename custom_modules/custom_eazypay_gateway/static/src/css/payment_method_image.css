@@ -1,0 +1,10 @@
+/* Limit EazyPay payment method image size to 64x64 */
+img.img.img-fluid[alt*="EazyPay"],
+img.img.img-fluid[src*="payment.method"][src*="eazypay"],
+img.img.img-fluid[src*="payment.method"][src*="EazyPay"],
+img.img.img-fluid[data-oe-model="payment.method"][data-oe-field="image_payment_form"] {
+   
+    width: 64px !important;
+    object-fit: contain;
+}
+

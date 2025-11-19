@@ -1,0 +1,579 @@
+<odoo>
+    <template id="portal_view_progress_report" name="Portal View Progress Report">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-4">
+                <style>
+                    .report-details-table th { white-space: wrap; }
+                    .report-details-table { font-size: 0.95rem; }
+                    .report-details-table th,
+                    .report-details-table td { padding: 0.75rem; }
+                    
+                    @media (max-width: 1199.98px) { 
+                        .report-details-table { font-size: 0.875rem; }
+                        .report-details-table th,
+                        .report-details-table td { padding: 0.65rem; }
+                    }
+                    @media (max-width: 991px) { 
+                        .report-details-table { 
+                            font-size: 0.75rem; 
+                            min-width: 1000px; /* Force scrollbar at 991px */
+                        }
+                        .report-details-table th,
+                        .report-details-table td { padding: 0.55rem; }
+                        .table-responsive {
+                            overflow-x: auto;
+                            -webkit-overflow-scrolling: touch;
+                        }
+                    }
+                    @media (max-width: 767.98px) { 
+                        .report-details-table { 
+                            font-size: 0.7rem; 
+                            min-width: 1000px; /* Maintain scrollbar */
+                        }
+                        .report-details-table th,
+                        .report-details-table td { padding: 0.5rem; }
+                    }
+                    @media (max-width: 575.98px) { 
+                        .report-details-table { 
+                            font-size: 0.65rem; 
+                            min-width: 1000px; /* Maintain scrollbar */
+                        }
+                        .report-details-table th,
+                        .report-details-table td { padding: 0.45rem; }
+                    }
+                </style>
+                <div class="mb-3">
+                    <h3>Progress Report Details</h3>
+                </div>
+                
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5 class="mb-0">Report Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Submitted By:</strong> <t t-esc="submitted_by_email"/>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Date:</strong> <t t-esc="report_date"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Task Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped report-details-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Project</th>
+                                        <th>Main Task</th>
+                                        <th>Subtask</th>
+                                        <th>Date</th>
+                                        <th>Done Qty</th>
+                                        <th>Planned Qty</th>
+                                        <th>Description</th>
+                                        <th style="width: 274px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-if="report_data">
+                                        <t t-foreach="report_data" t-as="report">
+                                            <tr>
+                                                <td><t t-esc="report['project_name']"/></td>
+                                                <td><t t-esc="report['main_task_name']"/></td>
+                                                <td><t t-esc="report['subtask_name']"/></td>
+                                                <td><t t-esc="report['date']"/></td>
+                                                <td><t t-esc="report['done_quantity']"/></td>
+                                                <td><t t-esc="report['planned_quantity']"/></td>
+                                                <td><t t-esc="report['description']"/></td>
+                                                <td>
+                                                    <div class="d-flex gap-2">
+                                                        <t t-if="report['images'] and len(report['images']) > 0">
+                                                            <button type="button" class="btn btn-sm btn-info view-images-btn" t-attf-data-row-index="#{report['index']}">
+                                                                <i class="fa fa-image"></i> View Images
+                                                            </button>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="text-muted">No images</span>
+                                                        </t>
+                                                        <t t-if="report.get('task_id')">
+                                                            <button type="button" class="btn btn-sm btn-success view-timesheets-btn" t-attf-data-task-id="#{report['task_id']}">
+                                                                <i class="fa fa-clock-o"></i> View Timesheets
+                                                            </button>
+                                                        </t>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">No data available.</td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Communication History / Chatter -->
+                <t t-if="object">
+                    <div class="card mt-4" id="task_chat" data-anchor="true">
+                        <div class="card-header">
+                            <h3 class="mb-0">Communication history</h3>
+                        </div>
+                        <div class="card-body">
+                            <t t-call="portal.message_thread"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+            
+            <!-- Images Modal -->
+            <div class="modal fade" id="imagesModal" tabindex="-1" aria-labelledby="imagesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="imagesModalLabel">Task Images</h5>
+                            <button type="button" class="btn-close close-modal-btn" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="imagesModalBody">
+                            <div class="row" id="imagesContainer">
+                                <!-- Images will be inserted here -->
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary close-modal-btn">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Timesheets Modal -->
+            <div class="modal fade" id="timesheetsModal" tabindex="-1" aria-labelledby="timesheetsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="timesheetsModalLabel">Task Timesheets</h5>
+                            <button type="button" class="btn-close close-timesheets-modal-btn" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="timesheetsModalBody">
+                            <div id="timesheetsContainer">
+                                <!-- Timesheets will be inserted here -->
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary close-timesheets-modal-btn">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+        
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                // Initialize portal chatter manually
+                setTimeout(function() {
+                    var discussionEl = document.getElementById('discussion');
+                    if (discussionEl) {
+                        // Portal chatter should auto-initialize, but if it doesn't, 
+                        // Odoo's portal chatter JavaScript will handle it based on data attributes
+                        // The structure matches Odoo's expected format
+                    }
+                }, 100);
+                
+                // Handle View Timesheets button click
+                document.querySelectorAll('.view-timesheets-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var taskId = parseInt(this.getAttribute('data-task-id'));
+                        if (!taskId) {
+                            alert('Task ID not found');
+                            return;
+                        }
+                        
+                        // Show loading state
+                        var container = document.getElementById('timesheetsContainer');
+                        container.innerHTML = '<div class="text-center p-4"><i class="fa fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading timesheets...</p></div>';
+                        
+                        // Show modal
+                        var modalEl = document.getElementById('timesheetsModal');
+                        if (typeof $ !== 'undefined') {
+                            $(modalEl).modal('show');
+                        } else {
+                            modalEl.classList.add('show');
+                            modalEl.style.display = 'block';
+                            modalEl.setAttribute('aria-hidden', 'false');
+                            document.body.classList.add('modal-open');
+                        }
+                        
+                        // Fetch timesheet data
+                        fetch('/my/progress_reports/timesheets/' + taskId, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: {},
+                                id: Math.floor(Math.random() * 1000000)
+                            }),
+                            credentials: 'same-origin'
+                        })
+                        .then(response => response.json())
+                        .then(function(data) {
+                            var result = data.result || data;
+                            displayTimesheets(result);
+                        })
+                        .catch(function(error) {
+                            console.error('Error fetching timesheets:', error);
+                            container.innerHTML = '<div class="alert alert-danger">Error loading timesheets. Please try again.</div>';
+                        });
+                        
+                        function displayTimesheets(result) {
+                            if (result.error) {
+                                container.innerHTML = '<div class="alert alert-danger">Error: ' + result.error + '</div>';
+                                return;
+                            }
+                            
+                            if (result.success) {
+                                var html = '';
+                                
+                                // Helper function to build timesheet table
+                                function buildTimesheetTable(timesheets, summary, sectionTitle) {
+                                    var sectionHtml = '';
+                                    
+                                    if (sectionTitle) {
+                                        sectionHtml += '<h5 class="mb-3 mt-4"><strong>' + sectionTitle + '</strong></h5>';
+                                    }
+                                    
+                                    sectionHtml += '<table class="o_portal_my_doc_table table table-sm table-striped">';
+                                    sectionHtml += '<thead><tr><th>Date</th><th>Employee</th><th>Description</th><th class="text-end">No of Workers</th><th class="text-end">Time Spent</th></tr></thead>';
+                                    sectionHtml += '<tbody>';
+                                    
+                                    if (!timesheets || timesheets.length === 0) {
+                                        sectionHtml += '<tr><td colspan="5" class="text-center text-muted">No timesheets found for this task.</td></tr>';
+                                    } else {
+                                        timesheets.forEach(function(ts) {
+                                            sectionHtml += '<tr valign="middle">';
+                                            sectionHtml += '<td>' + (ts.date || '') + '</td>';
+                                            sectionHtml += '<td title="' + (ts.employee || '') + '">' + (ts.employee || '') + '</td>';
+                                            sectionHtml += '<td>' + (ts.description || '') + '</td>';
+                                            sectionHtml += '<td class="text-end">' + (ts.no_of_workers || 1) + '</td>';
+                                            sectionHtml += '<td class="text-end">' + (ts.time_spent_formatted || (ts.time_spent || 0).toFixed(2)) + '</td>';
+                                            sectionHtml += '</tr>';
+                                        });
+                                    }
+                                    
+                                    sectionHtml += '</tbody></table>';
+                                    
+                                    // Add summary - match portal format exactly
+                                    if (summary) {
+                                        sectionHtml += '<div class="container_subtotal">';
+                                        sectionHtml += '<div class="row justify-content-end">';
+                                        sectionHtml += '<div class="col-sm-2">';
+                                        sectionHtml += '<table class="table table-sm">';
+                                        sectionHtml += '<tr>';
+                                        sectionHtml += '<td><strong>Total Time Spent: </strong></td>';
+                                        sectionHtml += '<td class="text-end">' + (summary.total_time_spent_formatted || (summary.total_time_spent || 0).toFixed(2)) + '</td>';
+                                        sectionHtml += '</tr>';
+                                        
+                                        if (summary.allocated_hours > 0) {
+                                            sectionHtml += '<tr>';
+                                            sectionHtml += '<td><strong>Time Remaining: </strong></td>';
+                                            var remainingClass = (summary.remaining_hours &lt; 0) ? 'text-danger' : '';
+                                            sectionHtml += '<td class="text-end ' + remainingClass + '">' + (summary.remaining_hours_formatted || (summary.remaining_hours || 0).toFixed(2)) + '</td>';
+                                            sectionHtml += '</tr>';
+                                            sectionHtml += '<tr>';
+                                            sectionHtml += '<td><strong>Time Spent (Days) ?: </strong></td>';
+                                            sectionHtml += '<td class="text-end">' + (summary.eff_days || 0) + ' / ' + (summary.alloc_days || 0) + ' days</td>';
+                                            sectionHtml += '</tr>';
+                                        }
+                                        
+                                        sectionHtml += '</table>';
+                                        sectionHtml += '</div></div></div>';
+                                    }
+                                    
+                                    return sectionHtml;
+                                }
+                                
+                                // Display main task timesheets first (if exists)
+                                if (result.main_task &amp;&amp; result.main_task.task_name) {
+                                    html += buildTimesheetTable(
+                                        result.main_task.timesheets,
+                                        result.main_task.summary,
+                                        'Main Task: ' + result.main_task.task_name
+                                    );
+                                }
+                                
+                                // Display subtask timesheets
+                                if (result.subtask) {
+                                    html += buildTimesheetTable(
+                                        result.subtask.timesheets,
+                                        result.subtask.summary,
+                                        'Subtask: ' + result.subtask.task_name
+                                    );
+                                }
+                                
+                                if (!html) {
+                                    html = '<div class="alert alert-warning">No timesheet data available.</div>';
+                                }
+                                
+                                container.innerHTML = html;
+                            } else {
+                                container.innerHTML = '<div class="alert alert-warning">No timesheet data available.</div>';
+                            }
+                        }
+                    });
+                });
+                
+                // Handle timesheets modal close buttons
+                document.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('close-timesheets-modal-btn') || e.target.closest('.close-timesheets-modal-btn')) {
+                        var modal = document.getElementById('timesheetsModal');
+                        if (modal) {
+                            if (typeof $ !== 'undefined') {
+                                $(modal).modal('hide');
+                            } else {
+                                modal.classList.remove('show');
+                                modal.style.display = 'none';
+                                modal.setAttribute('aria-hidden', 'true');
+                                document.body.classList.remove('modal-open');
+                            }
+                        }
+                    }
+                });
+                
+                // Close timesheets modal when clicking backdrop
+                var timesheetsModalEl = document.getElementById('timesheetsModal');
+                if (timesheetsModalEl) {
+                    timesheetsModalEl.addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            if (typeof $ !== 'undefined') {
+                                $(this).modal('hide');
+                            } else {
+                                this.classList.remove('show');
+                                this.style.display = 'none';
+                                this.setAttribute('aria-hidden', 'true');
+                                document.body.classList.remove('modal-open');
+                            }
+                        }
+                    });
+                }
+                
+                // Override breadcrumb to show Home / Progress Report / Report Details
+                const breadcrumb = document.querySelector('.o_portal_submenu.breadcrumb');
+                if (breadcrumb) {
+                    // Clear existing breadcrumb items
+                    breadcrumb.innerHTML = '';
+                    // Add home icon
+                    const homeItem = document.createElement('li');
+                    homeItem.className = 'breadcrumb-item';
+                    homeItem.innerHTML = '<a href="/my/home"><i class="fa fa-home"></i></a>';
+                    breadcrumb.appendChild(homeItem);
+                    // Add Progress Report link
+                    const reportItem = document.createElement('li');
+                    reportItem.className = 'breadcrumb-item';
+                    reportItem.innerHTML = '<a href="/my/progress_reports">Progress Report</a>';
+                    breadcrumb.appendChild(reportItem);
+                    // Add Report Details (active)
+                    const detailsItem = document.createElement('li');
+                    detailsItem.className = 'breadcrumb-item active';
+                    detailsItem.setAttribute('aria-current', 'page');
+                    detailsItem.textContent = 'Report Details';
+                    breadcrumb.appendChild(detailsItem);
+                }
+            });
+        </script>
+        
+        <!-- Store images data as JSON -->
+        <script type="application/json" id="reportImagesData">
+            <t t-raw="report_data_json"/>
+        </script>
+        
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                // Parse images data from JSON
+                var imagesData = {};
+                try {
+                    var jsonData = JSON.parse(document.getElementById('reportImagesData').textContent);
+                    jsonData.forEach(function(report, idx) {
+                        imagesData[idx] = report.images || [];
+                    });
+                } catch(e) {
+                    console.error('Error parsing images data:', e);
+                    imagesData = {};
+                }
+                
+                // Handle View Images button click
+                document.querySelectorAll('.view-images-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var rowIndex = parseInt(this.getAttribute('data-row-index'));
+                        var images = imagesData[rowIndex] || [];
+                        
+                        console.log('Row index:', rowIndex);
+                        console.log('Images data:', images);
+                        console.log('All images data:', imagesData);
+                        
+                        // Clear previous images
+                        var container = document.getElementById('imagesContainer');
+                        container.innerHTML = '';
+                        
+                        if (!images || images.length === 0) {
+                            container.innerHTML = '<div class="col-12 text-center text-muted"><p>No images available for this task.</p></div>';
+                        } else {
+                            images.forEach(function(img, idx) {
+                                console.log('Processing image', idx, img);
+                                
+                                var colDiv = document.createElement('div');
+                                colDiv.className = 'col-md-6 col-lg-4 mb-3';
+                                
+                                var imgElement = document.createElement('img');
+                                // Ensure image data is properly formatted
+                                var imageSrc = 'data:' + (img.mimetype || 'image/jpeg') + ';base64,' + (img.image || '');
+                                imgElement.src = imageSrc;
+                                imgElement.className = 'img-fluid rounded';
+                                imgElement.style.cursor = 'pointer';
+                                imgElement.style.width = '100%';
+                                imgElement.style.height = '250px';
+                                imgElement.style.objectFit = 'cover';
+                                imgElement.style.objectPosition = 'center';
+                                imgElement.title = 'Click to view full size';
+                                
+                                // Handle image load error
+                                imgElement.onerror = function() {
+                                    console.error('Failed to load image:', img);
+                                    this.style.display = 'none';
+                                };
+                                
+                                // Make image clickable to view full size
+                                imgElement.addEventListener('click', function() {
+                                    var fullSizeModalEl = document.getElementById('fullSizeImageModal');
+                                    if (!fullSizeModalEl) {
+                                        fullSizeModalEl = createFullSizeModal();
+                                    }
+                                    var fullSizeImg = document.getElementById('fullSizeImage');
+                                    if (fullSizeImg) {
+                                        fullSizeImg.src = this.src;
+                                        // Show modal using jQuery or manual method
+                                        if (typeof $ !== 'undefined') {
+                                            $(fullSizeModalEl).modal('show');
+                                        } else {
+                                            fullSizeModalEl.classList.add('show');
+                                            fullSizeModalEl.style.display = 'block';
+                                            fullSizeModalEl.setAttribute('aria-hidden', 'false');
+                                            document.body.classList.add('modal-open');
+                                        }
+                                    }
+                                });
+                                
+                                colDiv.appendChild(imgElement);
+                                container.appendChild(colDiv);
+                            });
+                        }
+                        
+                        // Show modal using jQuery (Odoo compatible)
+                        var modalEl = document.getElementById('imagesModal');
+                        if (typeof $ !== 'undefined') {
+                            $(modalEl).modal('show');
+                        } else {
+                            // Fallback: manual show using Bootstrap classes
+                            modalEl.classList.add('show');
+                            modalEl.style.display = 'block';
+                            modalEl.setAttribute('aria-hidden', 'false');
+                            document.body.classList.add('modal-open');
+                            // Remove existing backdrop if any
+                            var existingBackdrop = document.getElementById('modalBackdrop');
+                            if (existingBackdrop) {
+                                existingBackdrop.remove();
+                            }
+                            var backdrop = document.createElement('div');
+                            backdrop.className = 'modal-backdrop fade show';
+                            backdrop.id = 'modalBackdrop';
+                            document.body.appendChild(backdrop);
+                        }
+                    });
+                });
+                
+                // Handle modal close buttons
+                function closeModal(modalEl) {
+                    if (typeof $ !== 'undefined') {
+                        $(modalEl).modal('hide');
+                    } else {
+                        // Manual close
+                        modalEl.classList.remove('show');
+                        modalEl.style.display = 'none';
+                        modalEl.setAttribute('aria-hidden', 'true');
+                        document.body.classList.remove('modal-open');
+                        var backdrop = document.getElementById('modalBackdrop');
+                        if (backdrop) {
+                            backdrop.remove();
+                        }
+                    }
+                }
+                
+                // Add close handlers to modal buttons
+                document.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('close-modal-btn')) {
+                        var modal = e.target.closest('.modal');
+                        if (modal) {
+                            closeModal(modal);
+                        }
+                    }
+                });
+                
+                // Close modal when clicking backdrop
+                var imagesModalEl = document.getElementById('imagesModal');
+                if (imagesModalEl) {
+                    imagesModalEl.addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            closeModal(this);
+                        }
+                    });
+                }
+                
+                // Create full size image modal if it doesn't exist
+                function createFullSizeModal() {
+                    var modalDiv = document.createElement('div');
+                    modalDiv.className = 'modal fade';
+                    modalDiv.id = 'fullSizeImageModal';
+                    modalDiv.innerHTML = `
+                        <div class="modal-dialog modal-fullscreen">
+                            <div class="modal-content bg-dark">
+                                <div class="modal-header border-0">
+                                    <button type="button" class="btn-close btn-close-white close-fullsize-modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                                    <img id="fullSizeImage" class="img-fluid" style="max-height: 100vh; max-width: 100%; object-fit: contain;" />
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modalDiv);
+                    
+                    // Add close handler for full size modal
+                    modalDiv.querySelector('.close-fullsize-modal').addEventListener('click', function() {
+                        closeModal(modalDiv);
+                    });
+                    
+                    // Close on backdrop click
+                    modalDiv.addEventListener('click', function(e) {
+                        if (e.target === modalDiv) {
+                            closeModal(modalDiv);
+                        }
+                    });
+                    
+                    return modalDiv;
+                }
+            });
+        </script>
+    </template>
+</odoo>
+

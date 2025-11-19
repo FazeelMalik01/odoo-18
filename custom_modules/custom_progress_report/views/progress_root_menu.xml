@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Action reference will be in progress_report_views.xml -->
+
+        <!-- Root Menu for Progress Reports -->
+        <menuitem id="menu_custom_progress_report_root"
+                  name="Progress Reports"
+                  sequence="20"/>
+
+        <!-- Main Menu Item -->
+        <menuitem id="menu_custom_progress_report"
+                  name="Progress Reports"
+                  parent="menu_custom_progress_report_root"
+                  action="action_custom_progress_report"
+                  sequence="10"/>
+    </data>
+</odoo>

@@ -1,4 +1,4 @@
-odoo.define('service_request_portal.service_request', function (require) {
+odoo.define('custom_gatekeeper_security.service_request', function (require) {
     "use strict";
 
     const publicWidget = require('web.public.widget');

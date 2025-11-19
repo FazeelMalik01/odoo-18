@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- List View for Progress Reports -->
+        <record id="view_custom_progress_report_list" model="ir.ui.view">
+            <field name="name">custom.progress.report.list</field>
+            <field name="model">custom.progress.report</field>
+            <field name="arch" type="xml">
+                <list string="Progress Reports" default_order="date desc, id desc">
+                    <field name="date"/>
+                    <field name="task_name"/>
+                    <field name="task_description"/>
+                    <field name="done_quantity"/>
+                    <field name="planned_quantity"/>
+                    <field name="unit"/>
+                    <field name="progress_rate"/>
+                    <field name="user_id"/>
+                    <!-- <field name="report_batch_id"/> -->
+                </list>
+            </field>
+        </record>
+
+        <!-- Form View for Progress Reports -->
+        <record id="view_custom_progress_report_form" model="ir.ui.view">
+            <field name="name">custom.progress.report.form</field>
+            <field name="model">custom.progress.report</field>
+            <field name="arch" type="xml">
+                <form string="Progress Report">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="task_name"/>
+                                <field name="date"/>
+                                <field name="user_id"/>
+                                <!-- <field name="report_batch_id"/> -->
+                            </group>
+                            <group>
+                                <field name="done_quantity"/>
+                                <field name="planned_quantity"/>
+                                <field name="unit"/>
+                                <field name="progress_rate"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="task_description" placeholder="Task Description"/>
+                        </group>
+                        <group>
+                            <label for="task_image_ids" string="Images"/>
+                            <field name="task_image_ids" readonly="1" nolabel="1">
+                                <kanban class="o_kanban_mobile" default_order="sequence" create="0" delete="0">
+                                    <field name="sequence"/>
+                                    <field name="image" widget="image"/>
+                                    <field name="image_mimetype"/>
+                                    <templates>
+                                        <t t-name="card">
+                                            <div style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; margin: 2px; vertical-align: top; padding: 0; border: none !important; box-shadow: none !important; background: transparent !important;">
+                                                <field name="image" widget="image" style="width: 250px; object-fit: cover; cursor: pointer; border-radius: 4px;"/>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View for Progress Reports -->
+        <record id="view_custom_progress_report_search" model="ir.ui.view">
+            <field name="name">custom.progress.report.search</field>
+            <field name="model">custom.progress.report</field>
+            <field name="arch" type="xml">
+                <search string="Search Progress Reports">
+                    <field name="task_name" string="Task"/>
+                    <field name="user_id" string="Created By"/>
+                    <field name="date"/>
+                    <field name="report_batch_id" string="Batch ID"/>
+                    <field name="task_description" string="Description"/>
+                    <filter string="Today" name="today" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Week" name="this_week" domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                    <filter string="This Month" name="this_month" domain="[('date', '&gt;=', (context_today() - datetime.timedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                    <separator/>
+                    <filter string="Group by Batch ID" name="group_by_batch_id" context="{'group_by': 'report_batch_id'}"/>
+                    <filter string="Group by Date" name="group_by_date" context="{'group_by': 'date'}"/>
+                    <filter string="Group by Task" name="group_by_task" context="{'group_by': 'task_name'}"/>
+                    <filter string="Group by User" name="group_by_user" context="{'group_by': 'user_id'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action for Progress Reports -->
+        <record id="action_custom_progress_report" model="ir.actions.act_window">
+            <field name="name">Progress Reports</field>
+            <field name="res_model">custom.progress.report</field>
+            <field name="view_mode">list,form</field>
+            <field name="view_id" ref="view_custom_progress_report_list"/>
+            <field name="search_view_id" ref="view_custom_progress_report_search"/>
+            <field name="context">{'search_default_group_by_batch_id': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first progress report!
+                </p>
+                <p>
+                    Track daily progress of project tasks with detailed reports including quantities, descriptions, and images.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>
+

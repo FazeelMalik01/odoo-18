@@ -19,24 +19,31 @@
                 <div class="collapse mb-4" id="createReportForm">
                     <form id="progressCreateForm" action="/my/progress_reports/create" method="POST" enctype="multipart/form-data" class="border rounded p-3">
                         <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <!-- Project and Date - Selected Once for All Tasks -->
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-2">
+                                <label>Project</label>
+                                <select name="project_id" id="global-project-select" class="form-control project-select">
+                                    <option value="">Select Project</option>
+                                    <t t-foreach="request.env['project.project'].sudo().search([('privacy_visibility', '=', 'portal')], order='name')" t-as="project">
+                                        <option t-att-value="project.id" t-att-data-project-id="project.id">
+                                            <t t-esc="project.name"/> (#<t t-esc="project.id"/>)
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <label>Date</label>
+                                <input type="date" name="date" id="global-date-input" class="form-control"/>
+                            </div>
+                        </div>
                         <div id="taskRowsContainer">
                             <div class="task-row row mb-2">
-                                <div class="col-md-4">
-                                    <label>Project</label>
-                                    <select name="project_ids[]" class="form-control project-select">
-                                        <option value="">Select Project</option>
-                                        <t t-foreach="request.env['project.project'].sudo().search([('privacy_visibility', '=', 'portal')], order='name')" t-as="project">
-                                            <option t-att-value="project.id" t-att-data-project-id="project.id">
-                                                <t t-esc="project.name"/> (#<t t-esc="project.id"/>)
-                                            </option>
-                                        </t>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label>Task Name</label>
-                                    <select name="task_ids[]" class="form-control task-select">
-                                        <option value="">Select Task</option>
-                                        <t t-foreach="request.env['project.task'].sudo().search([('project_id.privacy_visibility', '=', 'portal')])" t-as="task">
+                                <div class="col-md-6">
+                                    <label>Main Task</label>
+                                    <select name="main_task_ids[]" class="form-control main-task-select">
+                                        <option value="">Select Main Task</option>
+                                        <t t-foreach="request.env['project.task'].sudo().search([('project_id.privacy_visibility', '=', 'portal'), ('state', '=', '01_in_progress'), ('parent_id', '=', False)])" t-as="task">
                                             <t t-set="project_id" t-value="task.project_id.id if task.project_id else ''"/>
                                             <option t-att-value="task.id" t-att-data-project-id="project_id">
                                                 <t t-esc="task.name"/>
@@ -44,33 +51,82 @@
                                         </t>
                                     </select>
                                 </div>
-                                <div class="col-md-6 mb-2">
-                                    <label>Date</label>
-                                    <input type="date" name="date" class="form-control"/>
+                                <div class="col-md-6">
+                                    <label>Subtask Name</label>
+                                    <select name="task_ids[]" class="form-control subtask-select">
+                                        <option value="">Select Subtask</option>
+                                        <t t-foreach="request.env['project.task'].sudo().search([('project_id.privacy_visibility', '=', 'portal'), ('state', '=', '01_in_progress'), ('parent_id', '!=', False)])" t-as="task">
+                                            <t t-set="project_id" t-value="task.project_id.id if task.project_id else ''"/>
+                                            <t t-set="parent_id" t-value="task.parent_id.id if task.parent_id else ''"/>
+                                            <option t-att-value="task.id" t-att-data-project-id="project_id" t-att-data-parent-id="parent_id">
+                                                <t t-esc="task.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
                                 </div>
-                                <div class="col-md-6 mb-2">
+                                <div class="col-md-4 mb-2">
                                     <label>Done Quantity</label>
                                     <input type="number" step="any" name="done_quantities[]" class="form-control"/>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-4">
                                     <label>Planned Qty</label>
                                     <input type="number" step="any" name="planned_quantities[]" class="form-control planned-qty" readonly='1'/>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-4">
                                     <label>Unit</label>
                                     <input type="text" name="units[]" class="form-control unit" readonly='1'/>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-6">
                                     <label>Description</label>
                                     <textarea name="task_descriptions[]" class="form-control task-desc"></textarea>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4">
                                     <label>Images</label>
                                     <div class="image-inputs-container">
                                         <input type="file" name="task_images_0_0[]" accept="image/*" class="form-control mb-1 task-image-input" multiple="multiple"/>
                                         
                                     </div>
                                 </div>
+                                
+                                <!-- Timesheet Fields -->
+                                <div class="col-12 mt-3 timesheet-section" style="display: none; margin-bottom: 5px;">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Timesheet Entry</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-3">
+                                                    <label>Date</label>
+                                                    <input type="date" name="timesheet_dates[]" class="form-control timesheet-date" value=""/>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label>Employee</label>
+                                                    <select name="timesheet_employee_ids[]" class="form-control timesheet-employee">
+                                                        <option value="">Select Employee</option>
+                                                        <t t-foreach="request.env['hr.employee'].sudo().search([])" t-as="emp">
+                                                            <option t-att-value="emp.id"><t t-esc="emp.name"/></option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label>Time Spent (Days)</label>
+                                                    <input type="number" step="0.01" name="timesheet_hours[]" class="form-control timesheet-hours" placeholder="0.00"/>
+                                                    
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label>No of Workers</label>
+                                                    <input type="number" step="1" name="timesheet_workers[]" class="form-control timesheet-workers" value="1" min="1"/>
+                                                </div>
+                                                <div class="col-md-12 mt-2">
+                                                    <label>Description</label>
+                                                    <textarea name="timesheet_descriptions[]" class="form-control timesheet-description" rows="2" placeholder="Timesheet description"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="col-md-1 d-flex align-items-end">
                                     <button type="button" class="btn btn-danger remove-task-btn">-</button>
                                 </div>
@@ -84,108 +140,118 @@
                         </div>
                     </form>
                 </div>
-                <!-- Under your existing form -->
-                <div class="accordion mt-5" id="dailyReportsAccordion">
+                
+                <!-- Submitted Reports Table -->
+                <div class="mt-5">
                     <h4 class="mb-3">Submitted Progress Reports</h4>
-                    <t t-if="grouped_reports">
-                        <t t-foreach="grouped_reports" t-as="grp" t-foreach-index="idx">
-                            <div class="accordion-item mb-2 shadow-sm">
-                                <h2 class="accordion-header d-flex justify-content-between align-items-center">
-                                    <t t-set="batch_id" t-value="grp['records'] and grp['records'][0].report_batch_id or idx"/>
-                                    <div class="d-flex align-items-center w-100">
-                                        <button class="accordion-button collapsed flex-grow-1" type="button" data-bs-toggle="collapse" t-attf-data-bs-target="#collapse#{batch_id}" t-attf-aria-controls="collapse#{batch_id}" aria-expanded="false">
-                                            <span class="d-inline-flex align-items-center gap-2 text-nowrap">
-                                                <strong class="text-nowrap">Progress Report</strong>
-                                                <small class="text-muted text-nowrap">(Date: <t t-esc="grp['label']"/> )</small>
-                                                <t t-if="(request.env.user.email == 'saleh.hassouna@gmail.com' or request.env.user.email == 'saleh@abuhayan.com') and grp['records'] and grp['records'][0].user_id">
-                                                    <small class="text-muted text-nowrap">- <t t-esc="grp['records'][0].user_id.name"/> (<t t-esc="grp['records'][0].user_id.email or 'N/A'"/>)</small>
-                                                </t>
-                                            </span>
-                                        </button>
-                                        <t t-if="request.env.user.email == 'saleh.hassouna@gmail.com' or request.env.user.email == 'saleh@abuhayan.com'">
-                                            <button type="button" class="btn btn-sm btn-danger ms-2 delete-report-btn" t-attf-data-batch-id="#{batch_id}" title="Delete Report" style="z-index: 10; padding:0.5rem 0.75rem; margin-right: 5px !important;">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                        </t>
-                                    </div>
-                                </h2>
-                                <div t-attf-id="collapse#{batch_id}" class="accordion-collapse collapse" data-bs-parent="#dailyReportsAccordion" t-attf-aria-labelledby="heading#{batch_id}">
-                                    <div class="accordion-body">
-                                        <div class="table-responsive">
-                                        <table class="table table-bordered table-striped mb-0 progress-table">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>Task Name</th>
-                                                    <th>Description</th>
-                                                    <th>Planned Qty</th>
-                                                    <th>Done Qty</th>
-                                                    <th>Unit</th>
-                                                    <th>Progress Rate (%)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <t t-foreach="grp['records']" t-as="report_line">
-                                                    <tr>
-                                                        
-                                                        <td>
-                                                            <span class="d-inline-flex align-items-center gap-2">
-                                                                <div class="d-flex align-items-center gap-1">
-                                                                    <t t-if="report_line.task_image_ids">
-                                                                        <t t-foreach="report_line.task_image_ids[:3]" t-as="img">
-                                                                            <img t-att-src="'data:%s;base64,%s' % (
-                                                                                (img.image_mimetype or 'image/jpeg'),
-                                                                                (img.image.decode('utf-8') if isinstance(img.image, (bytes, bytearray)) else img.image)
-                                                                            )" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" class="o_portal_contact_img rounded o_object_fit_cover" title="Image"/>
-                                                                        </t>
-                                                                        <t t-if="len(report_line.task_image_ids) > 3">
-                                                                            <span class="badge bg-secondary">+<t t-esc="len(report_line.task_image_ids) - 3"/></span>
-                                                                        </t>
-                                                                    </t>
-                                                                    <t t-elif="report_line.task_image">
-                                                                        <img t-att-src="'data:%s;base64,%s' % (
-                                                                            (report_line.task_image_mimetype or 'image/jpeg'),
-                                                                            (report_line.task_image.decode('utf-8') if isinstance(report_line.task_image, (bytes, bytearray)) else report_line.task_image)
-                                                                        )" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" class="o_portal_contact_img rounded o_object_fit_cover"/>
-                                                                    </t>
-                                                                </div>
-                                                                <span><t t-esc="report_line.task_name.name"/></span>
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <t t-esc="report_line.task_description"/>
-                                                        </td>
-                                                        <td>
-                                                            <t t-esc="report_line.planned_quantity"/>
-                                                        </td>
-                                                        <td>
-                                                            <t t-esc="report_line.done_quantity"/>
-                                                        </td>
-                                                        <td>
-                                                            <t t-esc="report_line.unit"/>
-                                                        </td>
-                                                        <td>
-                                                            <span t-attf-class="badge #{'bg-success' if report_line.progress_rate >= 90 else ('bg-warning' if report_line.progress_rate >= 50 else 'bg-danger')}">
-                                                                <t t-esc="'%.2f' % report_line.progress_rate"/>%
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                </t>
-                                            </tbody>
-                                        </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </t>
-                    </t>
-                    <t t-else="">
-                        <p class="text-muted">No progress reports submitted yet.</p>
-                    </t>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Project Name</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-if="grouped_reports">
+                                    <t t-foreach="grouped_reports" t-as="grp" t-foreach-index="idx">
+                                        <t t-set="batch_id" t-value="grp['records'] and grp['records'][0].report_batch_id or ('batch-%s' % idx)"/>
+                                        <t t-set="report_date" t-value="grp['label'] or (grp['records'] and grp['records'][0].date or '')"/>
+                                        <t t-set="first_record" t-value="grp['records'] and grp['records'][0] or None"/>
+                                        <t t-set="project_name" t-value="first_record and first_record.task_name and first_record.task_name.project_id and first_record.task_name.project_id.name or 'N/A'"/>
+                                        <tr>
+                                            <td><t t-esc="project_name"/></td>
+                                            <td><t t-esc="report_date"/></td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    <t t-set="has_reviewer_access" t-value="request.env.user.has_group('custom_progress_report.group_daily_report_reviewer')"/>
+                                                    <t t-if="has_reviewer_access">
+                                                        <a t-attf-href="/my/progress_reports/view/#{batch_id}" class="btn btn-sm btn-primary">
+                                                            <i class="fa fa-eye"></i> View
+                                                        </a>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <button type="button" class="btn btn-sm btn-primary" disabled="disabled" title="Only Daily Report Reviewers can view reports">
+                                                            <i class="fa fa-eye"></i> View
+                                                        </button>
+                                                    </t>
+                                                    
+                                                    <!-- <t t-set="can_delete" t-value="request.env.user.email == 'saleh@abuhayan.com'"/>
+                                                    <t t-if="can_delete">
+                                                        <button type="button" class="btn btn-sm btn-danger delete-report-btn" t-attf-data-batch-id="#{batch_id}" title="Delete this report">
+                                                            <i class="fa fa-trash"></i> Delete
+                                                        </button>
+                                                    </t> -->
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-else="">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">No progress reports submitted yet.</td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                
             </div>
         </t>
         <script type="text/javascript">
                 document.addEventListener('DOMContentLoaded', function () {
+                    // Handle delete report button
+                    document.querySelectorAll('.delete-report-btn').forEach(function(btn) {
+                        btn.addEventListener('click', function() {
+                            const batchId = this.getAttribute('data-batch-id');
+                            if (!batchId) {
+                                alert('Batch ID not found');
+                                return;
+                            }
+                            
+                            if (confirm('Are you sure you want to delete this progress report? This action cannot be undone.')) {
+                                // Show loading state
+                                const originalText = this.innerHTML;
+                                this.disabled = true;
+                                this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Deleting...';
+                                
+                                fetch('/my/progress_reports/delete/' + batchId, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        jsonrpc: '2.0',
+                                        method: 'call',
+                                        params: {},
+                                        id: Math.floor(Math.random() * 1000000)
+                                    }),
+                                    credentials: 'same-origin'
+                                })
+                                .then(response => response.json())
+                                .then(function(data) {
+                                    var result = data.result || data;
+                                    if (result.success) {
+                                        // Reload the page to show updated list
+                                        window.location.reload();
+                                    } else {
+                                        alert('Error deleting report: ' + (result.error || 'Unknown error'));
+                                        btn.disabled = false;
+                                        btn.innerHTML = originalText;
+                                    }
+                                })
+                                .catch(function(error) {
+                                    console.error('Error deleting report:', error);
+                                    alert('Error deleting report. Please try again.');
+                                    btn.disabled = false;
+                                    btn.innerHTML = originalText;
+                                });
+                            }
+                        });
+                    });
+                    
                     // Override breadcrumb to show only Home / Progress Report
                     const breadcrumb = document.querySelector('.o_portal_submenu.breadcrumb');
                     if (breadcrumb) {
@@ -204,6 +270,69 @@
                         breadcrumb.appendChild(reportItem);
                     }
               
+                    // Show/hide timesheet section based on task selection
+                    function toggleTimesheetSection(row) {
+                        const mainTaskSelect = row.querySelector('.main-task-select');
+                        const subtaskSelect = row.querySelector('.subtask-select');
+                        const timesheetSection = row.querySelector('.timesheet-section');
+                        const timesheetDateInput = row.querySelector('.timesheet-date');
+                        const globalDateInput = document.querySelector('#global-date-input');
+                        
+                        // Show timesheet section if main task is selected (regardless of subtask)
+                        if (mainTaskSelect &amp;&amp; mainTaskSelect.value) {
+                            if (timesheetSection) {
+                                timesheetSection.style.display = 'block';
+                            }
+                            // Set timesheet date to global date if not already set
+                            if (timesheetDateInput &amp;&amp; globalDateInput &amp;&amp; globalDateInput.value &amp;&amp; !timesheetDateInput.value) {
+                                timesheetDateInput.value = globalDateInput.value;
+                            }
+                        } else {
+                            if (timesheetSection) {
+                                timesheetSection.style.display = 'none';
+                            }
+                        }
+                    }
+                    
+                    // Initialize timesheet sections for existing rows
+                    document.querySelectorAll('.task-row').forEach(row => {
+                        toggleTimesheetSection(row);
+                    });
+                    
+                    // Add event listeners for main task and subtask changes
+                    document.querySelectorAll('.main-task-select, .subtask-select').forEach(select => {
+                        select.addEventListener('change', function() {
+                            const row = this.closest('.task-row');
+                            toggleTimesheetSection(row);
+                        });
+                    });
+                    
+                    // Update timesheet date when global date changes
+                    const globalDateInput = document.querySelector('#global-date-input');
+                    if (globalDateInput) {
+                        globalDateInput.addEventListener('change', function() {
+                            document.querySelectorAll('.timesheet-date').forEach(dateInput => {
+                                const row = dateInput.closest('.task-row');
+                                const mainTaskSelect = row.querySelector('.main-task-select');
+                                if (mainTaskSelect &amp;&amp; mainTaskSelect.value &amp;&amp; !dateInput.value) {
+                                    dateInput.value = this.value;
+                                }
+                            });
+                        });
+                    }
+                    
+                    // Initialize: Hide all subtasks on page load
+                    document.querySelectorAll('.subtask-select').forEach(subtaskSelect => {
+                        const subtaskOptions = subtaskSelect.querySelectorAll('option');
+                        subtaskOptions.forEach(option => {
+                            if (option.value === '') {
+                                option.style.display = '';
+                            } else {
+                                option.style.display = 'none';
+                            }
+                        });
+                    });
+              
                     function fetchTaskDetails(row, taskId) {
         if (!taskId) return;
 
@@ -216,19 +345,22 @@
             });
     }
 
-    // Handle project selection change - filter tasks
-    document.querySelector('#taskRowsContainer').addEventListener('change', function (e) {
-        if (e.target.classList.contains('project-select')) {
-            const row = e.target.closest('.task-row');
-            const taskSelect = row.querySelector('.task-select');
-            const selectedProjectId = e.target.value;
+    // Handle global project selection change - filter main tasks for all rows
+    document.querySelector('#global-project-select').addEventListener('change', function (e) {
+        const selectedProjectId = e.target.value;
+        
+        // Update all task rows
+        document.querySelectorAll('.task-row').forEach(row => {
+            const mainTaskSelect = row.querySelector('.main-task-select');
+            const subtaskSelect = row.querySelector('.subtask-select');
             
-            // Reset task selection
-            taskSelect.value = '';
+            // Reset main task and subtask selections
+            mainTaskSelect.value = '';
+            subtaskSelect.value = '';
             
-            // Show/hide tasks based on selected project
-            const taskOptions = taskSelect.querySelectorAll('option');
-            taskOptions.forEach(option => {
+            // Show/hide main tasks based on selected project
+            const mainTaskOptions = mainTaskSelect.querySelectorAll('option');
+            mainTaskOptions.forEach(option => {
                 if (option.value === '') {
                     option.style.display = '';
                 } else {
@@ -240,10 +372,53 @@
                     }
                 }
             });
+            
+            // Hide all subtasks initially (will show when main task is selected)
+            const subtaskOptions = subtaskSelect.querySelectorAll('option');
+            subtaskOptions.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Handle task-specific selections
+    document.querySelector('#taskRowsContainer').addEventListener('change', function (e) {
+        // Handle main task selection change - filter subtasks
+        if (e.target.classList.contains('main-task-select')) {
+            const row = e.target.closest('.task-row');
+            const subtaskSelect = row.querySelector('.subtask-select');
+            const selectedMainTaskId = e.target.value;
+            const globalProjectSelect = document.querySelector('#global-project-select');
+            const selectedProjectId = globalProjectSelect.value;
+            
+            // Reset subtask selection
+            subtaskSelect.value = '';
+            
+            // Show/hide subtasks based on selected main task and project
+            const subtaskOptions = subtaskSelect.querySelectorAll('option');
+            subtaskOptions.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = '';
+                } else {
+                    const subtaskProjectId = option.getAttribute('data-project-id');
+                    const subtaskParentId = option.getAttribute('data-parent-id');
+                    if (selectedMainTaskId &amp;&amp; selectedProjectId &amp;&amp; 
+                        subtaskParentId === selectedMainTaskId &amp;&amp; 
+                        subtaskProjectId === selectedProjectId) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                }
+            });
         }
         
-        // Handle task selection change
-        if (e.target.classList.contains('task-select')) {
+        // Handle subtask selection change
+        if (e.target.classList.contains('subtask-select')) {
             const row = e.target.closest('.task-row');
             fetchTaskDetails(row, e.target.value);
         }
@@ -256,15 +431,73 @@
         const newRow = firstRow.cloneNode(true);
         const rowIndex = container.querySelectorAll('.task-row').length;
 
-        // Reset all inputs
+        // Reset all inputs (excluding project/date which are global)
         newRow.querySelectorAll('input, textarea, select').forEach(el => {
-            el.value = '';
+            // Skip if it's project or date field (shouldn't be in task-row, but just in case)
+            if (!el.id || (el.id !== 'global-project-select' &amp;&amp; el.id !== 'global-date-input')) {
+                // Keep default value for timesheet workers
+                if (el.classList.contains('timesheet-workers')) {
+                    el.value = '1';
+                } else {
+                    el.value = '';
+                }
+            }
         });
         
         // Update file input name to include row index
         const fileInput = newRow.querySelector('.task-image-input');
         if (fileInput) {
             fileInput.name = `task_images_${rowIndex}_0[]`;
+        }
+        
+        // Apply global project filter to new row's main tasks
+        const globalProjectSelect = document.querySelector('#global-project-select');
+        const selectedProjectId = globalProjectSelect.value;
+        const mainTaskSelect = newRow.querySelector('.main-task-select');
+        if (selectedProjectId) {
+            const mainTaskOptions = mainTaskSelect.querySelectorAll('option');
+            mainTaskOptions.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = '';
+                } else {
+                    const taskProjectId = option.getAttribute('data-project-id');
+                    if (taskProjectId === selectedProjectId) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                }
+            });
+        }
+        
+        // Hide all subtasks initially
+        const subtaskSelect = newRow.querySelector('.subtask-select');
+        const subtaskOptions = subtaskSelect.querySelectorAll('option');
+        subtaskOptions.forEach(option => {
+            if (option.value === '') {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        });
+        
+        // Hide timesheet section initially for new row
+        const newTimesheetSection = newRow.querySelector('.timesheet-section');
+        if (newTimesheetSection) {
+            newTimesheetSection.style.display = 'none';
+        }
+        
+        // Add event listeners for main task and subtask changes in new row
+        const newMainTaskSelect = newRow.querySelector('.main-task-select');
+        if (newMainTaskSelect) {
+            newMainTaskSelect.addEventListener('change', function() {
+                toggleTimesheetSection(newRow);
+            });
+        }
+        if (subtaskSelect) {
+            subtaskSelect.addEventListener('change', function() {
+                toggleTimesheetSection(newRow);
+            });
         }
         
         container.appendChild(newRow);
