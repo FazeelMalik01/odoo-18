@@ -1,0 +1,39 @@
+<odoo>
+  <record id="res_config_settings_view_form_whatsapp_abandoned_cart" model="ir.ui.view">
+    <field name="name">res.config.settings.view.form.whatsapp.abandoned.cart</field>
+    <field name="model">res.config.settings</field>
+    <field name="inherit_id" ref="website.res_config_settings_view_form"/>
+    <field name="arch" type="xml">
+      <!-- Insert new block after Email & Marketing block -->
+      <xpath expr="//block[@id='website_email_marketing']" position="after">
+        <block title="WhatsApp Automation" id="website_whatsapp_automation">
+          <setting id="send_whatsapp_abandoned_cart"
+                             string="Abandoned Cart WhatsApp"
+                             help="Automatically send WhatsApp messages to customers who did not complete checkout.">
+            <field name="send_whatsapp_abandoned_cart"/>
+            <div class="content-group"
+                             invisible="not send_whatsapp_abandoned_cart">
+              <div class="row mt16">
+                <label class="col-lg-3 o_light_label"
+                                       for="whatsapp_abandoned_cart_delay"/>
+                <div class="col-lg-9">
+                  <field name="whatsapp_abandoned_cart_delay"
+                                           class="oe_inline"/>
+                  <span class="ms-2">Minutes</span>
+                </div>
+              </div>
+              <div class="row mt16">
+                <label class="col-lg-3 o_light_label"
+           for="whatsapp_abandoned_cart_template_id"/>
+                <div class="col-lg-9">
+                  <field name="whatsapp_abandoned_cart_template_id"
+               options="{'no_create': True}"/>
+                </div>
+              </div>
+            </div>
+          </setting>
+        </block>
+      </xpath>
+    </field>
+  </record>
+</odoo>

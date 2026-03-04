@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Extend the PaymentScreenPaymentLines template to add card number input -->
+    <t t-name="custom_pos_card.PaymentScreenPaymentLines" t-inherit="point_of_sale.PaymentScreenPaymentLines" t-inherit-mode="extension">
+        
+        <!-- Add card number input after the selected payment line info section -->
+        <xpath expr="//t[@t-if='line.isSelected()']/div[contains(@t-attf-class, 'paymentline selected')]" position="after">
+            <t t-if="line.payment_method_id and !line.payment_method_id.is_cash_count and line.payment_method_id.type === 'bank'">
+                <div class="card-no-input-container d-flex align-items-center justify-content-center gap-2 px-3 py-2 bg-warning-subtle border border-warning rounded-3 mt-1">
+                    <label class="text-dark mb-0 d-flex align-items-center fw-bold">
+                        <i class="fa fa-credit-card me-2 text-warning"/>
+                        <span>Enter Card Last 4 Digits:</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        class="form-control form-control-sm card-no-input border-warning"
+                        style="max-width: 90px; text-align: center; font-size: 1.3rem; letter-spacing: 4px; font-weight: bold;"
+                        maxlength="4"
+                        placeholder="0000"
+                        t-att-value="getCardNo(line)"
+                        t-on-input="(ev) => this.onCardNoChange(line, ev)"
+                        t-on-keydown="validateCardNo"
+                    />
+                </div>
+            </t>
+        </xpath>
+
+        <!-- Show card number for unselected card payment lines -->
+        <xpath expr="//t[@t-else='']/div[contains(@class, 'paymentline')]" position="after">
+            <t t-if="line.payment_method_id and !line.payment_method_id.is_cash_count and line.payment_method_id.type === 'bank' and getCardNo(line)">
+                <div class="card-no-display d-flex align-items-center justify-content-center gap-2 px-3 py-1 text-success small border-top">
+                    <i class="fa fa-credit-card"/>
+                    <span>Card: ****<t t-esc="getCardNo(line)"/></span>
+                </div>
+            </t>
+        </xpath>
+
+    </t>
+
+</templates>

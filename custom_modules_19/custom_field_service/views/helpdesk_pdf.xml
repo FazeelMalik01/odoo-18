@@ -1,0 +1,86 @@
+<odoo>
+    <record id="action_ticket_report_pdf" model="ir.actions.report">
+        <field name="name">Print Ticket PDF</field>
+        <field name="model">helpdesk.ticket</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_field_service.ticket_report_pdf</field>
+        <field name="report_file">custom_field_service.ticket_report_pdf</field>
+        <field name="print_report_name">'Helpdesk_Ticket_%s' % (object.name or 'Report')</field>
+    </record>
+    <!-- Bound server action to show "Print Ticket PDF" in Actions dropdown -->
+    <record id="action_ticket_report" model="ir.actions.server">
+        <field name="name">Print Ticket PDF</field>
+        <field name="model_id" ref="helpdesk.model_helpdesk_ticket"/>
+        <field name="binding_model_id" ref="helpdesk.model_helpdesk_ticket"/>
+        <field name="binding_view_types">form,list,kanban</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_pdf()</field>
+    </record>
+    <template id="ticket_report_pdf">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <div class="col-12">
+                            <h2>Helpdesk Ticket Report</h2>
+                            <table class="table table-bordered mt-3" style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background-color: #f0f0f0;">
+                                        <th style="border: 1px solid #ddd; padding: 8px;">ID</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px;">Name</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px;">Helpdesk Team</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px;">Assigned To</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px;">Customer</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px;">Stage</th>
+                                        <th style="border: 1px solid #ddd; padding: 8px;">Priority</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="docs" t-as="ticket">
+                                        <tr>
+                                            <!-- ID -->
+                                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                                <t t-esc="ticket.ticket_ref"/>
+                                            </td>
+                                            <!-- Name -->
+                                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                                <t t-esc="ticket.name"/>
+                                            </td>
+                                            <!-- Team -->
+                                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                                <t t-esc="ticket.team_id.name"/>
+                                            </td>
+                                            <!-- Assigned To -->
+                                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                                <t t-if="ticket.user_id">
+                                                    <t t-esc="ticket.user_id.name"/> </t>
+                                                <t t-if="not ticket.user_id">N/A</t>
+                                            </td>
+                                            <!-- Customer -->
+                                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                                <t t-esc="ticket.partner_id.name or 'N/A'"/>
+                                            </td>
+                                            <!-- Stage -->
+                                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                                <t t-esc="ticket.stage_id.name or 'N/A'"/>
+                                            </td>
+                                            <!-- Priority -->
+                                            <td style="border: 1px solid #ddd; padding: 8px;">
+                                                <t t-if="ticket.priority == '0'">Low</t>
+                                                <t t-if="ticket.priority == '1'">Normal</t>
+                                                <t t-if="ticket.priority == '2'">High</t>
+                                                <t t-if="ticket.priority == '3'">Urgent</t>
+                                                <t t-if="not ticket.priority">N/A</t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="oe_structure"/> </div>
+            </t>
+        </t>
+    </template>
+</odoo>

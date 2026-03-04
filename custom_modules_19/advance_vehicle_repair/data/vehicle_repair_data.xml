@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!--        Spare Assessments-->
+        <record id="vehicle_assessments_data1" model="vehicle.parts.assessments">
+            <field name="name">4WD</field>
+        </record>
+        <record id="vehicle_assessments_data2" model="vehicle.parts.assessments">
+            <field name="name">ABS</field>
+        </record>
+        <record id="vehicle_assessments_data3" model="vehicle.parts.assessments">
+            <field name="name">Air Conditioning</field>
+        </record>
+        <record id="vehicle_assessments_data4" model="vehicle.parts.assessments">
+            <field name="name">GPS</field>
+        </record>
+        <record id="vehicle_assessments_data5" model="vehicle.parts.assessments">
+            <field name="name">Running Boards</field>
+        </record>
+        <record id="vehicle_assessments_data6" model="vehicle.parts.assessments">
+            <field name="name">AWD</field>
+        </record>
+        <record id="vehicle_assessments_data7" model="vehicle.parts.assessments">
+            <field name="name">Roof Rack</field>
+        </record>
+        <record id="vehicle_assessments_data8" model="vehicle.parts.assessments">
+            <field name="name">Stereo</field>
+        </record>
+        <record id="vehicle_assessments_data9" model="vehicle.parts.assessments">
+            <field name="name">Sport Wheels</field>
+        </record>
+
+    </data>
+</odoo>

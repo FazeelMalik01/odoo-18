@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="vehicle_appointment_tree" model="ir.ui.view">
+        <field name="name">vehicle.appointment.list</field>
+        <field name="model">vehicle.appointment</field>
+        <field name="arch" type="xml">
+            <list string="Booking Appointment" create="false">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="vehicle_appointment_form" model="ir.ui.view">
+        <field name="name">vehicle.appointment.form</field>
+        <field name="model">vehicle.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <label for="name" class="o_form_label">Appointment Day</label>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <notebook>
+                        <page string="Appointment Slots" name="appointment_slots">
+                            <field name="appointment_line_ids">
+                                <list editable="bottom">
+                                    <field name="time_slot"/>
+                                    <field name="time_starting" widget="float_time"/>
+                                    <field name="time_closing" widget="float_time"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vehicle_appointment" model="ir.actions.act_window">
+        <field name="name">Booking Appointment</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.appointment</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Schedule your vehicle appointments here!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_appointment"
+              name="Booking Appointments"
+              parent="menu_configurations"
+              action="action_vehicle_appointment"
+              sequence="9"/>
+</odoo>

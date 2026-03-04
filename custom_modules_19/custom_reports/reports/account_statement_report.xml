@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Report Action - Account Statement for draft and posted invoices -->
+        <record id="action_report_account_statement" model="ir.actions.report">
+            <field name="name">Account Statement</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">custom_reports.account_statement_report</field>
+            <field name="report_file">custom_reports.account_statement_report</field>
+            <field name="paperformat_id" ref="custom_reports.paperformat_tax_invoice"/>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="print_report_name">object.get_account_statement_filename()</field>
+            <!-- Show for draft and posted customer invoices -->
+            <field name="domain">[('move_type', '=', 'out_invoice'), ('state', 'in', ['draft', 'posted'])]</field>
+        </record>
+
+        <!-- Footer template: Instagram left, Page center, Signature right (called early so it stays in view) -->
+        <template id="account_statement_footer">
+            <div class="footer" style="font-family: Arial, sans-serif; font-size: 12px; padding-top: 20px;">
+                <table style="width: 100%; border: none; border-color: #fff;">
+                    <tr>
+                        <td style="width: 33%; text-align: left; vertical-align: middle; border: none;">
+                            <img src="/custom_reports/static/src/img/instagram.png" style="max-height: 28px; max-width: 120px;" alt="Instagram"/>
+                        </td>
+                        <td style="width: 34%; text-align: center; vertical-align: middle; border: none;">
+                            Page <span class="page"/> of <span class="topage"/>
+                        </td>
+                        <td style="width: 33%; text-align: right; vertical-align: middle; border: none;">
+                            Customer Signature __________________
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </template>
+
+        <!-- Report Template -->
+        <template id="custom_reports.account_statement_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <!-- Shared header from Tax Quotation -->
+                        <t t-call="custom_reports.tax_quotation_header"/>
+                        <t t-call="custom_reports.account_statement_footer"/>
+                        <div class="page" style="font-family: Arial, sans-serif; padding: 10px 30px 40px 30px;">
+                        <!-- Title: ACCOUNT STATEMENT -->
+                        <div style="margin: 20px 0; margin-top:20%;">
+                            <h1 style="font-size: 38px; font-weight: bold; color: #898f91;">ACCOUNT STATEMENT</h1>
+                        </div>
+
+                        <!-- Customer and Statement Details (layout per spec: left = label then value on new line; right = label left, value right-aligned) -->
+                        <div style="margin: 20px 0; overflow: hidden;">
+                            <div style="float: left; width: 50%;">
+                                <div style="margin-bottom: 2px;"><strong>CUSTOMER:</strong></div>
+                                <div style="margin-bottom: 12px;"><t t-esc="doc.get_sale_partner_name()"/></div>
+                                <div style="margin-bottom: 12px; color: #333;">
+                                    <t t-if="doc.partner_id.city"><t t-esc="doc.partner_id.city"/></t>
+                                    <t t-if="doc.partner_id.state_id"><t t-if="doc.partner_id.city">, </t><t t-esc="doc.partner_id.state_id.name"/></t>
+                                    <t t-if="doc.partner_id.country_id"><t t-if="doc.partner_id.city or doc.partner_id.state_id">, </t><t t-esc="doc.partner_id.country_id.name"/></t>
+                                </div>
+                                <div style="margin-bottom: 2px; visibility: hidden;"><strong>ATT:</strong></div>
+                                <div style="visibility: hidden;"><t t-esc="doc.get_sale_att()"/></div>
+                            </div>
+                            <div style="float: right; width: 38%; margin-right: 90px;">
+                                <table style="width: 100%; border: none; border-collapse: collapse; border-color: #fff !important;">
+                                    <tr>
+                                        <td style="padding: 0 6px 4px 0; vertical-align: baseline; text-align: left;"><strong>DATE:</strong></td>
+                                        <td style="padding: 0 0 2px 0; vertical-align: baseline; text-align: left; white-space: nowrap; font-weight:bold;"><t t-esc="doc.get_account_statement_print_date()"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0 6px 4px 0; vertical-align: baseline; text-align: left;"><strong>REFF Q#:</strong></td>
+                                        <td style="padding: 0 0 2px 0; vertical-align: baseline; text-align: left; white-space: nowrap;"><t t-esc="doc.invoice_origin or doc._get_linked_sale_order().name or ''"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0 6px 0 0; vertical-align: baseline; text-align: left;"><strong>HMD TRN:</strong></td>
+                                        <td style="padding: 0; vertical-align: baseline; text-align: left; white-space: nowrap;">100003844600003</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+
+                        <!-- Total Quoted Amount Section -->
+                        <div style="margin: 25px 0;">
+                            <table style="width: 100%; border-collapse: collapse; border-color:#fff;">
+                                <tr>
+                                    <th style="border: none; border-bottom: 1px solid #898f91; padding: 8px; text-align: left; background-color: #fff; color: #666; font-weight: bold;">DESCRIPTION</th>
+                                    <th style="border: none; border-bottom: 1px solid #898f91; padding: 8px; text-align: left; background-color: #fff; color: #666; font-weight: bold;">AMOUNT</th>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; border-bottom: 1px solid #898f91; padding: 10px;"><t t-esc="doc.get_account_statement_quoted_description()"/></td>
+                                    <td style="border: none; border-bottom: 1px solid #898f91; padding: 10px; text-align: left;">AED <t t-esc="'{:,.2f}'.format(doc.amount_total)"/></td>
+                                </tr>
+                                <tr style="background-color: #f5f5f5;">
+                                    <td style="border: none; padding: 10px;"><strong>TOTAL QUOTED AMOUNT:</strong></td>
+                                    <td style="border: none; padding: 10px; text-align: left;"><strong>AED <t t-esc="'{:,.2f}'.format(doc.amount_total)"/></strong></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- PAYMENTS RECEIVED - centered, grey, underlined, no box -->
+                        <div style="margin: 20px 0; text-align: center;">
+                            <span style="color: #666; text-decoration: underline; font-size: 18px; font-weight: bold;">PAYMENTS RECEIVED</span>
+                        </div>
+
+                        <!-- Payments Received Section -->
+                        <div style="margin: 25px 0;">
+                            <table style="width: 100%; border-collapse: collapse; border: 1px solid #b0bdc2;">
+                                <tbody>
+                                    <t t-set="payments_list" t-value="doc.get_account_statement_payments()"/>
+                                    <t t-foreach="payments_list" t-as="pay">
+                                        <tr>
+                                            <td style="border: none; border-bottom: 1px solid #b0bdc2; border-right: 1px solid #b0bdc2; padding: 5px; width: 66%; vertical-align: middle;">
+                                                <t t-esc="doc.get_account_statement_quoted_description()"/><br/>
+                                                <span style="font-size: 11px; color: #333;">Dated: <t t-esc="pay['date']"/> Payment Method: <t t-esc="pay['method']"/></span>
+                                            </td>
+                                            <td style="border: none; border-bottom: 1px solid #b0bdc2; padding: 5px; text-align: right; width: 33%; vertical-align: middle;">AED <t t-esc="'{:,.2f}'.format(pay['amount'])"/></td>
+                                        </tr>
+                                    </t>
+                                    <t t-if="not payments_list">
+                                        <tr>
+                                            <td style="border: none; border-bottom: 1px solid #b0bdc2; border-right: 1px solid #b0bdc2; padding: 5px; width: 66%; vertical-align: middle;">
+                                                <t t-esc="doc.get_account_statement_quoted_description()"/>
+                                                <t t-if="doc.get_account_statement_amount_received() > 0"><br/><span style="font-size: 11px;">Payment recorded</span></t>
+                                            </td>
+                                            <td style="border: none; border-bottom: 1px solid #b0bdc2; padding: 5px; text-align: right; width: 33%; vertical-align: middle;">AED <t t-esc="'{:,.2f}'.format(doc.get_account_statement_amount_received())"/></td>
+                                        </tr>
+                                    </t>
+                                    <tr style="background-color: #f5f5f5;">
+                                        <td style="border: none; border-bottom: 2px solid #b0bdc2; padding: 10px;"><strong>TOTAL RECEIVED AMOUNT:</strong></td>
+                                        <td style="border: none; border-bottom: 2px solid #b0bdc2; padding: 10px; text-align: left;"><strong>AED <t t-esc="'{:,.2f}'.format(doc.get_account_statement_amount_received())"/></strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Summary: Accounts Receivable, Amount Received, Remaining Balance -->
+                        <div style="margin: 25px 0; overflow: hidden;">
+                             <!-- Left side for stamp -->
+                            <div style="float: left; width: 45%; text-align: left;">
+                                <div style="padding: 5px 0;">
+                                    <img src="/custom_reports/static/src/img/stamp.png" alt="Stamp" style="max-width: 200px; max-height: 200px;" />
+                                </div>
+                            </div>
+                            <div style="float: right; width: 45%; margin-right: 80px;">
+                                <table style="width: 100%; border: none; border-collapse: collapse; border-color: #fff;">
+                                    <tr>
+                                        <td style="padding: 5px 0; text-align: left;">ACCOUNTS RECEIVABLE:</td>
+                                        <td style="padding: 5px 0; text-align: right; white-space: nowrap;">AED <t t-esc="'{:,.2f}'.format(doc.amount_total)"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px 0; text-align: left;">AMOUNT RECEIVED:</td>
+                                        <td style="padding: 5px 0; text-align: right; white-space: nowrap;">AED <t t-esc="'{:,.2f}'.format(doc.get_account_statement_amount_received())"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 10px 0; text-align: left; font-weight: bold;"><strong>REMAINING BALANCE:</strong></td>
+                                        <td style="padding: 10px 0; text-align: left; white-space: nowrap; font-weight: bold;"><strong>AED <t t-esc="'{:,.2f}'.format(doc.get_account_statement_remaining_balance())"/></strong></td>
+                                    </tr>
+                                </table>
+                                <div style="border: 1px dashed #000; padding: 10px; margin-top: 15px; text-align: center; font-weight:bold;">
+                                    <t t-if="doc.get_account_statement_remaining_balance() == 0">
+                                        NIL/-
+                                    </t>
+                                    <t t-else="">
+                                        <t t-esc="doc._get_amount_in_words_invoice(doc.get_account_statement_remaining_balance())"/>
+                                    </t>
+                                </div>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+
+                        <!-- Bank Account Information -->
+                        <div style="margin: 25px 0;">
+                            <strong style="font-size: 14px;">BANK ACCOUNT INFORMATION:</strong>
+
+                            <div style="display: flex; margin-top: 8px; font-size: 12px;">
+                                <!-- Bank details -->
+                                <div style="flex: 1;">
+                                    <div><strong>Account Name:</strong> HONEST MASTERS DECOR L.L.C</div>
+                                    <div><strong>Account Number:</strong> 019100023308</div>
+                                    <div><strong>IBAN Number:</strong> AE960330000019100023308</div>
+                                    <div><strong>Bank Name:</strong> Mashreq Bank Rigga Branch Dubai UAE</div>
+                                    <div><strong>Swift Code:</strong> BOMLAEAD</div>
+                                </div>
+
+                                <!-- Cheque text -->
+                                <div style="margin-left: 55%; margin-top: -60px; margin-bottom: 30px; white-space: nowrap; color: #666;">
+                                    Make all Cheques Payable to<br/>
+                                    <strong>"HONEST MASTERS DECOR L.L.C"</strong>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

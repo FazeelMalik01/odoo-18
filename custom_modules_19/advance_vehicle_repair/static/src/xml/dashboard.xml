@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="advance_vehicle_repair.dashboard">
+        <div class="o_dashboards">
+            <div class="container-fluid o_lm_dashboard">
+                <t t-call="advance_vehicle_repair.dashboard_header"/>
+                <t t-call="advance_vehicle_repair.dashboard_content"/>
+            </div>
+        </div>        
+    </t>
+
+    <t t-name="advance_vehicle_repair.dashboard_header">
+        <div class="row o_dashboard_common">            
+            <div class="col-12 o_box">
+                <div class="o_inner_box o_dashboard_action" data-action="total_bookings"
+                     title="Confirm orders when you get paid." t-on-click="onDashboardAction">
+                    <div class="o_highlight">
+                        <t t-esc="this.state.total_bookings"/>
+                    </div>
+                    Total Bookings
+                </div>
+                <div class="o_inner_box o_dashboard_action" data-action="total_customers"
+                     title="Generate an invoice from orders ready for invoicing." t-on-click="onDashboardAction">
+                    <div class="o_highlight">
+                        <t t-esc="this.state.total_customers"/>
+                    </div>
+                    Total Customers
+                </div>
+                <div class="o_inner_box o_dashboard_action" data-action="total_teams"
+                     title="Capture order payments when the delivery is completed." t-on-click="onDashboardAction">
+                    <div class="o_highlight">
+                        <t t-esc="this.state.total_teams"/>
+                    </div>
+                    Total Teams
+                </div>
+
+                <div class="o_inner_box o_dashboard_action" data-action="total_job_cards"
+                     title="Send a recovery email to visitors who haven't completed their order."
+                     t-on-click="onDashboardAction">
+                    <div class="o_highlight">
+                        <t t-esc="this.state.total_job_cards"/>
+                    </div>
+                    Total Repairs and Inspections
+                </div>
+
+                <div class="o_inner_box o_dashboard_action" data-action="total_inspection_jobcards"
+                     title="Send a recovery email to visitors who haven't completed their order."
+                     t-on-click="onDashboardAction">
+                    <div class="o_highlight">
+                        <t t-esc="this.state.total_inspection_jobcards"/>
+                    </div>
+                    Inspection Job Cards
+                </div>
+                <div class="o_inner_box o_dashboard_action" data-action="total_repair_jobcards"
+                     title="Send a recovery email to visitors who haven't completed their order."
+                     t-on-click="onDashboardAction">
+                    <div class="o_highlight">
+                        <t t-esc="this.state.total_repair_jobcards"/>
+                    </div>
+                    Repair Job Cards
+                </div>
+
+                <div class="o_inner_box o_dashboard_action" data-action="total_todays_bookings"
+                     title="Send a recovery email to visitors who haven't completed their order."
+                     t-on-click="onDashboardAction">
+                    <div class="o_highlight">
+                        <t t-esc="this.state.total_todays_bookings"/>
+                    </div>
+                    Today's Bookings
+                </div>               
+            </div>
+        </div>
+        <div class="row o_dashboard_common mt-2">
+            <div class="col-12 o_box d-flex justify-content-end align-items-center" style="box-shadow: none; background: none;">
+                <div class="position-relative o_dashboard_customer_search_wrapper" style="max-width: 320px; background: #fff;" t-ref="customerSearchContainer">
+                    <div class="input-group o_dashboard_customer_search">
+                        <input type="text" style="color: #000 !important;"
+                               class="form-control"
+                               placeholder="Search customer by name or phone..."
+                               t-att-value="state.customer_search"
+                               t-on-input="onCustomerSearchInput"
+                               t-on-keydown="onCustomerSearchKeydown"
+                               t-on-focus="() => this.state.customer_dropdown_visible = this.state.customer_search_results.length &gt; 0"/>
+                        <button class="btn btn-primary"
+                                type="button"
+                                title="Search customers"
+                                t-on-click="onCustomerSearch">
+                            <i class="fa fa-search"/>
+                        </button>
+                    </div>
+                    <t t-if="state.customer_dropdown_visible &amp;&amp; state.customer_search_results.length">
+                        <div class="dropdown-menu o_dashboard_customer_dropdown show"
+                             style="position: absolute; top: 100%; left: 0; margin: 2px 0 0 0; max-height: 280px; overflow-y: auto;">
+                            <t t-foreach="state.customer_search_results" t-as="customer" t-key="customer.id">
+                                <div class="dropdown-item d-flex justify-content-between align-items-center text-nowrap py-2 o_dashboard_customer_row">
+                                    <a href="#" class="flex-grow-1 text-decoration-none text-body text-truncate me-1"
+                                       t-on-click.prevent="() => this.onSelectCustomer(customer)">
+                                        <span class="d-block text-truncate" t-esc="customer.name"/>
+                                        <small class="text-muted" t-esc="customer.phone"/>
+                                    </a>
+                                    <div class="flex-shrink-0">
+                                        <button type="button" class="btn btn-link btn-sm p-0 text-muted"
+                                                title="Actions"
+                                                t-on-click.stop="(ev) => this.toggleCustomerMenu(customer, ev)">
+                                            <i class="fa fa-ellipsis-v"/>
+                                        </button>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-if="state.customer_menu_open_customer">
+                        <div class="o_dashboard_customer_actions_fixed shadow-sm border rounded py-1"
+                             t-att-style="this.getCustomerMenuStyle()">
+                            <a href="#" class="dropdown-item py-2"
+                               t-on-click.prevent="() => this.onOpenBooking(state.customer_menu_open_customer)">
+                                <i class="fa fa-calendar-check-o me-2"/> Booking
+                            </a>
+                            <a href="#" class="dropdown-item py-2"
+                               t-on-click.prevent="() => this.onOpenJobCard(state.customer_menu_open_customer)">
+                                <i class="fa fa-wpforms me-2"/> Job Card
+                            </a>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="advance_vehicle_repair.dashboard_content">
+        <div class="o_activity_dashboard_content">
+            <div class="row o_dashboard_sales">
+                <div class="col-12 row o_box">
+                    <h2 class="col-lg-7 col-12">
+                       Vehicle Model Analysis
+                    </h2>
+                    <h4 class='col-lg-5 col-12'>AT A GLANCE</h4>
+                    <div class="col-lg-7 col-12">
+                        <div class="o_graph_licensing_bar_chart" data-type="licensing_bar_chart" t-ref="barChart"   style="width:80%;  height:100%; "/>
+                    </div>
+                    <div class="col-lg-5 col-12 d-flex justify-content-center align-items-center"
+                         style="min-width: 300px; max-width:500px; height:800px;">
+                        <div class="o_graph_licensing_pie_chart"
+                             data-type="licensing_pie_chart"
+                             t-ref="pieChart"
+                            style="width:90%;  height:100%; "/>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

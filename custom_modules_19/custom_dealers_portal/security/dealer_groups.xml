@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_dealer" model="res.groups">
+        <field name="name">Dealer</field>
+        <field name="comment">Users with dealer access can manage their customers and purchase orders through the portal</field>
+    </record>
+</odoo>

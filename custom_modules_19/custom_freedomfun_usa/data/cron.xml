@@ -1,0 +1,39 @@
+<odoo>
+    <record id="ir_cron_update_lead_delay_status" model="ir.cron">
+        <field name="name">Update Lead Delay Status</field>
+        <field name="model_id" ref="crm.model_crm_lead"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_update_lead_delay_status()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">minutes</field>
+        <field name="active">True</field>
+    </record>
+    <record id="ir_cron_webflow_sync_products" model="ir.cron">
+        <field name="name">Sync Webflow Products</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="state">code</field>
+        <field name="code">model.sync_webflow_products()</field>
+        <field name="interval_number">30</field>
+        <field name="interval_type">minutes</field>
+        <field name="active">True</field>
+    </record>
+    <record id="ir_cron_webflow_sync_products_addons" model="ir.cron">
+        <field name="name">Sync Webflow Products Addons</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="state">code</field>
+        <field name="code">model.sync_webflow_products_addons()</field>
+        <field name="interval_number">30</field>
+        <field name="interval_type">minutes</field>
+        <field name="active">True</field>
+    </record>
+    <record id="ir_cron_webflow_sync_product_quantity" model="ir.cron">
+        <field name="name">Sync Webflow Forecasted Stock</field>
+        <field name="model_id" ref="product.model_product_template"/>
+        <field name="state">code</field>
+        <field name="code">model.sync_webflow_forecasted_stock()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="active">True</field>
+    </record>
+</odoo>
+

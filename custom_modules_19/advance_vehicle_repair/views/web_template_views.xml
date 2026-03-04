@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="vehicle_booking_request_form" name="Vehicle Booking">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001"
+                         data-snippet="s_title" data-scroll-background-ratio="1">
+                    <span class="s_parallax_bg oe_img_bg"
+                          style="background-image: url('/web/image/website.s_banner_default_image'); background-position: 50% 0;"/>
+                    <div class="o_we_bg_filter bg-black-50"/>
+                    <div class="container">
+                        <h1>Repair Request</h1>
+                    </div>
+                </section>
+                <section class="s_text_block pt40 pb40 o_colored_level " data-snippet="s_text_block">
+                    <div class="container s_allow_columns">
+                        <div class="row">
+                            <div class="col-lg-8 mt-4 mt-lg-0">
+                                <p>
+                                    Contact us about anything related to vehicle requests or our services.
+                                    <br/>
+                                    We'll do our best to get back to you as soon as possible.
+                                </p>
+                                <section class="s_vehicle_booking_request_form">
+                                    <div class="container">
+                                        <form action="/advance_vehicle_repair/bookingrequest/form/" method="post"
+                                              class="">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <div class="s_website_form_rows row s_col_no_bgcolor">
+
+                                                <div class="row mt16">
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="customer_name">Customer Name</label>
+                                                            <input type="text" class="form-control name"
+                                                                   name="customer_name" id="customer_name"
+                                                                   placeholder="" autocomplete="off" required="True"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="customer_mobile">Customer Mobile</label>
+                                                            <input type="text" class="form-control name"
+                                                                   name="customer_mobile" id="customer_mobile"
+                                                                   placeholder="" autocomplete="off" required="True"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="customer_email">Customer Email</label>
+                                                            <input type="text" class="form-control name"
+                                                                   name="customer_email" id="customer_email"
+                                                                   placeholder="" autocomplete="off" required="True"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="vehicle_brand_id">Select Brand</label>
+                                                            <select name="vehicle_brand_id"
+                                                                    class="form-control vehicle_brand_id"
+                                                                    required="True">
+                                                                <option value="">Brand</option>
+                                                                <t t-foreach="brands or []" t-as="brand">
+                                                                    <option t-att-value="brand['id']">
+                                                                        <t t-esc="brand['name']"/>
+                                                                    </option>
+                                                                </t>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="vehicle_model_id">Select Model</label>
+                                                            <select name="vehicle_model_id"
+                                                                    class="form-control vehicle_model_id"
+                                                                    required="True">
+                                                                <option value="">Model</option>
+                                                                <t t-foreach="models or []" t-as="model">
+                                                                    <option t-att-value="model['id']">
+                                                                        <t t-esc="model['name']"/>
+                                                                    </option>
+                                                                </t>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="vehicle_fuel_type_id">Select Fuel Type</label>
+                                                            <select name="vehicle_fuel_type_id"
+                                                                    class="form-control vehicle_fuel_type_id"
+                                                                    required="True">
+                                                                <option value="">Fuel Type</option>
+                                                                <t t-foreach="fuel_types or []" t-as="fuel_type">
+                                                                    <option t-att-value="fuel_type['id']">
+                                                                        <t t-esc="fuel_type['name']"/>
+                                                                    </option>
+                                                                </t>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="vehicle_transmission_type">Select Transmission
+                                                                Type
+                                                            </label>
+                                                            <select name="vehicle_transmission_type"
+                                                                    class="form-control vehicle_transmission_type"
+                                                                    required="True">
+                                                                <option value="manual" selected="selected">Manual
+                                                                </option>
+                                                                <option value="automatic">Automatic</option>
+                                                                <option value="cvt">CVT</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="vehicle_registration_no">Registration No</label>
+                                                            <input type="text" class="form-control name"
+                                                                   name="vehicle_registration_no"
+                                                                   id="vehicle_registration_no" placeholder=""
+                                                                   autocomplete="off" required="True"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="vehicle_vin_no">VIN No</label>
+                                                            <input type="text" class="form-control name"
+                                                                   name="vehicle_vin_no" id="vehicle_vin_no"
+                                                                   placeholder="" autocomplete="off" required="True"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="booking_date">VIN No</label>
+                                                            <input type="date" name="booking_date"
+                                                                   class="form-control booking_date"
+                                                                   data-date-format="YYYY-MM-DD"
+                                                                   placeholder="YYYY-MM-DD" required="True"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4 mt16">
+                                                        <div class="form-group">
+                                                            <label for="vehicle_responsible_id">Select Agent
+                                                                (Responsible)
+                                                            </label>
+                                                            <select name="vehicle_responsible_id"
+                                                                    class="form-control vehicle_responsible_id"
+                                                                    required="True">
+                                                                <option value="">Responsible</option>
+                                                                <t t-foreach="users or []" t-as="user">
+                                                                    <option t-att-value="user['id']">
+                                                                        <t t-esc="user['name']"/>
+                                                                    </option>
+                                                                </t>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-0 py-2 col-12 s_website_form_submit"
+                                                     data-name="Submit Button">
+                                                    <button t-attf-class="btn btn-primary create_new_timeoff_confirm">
+                                                        Confirm
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="col-lg-4 mt-4 mt-lg-0">
+                                <ul class="list-unstyled mb-0 ps-2 d-none">
+                                    <li>My Company</li>
+                                    <li>
+                                        <i class="fa fa-map-marker fa-fw me-2"/>
+                                        <span class="o_force_ltr">3575 Fake Buena Vista Avenue</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-phone fa-fw me-2"/>
+                                        <span class="o_force_ltr">+1 (650) 555-0111</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-1x fa-fw fa-envelope me-2"/>
+                                        <span>info@yourcompany.example.com</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+
+    <template id="vehicle_booking_request_form_thanks" name="Vehicle Booking">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="s_text_block pt40 pb40 o_colored_level " data-snippet="s_text_block">
+                    <div class="container s_allow_columns">
+                        <div class="row">
+                            <div class="col-lg-7 col-xl-6 me-lg-auto">
+                                <span class="d-block fa fa-4x fa-thumbs-up mx-auto rounded-circle bg-primary"/>
+                                <br/>
+                                <h1 class="text-center">Thank You!</h1>
+                                <div class="pb16 pt16 s_hr" data-snippet="s_hr" data-name="Separator">
+                                    <hr class="mx-auto border-top w-50 border-dark text-center"/>
+                                </div>
+                                <h5 class="text-center">
+                                    <span class="fa fa-check-circle"/>
+                                    <span>Your request has been sent
+                                        <b>successfully</b>
+                                    </span>
+                                </h5>
+                                <p class="text-center">We will get back to you shortly.</p>
+                            </div>
+                            <div class="col-lg-4">
+                                <ul class="list-unstyled mb-0 ps-2 d-none">
+                                    <li>My Company</li>
+                                    <li>
+                                        <i class="fa fa-map-marker fa-fw me-2"/>
+                                        <span class="o_force_ltr">3575 Fake Buena Vista Avenue</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-phone fa-fw me-2"/>
+                                        <span class="o_force_ltr">+1 555-555-5556</span>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-1x fa-fw fa-envelope me-2"/>
+                                        <span>info@yourcompany.example.com</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>

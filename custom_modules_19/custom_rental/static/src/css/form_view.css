@@ -1,0 +1,25 @@
+/* Partner details: Customer & Billing and Event Information side by side, above Expiration column */
+.custom_rental_partner_details_flex {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+}
+/* Force the two child blocks (Customer and Event) to sit side by side - override Bootstrap col-lg-12 */
+.custom_rental_partner_details_flex > [class*="col-lg-"],
+.custom_rental_partner_details_flex > .o_inner_group {
+    flex: 1 1 400px !important;
+    max-width: none !important;
+    min-width: 400px;
+}
+
+/* Wider customer block (Customer, Company, Address, City, State, Zip) on rental order form */
+.custom_rental_customer_block {
+    min-width: 490px;
+}
+
+/* Wider Event information block on rental order form */
+.custom_rental_event_block {
+    min-width: 490px;
+}

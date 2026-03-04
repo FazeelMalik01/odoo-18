@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Menu Item next to Quality Control in Quality app -->
+        <menuitem id="menu_custom_worksheet"
+                  name="Custom Worksheets"
+                  parent="quality_control.menu_quality_root"
+                  action="action_custom_worksheet"
+                  sequence="16"/>
+    </data>
+</odoo>

@@ -1,0 +1,314 @@
+<odoo>
+    <!--WORK ORDER FORM-->
+
+    <template id="portal_technician_work_order_form" name="Technician Portal - Work Order Form">
+        <t t-call="portal.portal_layout">
+            <t t-set="title" t-value="'Work Order - ' + task.name"/>
+
+            <div class="container mt-3">
+
+                <!-- Header -->
+                <div class="row mb-4">
+                    <div class="col">
+                        <a href="/my/gate_lock_assigned" class="btn btn-outline-secondary btn-sm mb-3">
+                            <i class="fa fa-arrow-left me-2"></i> Back to List
+                        </a>
+                        <h2 class="mb-1">Work Order: <span t-field="task.name"/></h2>
+                        <p class="text-muted mb-0">Customer: <span t-field="task.service_request_id.customer_id.name"/></p>
+                    </div>
+                </div>
+
+                <!-- MAIN FORM -->
+                <form id="work-order-form" t-attf-action="/my/gate_lock_assigned/#{task.id}/update" method="post" enctype="multipart/form-data">
+                    <div class="row">
+
+                        <!-- LEFT COLUMN -->
+                        <div class="col-lg-8">
+
+                            <!-- Service Information -->
+                            <div class="card mb-4">
+                                <div class="card-header"><h5 class="card-title mb-0">Service Information</h5></div>
+
+                                <div class="card-body">
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Customer</label>
+                                                <p class="mb-0" t-field="task.service_request_id.customer_id.name"/>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Service Address</label>
+                                                <p class="mb-0 text-muted" t-field="task.service_request_id.service_address"/>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Requested Appointment</label>
+                                                <p class="mb-0" t-field="task.service_request_id.requested_appointment"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Contact Method</label>
+                                                <p class="mb-0" t-field="task.service_request_id.preferred_contact_method"/>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Primary Phone</label>
+                                                <p class="mb-0" t-field="task.service_request_id.primary_phone"/>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Email</label>
+                                                <p class="mb-0" t-field="task.service_request_id.email"/>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Important Notes for Technician</label>
+                                        <p class="mb-0 text-muted" t-field="task.service_request_id.technician_notes"/>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Gate Code / Access Details</label>
+                                                <p class="mb-0 text-muted" t-field="task.service_request_id.gate_code"/>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Pets on Site</label>
+                                            <p class="mb-0">
+                                                <span t-if="task.service_request_id.pets_on_site" class="badge bg-warning">Yes</span>
+                                                <span t-else="" class="badge bg-success">No</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Work Execution -->
+                            <div class="card mb-4">
+                                <div class="card-header"><h5 class="card-title mb-0">Work Execution</h5></div>
+
+                                <div class="card-body">
+
+                                    <!-- Task Status -->
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label fw-bold">Task Status</label>
+                                            <select name="state" class="form-select">
+                                                <option value="01_in_progress" t-att-selected="task.state=='01_in_progress'">In Progress</option>
+                                                <option value="1_done" t-att-selected="task.state=='1_done'">Done</option>
+                                                <option value="1_canceled" t-att-selected="task.state=='1_canceled'">Cancelled</option>
+                                                <option value="04_waiting_normal" t-att-selected="task.state=='04_waiting_normal'">Waiting</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Timer Controls -->
+                                    <div class="card mb-4">
+                                        <div class="card-header bg-light">
+                                            <h6 class="card-title mb-0">Time Tracking</h6>
+                                        </div>
+
+                                        <div class="card-body timer-container"
+                                             t-att-data-task-id="task.id"
+                                             t-att-data-timer-hours="task.timer_hours or 0"
+                                             t-att-data-elapsed-seconds="task.elapsed_seconds or 0"
+                                             t-att-data-timer-start="task.timer_start if task.timer_start else ''"
+                                             t-att-data-timer-running="'true' if (task.timer_running and task.timer_start) else 'false'">
+                                            
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                            <!-- Display -->
+                                            <div class="row mb-3">
+                                                <div class="col-12">
+                                                    <label class="form-label fw-bold">Current Timer</label>
+                                                    <h3 class="mb-0 text-primary">
+                                                        <span id="current-timer-display">00:00:00</span>
+                                                    </h3>
+
+                                                    <small class="text-muted" id="timer-status">
+                                                        <t t-if="task.timer_running">
+                                                            <span class="text-success">●</span> Timer Running
+                                                        </t>
+                                                        <t t-else="">
+                                                            <span class="text-secondary">●</span> Timer Stopped
+                                                        </t>
+                                                    </small>
+                                                </div>
+                                            </div>
+
+                                            <!-- BUTTONS: WITH JAVASCRIPT -->
+                                            <div class="row">
+
+                                                <!-- START -->
+                                                <div class="col-4">
+                                                    <button type="button" id="timer-start-btn" class="btn btn-success w-100"
+                                                            t-att-disabled="task.timer_running">
+                                                        <i class="fa fa-play me-1"></i> Start
+                                                    </button>
+                                                </div>
+
+                                                <!-- STOP -->
+                                                <div class="col-4">
+                                                    <button type="button" id="timer-stop-btn" class="btn btn-warning w-100"
+                                                            t-att-disabled="not task.timer_running">
+                                                        <i class="fa fa-pause me-1"></i> Stop
+                                                    </button>
+                                                </div>
+
+                                                <!-- RESET -->
+                                                <div class="col-4">
+                                                    <button type="button" id="timer-reset-btn" class="btn btn-danger w-100">
+                                                        <i class="fa fa-refresh me-1"></i> Reset
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <!-- Backend Allocated Hours (Manually Set) -->
+                                            <div class="row mt-3">
+                                                <div class="col-12">
+                                                    <label class="form-label fw-bold">Allocated Hours (Backend)</label>
+                                                    <input type="text" class="form-control bg-light" readonly="1"
+                                                           t-att-value="'%02d:%02d:%02d' % (int((task.allocated_hours or 0)), int(((task.allocated_hours or 0) * 60) % 60), int(((task.allocated_hours or 0) * 3600) % 60))"/>
+                                                    <small class="text-muted">Manually set allocated hours (not affected by timer)</small>
+                                                </div>
+                                            </div>
+
+                                            <!-- Timer Hours (From Timer) -->
+                                            <div class="row mt-3">
+                                                <div class="col-12">
+                                                    <label class="form-label fw-bold">Timer Hours</label>
+                                                    <input type="text" id="total-timer-hours" class="form-control bg-light" readonly="1"
+                                                           value="00:00:00"/>
+                                                    <small class="text-muted">Time tracked by timer</small>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Work Images -->
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Work Images</label>
+                                        <input type="file" name="work_images" class="form-control" accept="image/*" multiple="multiple"/>
+                                        <small class="text-muted">You can select multiple images (JPG, PNG, etc.)</small>
+                                        
+                                        <!-- Display existing images -->
+                                        <div class="mt-3" t-if="task.work_images">
+                                            <div class="row">
+                                                <t t-foreach="task.work_images" t-as="image">
+                                                    <div class="col-md-3 mb-2">
+                                                        <div class="card">
+                                                            <img t-attf-src="/web/image/ir.attachment/{{image.id}}/datas" 
+                                                                 class="card-img-top" 
+                                                                 style="height: 150px; object-fit: cover; cursor: pointer;"
+                                                                 t-attf-onclick="window.open('/web/image/ir.attachment/{{image.id}}/datas', '_blank')"
+                                                                 t-attf-alt="{{image.name}}"/>
+                                                            <div class="card-body p-2">
+                                                                <small class="text-muted d-block" t-esc="image.name" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Material Used -->
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Material Used</label>
+                                        <textarea name="material_used" class="form-control" rows="3"><t t-esc="task.material_used or ''"/></textarea>
+                                    </div>
+
+                                    <!-- Work Notes -->
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">Work Notes</label>
+                                        <textarea name="work_notes" class="form-control" rows="3"><t t-esc="task.work_notes or ''"/></textarea>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- RIGHT COLUMN -->
+                        <div class="col-lg-4">
+
+                            <!-- Gating Status -->
+                            <div class="card mb-4">
+                                <div class="card-header"><h5 class="card-title mb-0">Status &amp; Tracking</h5></div>
+
+                                <div class="card-body">
+                                    <label class="form-label fw-bold">Gating Status</label>
+                                    <div class="form-control-plaintext">
+                                        <span t-attf-class="badge
+                                            #{task.gating_status=='pending' and 'bg-secondary' or ''}
+                                            #{task.gating_status=='blocked' and 'bg-danger' or ''}
+                                            #{task.gating_status=='ready' and 'bg-info' or ''}
+                                            #{task.gating_status=='completed' and 'bg-success' or ''}">
+                                            <t t-raw="task.gating_status.title()"/>
+                                        </span>
+                                    </div>
+                                    <small class="form-text text-muted">Gating status is managed by administration</small>
+                                </div>
+                            </div>
+
+                            <!-- SMS Messages -->
+                            <div class="card mb-4">
+                                <div class="card-header"><h5 class="card-title mb-0">Customer Communication</h5></div>
+
+                                <div class="card-body">
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">SMS Thread</label>
+                                        <div class="border rounded p-2 bg-light" style="min-height: 100px; max-height: 200px; overflow-y:auto;">
+                                            <t t-if="task.sms_thread">
+                                                <pre t-field="task.sms_thread" class="mb-0"/>
+                                            </t>
+                                            <t t-else="">
+                                                <p class="text-muted text-center mb-0 mt-3">No SMS messages yet</p>
+                                            </t>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="sms_message" class="form-label fw-bold">New SMS Message</label>
+                                        <textarea name="sms_message" class="form-control" rows="3"
+                                            placeholder="Type your message to customer..."/>
+                                        <small class="form-text text-muted">This will be sent to the customer's primary phone</small>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <button type="submit" class="btn btn-primary w-100 mb-2">
+                                        <i class="fa fa-save me-2"></i> Save Changes
+                                    </button>
+
+                                    <a href="/my/gate_lock_assigned" class="btn btn-outline-secondary w-100">
+                                        <i class="fa fa-times me-2"></i> Cancel
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+        </t>
+    </template>
+</odoo>

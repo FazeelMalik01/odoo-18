@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="custom_pos.ControlButtons" t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <!-- Add Discount Amount button after the second OrderlineNoteButton in the modal -->
+        <xpath expr="//t[@t-if='props.showRemainingButtons']/div[hasclass('control-buttons-modal')]/OrderlineNoteButton[2]" position="after">
+            <button t-att-class="buttonClass" t-on-click="() => this.clickDiscountAmount()">
+                <i class="fa fa-tag me-1" />
+                Discount Amount
+            </button>
+        </xpath>
+        
+        <!-- Add Discount % button if module_pos_discount is enabled -->
+        <xpath expr="//t[@t-if='props.showRemainingButtons']/div[hasclass('control-buttons-modal')]/button[hasclass('o_pricelist_button')]" position="before">
+            <button t-if="pos.config.module_pos_discount and pos.config.discount_product_id"
+                    t-att-class="buttonClass"
+                    t-on-click="() => this.clickDiscount()">
+                <i class="fa fa-tag me-1"/>Discount %
+            </button>
+        </xpath>
+    </t>
+</templates>

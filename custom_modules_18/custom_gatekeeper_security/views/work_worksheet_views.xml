@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Work Order Worksheet List View -->
+    <record id="view_work_worksheet_tree" model="ir.ui.view">
+        <field name="name">work.order.worksheet.list</field>
+        <field name="model">work.order.worksheet</field>
+        <field name="arch" type="xml">
+            <list string="Work Worksheets" decoration-info="state=='01_in_progress'" decoration-success="state=='1_done'">
+                <field name="name"/>
+                <field name="task_id"/>
+                <field name="customer_id"/>
+                <field name="technician_id"/>
+                <field name="state"/>
+                <field name="completion_date"/>
+                <field name="timer_hours"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Work Order Worksheet Form View -->
+    <record id="view_work_worksheet_form" model="ir.ui.view">
+        <field name="name">work.order.worksheet.form</field>
+        <field name="model">work.order.worksheet</field>
+        <field name="arch" type="xml">
+            <form string="Work Order Worksheet">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="True"/>
+                            <field name="task_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                            <field name="service_request_id" readonly="True"/>
+                            <field name="customer_id" readonly="True"/>
+                        </group>
+                        <group>
+                            <field name="technician_id" readonly="True"/>
+                            <field name="completion_date" readonly="True"/>
+                            <field name="state"/>
+                            <field name="gating_status" readonly="True"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Work Details" name="work_details">
+                            <group>
+                                <group string="Time Tracking">
+                                    <field name="timer_hours" readonly="True"/>
+                                    <field name="allocated_hours" readonly="True"/>
+                                </group>
+                                <group string="Service Information">
+                                    <field name="service_address" readonly="True" nolabel="True"/>
+                                </group>
+                            </group>
+
+                            <group string="Work Images">
+                                <field name="work_images_html" nolabel="True" readonly="True"/>
+                            </group>
+
+                            <group string="Material Used">
+                                <field name="material_used" nolabel="True"/>
+                            </group>
+
+                            <group string="Work Notes">
+                                <field name="work_notes" nolabel="True"/>
+                            </group>
+
+                            <group string="SMS Message">
+                                <field name="sms_message" nolabel="True" readonly="True"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Work Order Worksheet Search View -->
+    <record id="view_work_worksheet_search" model="ir.ui.view">
+        <field name="name">work.order.worksheet.search</field>
+        <field name="model">work.order.worksheet</field>
+        <field name="arch" type="xml">
+            <search string="Work Worksheets">
+                <field name="name"/>
+                <field name="task_id"/>
+                <field name="customer_id"/>
+                <field name="technician_id"/>
+                <field name="state"/>
+                <filter string="In Progress" name="in_progress" domain="[('state', '=', '01_in_progress')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', '1_done')]"/>
+                <filter string="Cancelled" name="canceled" domain="[('state', '=', '1_canceled')]"/>
+                <filter string="Waiting" name="waiting" domain="[('state', '=', '04_waiting_normal')]"/>
+                <separator/>
+                <filter string="My Worksheets" name="my_worksheets" domain="[('technician_id', '=', uid)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Technician" name="group_technician" context="{'group_by': 'technician_id'}"/>
+                    <filter string="Customer" name="group_customer" context="{'group_by': 'customer_id'}"/>
+                    <filter string="Completion Date" name="group_date" context="{'group_by': 'completion_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Work Order Worksheet Action (for task view) -->
+    <record id="action_work_worksheet" model="ir.actions.act_window">
+        <field name="name">Work Worksheets</field>
+        <field name="res_model">work.order.worksheet</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('task_id', '=', active_id)]</field>
+        <field name="context">{'default_task_id': active_id, 'search_default_task_id': active_id}</field>
+        <field name="search_view_id" ref="view_work_worksheet_search"/>
+    </record>
+
+</odoo>
+

@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_repair">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <center>
+                        <h3 style="background-color: #f0f0f0; padding: 10px;">
+                            <b>Repair Job Card Report</b>
+                        </h3>
+                    </center>
+
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Job Card No:</strong>
+                                <span t-field="o.sequence_id"/>
+                                <br/><br/>
+
+                                <strong>
+                                    <b>Vehicle Details</b>
+                                </strong>
+                                <br/>
+                                <strong>Name:</strong>
+                                <span t-field="o.brand_id"/>
+                                <br/>
+                                <strong>Fuel Type:</strong>
+                                <span t-field="o.fuel_type_id"/>
+                                <br/>
+                                <strong>Registration No:</strong>
+                                <span t-field="o.registration_no"/>
+                                <br/><br/>
+
+                                <strong>
+                                    <b>Customer Details</b>
+                                </strong>
+                                <br/>
+                                <strong>Customer:</strong>
+                                <span t-field="o.customer_id"/>
+                                <br/>
+                                <strong>Phone:</strong>
+                                <span t-field="o.phone"/>
+                                <br/>
+                                <strong>Email:</strong>
+                                <span t-field="o.email"/>
+                                <br/><br/>
+                            </div>
+
+                            <div class="col-6">
+                                <br/><br/><br/><br/>
+                                <strong>Model:</strong>
+                                <span t-field="o.model_id"/>
+                                <br/>
+                                <strong>Transmission Type:</strong>
+                                <span t-field="o.transmission_type"/>
+                                <br/>
+                                <strong>VIN No:</strong>
+                                <span t-field="o.vin_no"/>
+                                <br/><br/><br/>
+
+                                <strong>Address:</strong>
+                                <span t-field="o.street"/>
+                                <br/>
+                                <span t-field="o.city"/>
+                                <t t-if="o.city and o.state_id">,</t>
+                                <span t-field="o.state_id"/>
+                                <br/><br/><br/><br/><br/><br/>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <t t-if="o.observations">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Customer Observations</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <span t-field="o.observations"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row mt16">
+                            <div class="col-12">
+                                <t t-if="o.service_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Vehicle Services</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>Service</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Team</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Work Assigners</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Start Date</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>End Date</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Service Cost</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.service_ids" t-as="services">
+                                                <t t-if="services.state == 'done'">
+                                                    <td>
+                                                        <span t-field="services.service_id"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="services.service_team"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="services.assigners"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="services.start_date"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="services.end_date"/>
+                                                    </td>
+                                                    <td>
+                                                        <span t-field="services.service_cost"/>
+                                                    </td>
+                                                </t>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="6" style="text-align: right;">
+                                                    <strong>Total Service Charge:</strong>
+                                                    <span t-field="o.total_service_charge"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row mt16">
+                            <div class="col-12">
+                                <t t-if="o.parts_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Spare Parts Details</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>Spare Part</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Quantity</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Unit Price</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Sub Total</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.parts_ids" t-as="spare">
+                                                <td>
+                                                    <span t-field="spare.spare_id"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="spare.quantity"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="spare.unit_price"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="spare.sub_total"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="6" style="text-align: right;">
+                                                    <strong>Total Parts Price:</strong>
+                                                    <span t-field="o.total_parts_charge"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row mt32" style="page-break-inside: avoid;">
+                            <t t-if="o.repair_image_ids">
+                                <div style="page-break-inside: avoid;">
+                                    <h5 style="background-color: #f0f0f0; padding: 10px; text-align: center; border: 1px solid;">
+                                        <b>Repair Images</b>
+                                    </h5>
+                                    <div style="text-align: center; page-break-inside: avoid; border: 1px solid;">
+                                        <t t-foreach="o.repair_image_ids" t-as="image">
+                                            <t t-if="image.image">
+                                                <div style="display: inline-block; margin-left: 5px; margin-right: 5px; margin-top: 10px;">
+                                                    <img t-att-src="'data:image/png;base64,' + image.image.decode('utf-8')"
+                                                         style="max-width: 290px; height: 230px;"/>
+                                                    <h5 style="margin-top: 8px;">
+                                                        <t t-esc="image.note"/>
+                                                    </h5>
+                                                </div>
+                                            </t>
+                                        </t>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <t t-if="o.checklist_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Checklist</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>Check</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Name</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.checklist_lines" t-as="checklist">
+                                                <td>
+                                                    <t t-if="checklist.is_checked">
+                                                        <span style="color: green; font-size: 18px;">☑</span>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <span t-field="checklist.name"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row" style="page-break-inside: avoid; margin-top: 30px;">
+                            <div class="col-9"/>
+                            <div class="col-3">
+                                <center>
+                                    <t t-if="o.signature_img">
+                                        <span style="font-weight: bold;">
+                                            Date:
+                                            <span class="label label-default" t-field="o.signature_date"/>
+                                        </span>
+                                        <img t-att-src="'data:image/png;base64,' + o.signature_img.decode('utf-8')"
+                                             style="width: 170px; height: 100px;"/>
+                                        <h6 style="margin-top: 8px;">Authorised Signature</h6>
+                                    </t>
+                                </center>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
+

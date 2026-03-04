@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Modify user_ids domain to allow portal users (technicians) -->
+    <record id="view_project_task_form_allow_portal_users" model="ir.ui.view">
+        <field name="name">project.task.form.allow.portal.users</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            <!-- Find the user_ids field and modify its domain -->
+            <field name="user_ids" position="attributes">
+                <attribute name="domain">[('active', '=', True)]</attribute>
+            </field>
+        </field>
+    </record>
+
+    <!-- Also update the tree/view if needed -->
+<!--    <record id="view_project_task_tree_allow_portal_users" model="ir.ui.view">-->
+<!--        <field name="name">project.task.tree.allow.portal.users</field>-->
+<!--        <field name="model">project.task</field>-->
+<!--        <field name="inherit_id" ref="project.view_task_tree2"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <field name="user_ids" position="attributes">-->
+<!--                <attribute name="domain">[('active', '=', True)]</attribute>-->
+<!--            </field>-->
+<!--        </field>-->
+<!--    </record>-->
+</odoo>

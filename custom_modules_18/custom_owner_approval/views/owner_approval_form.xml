@@ -1,0 +1,76 @@
+<!-- views/owner_approval_form.xml -->
+<odoo>
+    <record id="view_owner_approval_form" model="ir.ui.view">
+        <field name="name">owner.approval.form</field>
+        <field name="model">owner.approval</field>
+        <field name="arch" type="xml">
+            <form string="Owner Approval">
+                <header>
+                    <button class="btn btn-primary" type="object" name="action_submit" string="Submit" invisible="state not in ('draft', 'revise')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved,rejected,revise,late"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="title" readonly="state in ['approved','rejected','late']"/>
+                            <field name="approval_type" readonly="state in ['approved','rejected','late']"/>
+                        </group>
+                        <group>
+                            <field name="project_id" readonly="state in ['approved','rejected','late']"/>
+                            <field name="task_stage_id" invisible='1'/>
+                            <field name="task_id" readonly="state in ['approved','rejected','late']"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Context">
+                            <group>
+                                <field name="boq_ref" readonly="state in ['approved','rejected','late']"/>
+                                <field name="location" readonly="state in ['approved','rejected','late']"/>
+                                <field name="owner_partner_id" readonly="state in ['approved','rejected','late']"/>
+                                <field name="responsible_user_id" readonly="state in ['approved','rejected','late']"/>
+                            </group>
+                        </page>
+                        <page string="Submission">
+                            <group>
+                                <field name="submission_date" readonly="1"/>
+                                <field name="required_response_days" readonly="state in ['approved','rejected','late']"/>
+                                <field name="due_date" readonly="1"/>
+                                <field name="is_overdue" readonly="1"/>
+                                <field name="days_late" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Decision">
+                            <group>
+                                <field name="decision" readonly="1"/>
+                                <field name="owner_response_date" readonly="1"/>
+                                <field name="owner_comments" readonly="1"/>
+                                
+                            </group>
+                        </page>
+                        <page string="Documents">
+                            <group>
+                                <field name="attachment_ids" widget="many2many_binary" readonly="state in ['approved','rejected','late']"/>
+                                <field name="revision_no" readonly="1"/>
+                                <field name="previous_approval_id" readonly="state in ['approved','rejected','late']"/>
+                            </group>
+                        </page>
+                        <page string="Internal Notes">
+                            <group>
+                                <field name="internal_notes" readonly="state in ['approved','rejected','late']"/>
+                            </group>
+                        </page>
+                        <page string="Signature">
+                            <group>
+                                <field name="responsible_signature" widget="signature" readonly='1'/>
+                                <field name="owner_signature" widget="signature" readonly='1'/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+</odoo>

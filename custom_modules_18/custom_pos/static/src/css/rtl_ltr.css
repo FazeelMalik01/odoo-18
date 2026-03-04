@@ -1,0 +1,78 @@
+/**
+ * RTL/LTR Support Styles for Mixed Arabic/English Text
+ * Ensures proper text direction for variant attributes
+ */
+
+/* Ensure BDI elements properly isolate text direction */
+.variant-attributes bdi,
+.product-name bdi,
+.attribute-name-cell bdi {
+    unicode-bidi: isolate;
+    display: inline;
+}
+
+/* RTL specific styling */
+[dir="rtl"] {
+    unicode-bidi: isolate;
+}
+
+/* LTR specific styling */
+[dir="ltr"] {
+    unicode-bidi: isolate;
+}
+
+/* Product name container with proper direction handling */
+.product-name.rtl-aware {
+    unicode-bidi: plaintext;
+}
+
+/* Attribute value pills with proper direction */
+.attribute-name-cell span[dir],
+.configurator_radio span[dir] {
+    unicode-bidi: isolate;
+    display: inline-block;
+}
+
+/* Orderline product name with variants */
+.orderline .product-name .variant-attributes {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Attribute separator */
+.variant-attributes .attr-separator {
+    display: inline;
+    unicode-bidi: embed;
+    direction: ltr;
+}
+
+/* Product Configurator Popup - Attribute Names */
+.attribute .attribute_name[dir] {
+    unicode-bidi: isolate;
+}
+
+/* Product Info Banner */
+.product-info-banner [dir] {
+    unicode-bidi: isolate;
+}
+
+/* Receipt orderlines */
+.pos-receipt .product-name [dir] {
+    unicode-bidi: isolate;
+}
+
+/* Ensure proper text wrapping in mixed direction content */
+.product-base-name,
+.variant-attributes {
+    text-align: start;
+}
+
+/* Pills/Radio buttons with mixed direction text */
+.configurator_radio label span[dir="rtl"] {
+    text-align: right;
+}
+
+.configurator_radio label span[dir="ltr"] {
+    text-align: left;
+}
+

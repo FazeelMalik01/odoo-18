@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!--    Search View-->
+    <record id="vehicle_repair_services_line_search" model="ir.ui.view">
+        <field name="name">vehicle.repair.services.line.search</field>
+        <field name="model">vehicle.repair.services.line</field>
+        <field name="arch" type="xml">
+            <search string="Task">
+                <field name="title"/>
+                <field name="service_id"/>
+                <field name="product_id"/>
+                <field name="service_team"/>
+                <group>
+                    <filter name="repair_stages" string="Stages" context="{'group_by':'state'}"/>
+                    <filter name="repair_teams" string="Service Team" context="{'group_by':'service_team'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <!--    Kanban View-->
+    <record id="vehicle_repair_services_line_kanban" model="ir.ui.view">
+        <field name="name">vehicle.repair.services.line.kanban</field>
+        <field name="model">vehicle.repair.services.line</field>
+        <field name="arch" type="xml">
+            <kanban create="False">
+                <field name="title"/>
+                <field name="service_id"/>
+                <field name="product_id"/>
+                <field name="service_team"/>
+                <field name="end_date"/>
+                <field name="customer_id"/>
+                <field name="jobcard_id"/>
+                <field name="assigners"/>
+                <templates>
+                    <t t-name="card">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top mb16">
+                                <div class="o_kanban_record_headings mt4">
+                                    <strong class="o_kanban_record_title">
+                                        <span t-esc="record.title.value"/>
+                                        <br/>
+                                    </strong>
+                                    <span t-esc="record.service_team.value"/>
+                                </div>
+                                <strong>
+                                    <span t-esc="record.end_date.value"/>
+                                </strong>
+                            </div>
+                            <div class="o_kanban_tags_section oe_kanban_partner_categories">
+                                <span t-esc="record.customer_id.value"/>
+                            </div>
+                            <div class="o_kanban_record_bottom text-muted">
+                                <div class="oe_kanban_bottom_left">
+                                    <span t-esc="record.jobcard_id.value"/>
+                                    <field name="activity_ids" widget="kanban_activity"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <span>
+                                        <field name="state" widget="label_selection"
+                                               options="{'classes': {'info': 'warning', 'info': 'success', 'done': 'success', 'cancel': 'muted'}}"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <!--Tree View-->
+    <record id="vehicle_repair_services_line_tree" model="ir.ui.view">
+        <field name="name">vehicle.repair.services.line.list</field>
+        <field name="model">vehicle.repair.services.line</field>
+        <field name="arch" type="xml">
+            <list string="Vehicle Repair" create="False" decoration-muted="state == 'cancel'">
+                <field name="title"/>
+                <field name="service_team"/>
+                <field name="team_employee_ids"/>
+                <field name="jobcard_id"/>
+                <field name="service_id"/>
+                <field name="assigners" widget="many2many_tags"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'"
+                       decoration-info="state in ('draft','in_progress')"
+                       decoration-muted="state == 'cancel'"/>
+                <field name="service_cost" optional="hide"/>
+                <field name="start_date" optional="hide"/>
+                <field name="end_date" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <!--    Form View-->
+    <record id="vehicle_repair_services_line_form" model="ir.ui.view">
+        <field name="name">vehicle.repair.services.line.form</field>
+        <field name="model">vehicle.repair.services.line</field>
+        <field name="arch" type="xml">
+            <form string="Vehicle Repair" create="False">
+                <header>
+                    <button 
+                        name="action_start_timer"
+                        string="Start Timer"
+                        type="object"
+                        invisible="is_timer_running or state == 'draft' or state == 'done'"
+                        class="btn-success"/>
+                    <button 
+                        name="action_pause_timer"
+                        string="Pause Timer"
+                        type="object"
+                        invisible="not is_timer_running"
+                        class="btn-warning"/>
+                    <button 
+                        name="action_progress" 
+                        string="Progress" 
+                        type="object"
+                        invisible="state != 'assigned'"
+                        class="btn-primary"/>
+                    <button 
+                        name="action_complete" 
+                        string="Complete" 
+                        type="object"
+                        invisible="state != 'in_progress'"
+                        class="btn-primary"/>
+                    <button 
+                        name="action_cancel" 
+                        string="Cancel" 
+                        type="object"
+                        invisible="state != 'assigned' and state != 'in_progress'"
+                        class="btn-secondary"/>
+                    <field 
+                        name="state" 
+                        widget="statusbar" 
+                        statusbar_visible="draft,assigned,in_progress,done" options="{'clickable': '1'}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title" style="margin-top: 10px">
+                        <h1>
+                            <field name="title"/>
+                        </h1>
+                    </div>
+                    <div class="oe_data" style="margin-top: 20px">
+                        <group>
+                            <group>
+                                <field name="jobcard_id" readonly="1"/>
+                                <field name="service_id" readonly="1"/>
+                                <field name="service_team"  readonly="state != 'draft'"/>
+                                <field name="team_employee_ids" invisible="1"/>
+                                <field name="assigners" widget="many2many_tags" readonly="state != 'draft'"/>
+                                <field name="assigners_user_ids" widget="many2many_tags" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="end_date" string="Deadline" readonly="1"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="responsible_id" readonly="1" class="oe_inline" widget="many2one_avatar_user"/>
+                            </group>
+                        </group>
+                    </div>
+                    <notebook>
+                        <page string="Vehicle Details" name="vehicle_details">
+                            <group>
+                                <group>
+                                    <field name="customer_id"/>
+                                    <field name="brand_id"/>
+                                    <field name="registration_no"/>
+                                </group>
+                                <group>
+                                    <field name="model_id"/>
+                                    <field name="vin_no"/>
+                                    <field name="fuel_type_id"/>
+                                </group>
+                            </group>
+                            <notebook>
+                                <page string="Spare Parts" name="spare_parts">
+                                    <field name="parts_ids">
+                                        <list editable="bottom">
+                                            <field name="spare_id"/>
+                                            <field name="consume"/>
+                                        </list>
+                                    </field>
+                                </page>
+                            </notebook>
+                        </page>
+                        <page string="Description" name="description">
+                            <group>
+                                <group name="note_group" col="6" class="mt-2 mt-md-0">
+                                    <group colspan="4">
+                                        <field name="note" colspan="2" nolabel="1" placeholder="Description..."/>
+                                    </group>
+                                    <div class="clearfix"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Timesheets" name="timesheets">
+                            <field name="timesheet_ids" context="{'default_repair_line_id': id}">
+                                <list editable="bottom">
+                                    <field name="user_id"/>
+                                    <field name="name"/>
+                                    <field name="unit_amount" string="Duration"/>
+                                </list>
+                            </field>
+                            <group>
+                                <field name="total_duration" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <!--    Action-->
+    <record id="vehicle_repair_services_line_action" model="ir.actions.act_window">
+        <field name="name">Task</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.repair.services.line</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="context">{'group_by': 'state'}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                There are no new tasks available at the moment.
+            </p>
+        </field>
+    </record>
+    <!--    Menu-->
+    <menuitem 
+        id="menu_tasks"
+        name="Tasks"
+        parent="root_vehicle_repair"
+        action="vehicle_repair_services_line_action"
+        sequence="8"
+        groups="advance_vehicle_repair.group_vehicle_repair_technician,advance_vehicle_repair.group_vehicle_repair_user,advance_vehicle_repair.group_vehicle_repair_manager"
+        />
+</odoo>

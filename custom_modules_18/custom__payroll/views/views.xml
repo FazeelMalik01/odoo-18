@@ -1,0 +1,102 @@
+<odoo>
+  <data>
+    <!-- Salary Calculation Rules List View -->
+    <record model="ir.ui.view" id="custom__payroll_salary_calculation_rule_list">
+        <field name="name">custom__payroll.salary_calculation_rule.list</field>
+        <field name="model">custom__payroll.salary_calculation_rule</field>
+        <field name="arch" type="xml">
+            <list string="Salary Calculation Rules">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Salary Calculation Rules Form View -->
+    <record model="ir.ui.view" id="custom__payroll_salary_calculation_rule_form">
+        <field name="name">custom__payroll.salary_calculation_rule.form</field>
+        <field name="model">custom__payroll.salary_calculation_rule</field>
+        <field name="arch" type="xml">
+            <form string="Salary Calculation Rule">
+                <sheet>
+                    <group>
+                        <field name="name" placeholder="Enter title..."/>
+                    </group>
+                    <notebook>
+                        <!-- Age classification tabs are defined in separate XML files -->
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Salary Calculation Rules Search View -->
+    <record model="ir.ui.view" id="custom__payroll_salary_calculation_rule_search">
+        <field name="name">custom__payroll.salary_calculation_rule.search</field>
+        <field name="model">custom__payroll.salary_calculation_rule</field>
+        <field name="arch" type="xml">
+            <search string="Salary Calculation Rules">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Salary Calculation Rules Action -->
+    <record model="ir.actions.act_window" id="custom__payroll.action_salary_calculation_rules">
+        <field name="name">Salary Calculation Rules</field>
+        <field name="res_model">custom__payroll.salary_calculation_rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="custom__payroll_salary_calculation_rule_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new salary calculation rule
+            </p>
+            <p>
+                Define calculation rules that will be used to calculate monthly salaries for employees.
+            </p>
+        </field>
+    </record>
+
+    <!-- Salary Calculation Rules Menu -->
+    <menuitem 
+        id="custom__payroll.menu_salary_calculation_rules"
+        name="Salary Calculation Rules"
+        parent="hr_payroll.menu_hr_salary_configuration"
+        action="custom__payroll.action_salary_calculation_rules"
+        sequence="50"
+        groups="hr_payroll.group_hr_payroll_manager"/>
+
+    <!-- Contract Form View Extension -->
+    <record id="hr_contract_view_form_inherit_custom_payroll" model="ir.ui.view">
+        <field name="name">hr.contract.form.inherit.custom.payroll</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_payroll.hr_contract_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='wage_type']" position="before">
+                <field name="salary_computation_type"/>
+                <field name="salary_computation_rule_id" invisible="salary_computation_type != 'computed'"/>
+            </xpath>
+            <xpath expr="//field[@name='wage_type']" position="attributes">
+                <attribute name="invisible">salary_computation_type == 'computed'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='schedule_pay']" position="after">
+                <field name="level"/>
+                <field name="employment_type"/>
+                <field name="pay_rate"/>
+                <field name="age"/>
+            </xpath>
+            <xpath expr="//label[@for='hourly_wage']" position="attributes">
+                <attribute name="invisible">salary_computation_type == 'computed'</attribute>
+            </xpath>
+            <xpath expr="//div[@name='hourly_wage']" position="attributes">
+                <attribute name="invisible">salary_computation_type == 'computed'</attribute>
+            </xpath>
+            <xpath expr="//label[@for='wage']" position="attributes">
+                <attribute name="invisible">salary_computation_type == 'computed'</attribute>
+            </xpath>
+            <xpath expr="//div[@name='wage']" position="attributes">
+                <attribute name="invisible">salary_computation_type == 'computed'</attribute>
+            </xpath>
+        </field>
+    </record>
+  </data>
+</odoo>

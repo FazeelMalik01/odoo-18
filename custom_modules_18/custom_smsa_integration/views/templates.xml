@@ -1,0 +1,56 @@
+<odoo>
+    <data>
+        <!-- National Address field on checkout address form (Saudi Arabia) -->
+        <template id="address_national_address" inherit_id="website_sale.address">
+            <xpath expr="//div[@id='div_street2']" position="after">
+                <div id="div_national_address" class="col-lg-12 mb-2"
+                     t-att-style="(not country or country.code != 'SA') and 'display: none;'">
+                    <label class="col-form-label label-optional" for="o_national_address">National Address</label>
+                    <input id="o_national_address" type="text" name="national_address" class="form-control"
+                           maxlength="8" placeholder="e.g. RRRD2929 (4 letters + 4 numbers)"
+                           t-att-value="partner_sudo.national_address or ''"/>
+                    <small class="form-text text-muted">For Saudi Arabia: 4 letters + 4 numbers</small>
+                </div>
+            </xpath>
+            <xpath expr="//form[@action='/shop/address/submit']" position="inside">
+                <script type="text/javascript">
+                    (function() {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            var countrySelect = document.querySelector('#o_country_id');
+                            var nationalDiv = document.querySelector('#div_national_address');
+                            if (countrySelect &amp;&amp; nationalDiv) {
+                                function toggleNationalAddress() {
+                                    var opt = countrySelect.options[countrySelect.selectedIndex];
+                                    var code = opt &amp;&amp; opt.getAttribute('code');
+                                    nationalDiv.style.display = (code === 'SA') ? '' : 'none';
+                                }
+                                toggleNationalAddress();
+                                countrySelect.addEventListener('change', toggleNationalAddress);
+                            }
+                        });
+                    })();
+                </script>
+            </xpath>
+        </template>
+<!--
+        <template id="listing">
+          <ul>
+            <li t-foreach="objects" t-as="object">
+              <a t-attf-href="#{ root }/objects/#{ object.id }">
+                <t t-esc="object.display_name"/>
+              </a>
+            </li>
+          </ul>
+        </template>
+        <template id="object">
+          <h1><t t-esc="object.display_name"/></h1>
+          <dl>
+            <t t-foreach="object._fields" t-as="field">
+              <dt><t t-esc="field"/></dt>
+              <dd><t t-esc="object[field]"/></dd>
+            </t>
+          </dl>
+        </template>
+-->
+    </data>
+</odoo>

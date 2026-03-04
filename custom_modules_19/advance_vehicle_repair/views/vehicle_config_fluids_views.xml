@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="vehicle_fluids_search" model="ir.ui.view">
+        <field name="name">vehicle.fluids.search</field>
+        <field name="model">vehicle.fluids</field>
+        <field name="arch" type="xml">
+            <search string="vehicle">
+                <field name="name"/>
+                <field name="component_side"/>
+                <group>
+                    <filter name="vehicle_component" string="Vehicle Side" context="{'group_by':'component_side'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="vehicle_fluids_tree" model="ir.ui.view">
+        <field name="name">vehicle.fluids.list</field>
+        <field name="model">vehicle.fluids</field>
+        <field name="arch" type="xml">
+            <list string="Vehicle Fluids" editable="bottom">
+                <field name="name"/>
+                <field name="component_side"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_vehicle_fluids" model="ir.actions.act_window">
+        <field name="name">Vehicle Fluid</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.fluids</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add your vehicle fluids here!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_fluids"
+              name="Fluids"
+              parent="menu_vehicle_components"
+              action="action_vehicle_fluids"
+              sequence="2"/>
+</odoo>

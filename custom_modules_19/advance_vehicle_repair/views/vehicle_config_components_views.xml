@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="vehicle_components_search" model="ir.ui.view">
+        <field name="name">vehicle.components.search</field>
+        <field name="model">vehicle.components</field>
+        <field name="arch" type="xml">
+            <search string="vehicle">
+                <field name="name"/>
+                <field name="side"/>
+                <group>
+                    <filter name="vehicle_component" string="Vehicle Side" context="{'group_by':'side'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="vehicle_components_tree" model="ir.ui.view">
+        <field name="name">vehicle.components.list</field>
+        <field name="model">vehicle.components</field>
+        <field name="arch" type="xml">
+            <list string="Vehicle Items" editable="bottom">
+                <field name="name"/>
+                <field name="side"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_vehicle_components" model="ir.actions.act_window">
+        <field name="name">Vehicle Component</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.components</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                 Add your vehicle components here!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_components"
+              name="Components"
+              parent="menu_vehicle_components"
+              action="action_vehicle_components"
+              sequence="1"/>
+
+</odoo>

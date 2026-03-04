@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="vehicle_fluid_oil" model="vehicle.fluids">
+            <field name="name">Engine Oil</field>
+            <field name="component_side">front</field>
+        </record>
+        <record id="vehicle_fluid_transmission" model="vehicle.fluids">
+            <field name="name">Transmission Fluid</field>
+            <field name="component_side">rear</field>
+        </record>
+        <record id="vehicle_fluid_coolant" model="vehicle.fluids">
+            <field name="name">Coolant</field>
+            <field name="component_side">top</field>
+        </record>
+        <record id="vehicle_fluid_brake" model="vehicle.fluids">
+            <field name="name">Brake Fluid</field>
+            <field name="component_side">bottom</field>
+        </record>
+        <record id="vehicle_fluid_power_steering" model="vehicle.fluids">
+            <field name="name">Power Steering Fluid</field>
+            <field name="component_side">front_left</field>
+        </record>
+        <record id="vehicle_fluid_windshield_washer" model="vehicle.fluids">
+            <field name="name">Windshield Washer Fluid</field>
+            <field name="component_side">front_right</field>
+        </record>
+        <record id="vehicle_fluid_diff" model="vehicle.fluids">
+            <field name="name">Differential Fluid</field>
+            <field name="component_side">rear_left</field>
+        </record>
+        <record id="vehicle_fluid_transfer_case" model="vehicle.fluids">
+            <field name="name">Transfer Case Fluid</field>
+            <field name="component_side">rear_right</field>
+        </record>
+        <record id="vehicle_fluid_ac_refrigerant" model="vehicle.fluids">
+            <field name="name">A/C Refrigerant</field>
+            <field name="component_side">top</field>
+        </record>
+        <record id="vehicle_fluid_fuel" model="vehicle.fluids">
+            <field name="name">Fuel</field>
+            <field name="component_side">bottom</field>
+        </record>
+        <record id="vehicle_fluid_clutch" model="vehicle.fluids">
+            <field name="name">Clutch Fluid</field>
+            <field name="component_side">center</field>
+        </record>
+        <record id="vehicle_fluid_hydraulic" model="vehicle.fluids">
+            <field name="name">Hydraulic Fluid</field>
+            <field name="component_side">top</field>
+        </record>
+    </data>
+</odoo>

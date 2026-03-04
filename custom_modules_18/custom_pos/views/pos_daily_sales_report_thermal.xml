@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="pos_receipt_employee_pricelist_inherit"
+              inherit_id="point_of_sale.SaleDetailsReport"
+              t-inherit-mode="extension">
+
+        <xpath expr="//div[normalize-space(text()) = 'SOLD:']" position="before">
+            <!-- ========== EMPLOYEE SALES DETAILS ========== -->
+            <t t-if="employee_orders">
+                <div class="pos-receipt-center-align" style="margin-top:5px; font-weight:bold;">
+                    Employee Sales Details
+                </div>
+                <t t-foreach="employee_orders.items()" t-as="emp_data">
+                    <div class="responsive-price" style="margin-top:2px;">
+                        <t t-esc="emp_data[0]" />
+                        <span class="pos-receipt-right-align">
+                            <t t-esc="len(emp_data[1])" /> /
+                            <t t-set="emp_total" t-value="sum(order['total'] for order in emp_data[1])" />
+                            <t t-esc="formatCurrency(emp_total, false)" />
+                        </span>
+                    </div>
+                    <t t-foreach="emp_data[1]" t-as="order">
+                        <div class="pos-receipt-left-padding">
+                            <t t-esc="order['order_name']" />
+                            <span class="pos-receipt-right-align">
+                                <t t-esc="formatCurrency(order['total'], false)" />
+                            </span>
+                        </div>
+                    </t>
+                </t>
+
+                <div>------------------------</div>
+            </t>
+
+            <!-- ========== PRICELIST SUMMARY ========== -->
+            <t t-if="pricelist_summary">
+                <div class="pos-receipt-center-align" style="margin-top:5px; font-weight:bold;">
+                    Pricelist Summary
+                </div>
+                <t t-foreach="pricelist_summary.items()" t-as="pl">
+                    <div class="responsive-price">
+                        <t t-esc="pl[0]" />
+                        <span class="pos-receipt-right-align">
+                            <t t-esc="pl[1]['count']" /> /
+                            <t t-esc="formatCurrency(pl[1]['total'], false)" />
+                        </span>
+                    </div>
+                </t>
+
+                <div class="pos-receipt-left-padding" style="font-weight:bold; margin-top:3px;">
+                    Total:
+                    <span class="pos-receipt-right-align">
+                        <t t-set="total_amount" t-value="sum([v['total'] for v in pricelist_summary.values()])"/>
+                        <t t-esc="formatCurrency(total_amount, false)" />
+                    </span>
+                </div>
+
+                <div>------------------------</div>
+            </t>
+        </xpath>
+
+        <!-- 2) Replace the Discount display in each line with JS-based split & pad (show INT.FF) -->
+        <xpath expr="//t[@t-if='line.discount !== 0']" position="replace">
+            <t t-if="line.discount !== 0">
+                <t t-set="discount_str" t-value="str(round(line['discount'] or 0, 2))"/>
+                <t t-set="discount_parts" t-value="discount_str.split('.')"/>
+                <t t-set="discount_one" t-value="discount_parts[0]"/>
+                <t t-set="discount_two" t-value="(discount_parts[1] if len(discount_parts) > 1 else '00')[:2]"/>
+                
+                <div class="pos-receipt-left-padding">
+                    Discount: <t t-esc="discount_one + '.' + discount_two"/>%
+                </div>
+            </t>
+        </xpath>
+
+    </template>
+</odoo>

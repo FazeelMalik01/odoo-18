@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        
+        <!-- Partner Reporting List View (Grouped by Partner) -->
+        <record id="view_partner_reporting_tree" model="ir.ui.view">
+            <field name="name">laundry.partner.reporting.tree</field>
+            <field name="model">laundry.appointment</field>
+            <field name="arch" type="xml">
+                <list string="Partner Reporting" create="0" delete="0" default_order="appointment_date desc">
+                    <field name="assigned_partner_id" string="Partner"/>
+                    <field name="name" string="Reference"/>
+                    <field name="customer_name" string="Customer"/>
+                    <field name="appointment_date" string="Date"/>
+                    <field name="appointment_time" string="Time"/>
+                    <field name="status" 
+                           widget="badge"
+                           decoration-info="status == 'confirmed' or status == 'pickup'"
+                           decoration-warning="status == 'pending'"
+                           decoration-success="status == 'completed'"
+                           decoration-danger="status == 'cancelled'"
+                           decoration-muted="status == 'in_progress' or status == 'delivery'"/>
+                    <field name="service_type_ids" string="Service Types" widget="many2many_tags" optional="hide"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Partner Reporting Action -->
+        <record id="action_partner_reporting" model="ir.actions.act_window">
+            <field name="name">Partner Reporting</field>
+            <field name="res_model">laundry.appointment</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[('assigned_partner_id', '!=', False), ('status', 'in', ['confirmed', 'pickup', 'in_progress', 'completed', 'delivery'])]</field>
+            <field name="context">{'group_by': 'assigned_partner_id', 'search_default_group_by_partner': 1}</field>
+            <field name="view_id" ref="view_partner_reporting_tree"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No partner reports available yet.
+                </p>
+                <p>
+                    This report shows all service requests assigned to partners with completed work. 
+                    Statuses included: Confirmed, Pickup, In Progress, Completed, and Delivery.
+                </p>
+            </field>
+        </record>
+
+        <!-- Reporting Menu (before Configuration) -->
+        <menuitem id="menu_laundry_reporting"
+                  name="Reporting"
+                  parent="custom_laundry_service.menu_laundry_appointment_root"
+                  action="action_partner_reporting"
+                  sequence="15"/>
+
+    </data>
+</odoo>
+

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!--        For Services-->
+        <record id="product_services_1" model="product.product">
+            <field name="name">Oil Changing</field>
+            <field name="standard_price">1.0</field>
+            <field name="list_price">1.0</field>
+            <field name="type">service</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+<!--            <field name="uom_po_id" ref="uom.product_uom_unit"/>-->
+            <field name="default_code">SRVONE</field>
+        </record>
+
+        <record id="product_services_two" model="product.product">
+            <field name="name">Washing</field>
+            <field name="standard_price">1.0</field>
+            <field name="list_price">1.0</field>
+            <field name="type">service</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+<!--            <field name="uom_po_id" ref="uom.product_uom_unit"/>-->
+            <field name="default_code">SRVTWO</field>
+        </record>
+
+        <record id="product_services_three" model="product.product">
+            <field name="name">Polishing</field>
+            <field name="standard_price">1.0</field>
+            <field name="list_price">1.0</field>
+            <field name="type">service</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+<!--            <field name="uom_po_id" ref="uom.product_uom_unit"/>-->
+            <field name="default_code">SRVTHREE</field>
+        </record>
+
+        <!--        For Inspection -->
+        <record id="product_inspection_1" model="product.product">
+            <field name="name">Inspection</field>
+            <field name="standard_price">1.0</field>
+            <field name="list_price">1.0</field>
+            <field name="type">service</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+<!--            <field name="uom_po_id" ref="uom.product_uom_unit"/>-->
+            <field name="default_code">INSP</field>
+        </record>
+
+
+        <!--    Services-->
+        <record id="vehicle_services_data1" model="vehicle.services">
+            <field name="name">Oil Changing</field>
+            <field name="service_amount">300</field>
+            <field name="product_id" ref="advance_vehicle_repair.product_services_1"/>
+        </record>
+        <record id="vehicle_services_data2" model="vehicle.services">
+            <field name="name">Washing</field>
+            <field name="service_amount">500</field>
+            <field name="product_id" ref="advance_vehicle_repair.product_services_two"/>
+        </record>
+        <record id="vehicle_services_data3" model="vehicle.services">
+            <field name="name">Polishing</field>
+            <field name="service_amount">600</field>
+            <field name="product_id" ref="advance_vehicle_repair.product_services_three"/>
+        </record>
+
+        <!--    Spare Parts-->
+        <record id="vehicle_spare_data3" model="product.product">
+            <field name="name">Engine oil</field>
+            <field name="spare_part">True</field>
+            <field name="list_price">400</field>
+        </record>
+        <record id="vehicle_spare_data4" model="product.product">
+            <field name="name">Coolant</field>
+            <field name="spare_part">True</field>
+            <field name="list_price">200</field>
+        </record>
+    </data>
+</odoo>

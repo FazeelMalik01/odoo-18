@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="1">
+        <!-- Categories -->
+        <record id="vehicle_category_mechanical" model="vehicle.item.category">
+            <field name="name">Mechanical</field>
+        </record>
+
+        <record id="vehicle_category_electrical" model="vehicle.item.category">
+            <field name="name">Electrical</field>
+        </record>
+
+        <record id="vehicle_category_wheels" model="vehicle.item.category">
+            <field name="name">Wheels</field>
+        </record>
+
+        <record id="vehicle_category_fuel" model="vehicle.item.category">
+            <field name="name">Fuel System</field>
+        </record>
+
+        <record id="vehicle_category_exhaust" model="vehicle.item.category">
+            <field name="name">Exhaust</field>
+        </record>
+
+        <record id="vehicle_category_cooling" model="vehicle.item.category">
+            <field name="name">Cooling</field>
+        </record>
+
+        <record id="vehicle_category_suspension" model="vehicle.item.category">
+            <field name="name">Suspension</field>
+        </record>
+
+        <record id="vehicle_category_filter" model="vehicle.item.category">
+            <field name="name">Filter</field>
+        </record>
+
+        <record id="vehicle_category_lighting" model="vehicle.item.category">
+            <field name="name">Lighting</field>
+        </record>
+
+        <record id="vehicle_category_interior" model="vehicle.item.category">
+            <field name="name">Interior</field>
+        </record>
+
+        <!-- Items: Mechanical -->
+        <record id="vehicle_item_engine" model="vehicle.items">
+            <field name="name">Engine</field>
+            <field name="vehicle_category_id" ref="vehicle_category_mechanical"/>
+        </record>
+
+
+        <!-- Items: Electrical -->
+        <record id="vehicle_item_battery" model="vehicle.items">
+            <field name="name">Battery</field>
+            <field name="vehicle_category_id" ref="vehicle_category_electrical"/>
+        </record>
+        <record id="vehicle_item_starter_motor" model="vehicle.items">
+            <field name="name">Starter Motor</field>
+            <field name="vehicle_category_id" ref="vehicle_category_electrical"/>
+        </record>
+
+        <!-- Items: Wheels -->
+        <record id="vehicle_item_front_wheel" model="vehicle.items">
+            <field name="name">Front Wheel</field>
+            <field name="vehicle_category_id" ref="vehicle_category_wheels"/>
+        </record>
+
+        <!-- Items: Fuel System -->
+        <record id="vehicle_item_fuel_pump" model="vehicle.items">
+            <field name="name">Fuel Pump</field>
+            <field name="vehicle_category_id" ref="vehicle_category_fuel"/>
+        </record>
+
+        <!-- Items: Exhaust -->
+        <record id="vehicle_item_exhaust_pipe" model="vehicle.items">
+            <field name="name">Exhaust Pipe</field>
+            <field name="vehicle_category_id" ref="vehicle_category_exhaust"/>
+        </record>
+
+        <!-- Items: Cooling -->
+        <record id="vehicle_item_radiator" model="vehicle.items">
+            <field name="name">Radiator</field>
+            <field name="vehicle_category_id" ref="vehicle_category_cooling"/>
+        </record>
+
+        <!-- Items: Suspension -->
+        <record id="vehicle_item_shock_absorber" model="vehicle.items">
+            <field name="name">Shock Absorber</field>
+            <field name="vehicle_category_id" ref="vehicle_category_suspension"/>
+        </record>
+        <record id="vehicle_item_strut" model="vehicle.items">
+            <field name="name">Strut</field>
+            <field name="vehicle_category_id" ref="vehicle_category_suspension"/>
+        </record>
+
+        <!-- Items: Filter -->
+        <record id="vehicle_item_air_filter" model="vehicle.items">
+            <field name="name">Air Filter</field>
+            <field name="vehicle_category_id" ref="vehicle_category_filter"/>
+        </record>
+        <record id="vehicle_item_oil_filter" model="vehicle.items">
+            <field name="name">Oil Filter</field>
+            <field name="vehicle_category_id" ref="vehicle_category_filter"/>
+        </record>
+
+        <!-- Items: Lighting -->
+        <record id="vehicle_item_headlight" model="vehicle.items">
+            <field name="name">Headlight</field>
+            <field name="vehicle_category_id" ref="vehicle_category_lighting"/>
+        </record>
+        <record id="vehicle_item_taillight" model="vehicle.items">
+            <field name="name">Taillight</field>
+            <field name="vehicle_category_id" ref="vehicle_category_lighting"/>
+        </record>
+
+        <!-- Items: Interior -->
+        <record id="vehicle_item_dashboard" model="vehicle.items">
+            <field name="name">Dashboard</field>
+            <field name="vehicle_category_id" ref="vehicle_category_interior"/>
+        </record>
+        <record id="vehicle_item_seat" model="vehicle.items">
+            <field name="name">Seat</field>
+            <field name="vehicle_category_id" ref="vehicle_category_interior"/>
+        </record>
+
+    </data>
+</odoo>
+
+

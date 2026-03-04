@@ -1,0 +1,120 @@
+<odoo>
+  <data>
+    <!-- Customer information with labels (Company, Address, City, State, Zip) like Event information -->
+    <record id="view_order_form_customer_details" model="ir.ui.view">
+      <field name="name">sale.order.form.customer.details</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <!-- Reference: hide label only, keep sequence (S00124) visible -->
+        <xpath expr="//div[hasclass('oe_title')]" position="before">
+          <label for="name" string="Reference" invisible="1"/>
+        </xpath>
+        <xpath expr="//field[@name='name']" position="attributes">
+          <attribute name="nolabel">1</attribute>
+        </xpath>
+        <!-- Referrer under Duration (right column) with label -->
+        <xpath expr="//field[@name='duration_days']/parent::div" position="after">
+          <label for="referrer_id" string="Referrer"/>
+          <field name="referrer_id" nolabel="1" context="{'res_partner_search_mode': 'customer'}" options="{'no_create': True}"/>
+          <separator string="Additional Information"/>
+          <div colspan="2" class="text-muted small mt-1 mb-1" style="white-space: normal;">
+              If your reservation is cancelled due to inclement weather, your deposit can be applied to a future date. This rain check will not expire. Once equipment is delivered, there will be no rain check or refunds. Customer agrees to full policy on our website at https://freedomfunusa.com/about/#payment-and-weather-policy
+            </div>
+          <field name="additional_weather_policy_agreed" required="1"/>
+          <div colspan="2" class="text-muted small mt-2 mb-1" style="white-space: normal;">
+              We do not set up on rock or gravel. You will need to provide a separate circuit for each item ordered. Units must have electricity located within 50' ft.
+            </div>
+          <field name="additional_setup_terms_agreed" required="1"/>
+          <label for="setup_surface" string="Setup surface"/>
+          <field name="setup_surface" nolabel="1" placeholder="Select..."/>
+          <label for="general_discount" string="General Discount"/>
+          <field name="general_discount" nolabel="1"/>
+          <label for="internal_notes" string="Internal Notes"/>
+          <field name="internal_notes" nolabel="1" placeholder="Internal notes..."/>
+          <label for="override_travel_fee" string="Override Travel Fee"/>
+          <field name="override_travel_fee" nolabel="1"/>
+          <label for="override_deposit_amount" string="Override Deposit Amount"/>
+          <field name="override_deposit_amount" nolabel="1"/>
+          <label for="override_tax_amount" string="Override Tax Amount"/>
+          <field name="override_tax_amount" nolabel="1"/>
+          <label for="miscellaneous_fees" string="Miscellaneous Fees"/>
+          <field name="miscellaneous_fees" nolabel="1"/>
+        </xpath>
+        <!-- Customer + Company/Address/City/State/Zip in one group, Customer on first row -->
+        <xpath expr="//group[@name='partner_details']/field[@name='partner_id']" position="replace">
+          <group col="2" name="customer_details_labeled" string="Customer &amp; Billing Information" class="custom_rental_customer_block">
+            <label for="partner_id" string="Customer"/>
+            <field name="partner_id" nolabel="1"
+                   widget="res_partner_many2one"
+                   context="{'res_partner_search_mode': 'customer', 'show_address': 0, 'show_vat': False, 'partner_display_name_hide_company': 1}"
+                   placeholder="Type to find a customer..."
+                   readonly="state in ['cancel', 'sale']"/>
+            <label for="partner_company_display" string="Company"/>
+            <field name="partner_company_display" nolabel="1"/>
+            <label for="partner_email_display" string="Email"/>
+            <field name="partner_email_display" nolabel="1" widget="email"/>
+            <label for="partner_phone_display" string="Phone"/>
+            <field name="partner_phone_display" nolabel="1" widget="phone"/>
+            <label for="partner_phone_secondary_display" string="Secondary Phone"/>
+            <field name="partner_phone_secondary_display" nolabel="1" widget="phone"/>
+            <label for="partner_street_display" string="Address"/>
+            <field name="partner_street_display" nolabel="1"/>
+            <field name="partner_street2_display" invisible="1"/>
+            <label for="partner_city_display" string="City"/>
+            <field name="partner_city_display" nolabel="1"/>
+            <label for="partner_state_id_display" string="State"/>
+            <field name="partner_state_id_display" nolabel="1"/>
+            <label for="partner_zip_display" string="Zip/Postal code"/>
+            <field name="partner_zip_display" nolabel="1"/>
+            <label for="how_did_you_hear" string="How did you hear about us"/>
+            <field name="how_did_you_hear" nolabel="1" placeholder="Select..."/>
+            <field name="partner_country_id_display" invisible="1"/>
+          </group>
+        </xpath>
+      </field>
+    </record>
+    <!-- Rental / Sale order form: event information next to Customer & Billing, above Expiration -->
+    <record id="view_order_form_event_information" model="ir.ui.view">
+      <field name="name">sale.order.form.event.information</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+        <!-- Insert Event information right after Customer block so they appear side by side (row 1: Customer | Event; row 2: Invoice | Shipping) -->
+        <xpath expr="//group[@name='customer_details_labeled']" position="after">
+          <group name="event_information_block" string="Event information" class="custom_rental_event_block">
+            <label for="event_location_name" string="Location name"/>
+            <field name="event_location_name" nolabel="1"/>
+            <field name="event_same_as_billing" string="Same as billing"/>
+            <field name="event_street" string="Address" readonly="event_same_as_billing"/>
+            <field name="event_street2" invisible="1"/>
+            <field name="event_city" string="City" readonly="event_same_as_billing"/>
+            <field name="event_state_id" string="State" readonly="event_same_as_billing"/>
+            <field name="event_zip" string="Zip/Postal code" readonly="event_same_as_billing"/>
+            <label for="event_zip_verification_id" string="Zip verification"/>
+            <field name="event_zip_verification_id" nolabel="1" options="{'no_create': True}" />
+            <div colspan="2" class="text-muted small mt-1 mb-2" style="white-space: normal;">
+              *IMPORTANT ZIP CODE VERIFICATION STEP* The zip code selected MUST MATCH the EVENT ZIP CODE / NOT the BILLING ZIP CODE (If different) CAUTION!! If Zip Code is not listed, you must verify franchise territory ownership with zip code file on intranet or by contacting corporate office.
+            </div>
+            <label for="event_type" string="Type of event"/>
+            <field name="event_type" nolabel="1" />
+            <div colspan="2" class="text-muted small mt-1 mb-2" style="white-space: normal;">
+              Type of Event? Birthday Party - Age of guests? Wedding, Bachelor Party, Corporate, School, etc.
+            </div>
+            <label for="damage_waiver" string="Damage waiver"/>
+            <field name="damage_waiver" nolabel="1" placeholder="Select..."/>
+            <div colspan="2" class="text-muted small mt-1 mb-2" style="white-space: normal;">
+              For your protection we offer a damage waiver for 10% of your rental fee. We will waive any damage that happens to our equipment during your rental excluding intentional damage or theft.
+            </div>
+            <label for="event_location" string="Event location"/>
+            <field name="event_location" nolabel="1" placeholder="Select..."/>
+            <div colspan="2" class="text-muted small mt-1 mb-2" style="white-space: normal;">
+              Are you having your event at a park, church, school or business (anything non-residential)?
+            </div>
+            <field name="event_country_id" invisible="1"/>
+          </group>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>

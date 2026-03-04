@@ -1,0 +1,4 @@
+/* Override signup form max-width */
+.oe_signup_form {
+    max-width: 650px !important;
+}

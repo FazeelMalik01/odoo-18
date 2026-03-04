@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="journal_entry_report_action" model="ir.actions.report">
+            <field name="name">Journal Entry Report</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">custom_falcon_rep.journal_entry_report_template</field>
+            <field name="report_file">custom_falcon_rep.journal_entry_report_template</field>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="domain">[('move_type', '=', 'entry')]</field>
+        </record>
+    </data>
+</odoo>

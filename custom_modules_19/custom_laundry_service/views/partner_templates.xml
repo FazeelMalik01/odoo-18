@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Override portal_my_home to add Service Requests card -->
+        <template id="portal_my_home_inherit_partner" inherit_id="portal.portal_my_home" name="Portal My Home - Service Requests Card">
+            <xpath expr="//div[@id='portal_common_category']" position="inside">
+                <t t-call="portal.portal_docs_entry" groups="custom_laundry_service.group_partner">
+                    <t t-set="icon" t-value="'/custom_laundry_service/static/src/img/portal-service.svg'"/>
+                    <t t-set="title">Service Requests</t>
+                    <t t-set="text">View and manage your service requests</t>
+                    <t t-set="url" t-value="'/my/service-requests'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </xpath>
+        </template>
+
+        <!-- Override portal breadcrumbs to add Service Requests -->
+        <template id="portal_breadcrumbs_inherit_partner" inherit_id="portal.portal_breadcrumbs" name="Portal Breadcrumbs - Service Requests">
+            <xpath expr="//ol[@class='o_portal_submenu breadcrumb mb-0 flex-grow-1 px-0']" position="inside">
+                <li t-if="page_name == 'my_service_requests'" class="breadcrumb-item">Service Requests</li>
+            </xpath>
+        </template>
+
+        <!-- Service Requests List Page -->
+        <template id="portal_my_service_requests" name="My Service Requests">
+            <t t-call="portal.portal_layout">
+                <t t-set="page_name" t-value="'my_service_requests'"/>
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <!-- Include image viewer modal -->
+                <t t-call="custom_laundry_service.completion_images_modal"/>
+                <!-- Include service request detail modal -->
+                <t t-call="custom_laundry_service.service_request_detail_modal"/>
+                <div class="o_portal_my_service_requests">
+                    <t t-call="portal.portal_searchbar">
+                        <t t-set="title">Service Requests</t>
+                    </t>
+                    <div class="o_portal_docs">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">My Service Requests</h4>
+                        </div>
+                        <!-- Services Done Counter -->
+                        <div class="alert alert-info d-flex justify-content-between align-items-center mb-3" role="alert">
+                            <div>
+                                <strong>No. of Services Done:</strong> 
+                                <span class="badge bg-primary ms-2" style="font-size: 1.1em; padding: 0.5em 0.75em;">
+                                    <t t-esc="services_done_count or 0"/>
+                                </span>
+                            </div>
+                            <small class="text-muted">Services with status: Confirmed, Pickup, In Progress, Completed, or Delivery</small>
+                        </div>
+                        
+                        <t t-if="service_requests and len(service_requests) > 0">
+                            <!-- Check if any service request has status 'pickup' or 'delivery' -->
+                            <t t-set="has_pickup_or_delivery" t-value="any(sr.get('status_value') in ['pickup', 'delivery'] for sr in service_requests or [])"/>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Request Number</th>
+                                            <th>Date &amp; Time</th>
+                                            <th>Service Types</th>
+                                            <th>Customer</th>
+                                            <th class="approval-column-header">Approval</th>
+                                            <th class="status-column-header" style="display: none;">Status</th>
+                                            <!-- Completion Images column - only show if any service request has status 'pickup' or 'delivery' -->
+                                            <t t-if="has_pickup_or_delivery">
+                                                <th>Completion Images</th>
+                                            </t>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="service_requests" t-as="service_request">
+                                            <td>
+                                                <a href="#" 
+                                                   class="service-request-detail-link text-decoration-none" 
+                                                   t-att-data-appointment-id="service_request.get('id')"
+                                                   style="color: #0d6efd; cursor: pointer;">
+                                                    <strong><t t-esc="service_request.get('name', '')"/></strong>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <t t-esc="service_request.get('date', '')"/>
+                                                <t t-if="service_request.get('time')">
+                                                    <br/><small class="text-muted"><t t-esc="service_request.get('time', '')"/></small>
+                                                </t>
+                                            </td>
+                                            <td>
+                                                <t t-esc="service_request.get('service_types', 'N/A')"/>
+                                            </td>
+                                            <td>
+                                                <t t-esc="service_request.get('customer_name', '')"/>
+                                                <t t-if="service_request.get('phone')">
+                                                    <br/><small class="text-muted"><t t-esc="service_request.get('phone', '')"/></small>
+                                                </t>
+                                            </td>
+                                            <!-- Approval Column - Show when pending and not yet responded -->
+                                            <td class="approval-column" t-attf-style="display: {{ 'none' if service_request.get('status_value') == 'confirmed' or service_request.get('has_responded') else 'table-cell' }};">
+                                                <t t-set="current_status" t-value="service_request.get('status_value', 'pending')"/>
+                                                <t t-if="current_status == 'pending' and not service_request.get('has_responded')">
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-success accept-request-btn me-1"
+                                                            t-att-data-appointment-id="service_request.get('id')">
+                                                        <i class="fa fa-check me-1"></i>Accept
+                                                    </button>
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-danger reject-request-btn"
+                                                            t-att-data-appointment-id="service_request.get('id')">
+                                                        <i class="fa fa-times me-1"></i>Reject
+                                                    </button>
+                                                </t>
+                                            </td>
+                                            <!-- Status Column - Show when confirmed or responded -->
+                                            <td class="status-column" t-attf-style="display: {{ 'table-cell' if service_request.get('status_value') == 'confirmed' or service_request.get('has_responded') else 'none' }};">
+                                                <t t-set="current_status" t-value="service_request.get('status_value', 'pending')"/>
+                                                <select class="form-select form-select-sm status-select" 
+                                                        t-att-data-appointment-id="service_request.get('id')"
+                                                        t-att-data-current-status="current_status">
+                                                    <option value="pending" 
+                                                            t-att-selected="current_status == 'pending'"
+                                                            disabled="disabled">Pending</option>
+                                                    <option value="confirmed" 
+                                                            t-att-selected="current_status == 'confirmed'"
+                                                            t-att-disabled="current_status not in ['pending']">Confirmed</option>
+                                                    <option value="pickup" 
+                                                            t-att-selected="current_status == 'pickup'"
+                                                            t-att-disabled="current_status not in ['confirmed']">Pickup</option>
+                                                    <option value="in_progress" 
+                                                            t-att-selected="current_status == 'in_progress'"
+                                                            t-att-disabled="current_status not in ['pickup']">In Progress</option>
+                                                    <option value="completed" 
+                                                            t-att-selected="current_status == 'completed'"
+                                                            t-att-disabled="current_status not in ['in_progress']">Completed</option>
+                                                    <option value="delivery" 
+                                                            t-att-selected="current_status == 'delivery'"
+                                                            t-att-disabled="current_status not in ['completed']">Delivery</option>
+                                                    <option value="cancelled" 
+                                                            t-att-selected="current_status == 'cancelled'"
+                                                            t-att-disabled="current_status not in ['pending']">Cancelled</option>
+                                                </select>
+                                            </td>
+                                            <!-- Completion Images column - only show if status is 'pickup' or 'delivery' -->
+                                            <t t-if="has_pickup_or_delivery">
+                                                <td t-if="service_request.get('status_value') in ['pickup', 'delivery']">
+                                                    <div class="completion-images-container" t-att-data-appointment-id="service_request.get('id')">
+                                                        <!-- Image upload form - show if no images exist OR if status is delivery (allow additional uploads) -->
+                                                        <t t-if="not service_request.get('completion_images') or len(service_request.get('completion_images', [])) == 0">
+                                                            <form class="completion-image-upload-form" enctype="multipart/form-data">
+                                                                <input type="file" 
+                                                                       class="form-control form-control-sm completion-image-input" 
+                                                                       accept="image/*" 
+                                                                       multiple="multiple"
+                                                                       t-att-data-appointment-id="service_request.get('id')"/>
+                                                                <button type="button" 
+                                                                        class="btn btn-sm btn-primary mt-1 upload-images-btn"
+                                                                        t-att-data-appointment-id="service_request.get('id')">
+                                                                    <i class="fa fa-upload me-1"></i>Upload Images
+                                                                </button>
+                                                            </form>
+                                                        </t>
+                                                        <!-- View Images button and image count - show if images exist -->
+                                                        <t t-if="service_request.get('completion_images') and len(service_request.get('completion_images', [])) > 0">
+                                                            <div class="mt-2">
+                                                                <button type="button" 
+                                                                        class="btn btn-sm btn-info view-images-btn"
+                                                                        t-att-data-appointment-id="service_request.get('id')"
+                                                                        t-att-data-images="json.dumps(service_request.get('completion_images', []))">
+                                                                    <i class="fa fa-images me-1"></i>View Images (<t t-esc="len(service_request.get('completion_images', []))"/>)
+                                                                </button>
+                                                                <!-- Allow additional uploads on delivery status even if images exist -->
+                                                                <t t-if="service_request.get('status_value') == 'delivery'">
+                                                                    <form class="completion-image-upload-form mt-2" enctype="multipart/form-data">
+                                                                        <input type="file" 
+                                                                               class="form-control form-control-sm completion-image-input" 
+                                                                               accept="image/*" 
+                                                                               multiple="multiple"
+                                                                               t-att-data-appointment-id="service_request.get('id')"/>
+                                                                        <button type="button" 
+                                                                                class="btn btn-sm btn-primary mt-1 upload-images-btn"
+                                                                                t-att-data-appointment-id="service_request.get('id')">
+                                                                            <i class="fa fa-upload me-1"></i>Upload More Images
+                                                                        </button>
+                                                                    </form>
+                                                                </t>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </td>
+                                                <td t-if="service_request.get('status_value') not in ['pickup', 'delivery']">
+                                                    <span class="text-muted">-</span>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="alert alert-info" role="alert">
+                                <h4 class="alert-heading">No Service Requests</h4>
+                                <p class="mb-0">You don't have any service requests yet. Service requests will appear here once they are created.</p>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Image Viewer Modal -->
+        <template id="completion_images_modal" name="Completion Images Modal">
+            <div class="modal fade" id="completionImagesModal" tabindex="-1" aria-labelledby="completionImagesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="completionImagesModalLabel">Completion Images</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="modal-images-container" class="row g-3">
+                                <!-- Images will be loaded here via JavaScript -->
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Service Request Detail Modal -->
+        <template id="service_request_detail_modal" name="Service Request Detail Modal">
+            <div class="modal fade" id="serviceRequestDetailModal" tabindex="-1" aria-labelledby="serviceRequestDetailModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="serviceRequestDetailModalLabel">Service Request Details</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="service-request-detail-content">
+                                <div class="text-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mt-2">Loading details...</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </data>
+</odoo>
+

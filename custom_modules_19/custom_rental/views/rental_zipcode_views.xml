@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="rental_zipcode_view_list" model="ir.ui.view">
+        <field name="name">rental.zipcode.list</field>
+        <field name="model">rental.zipcode</field>
+        <field name="arch" type="xml">
+            <list string="Zip Codes" create="1" edit="1" delete="1">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="city"/>
+                <field name="state_id"/>
+                <field name="country_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="rental_zipcode_view_form" model="ir.ui.view">
+        <field name="name">rental.zipcode.form</field>
+        <field name="model">rental.zipcode</field>
+        <field name="arch" type="xml">
+            <form string="Zip Code">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="city"/>
+                        </group>
+                        <group>
+                            <field name="state_id"/>
+                            <field name="country_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rental_zipcode" model="ir.actions.act_window">
+        <field name="name">Zip Codes</field>
+        <field name="res_model">rental.zipcode</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first zip code.
+            </p>
+            <p>
+                Add zip/postal codes to use in rental orders.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_rental_zipcode"
+        name="Zip Codes"
+        parent="sale_renting.menu_rental_config"
+        action="action_rental_zipcode"
+        groups="sales_team.group_sale_manager"
+        sequence="15"/>
+</odoo>

@@ -1,0 +1,14 @@
+/* Make many2many_checkboxes display horizontally */
+.o_field_widget.o_field_many2many_checkboxes > div {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 1rem !important;
+    align-items: center !important;
+}
+
+.o_field_widget.o_field_many2many_checkboxes > div > div {
+    display: inline-flex !important;
+    align-items: center !important;
+    margin-right: 0.5rem !important;
+}
+

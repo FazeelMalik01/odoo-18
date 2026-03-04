@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- ========================= -->
+    <!--   HEADER EXTENSION        -->
+    <!-- ========================= -->
+    <t t-name="custom_pos.ReceiptHeader"
+       t-inherit="point_of_sale.ReceiptHeader"
+       t-inherit-mode="extension">
+
+        <!-- Add partner info below the company header -->
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="after">
+            <div class="pos-receipt-center-align" style="margin-bottom: 5px;">
+                <t t-if="props.data.partner">
+                    <div style="font-size: 16px; font-weight: bold;">
+                        <t t-out="props.data.partner.name"/>
+                    </div>
+
+<t t-if="props.data.partner.phone">
+    <div>Phone: <t t-esc="props.data.partner.phone" /></div>
+</t>
+<t t-if="props.data.partner.mobile">
+    <div>Mobile: <t t-esc="props.data.partner.mobile" /></div>
+</t>
+
+                    <t t-if="props.data.partner.contact_address">
+                        <div style="font-size: 16px; font-weight: bold;">
+                            <span>Address: </span>
+                            <span t-esc="props.data.partner.contact_address"/>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </xpath>
+
+        <!-- Make the original contact section slightly larger -->
+        <xpath expr="//div[hasclass('pos-receipt-contact')]" position="attributes">
+            <attribute name="style" add="font-size: 18px" separator=" "/>
+        </xpath>
+    </t>
+
+<!--    <t t-name="custom_pos.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">-->
+
+<!--        &lt;!&ndash; Hide "Served by Cashier" &ndash;&gt;-->
+<!--        <xpath expr="//div[contains(@class,'pos-receipt-order-data')]/p" position="attributes">-->
+<!--            <attribute name="style">display: none;</attribute>-->
+<!--        </xpath>-->
+
+<!--        &lt;!&ndash; Bold order number and date &ndash;&gt;-->
+<!--        <xpath expr="//div[contains(@class,'pos-receipt-order-data')]/div[@t-esc='props.data.name']"-->
+<!--               position="attributes">-->
+<!--            <attribute name="style" add="font-weight: bold;" separator=" "/>-->
+<!--        </xpath>-->
+<!--        <xpath expr="//div[contains(@class,'pos-receipt-order-data')]/div[@t-esc='props.data.date']"-->
+<!--               position="attributes">-->
+<!--            <attribute name="style" add="font-weight: bold;" separator=" "/>-->
+<!--        </xpath>-->
+
+<!--        &lt;!&ndash; Replace totals &ndash;&gt;-->
+<!--        <xpath expr="//div[contains(@class,'receipt-total')]" position="replace">-->
+<!--            <div class="pos-receipt-amount receipt-total" style="font-size: 14px; font-weight: bold">-->
+<!--                <t>TOTAL LBP:</t>-->
+<!--                <span t-esc="props.formatCurrency((taxTotals.order_sign * taxTotals.order_total) or 0)" class="pos-receipt-right-align"/>-->
+<!--            </div>-->
+<!--            <div t-if="props.data.total_usd_display" class="pos-receipt-amount receipt-total" style="font-size: 14px; font-weight: bold">-->
+<!--                <t>TOTAL USD:</t>-->
+<!--                <span class="pos-receipt-right-align"><t t-esc="props.data.total_usd_display"/>$</span>-->
+<!--&lt;!&ndash;                <span t-esc="props.data.total_usd_display" class="pos-receipt-right-align"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <span  t-esc="props.formatCurrency((props.data.order_change or 0))"  class="pos-receipt-right-align"/>&ndash;&gt;-->
+<!--            </div>-->
+
+<!--&lt;!&ndash;            <div class="text-center">&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</div>&ndash;&gt;-->
+
+<!--        </xpath>-->
+
+<!--        <xpath expr="//div[contains(@class,'pos-receipt-taxes')]" position="replace">-->
+
+<!--        </xpath>-->
+
+<!--&lt;!&ndash;        <xpath expr="//div[@class='paymentlines text-start']" position="replace"/>&ndash;&gt;-->
+<!--&lt;!&ndash;        <xpath expr="//div[contains(@class,'paymentlines')]" position="replace"/>&ndash;&gt;-->
+
+<!--        &lt;!&ndash; Bold payment lines &ndash;&gt;-->
+<!--        <xpath expr="//div[contains(@class,'paymentlines') or contains(@class,'receipt-paymentlines')]"-->
+<!--               position="replace">-->
+<!--&lt;!&ndash;            <attribute name="style" add="font-weight: bold;" separator=" "/>&ndash;&gt;-->
+<!--        </xpath>-->
+
+<!--        &lt;!&ndash; Replace change section &ndash;&gt;-->
+<!--        <xpath expr="//div[contains(@class,'receipt-change')]" position="replace">-->
+
+<!--            &lt;!&ndash; Keep tax section &ndash;&gt;-->
+<!--            <t t-set="taxTotals" t-value="props.data.taxTotals"/>-->
+<!--            <div t-if="taxTotals and taxTotals.has_tax_groups" class="pos-receipt-taxes">-->
+<!--                <div class="text-center">&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</div>-->
+<!--                <t t-foreach="taxTotals.subtotals" t-as="subtotal" t-key="subtotal.name">-->
+<!--                    <div class="d-flex" style="font-size: 14px; font-weight: bold">-->
+<!--                        <span t-if="showTaxGroupLabels" class="me-2" style="visibility: hidden;">A</span>-->
+<!--                        <span class="fw-bolder text-nowrap mw-100" t-out="subtotal.name"/>-->
+<!--                        <span t-esc="props.formatCurrency(subtotal.base_amount_currency)" class="ms-auto"/>-->
+<!--                    </div>-->
+
+<!--                    <div t-foreach="subtotal.tax_groups" t-as="tax_group" t-key="tax_group.id" class="d-flex" style="font-size: 14px; font-weight: bold">-->
+<!--                        <t t-if="showTaxGroupLabels">-->
+<!--                            <span t-if="tax_group.group_label" t-out="tax_group.group_label" class="me-2"/>-->
+<!--                            <span t-else="" class="me-2" style="visibility: hidden;">A</span>-->
+<!--                        </t>-->
+<!--                        <span>-->
+<!--                            <span t-esc="tax_group.group_name"/>-->
+<!--                            <t t-if="!taxTotals.same_tax_base">-->
+<!--                                on-->
+<!--                                <span t-esc="props.formatCurrency(tax_group.base_amount_currency)"/>-->
+<!--                            </t>-->
+<!--                        </span>-->
+<!--                        <span t-esc="props.formatCurrency(tax_group.tax_amount_currency)" class="ms-auto"/>-->
+<!--                    </div>-->
+<!--                </t>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Payment Lines &ndash;&gt;-->
+<!--            <t t-if="props.data.taxTotals">-->
+<!--                <t t-if="taxTotals and taxTotals.has_tax_groups">-->
+<!--                <div class="paymentlines text-start"-->
+<!--                     t-foreach="props.data.paymentlines"-->
+<!--                     t-as="line"-->
+<!--                     t-key="line_index" style="font-size: 14px; font-weight: bold">-->
+<!--                    <t t-esc="line.name" />-->
+<!--                    <span t-esc="props.formatCurrency(line.amount)" class="pos-receipt-right-align"/>-->
+<!--                </div>-->
+<!--                    </t>-->
+<!--</t>-->
+<!--            &lt;!&ndash; Divider line &ndash;&gt;-->
+<!--            <div class="text-center">&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</div>-->
+
+
+
+<!--            <t t-set="taxTotals" t-value="props.data.taxTotals"/>-->
+
+<!--                <t t-if="!taxTotals.has_tax_groups">-->
+
+<!--            <div class="paymentlines text-start"-->
+<!--                 t-foreach="props.data.paymentlines"-->
+<!--                 t-as="line"-->
+<!--                 t-key="line_index" style="font-size: 14px; font-weight: bold">-->
+<!--                <t t-esc="line.name" />-->
+<!--                <span t-esc="props.formatCurrency(line.amount)" class="pos-receipt-right-align"/>-->
+<!--            </div>-->
+
+<!--            <div class="text-center">&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</div>-->
+
+<!--            </t>-->
+
+<!--            <div class="pos-receipt-amount receipt-change" style="font-size: 14px; font-weight: bold">-->
+<!--                <t>CHANGE LBP:</t>-->
+<!--&lt;!&ndash;                <span t-esc="props.data.change_lbp_display or props.formatCurrency(props.data.order_change or 0)"&ndash;&gt;-->
+<!--&lt;!&ndash;                      class="pos-receipt-right-align"/>&ndash;&gt;-->
+<!--                <span t-esc="props.formatCurrency((props.data.order_change or 0))" class="pos-receipt-right-align"/>-->
+<!--            </div>-->
+
+<!--            <div t-if="props.data.change_usd_display" class="pos-receipt-amount receipt-change" style="font-size: 14px; font-weight: bold">-->
+<!--                <t>CHANGE USD:</t>-->
+<!--    <span class="pos-receipt-right-align"><t t-esc="props.data.change_usd_display"/>$</span>-->
+
+<!--                &lt;!&ndash;                <span  t-esc="props.data.change_usd_display" class="pos-receipt-right-align"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                <span  t-esc="props.formatCurrency((props.data.change_usd_display or 0))"  class="pos-receipt-right-align"/>&ndash;&gt;-->
+<!--            </div>-->
+
+<!--        </xpath>-->
+
+
+<!--&lt;!&ndash;        &lt;!&ndash; Bold payment lines &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;        <xpath expr="//div[contains(@class,'paymentlines') or contains(@class,'receipt-paymentlines')]"&ndash;&gt;-->
+<!--&lt;!&ndash;               position="replace">&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            <attribute name="style" add="font-weight: bold;" separator=" "/>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;        </xpath>&ndash;&gt;-->
+
+<!--        &lt;!&ndash; Bold footer &ndash;&gt;-->
+<!--        <xpath expr="//div[contains(@class,'footer') or contains(@class,'receipt-footer')]"-->
+<!--               position="attributes">-->
+<!--            <attribute name="style" add="font-weight: bold;" separator=" "/>-->
+<!--        </xpath>-->
+
+<!--        &lt;!&ndash; Safely remove total discount block &ndash;&gt;-->
+<!--        <xpath expr="//t[@t-if='props.data.total_discount']" position="replace"/>-->
+
+<!--        &lt;!&ndash; Hide "Served by Cashier" &ndash;&gt;-->
+<!--        <xpath expr="//div[contains(@class,'pos-receipt-order-data')]/p" position="attributes">-->
+<!--            <attribute name="style">display: none;</attribute>-->
+<!--        </xpath>-->
+
+<!--        &lt;!&ndash; Bold order number and date &ndash;&gt;-->
+<!--        <xpath expr="//div[contains(@class,'pos-receipt-order-data')]/div[@t-esc='props.data.name']"-->
+<!--               position="attributes">-->
+<!--            <attribute name="style" add="font-weight: bold;" separator=" "/>-->
+<!--        </xpath>-->
+
+<!--        <xpath expr="//div[contains(@class,'pos-receipt-order-data')]/div[@t-esc='props.data.date']"-->
+<!--               position="attributes">-->
+<!--            <attribute name="style" add="font-weight: bold;" separator=" "/>-->
+<!--        </xpath>-->
+
+<!--&lt;!&ndash;        &lt;!&ndash; Bold totals: use any of the classes that might exist &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;        <xpath expr="//div[contains(@class,'totals') or contains(@class,'receipt-total') or contains(@class,'receipt-summary')]"&ndash;&gt;-->
+<!--&lt;!&ndash;               position="attributes">&ndash;&gt;-->
+<!--&lt;!&ndash;            <attribute name="style" add="font-weight: bold;" separator=" "/>&ndash;&gt;-->
+<!--&lt;!&ndash;        </xpath>&ndash;&gt;-->
+
+<!--    </t>-->
+</templates>

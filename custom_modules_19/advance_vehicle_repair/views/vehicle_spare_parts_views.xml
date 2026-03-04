@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="product_product_inherit_id" model="ir.ui.view">
+        <field name="name">product.product.inheritance</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='options']" position="inside">
+                <span class="d-inline-block">
+                    <field name="spare_part"/>
+                    <label for="spare_part"/>
+                </span>
+
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_inherited_product_product" model="ir.actions.act_window">
+        <field name="name">Spare Parts</field>
+        <field name="res_model">product.product</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('spare_part', '=', True)]</field>
+    </record>
+
+    <menuitem id="menu_spare_parts_items"
+              name="Spare Parts"
+              parent="menu_spare_parts"
+              action="action_inherited_product_product"
+              sequence="2"/>
+
+</odoo>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Custom Paperformat for Proforma Invoice -->
+        <record id="paperformat_proforma_invoice" model="report.paperformat">
+            <field name="name">Proforma Invoice Format</field>
+            <field name="default" eval="False"/>
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <!-- Minimal margins -->
+            <field name="margin_top">5</field>
+            <field name="margin_bottom">25</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <!-- Report Action - Proforma Invoice should be available from Accounting (Invoices),
+             not from the Sales module, so it is bound to account.move. -->
+        <record id="action_report_proforma_invoice" model="ir.actions.report">
+            <field name="name">Proforma Invoice</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">custom_reports.proforma_invoice_report</field>
+            <field name="report_file">custom_reports.proforma_invoice_report</field>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="print_report_name">object.get_proforma_invoice_filename()</field>
+            <!-- Show for draft and posted customer invoices -->
+            <field name="domain">[('move_type', '=', 'out_invoice'), ('state', 'in', ['draft', 'posted'])]</field>
+            <field name="paperformat_id" ref="custom_reports.paperformat_proforma_invoice"/>
+        </record>
+
+        <!-- Report Template (use basic_layout so PDF body content renders; html_container can show only footer) -->
+        <template id="proforma_invoice_report">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="doc">
+                    <!-- Shared header from Tax Quotation -->
+                    <t t-call="custom_reports.tax_quotation_header"/>
+
+                    <div class="page" style="font-family: Arial, sans-serif; padding: 0 40px 40px 40px; padding-top:10px !important;">
+
+                        <!-- Title: Proforma Invoice -->
+                        <div style="margin: 30px 0; margin-top: 20%;">
+                            <h1 style="font-size: 38px; font-weight: bold; color: #666;">PROFORMA INVOICE</h1>
+                        </div>
+
+                        <!-- Invoice Header + Customer Details / Payment Info to match client layout -->
+                        <div style="margin: 20px 0;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 14px; border-color:#fff;">
+                                <!-- First row: INVOICE NO / DATE -->
+                                <tr>
+                                <td style="width: 50%; padding: 4px 2px; border: none; text-align: left;">
+                                    <strong>INVOICE NO:</strong>
+                                    <span style="padding-left: 10px;">
+                                        <!-- Use linked quotation number when available -->
+                                        <t t-esc="doc._get_linked_sale_order().name or doc.name or ''"/>
+                                    </span>
+                                </td>
+                                    <td style="width: 50%; padding: 4px 2px; border: none; text-align: left;">
+                                        <strong>DATE:</strong>
+                                        <span style="padding-left: 10px;">
+                                            <!-- Use invoice date formatted when printing from Accounting -->
+                                            <t t-esc="doc.get_invoice_date_formatted()"/>
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                <!-- Second row: CUSTOMER DETAILS / PAYMENT INFO headings with border -->
+                                <tr style="background-color: #d3d5d2; color: #666; border-top: 2px solid #d3d5d2; border-bottom: 2px solid #d3d5d2;">
+                                    <td style="padding: 4px; text-align: left; font-weight: bold;">
+                                        CUSTOMER DETAILS:
+                                    </td>
+<!--                                    <td style="padding: 4px; text-align: left; font-weight: bold;">-->
+<!--                                        &lt;!&ndash; PAYMENT INFO: (commented out) &ndash;&gt;-->
+<!--                                    </td>-->
+                                </tr>
+
+                                <!-- Detail rows -->
+                                <tr style="border-color: #fff;">
+                                    <td style="padding: 4px; border-left: 1px solid #fff;">
+                                        <span style="font-weight: bold;">TO:</span>
+                                        <span style="padding-left: 10px;">
+                                            <t t-esc="doc.partner_id.name or ''"/>
+                                        </span>
+                                    </td>
+                                    <td style="padding: 4px; border-right: 1px solid #fff;">
+                                        <!-- METHOD (commented out)
+                                        <span style="font-weight: bold;">METHOD:</span>
+                                        <span style="padding-left: 10px;">
+                                            <t t-esc="doc.get_invoice_payment_method()"/>
+                                        </span>
+                                        -->
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px; border-left: 1px solid #fff;">
+                                        <span style="font-weight: bold;">SITE:</span>
+                                        <span style="padding-left: 10px;">
+                                            <!-- SITE should come from linked sale order when printing from Accounting -->
+                                            <t t-esc="doc.get_sale_site()"/>
+                                        </span>
+                                    </td>
+                                    <td style="padding: 4px; border-right: 1px solid #fff;">
+                                        <!-- CHEQUE NO. (commented out)
+                                        <span style="font-weight: bold;">CHEQUE NO.:</span>
+                                        <span style="padding-left: 10px;">
+                                            <t t-esc="doc.cheque_no or ''"/>
+                                        </span>
+                                        -->
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <!-- Keep empty cell so layout/columns stay aligned, but hide ATT -->
+                                    <td style="padding: 4px; border-left: 1px solid #fff;">
+                                        <span style="visibility: hidden; font-weight: bold;">ATT:</span>
+                                        <span style="padding-left: 10px; visibility: hidden;">
+                                            <t t-esc="doc.get_sale_att()"/>
+                                        </span>
+                                    </td>
+                                    <td style="padding: 4px; border-right: 1px solid #fff;">
+                                        <!-- BANK NAME (commented out)
+                                        <span style="font-weight: bold;">BANK NAME:</span>
+                                        <span style="padding-left: 10px;">
+                                            <t t-esc="doc.bank_name or ''"/>
+                                        </span>
+                                        -->
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px; border-left: 1px solid #fff;">
+                                        <span style="font-weight: bold;">SUBJECT:</span>
+                                        <span style="padding-left: 10px;">
+                                            <t t-esc="doc.get_sale_subject()"/>
+                                        </span>
+                                    </td>
+                                    <td style="padding: 4px; border-right: 1px solid #fff;">
+                                        <!-- Empty cell under Payment Info to match sample -->
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px; border-left: 1px solid #fff; border-bottom: 1px solid #fff;">
+                                        <span style="font-weight: bold;">TRN#</span>
+                                        <span style="padding-left: 10px;">
+                                            <!-- Customer TRN should come from partner.vat -->
+                                            <t t-esc="doc.get_customer_vat()"/>
+                                        </span>
+                                    </td>
+                                    <td style="padding: 4px; border-right: 1px solid #fff; border-bottom: 1px solid #fff;">
+                                        <!-- Empty cell under Payment Info to match sample -->
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Product table styled like client sample (thin lines, bold 'Full Payment') -->
+                        <div style="margin: 0; position: relative;">
+                            <!-- Table area -->
+                            <div style="width: 100%;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; border-color: #fff;">
+                                    <thead>
+                                        <tr style="background-color: #d3d5d2; color: #666; border-top: 2px solid #d3d5d2; border-bottom: 2px solid #d3d5d2;">
+                                            <th style="padding: 4px 6px; text-align: left; border: none;"><strong>ITEM DESCRIPTION</strong></th>
+                                            <th style="padding: 4px 6px; text-align: center; border: none; width: 60px;"><strong>QTY</strong></th>
+                                            <th style="padding: 4px 6px; text-align: right; border: none; width: 120px;"><strong>AMOUNT</strong></th>
+                                            <th style="padding: 4px 6px; text-align: right; border: none; width: 100px;"><strong>VAT 5%</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="payment_term_label" t-value="doc.invoice_payment_term_id.name if doc.invoice_payment_term_id else 'Payment'"/>
+                                        <tr>
+                                            <td style="padding: 8px 6px; border-bottom: 2px solid #d3d5d2;">
+                                                <span style="font-weight: bold;">1
+                                                    <t t-esc="payment_term_label"/>   Payment:
+                                                </span>
+                                                <span>
+                                                    Reff. QUOTATION
+                                                    <t t-esc="doc._get_linked_sale_order().name or ''"/> - <t t-esc="doc.get_sale_subject()"/>
+                                                </span>
+                                            </td>
+                                            <td style="padding: 8px 6px; text-align: center; border-bottom: 2px solid #d3d5d2;">
+                                                1
+                                            </td>
+                                            <td style="padding: 8px 6px; text-align: right; border-bottom: 2px solid #d3d5d2;">
+                                                <t t-esc="'{:,.2f}'.format(doc.amount_untaxed)"/>
+                                            </td>
+                                            <td style="padding: 8px 6px; text-align: right; border-bottom: 2px solid #d3d5d2;">
+                                                <t t-esc="'{:,.2f}'.format(doc.amount_tax)"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- QR image on the extreme right, overlaid so it doesn't push content down -->
+<!--                                <div style="position: absolute; top: 0; right: 0; text-align: right;">-->
+<!--                                    <img t-if="doc.get_qr_logo()"-->
+<!--                                         t-att-src="'data:image/png;base64,' + doc.get_qr_logo()"/>-->
+<!--                                </div>-->
+                        </div>
+
+                        <!-- Totals + Terms on same row, styled like client sample -->
+                        <div style="margin: 10px 0 5px 0;">
+                            <div style="overflow: hidden;">
+                                <!-- LEFT: Terms & Conditions B -->
+                                <div style="float: left; width: 55%; color: #777; font-size: 9px;">
+                                    <div style="font-weight: bold; margin-bottom: 3px;">
+                                        Terms &amp; Conditions
+                                    </div>
+                                    <div>
+                                        Payment received and acknowledged. For discrepancies, contact us within 15 days of receipt.
+                                    </div>
+                                </div>
+
+                                <!-- RIGHT: Totals (labels left, amounts right) -->
+                                <div style="float: right; width: 40%; font-size: 11px; text-align: right; font-size: 14px;">
+                                    <table style="width: 100%; border-collapse: collapse; border-color: #fff;">
+                                        <tr>
+                                            <td style="padding: 3px 0; text-align: left;">SUBTOTAL:</td>
+                                            <td style="padding: 3px 0; text-align: right;">AED <t t-esc="'{:,.2f}'.format(doc.amount_untaxed)"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 3px 0; text-align: left;">VAT 5%:</td>
+                                            <td style="padding: 3px 0; text-align: right;">AED <t t-esc="'{:,.2f}'.format(doc.amount_tax)"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 6px 0; text-align: left; color: #666;"><strong>TOTAL:</strong></td>
+                                            <td style="padding: 6px 0; text-align: right;"><strong>AED <t t-esc="'{:,.2f}'.format(doc.amount_total)"/></strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Amount in Words - Bottom-left, bold, full-width left-aligned -->
+                        <div style="padding: 8px 0; text-align: center; margin-top: 8px; color: #000; clear: both;">
+                            <strong style="font-size: 14px;"><t t-esc="doc._get_amount_in_words_invoice(doc.amount_total)"/></strong>
+                        </div>
+
+                        <!-- Bank Account Information ONLY (no stamps on proforma) -->
+                        <div style="margin: 20px 0;">
+                            <strong style="font-size: 14px;">BANK ACCOUNT INFORMATION:</strong>
+                            <div style="margin-top: 10px; font-size: 12px;">
+                                <div><strong>Account Name:</strong> HONEST MASTERS DECOR L.L.C</div>
+                                <div><strong>Account Number:</strong> 019100023308</div>
+                                <div><strong>IBAN Number:</strong> AE960330000019100023308</div>
+                                <div><strong>Bank Name:</strong> Mashreq Bank Rigga Branch Dubai UAE</div>
+                                <div><strong>Swift Code:</strong> BOMLAEAD</div>
+                            </div>
+                        </div>
+
+                        <!-- Footer: Logo left, Page center, Signature right (same line, normal flow so PDF shows it) -->
+                        <div class="footer" style="margin-top: 45px; padding-top: 30px; width: 100%; font-family: Arial, sans-serif; font-size: 12px;">
+                            <table style="width: 100%; border: none; border-color: #fff;">
+                                <tr>
+                                    <td style="width: 33%; text-align: left; vertical-align: middle; border: none;">
+                                        <img t-if="doc.get_instagram_logo()" t-att-src="'data:image/png;base64,' + doc.get_instagram_logo()" style="max-height: 28px; max-width: 120px;" alt="Instagram"/>
+                                    </td>
+                                    <td style="width: 34%; text-align: center; vertical-align: middle; border: none;">
+                                        Page <span class="page"/> of <span class="topage"/>
+                                    </td>
+                                    <td style="width: 33%; text-align: right; vertical-align: middle; border: none;">
+                                        Customer Signature __________________
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

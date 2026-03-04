@@ -1,0 +1,190 @@
+<odoo>
+    <!-- Breadcrumb for purchase orders list -->
+    <template id="portal_purchase_orders_breadcrumb" inherit_id="portal.portal_breadcrumbs" name="Purchase Orders List Breadcrumb">
+        <xpath expr="//ol" position="inside">
+            <li t-if="page_name == 'purchase_orders_list'" class="breadcrumb-item active">
+                Purchase Orders
+            </li>
+        </xpath>
+    </template>
+
+    <!-- Dealer Purchase Orders List -->
+    <template id="portal_purchase_orders_list" name="Dealer Purchase Orders List">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">Purchase Orders</t>
+
+            <style>
+                /* Status badges */
+                .oe_status {
+                display: inline-block;
+                padding: 4px 16px;        /* vertical 4px, horizontal 16px */
+                border-radius: 50px;      /* fully rounded pill */
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: none;     /* normal text */
+                letter-spacing: 0.4px;
+                border: 1px solid transparent;
+                white-space: nowrap;
+                min-width: 100px;         /* optional for uniform width */
+                text-align: center;
+            }
+
+            /* Confirmed Purchase Order – green pill */
+            .status_sale {
+                background-color: #198754;
+                color: #ffffff;
+                border-color: #198754;
+            }
+
+            /* Cancelled – red pill */
+            .status_cancel {
+                background-color: #dc3545;
+                color: #ffffff;
+                border-color: #dc3545;
+            }
+
+                /* Table polish */
+                .enhanced-table thead th {
+                    background-color: #f8fafc;
+                    font-size: 12px;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 0.4px;
+                    color: #64748b;
+                }
+
+                .enhanced-table tbody tr:hover {
+                    background-color: #f8fafc;
+                }
+
+                .order-ref {
+                    font-weight: 600;
+                    color: #0d6efd;
+                    text-decoration: none;
+                }
+
+                .order-ref:hover {
+                    text-decoration: underline;
+                }
+
+                .text-muted-small {
+                    font-size: 13px;
+                    color: #64748b;
+                }
+
+                .address-info {
+                    font-size: 13px;
+                    color: #475569;
+                    max-width: 200px;
+                    line-height: 1.4;
+                }
+            </style>
+
+            <div class="container my-4">
+
+                <!-- Header -->
+                <div class="card shadow-sm mb-4 border-0">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-1 fw-bold">Purchase Orders</h2>
+                            <small class="text-muted">
+                                <t t-if="sale_orders">
+                                    <t t-esc="len(sale_orders)"/> purchase orders found
+                                </t>
+                            </small>
+                        </div>
+                        <a href="/my/purchase_orders_form"
+                           class="btn btn-primary">
+                            New Purchase Order
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <t t-if="sale_orders">
+                    <div class="card shadow-sm border-0">
+                        <div class="table-responsive">
+                            <table class="table enhanced-table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Reference</th>
+                                        <th>Date</th>
+                                        <th>Customer</th>
+                                        <th>Invoice Address</th>
+                                        <th>Delivery Address</th>
+                                        <th class="text-end">Total</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="sale_orders" t-as="order">
+                                        <tr>
+                                            <td>
+                                                <a t-attf-href="/my/purchase_orders_form?order_id=#{order.id}&amp;view_mode=readonly" class="order-ref">
+                                                    <t t-esc="order.name"/>
+                                                </a>
+
+                                            </td>
+
+                                            <td class="text-muted-small">
+                                                <t t-esc="order.date_order and order.date_order.strftime('%Y-%m-%d %H:%M') or ''"/>
+                                            </td>
+
+                                            <td>
+                                                <t t-esc="order.partner_id.display_name"/>
+                                            </td>
+
+                                            <td>
+                                                <div class="address-info">
+                                                    <t t-set="inv_name_get" t-value="order.partner_invoice_id.name_get() if order.partner_invoice_id else []"/>
+                                                    <t t-esc="inv_name_get[0][1] if inv_name_get else (order.partner_invoice_id.display_name if order.partner_invoice_id else '')"/>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                <div class="address-info">
+                                                    <t t-set="del_name_get" t-value="order.partner_shipping_id.name_get() if order.partner_shipping_id else []"/>
+                                                    <t t-esc="del_name_get[0][1] if del_name_get else (order.partner_shipping_id.display_name if order.partner_shipping_id else '')"/>
+                                                </div>
+                                            </td>
+
+                                            <td class="text-end fw-semibold">
+                                                <span t-field="order.amount_total"
+                                                      t-options="{'widget': 'monetary', 'display_currency': order.currency_id}"/>
+                                            </td>
+
+                                            <td>
+                                                <span t-att-class="'oe_status status_' + order.state">
+                                                    <t t-if="order.state == 'sale'">Purchase Order</t>
+                                                    <t t-if="order.state == 'cancel'">Cancelled</t>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+
+                <!-- Empty State -->
+                <t t-if="not sale_orders">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body text-center py-5">
+                            <h5 class="text-muted">No purchase orders yet</h5>
+                            <p class="text-muted">
+                                Create your first purchase order to get started.
+                            </p>
+                            <a href="/my/purchase_orders_form"
+                               class="btn btn-primary">
+                                Create Purchase Order
+                            </a>
+                        </div>
+                    </div>
+                </t>
+
+            </div>
+        </t>
+    </template>
+
+</odoo>

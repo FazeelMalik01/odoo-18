@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Custom Worksheet Views -->
+        <record id="view_custom_worksheet_form" model="ir.ui.view">
+            <field name="name">custom.worksheet.form</field>
+            <field name="model">custom.worksheet</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_quality_checks_wizard" type="object" string="Quality Checks" class="btn-primary" invisible="not quality_point_id"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_quality_checks" type="object" class="oe_stat_button" icon="fa-check-circle" invisible="not quality_point_id">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value"><field name="quality_check_count"/></span>
+                                    <span class="o_stat_text">Quality Checks</span>
+                                </div>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="quality_point_id" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Worksheet Data">
+                                <group>
+                                    <group>
+                                        <field name="field_one"/>
+                                        <field name="field_two"/>
+                                        <field name="field_three"/>
+                                    </group>
+                                    <group>
+                                        <field name="field_four"/>
+                                        <field name="field_five"/>
+                                        <field name="field_six"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Comments">
+                                <field name="comments" placeholder="Add comments about this worksheet..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_custom_worksheet_list" model="ir.ui.view">
+            <field name="name">custom.worksheet.list</field>
+            <field name="model">custom.worksheet</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="name"/>
+                    <field name="field_one"/>
+                    <field name="field_two"/>
+                    <field name="field_three"/>
+                    <field name="quality_check_count" string="Quality Checks"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_custom_worksheet_search" model="ir.ui.view">
+            <field name="name">custom.worksheet.search</field>
+            <field name="model">custom.worksheet</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="field_one"/>
+                    <field name="field_two"/>
+                    <field name="field_three"/>
+                    <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Actions -->
+        <record id="action_custom_worksheet" model="ir.actions.act_window">
+            <field name="name">Custom Worksheets</field>
+            <field name="res_model">custom.worksheet</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Custom worksheets are automatically created for tasks
+                </p>
+            </field>
+        </record>
+
+        <!-- Extend project.task form to add custom worksheet field and button -->
+        <record id="view_project_task_form_inherit_custom_worksheet" model="ir.ui.view">
+            <field name="name">project.task.form.inherit.custom.worksheet</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_view_custom_worksheet" type="object" class="oe_stat_button" icon="fa-file-text" invisible="not custom_worksheet_id">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">Custom Worksheet</span>
+                        </div>
+                    </button>
+                </xpath>
+                <xpath expr="//field[@name='user_ids']" position="after">
+                    <field name="custom_worksheet_id" 
+                           options="{'no_create': True, 'no_create_edit': True}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Extend quality.point form to show service field and template selection -->
+        <record id="view_quality_point_form_inherit_custom_worksheet" model="ir.ui.view">
+            <field name="name">quality.point.form.inherit.custom.worksheet</field>
+            <field name="model">quality.point</field>
+            <field name="inherit_id" ref="quality.quality_point_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='team_id']" position="after">
+                    <field name="service" string="Field Service"/>
+                    <field name="custom_worksheet_id"
+                           string="Custom Worksheet"
+                           invisible="not service"
+                           domain="[('active', '=', True), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"
+                           context="{'default_active': True}"
+                           options="{'no_create': True, 'no_create_edit': True}"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

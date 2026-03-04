@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="vehicle_services_tree" model="ir.ui.view">
+        <field name="name">vehicle.services.list</field>
+        <field name="model">vehicle.services</field>
+        <field name="arch" type="xml">
+            <list string="Vehicle Service">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="service_team_id" optional="hide"/>
+                <field name="company_id" optional="hide"/>
+                <field name="company_currency" optional="hide"/>
+                <field name="service_amount" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                <field name="colr_picker" widget="color_picker"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="vehicle_services_form" model="ir.ui.view">
+        <field name="name">vehicle.services.form</field>
+        <field name="model">vehicle.services</field>
+        <field name="arch" type="xml">
+            <form string="Vehicle Service">
+                <sheet>
+                    <div class="oe_title" style="margin-bottom: 30px">
+                        <h1>
+                            <label for="name" class="o_form_label">Name</label>
+                            <field name="name"/>
+                            <field name="colr_picker" widget="color_picker"/>
+                        </h1>
+                    </div>
+                    <div>
+                        <group>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="service_team_id"/>
+                                <field name="is_recurring"/>
+                                <field name="recurring_days" invisible="not is_recurring"/>  
+                            </group>
+                            <group>
+                                <field name="company_id" invisible="1"/>
+                                <field name="company_currency"/>
+                                <field name="service_amount" widget="monetary"
+                                       options="{'currency_field': 'company_currency'}"/>
+                            </group>
+                        </group>
+                    </div>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vehicle_services" model="ir.actions.act_window">
+        <field name="name">Vehicle Service</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.services</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add your services here!
+            </p>
+        </field>
+    </record>
+
+    <menuitem 
+        id="menu_services"
+        name="Services"
+        parent="root_vehicle_repair"
+        action="action_vehicle_services"
+        groups="advance_vehicle_repair.group_vehicle_repair_manager"
+        sequence="10"/>
+</odoo>

@@ -1,0 +1,745 @@
+<odoo>
+    <template id="portal_purchases_breadcrumb" inherit_id="portal.portal_breadcrumbs" name="Purchase Order Breadcrumb">
+        <xpath expr="//ol" position="inside">
+            <t t-if="page_name == 'purchase_orders_form'">
+                <!-- Link to list view -->
+                <li class="breadcrumb-item">
+                    <a href="/my/purchase_orders">Purchase Orders</a>
+                </li>
+                <!-- Active order -->
+                <li class="breadcrumb-item active">
+                    <t t-esc="order_name or 'New Purchase Order'"/>
+                </li>
+            </t>
+        </xpath>
+    </template>
+
+
+    <!-- Purchase Order Form -->
+    <template id="portal_purchase_order_form" name="Purchase Order Form">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">Purchase Order Form</t>
+
+            <!-- Store CSRF token in a meta tag -->
+            <t t-if="request.csrf_token()">
+                <meta name="csrf-token" t-att-content="request.csrf_token()" id="csrf_meta_token"/>
+            </t>
+
+            <div class="container mt-4">
+                <div class="text-end mb-2">
+                    <a href="/my/purchase_orders_form" class="btn btn-danger">
+                        Cancel
+                    </a>
+                </div>
+
+                <h1 class="mb-4">
+                    <t t-if="is_readonly">View Purchase Order</t>
+                    <t t-if="not is_readonly">Create Purchase Order</t>
+                </h1>
+
+                <t t-if="request.params.get('success')">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        Purchase Order created successfully!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </t>
+
+                <t t-if="error">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <t t-esc="error"/>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </t>
+
+                <form action="/my/purchase_orders_form/submit" method="post" class="needs-validation" novalidate="novalidate" id="purchase_order_form">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                    <!-- Customer Field -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="customer" class="form-label">Customer</label>
+                            <t t-if="is_readonly">
+                                <input type="text" class="form-control" t-att-value="order_data.get('customer_name', '') if order_data else ''" readonly="readonly"/>
+                            </t>
+                            <t t-if="not is_readonly">
+                                <select class="form-select" id="customer" name="customer" required="required">
+                                    <option value="">Select Customer</option>
+                                    <t t-foreach="customers" t-as="customer">
+                                        <option t-att-value="customer.id" t-att-selected="order_data and order_data.get('customer') == customer.id">
+                                            <t t-esc="customer.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Invoice Address and Delivery Address -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="invoice_address" class="form-label">Invoice Address</label>
+                            <t t-if="is_readonly">
+                                <input type="text" class="form-control" t-att-value="order_data.get('invoice_address_name', '') if order_data else ''" readonly="readonly"/>
+                            </t>
+                            <t t-if="not is_readonly">
+                                <input type="text" class="form-control" id="invoice_address" readonly="readonly" placeholder="Auto-filled from dealer"/>
+                                <input type="hidden" id="invoice_address_id" name="invoice_address" value=""/>
+                            </t>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="delivery_address" class="form-label">Delivery Address</label>
+                            <t t-if="is_readonly">
+                                <input type="text" class="form-control" t-att-value="order_data.get('delivery_address_name', '') if order_data else ''" readonly="readonly"/>
+                            </t>
+                            <t t-if="not is_readonly">
+                                <select class="form-select" id="delivery_address" name="delivery_address">
+                                    <option value="">Select Delivery Address</option>
+                                </select>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Notes Field -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="notes" class="form-label">Notes</label>
+                            <t t-if="is_readonly">
+                                <textarea class="form-control" readonly="readonly" rows="3" t-att-value="order_data.get('notes', '') if order_data else ''"></textarea>
+                            </t>
+                            <t t-if="not is_readonly">
+                                <textarea class="form-control" id="notes" name="notes" readonly="readonly" rows="3" placeholder="Auto-filled from customer"></textarea>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Shipping Option for Dropship Field -->
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="shipping_option_dropship" class="form-label">Shipping Option for Dropship</label>
+                            <t t-if="is_readonly">
+                                <input type="text" class="form-control" readonly="readonly" t-att-value="order_data.get('shipping_option_dropship_display', '') if order_data else ''"/>
+                            </t>
+                            <t t-if="not is_readonly">
+                                <select class="form-select" id="shipping_option_dropship" name="shipping_option_dropship">
+                                    <option value="">Select Shipping Option</option>
+                                    <option value="rate_quote">Provide a rate quote before shipping</option>
+                                    <option value="cheapest_rate">Please ship at cheapest rate</option>
+                                    <option value="own_carrier">Client will use their own carrier</option>
+                                    <option value="client_pickup">Client will pickup</option>
+                                    <option value="yannick_pickup">Yannick will pickup this order</option>
+                                    <option value="dhc_courier">Ship with DHC's courier and add cost to invoice</option>
+                                </select>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Order Lines Table -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">Order Lines</label>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover" id="order_lines_table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 20%;">Category</th>
+                                            <th style="width: 25%;">Product</th>
+                                            <th style="width: 8%;">Quantity</th>
+                                            <th style="width: 8%;">Unit</th>
+                                            <th style="width: 10%;">Unit Price</th>
+                                            <th style="width: 15%;">Taxes</th>
+                                            <th style="width: 8%;">Amount</th>
+                                            <th style="width: 6%;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="order_lines_tbody">
+                                        <!-- Read-only mode: show order lines from order data -->
+                                        <t t-if="is_readonly and order_data and order_data.get('order_lines')">
+                                            <t t-foreach="order_data.get('order_lines', [])" t-as="line">
+                                                <tr class="order_line_row">
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm" t-att-value="line.get('category_name', '')" readonly="readonly"/>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm" t-att-value="line.get('product_name', '')" readonly="readonly"/>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm" t-att-value="line.get('quantity', '')" readonly="readonly"/>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm" t-att-value="line.get('uom_name', '')" readonly="readonly"/>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm" t-att-value="line.get('price_unit', '')" readonly="readonly"/>
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex flex-wrap gap-2">
+                                                            <t t-foreach="line.get('tax_names', [])" t-as="tax_name">
+                                                                <span class="badge bg-secondary"><t t-esc="tax_name"/></span>
+                                                            </t>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm" t-att-value="line.get('price_subtotal', '')" readonly="readonly" style="text-align: right;"/>
+                                                    </td>
+                                                    <td></td>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <!-- Edit mode: show editable form -->
+                                        <t t-if="not is_readonly">
+                                            <tr class="order_line_row">
+                                                <td>
+                                                    <select class="form-select form-select-sm category_select" name="category_ids[]">
+                                                        <option value="">All Categories</option>
+                                                        <t t-foreach="categories" t-as="category">
+                                                            <option t-att-value="category.id">
+                                                                <t t-esc="category.name"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <select class="form-select form-select-sm product_select" name="product_ids[]">
+                                                        <option value="">Select Product</option>
+                                                        <t t-foreach="products" t-as="product">
+                                                            <option t-att-value="product.get('id')" 
+                                                                    t-att-data-categ="product.get('categ_id') or ''"
+                                                                    t-att-data-uom="product.get('uom_id') or ''">
+                                                                <t t-esc="product.get('display_name', product.get('name', ''))"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm quantity_input" name="quantities[]" value="1" min="0" step="0.01"/>
+                                                </td>
+                                                <td>
+                                                    <select class="form-select form-select-sm uom_select" name="uom_ids[]">
+                                                        <option value="">Select Unit</option>
+                                                        <t t-foreach="uoms" t-as="uom">
+                                                            <option t-att-value="uom.id">
+                                                                <t t-esc="uom.name"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm price_unit_input" name="price_units[]" value="0" min="0" step="0.01"/>
+                                                </td>
+                                                <td>
+                                                    <div class="tax_display d-flex flex-wrap gap-1"></div>
+                                                    <input type="hidden" class="tax_ids_hidden" name="tax_ids[]" value=""/>
+                                                </td>
+
+                                                <td>
+                                                    <input type="text" class="form-control form-control-sm amount_display" name="amounts[]" readonly="readonly" value="0.00" style="text-align: right;"/>
+                                                    <input type="hidden" class="amount_hidden" name="amounts_hidden[]" value="0.00"/>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-sm btn-outline-danger remove_line_btn" title="Remove line">
+                                                        ✕
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <t t-if="not is_readonly">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="add_line_btn">
+                                    + Add a product
+                                </button>
+                                <t t-if="show_catalog">
+                                    <a href="/my/purchase_orders_form/catalog" 
+                                       class="btn btn-sm btn-outline-primary ms-2" 
+                                       target="_blank">
+                                        Catalog
+                                    </a>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+
+                    <t t-if="is_readonly">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Order Date</label>
+                                <input type="text" class="form-control" t-att-value="order_data.get('date_order', '') if order_data else ''" readonly="readonly"/>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Total Amount</label>
+                                <input type="text" class="form-control" t-att-value="order_data.get('amount_total', '') if order_data else ''" readonly="readonly"/>
+                            </div>
+                        </div>
+                        <a href="/my/purchase_orders" class="btn btn-secondary">Back to List</a>
+                    </t>
+                    <t t-if="not is_readonly">
+                        <button type="submit" class="btn btn-primary">Create Purchase Order</button>
+                    </t>
+                </form>
+
+
+                <!-- Set readonly flag for JavaScript -->
+                <t t-set="is_readonly_str" t-value="'true' if is_readonly else 'false'"/>
+                <t t-set="show_catalog_str" t-value="'true' if show_catalog and not is_readonly else 'false'"/>
+                <script type="text/javascript">
+                    window.purchaseOrderFormReadonly = '<t t-esc="is_readonly_str"/>';
+                    window.showCatalog = '<t t-esc="show_catalog_str"/>';
+                </script>
+
+                <script><![CDATA[
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Check if product was selected from catalog
+                    const selectedProductId = sessionStorage.getItem('selectedProductId');
+                    const selectedCategoryId = sessionStorage.getItem('selectedCategoryId');
+                    if (selectedProductId) {
+                        // Clear session storage
+                        sessionStorage.removeItem('selectedProductId');
+                        sessionStorage.removeItem('selectedCategoryId');
+                        
+                        // Wait for form to be ready, then add product
+                        setTimeout(function() {
+                            const tbody = document.getElementById('order_lines_tbody');
+                            if (tbody) {
+                                const rows = tbody.querySelectorAll('.order_line_row');
+                                let targetRow = null;
+                                
+                                // Find first empty row
+                                for (let row of rows) {
+                                    const productSelect = row.querySelector('.product_select');
+                                    if (!productSelect || !productSelect.value) {
+                                        targetRow = row;
+                                        break;
+                                    }
+                                }
+                                
+                                if (targetRow) {
+                                    // Set category if provided
+                                    if (selectedCategoryId) {
+                                        const categorySelect = targetRow.querySelector('.category_select');
+                                        if (categorySelect) {
+                                            categorySelect.value = selectedCategoryId;
+                                            categorySelect.dispatchEvent(new Event('change'));
+                                        }
+                                    }
+                                    
+                                    // Wait a bit for category change to process, then set product
+                                    setTimeout(function() {
+                                        const productSelect = targetRow.querySelector('.product_select');
+                                        if (productSelect) {
+                                            productSelect.value = selectedProductId;
+                                            productSelect.dispatchEvent(new Event('change'));
+                                        }
+                                    }, 300);
+                                }
+                            }
+                        }, 500);
+                    }
+                    
+                    // Skip all JS if in readonly mode
+                    const isReadonly = window.purchaseOrderFormReadonly === 'true';
+                    if (isReadonly) {
+                        return; // Don't initialize any form functionality
+                    }
+
+                    // Get CSRF token from meta tag
+                    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                    window.odoo = window.odoo || {};
+                    window.odoo.csrf_token = csrfMeta ? csrfMeta.content : '';
+
+                    // Load addresses, notes, and shipping option when customer changes
+                    const customerSelect = document.getElementById('customer');
+                    const invoiceAddressInput = document.getElementById('invoice_address');
+                    const deliveryAddressSelect = document.getElementById('delivery_address');
+                    const notesTextarea = document.getElementById('notes');
+                    const shippingOptionSelect = document.getElementById('shipping_option_dropship');
+
+                    if (!customerSelect || !invoiceAddressInput || !deliveryAddressSelect || !notesTextarea || !shippingOptionSelect) {
+                        console.error('Required form elements not found');
+                        return;
+                    }
+
+                    customerSelect.addEventListener('change', function() {
+                        const customerId = this.value;
+                        if (customerId) {
+                            fetch('/my/purchase_orders_form/get_addresses', {
+                                method: 'POST',
+                                credentials: 'same-origin',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': window.odoo && window.odoo.csrf_token ? window.odoo.csrf_token : '',
+                                },
+                                body: JSON.stringify({
+                                    jsonrpc: '2.0',
+                                    method: 'call',
+                                    params: { customer_id: parseInt(customerId) }
+                                })
+                            })
+                            .then(response => {
+                                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                                return response.json();
+                            })
+                            .then(data => {
+                                const result = data.result || data;
+                                const invoiceAddresses = result.invoice_addresses || [];
+                                const deliveryAddresses = result.delivery_addresses || [];
+                                const notes = result.notes || '';
+                                const shippingOption = result.shipping_option_dropship || '';
+
+                                // Auto-patch invoice address (from dealer) - show first one
+                                const invoiceAddressIdInput = document.getElementById('invoice_address_id');
+                                if (invoiceAddresses.length > 0) {
+                                    const firstInvoiceAddr = invoiceAddresses[0];
+                                    invoiceAddressInput.value = firstInvoiceAddr.label || firstInvoiceAddr.name || firstInvoiceAddr.display_name || '';
+                                    if (invoiceAddressIdInput) {
+                                        invoiceAddressIdInput.value = firstInvoiceAddr.id;
+                                    }
+                                } else {
+                                    invoiceAddressInput.value = '';
+                                    if (invoiceAddressIdInput) {
+                                        invoiceAddressIdInput.value = '';
+                                    }
+                                }
+
+                                // Populate delivery addresses dropdown
+                                deliveryAddressSelect.innerHTML = '<option value="">Select Delivery Address</option>';
+                                deliveryAddresses.forEach(addr => {
+                                    const option = document.createElement('option');
+                                    option.value = addr.id;
+                                    option.textContent = addr.label || addr.name || addr.display_name;
+                                    deliveryAddressSelect.appendChild(option);
+                                });
+
+                                // Auto-patch notes from customer
+                                notesTextarea.value = notes;
+                                
+                                // Auto-patch shipping option from customer
+                                shippingOptionSelect.value = shippingOption;
+                            })
+                            .catch(err => {
+                                console.error('Error loading addresses:', err);
+                                alert('Error loading addresses. Please check the console for details.');
+                            });
+                        } else {
+                            invoiceAddressInput.value = '';
+                            deliveryAddressSelect.innerHTML = '<option value="">Select Delivery Address</option>';
+                            notesTextarea.value = '';
+                            shippingOptionSelect.value = '';
+                        }
+                    });
+
+                    // Add line functionality
+                    const addLineBtn = document.getElementById('add_line_btn');
+                    const tbody = document.getElementById('order_lines_tbody');
+
+                    // Remove line functionality
+                    tbody.addEventListener('click', function(e) {
+                        const btn = e.target.closest('.remove_line_btn');
+                        if (!btn) return;
+
+                        const row = btn.closest('.order_line_row');
+                        if (tbody.querySelectorAll('.order_line_row').length > 1) {
+                            row.remove();
+                        } else {
+                            alert('At least one line is required');
+                        }
+                    });
+
+                    // Auto-select UOM, price, and display taxes when product is selected
+                    tbody.addEventListener('change', function(e) {
+                        if (!e.target.classList.contains('product_select')) return;
+
+                        const row = e.target.closest('.order_line_row');
+                        const productId = e.target.value;
+                        const selectedOption = e.target.options[e.target.selectedIndex];
+                        const uomId = selectedOption.getAttribute('data-uom');
+
+                        if (uomId) row.querySelector('.uom_select').value = uomId;
+
+                        // If no product selected, reset tax rate and clear tax display
+                        if (!productId) {
+                            row.setAttribute('data-tax-rate', '0');
+                            row.querySelector('.tax_display').innerHTML = '';
+                            row.querySelector('.tax_ids_hidden').value = '';
+                            calculateLineAmount(row);
+                            return;
+                        }
+
+                        if (productId) {
+                            fetch('/my/purchase_orders_form/get_product_info', {
+                                method: 'POST',
+                                credentials: 'same-origin',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': window.odoo && window.odoo.csrf_token ? window.odoo.csrf_token : '',
+                                },
+                                body: JSON.stringify({
+                                    jsonrpc: '2.0',
+                                    method: 'call',
+                                    params: { product_id: parseInt(productId) }
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                const result = data.result || {};
+
+                                // Set price
+                                if (result.list_price) {
+                                    row.querySelector('.price_unit_input').value = result.list_price;
+                                }
+
+                                // Set UOM if not already set
+                                if (result.uom_id) row.querySelector('.uom_select').value = result.uom_id[0];
+
+                                // Display taxes as badges and store tax rates
+                                if (result.taxes) {
+                                    const taxDisplay = row.querySelector('.tax_display');
+                                    const taxHidden = row.querySelector('.tax_ids_hidden');
+
+                                    taxDisplay.innerHTML = '';
+                                    const taxIds = [];
+                                    let totalTaxRate = 0;
+
+                                    result.taxes.forEach(tax => {
+                                        taxIds.push(tax.id);
+                                        // tax.amount is already a percentage (e.g., 15 for 15%)
+                                        // tax.rate is the decimal version (e.g., 0.15 for 15%)
+                                        const taxRateDecimal = parseFloat(tax.rate) || (parseFloat(tax.amount) / 100) || 0;
+                                        totalTaxRate += taxRateDecimal;
+                                        
+                                        const span = document.createElement('span');
+                                        span.className = 'badge bg-secondary me-1';
+                                        // Display tax as percentage (tax.amount is already in percentage form)
+                                        const taxPercent = parseFloat(tax.amount) || 0;
+                                        span.textContent = taxPercent.toFixed(0) + '%';
+                                        taxDisplay.appendChild(span);
+                                    });
+
+                                    taxHidden.value = taxIds.join(',');
+                                    
+                                    // Store total tax rate (as decimal) in data attribute for calculation
+                                    row.setAttribute('data-tax-rate', totalTaxRate.toString());
+                                } else {
+                                    // No taxes, set tax rate to 0
+                                    row.setAttribute('data-tax-rate', '0');
+                                }
+
+                                // Calculate amount after price is set
+                                calculateLineAmount(row);
+                            })
+                            .catch(err => console.error('Error loading product info:', err));
+                        }
+                    });
+
+                    // function to calculate line amount (including taxes)
+                    function calculateLineAmount(row) {
+                        const quantityInput = row.querySelector('.quantity_input');
+                        const priceInput = row.querySelector('.price_unit_input');
+                        const amountDisplay = row.querySelector('.amount_display');
+                        const amountHidden = row.querySelector('.amount_hidden');
+
+                        if (quantityInput && priceInput && amountDisplay) {
+                            const quantity = parseFloat(quantityInput.value) || 0;
+                            const price = parseFloat(priceInput.value) || 0;
+                            
+                            // Get tax rate from data attribute (stored as decimal, e.g., 0.15 for 15%)
+                            const taxRate = parseFloat(row.getAttribute('data-tax-rate')) || 0;
+                            
+                            // Simple calculation: price * quantity * (1 + tax_rate)
+                            // Example: 100 * 1 * (1 + 0.15) = 115
+                            const amount = price * quantity * (1 + taxRate);
+
+                            amountDisplay.value = amount.toFixed(2);
+                            if (amountHidden) {
+                                amountHidden.value = amount.toFixed(2);
+                            }
+
+                            return amount;
+                        }
+                        return 0;
+                    }
+
+                    // function to recalculate all amounts
+                    function recalculateAllAmounts() {
+                        const rows = document.querySelectorAll('.order_line_row');
+                        let total = 0;
+
+                        rows.forEach(row => {
+                            total += calculateLineAmount(row);
+                        });
+
+                        return total;
+                    }
+
+                    // amount calculation when quantity or price changes
+                    tbody.addEventListener('input', function(e) {
+                        if (e.target.classList.contains('quantity_input') ||
+                            e.target.classList.contains('price_unit_input')) {
+                            const row = e.target.closest('.order_line_row');
+                            calculateLineAmount(row);
+                        }
+                    });
+
+                    // Category change handler - filter products
+                    tbody.addEventListener('change', function(e) {
+                        if (!e.target.classList.contains('category_select')) return;
+
+                        const row = e.target.closest('.order_line_row');
+                        const categoryId = e.target.value;
+                        const productSelect = row.querySelector('.product_select');
+                        const currentProductId = productSelect.value;
+
+                        // Clear product selection when category changes
+                        productSelect.innerHTML = '<option value="">Select Product</option>';
+
+                        // Fetch products by category
+                        fetch('/my/purchase_orders_form/get_products_by_category', {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': window.odoo && window.odoo.csrf_token ? window.odoo.csrf_token : '',
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: { category_id: categoryId ? parseInt(categoryId) : null }
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const result = data.result || data;
+                            const products = result.products || [];
+
+                            products.forEach(product => {
+                                const option = document.createElement('option');
+                                option.value = product.id;
+                                option.textContent = product.display_name || product.name;
+                                option.setAttribute('data-uom', product.uom_id || '');
+                                productSelect.appendChild(option);
+                            });
+
+                            // Try to restore previous selection if it's still available
+                            if (currentProductId) {
+                                const option = productSelect.querySelector(`option[value="${currentProductId}"]`);
+                                if (option) {
+                                    productSelect.value = currentProductId;
+                                    // Trigger product change to load product info
+                                    productSelect.dispatchEvent(new Event('change'));
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error loading products:', err);
+                        });
+                    });
+
+                    // Add line button event listener (single listener to prevent duplicate rows)
+                    addLineBtn.addEventListener('click', function() {
+                        const firstRow = tbody.querySelector('.order_line_row');
+                        if (!firstRow) return;
+
+                        const newRow = firstRow.cloneNode(true);
+
+                        // Clear values
+                        newRow.querySelector('.category_select').value = '';
+                        newRow.querySelector('.product_select').value = '';
+                        newRow.querySelector('.product_select').innerHTML = '<option value="">Select Product</option>';
+                        // Re-populate products dropdown (all products when no category)
+                        fetch('/my/purchase_orders_form/get_products_by_category', {
+                            method: 'POST',
+                            credentials: 'same-origin',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': window.odoo && window.odoo.csrf_token ? window.odoo.csrf_token : '',
+                            },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method: 'call',
+                                params: { category_id: null }
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            const result = data.result || data;
+                            const products = result.products || [];
+                            const productSelect = newRow.querySelector('.product_select');
+                            products.forEach(product => {
+                                const option = document.createElement('option');
+                                option.value = product.id;
+                                option.textContent = product.display_name || product.name;
+                                option.setAttribute('data-uom', product.uom_id || '');
+                                productSelect.appendChild(option);
+                            });
+                        })
+                        .catch(err => console.error('Error loading products:', err));
+
+                        newRow.querySelector('.quantity_input').value = '1';
+                        newRow.querySelector('.uom_select').value = '';
+                        newRow.querySelector('.price_unit_input').value = '0';
+                        newRow.querySelector('.amount_display').value = '0.00';
+                        newRow.querySelector('.amount_hidden').value = '0.00';
+                        newRow.querySelector('.tax_display').innerHTML = '';
+                        newRow.querySelector('.tax_ids_hidden').value = '';
+                        newRow.setAttribute('data-tax-rate', '0'); // Reset tax rate
+
+                        tbody.appendChild(newRow);
+                    });
+
+                    // amount calculation when product is selected (price might be auto-filled)
+                    tbody.addEventListener('change', function(e) {
+                        if (e.target.classList.contains('product_select')) {
+                            // Wait a moment for price to be set
+                            setTimeout(() => {
+                                const row = e.target.closest('.order_line_row');
+                                calculateLineAmount(row);
+                            }, 200);
+                        }
+                    });
+
+                    // Form submission validation - filter out empty rows
+                    const form = document.getElementById('purchase_order_form');
+                    form.addEventListener('submit', function(e) {
+                        const rows = tbody.querySelectorAll('.order_line_row');
+                        let hasValidRow = false;
+
+                        rows.forEach(row => {
+                            const productSelect = row.querySelector('.product_select');
+                            const productId = productSelect ? productSelect.value : '';
+
+                            if (productId && productId.trim() !== '') {
+                                hasValidRow = true;
+                            } else {
+                                const inputs = row.querySelectorAll('input, select');
+                                inputs.forEach(input => input.disabled = true);
+                            }
+                        });
+
+                        if (!hasValidRow) {
+                            e.preventDefault();
+                            alert('At least one valid order line with a product is required.');
+                            return false;
+                        }
+                    });
+                    
+                    // Initialize amounts on page load
+                    const initialRows = tbody.querySelectorAll('.order_line_row');
+                    initialRows.forEach(row => {
+                        // Set initial tax rate to 0 if not set
+                        if (!row.getAttribute('data-tax-rate')) {
+                            row.setAttribute('data-tax-rate', '0');
+                        }
+                        calculateLineAmount(row);
+                    });
+                    
+                });
+                ]]></script>
+
+            </div>
+        </t>
+    </template>
+</odoo>

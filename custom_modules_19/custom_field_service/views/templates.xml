@@ -1,0 +1,101 @@
+<odoo>
+    <data>
+        <!-- PDF Report Template for Field Service Tasks -->
+        <record id="action_task_report_pdf" model="ir.actions.report">
+            <field name="name">Print PDF</field>
+            <field name="model">project.task</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">custom_field_service.task_report_pdf</field>
+            <field name="report_file">custom_field_service.task_report_pdf</field>
+            <field name="print_report_name">'Field_Service_Task_%s' % (object.name or 'Report')</field>
+        </record>
+
+        <template id="task_report_pdf">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div class="row">
+                            <div class="col-12">
+                                <h2>Field Service Task Report</h2>
+                                <table class="table table-bordered mt-3" style="width: 100%; border-collapse: collapse;">
+                                    <thead>
+                                        <tr style="background-color: #f0f0f0;">
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Task Title</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Customer</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Assigned To</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Field Service Manager</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Creation Date</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Completion Date</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Quality Check Status</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Stage</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Project</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="docs" t-as="doc">
+                                            <tr>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <t t-esc="doc.name"/>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <t t-esc="doc.partner_id.name or 'N/A'"/>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <t t-if="doc.user_ids">
+                                                        <t t-set="user_names" t-value="', '.join([user.name for user in doc.user_ids])"/>
+                                                        <t t-esc="user_names"/>
+                                                    </t>
+                                                    <t t-if="not doc.user_ids">N/A</t>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <t t-if="doc.field_service_manager_id">
+                                                        <t t-esc="doc.field_service_manager_id.name"/>
+                                                    </t>
+                                                    <t t-if="not doc.field_service_manager_id">N/A</t>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <t t-if="doc.task_creation_date">
+                                                        <t t-set="creation_date_str" t-value="doc.task_creation_date.strftime('%Y-%m-%d')"/>
+                                                        <t t-esc="creation_date_str"/>
+                                                    </t>
+                                                    <t t-if="not doc.task_creation_date">
+                                                        <t t-if="doc.create_date">
+                                                            <t t-set="create_date_str" t-value="doc.create_date.strftime('%Y-%m-%d')"/>
+                                                            <t t-esc="create_date_str"/>
+                                                        </t>
+                                                        <t t-if="not doc.create_date">N/A</t>
+                                                    </t>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <t t-if="doc.task_completion_date">
+                                                        <t t-set="completion_date_str" t-value="doc.task_completion_date.strftime('%Y-%m-%d')"/>
+                                                        <t t-esc="completion_date_str"/>
+                                                    </t>
+                                                    <t t-if="not doc.task_completion_date">N/A</t>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <t t-if="doc.quality_check_state == 'pending'">Pending</t>
+                                                    <t t-if="doc.quality_check_state == 'approved'">Approved</t>
+                                                    <t t-if="doc.quality_check_state == 'rejected'">Rejected</t>
+                                                    <t t-if="not doc.quality_check_state">N/A</t>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <t t-esc="doc.stage_id.name or 'N/A'"/>
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <t t-esc="doc.project_id.name or 'N/A'"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

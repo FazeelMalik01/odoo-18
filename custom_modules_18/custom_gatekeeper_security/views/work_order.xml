@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Security group used in field definition -->
+        <record id="group_service_secure_notes" model="res.groups">
+            <field name="name">Service: Secure Notes</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+
+        <!-- Add Service Request tab to Project Task form -->
+        <record id="view_task_form_inherit_service_request" model="ir.ui.view">
+            <field name="name">project.task.form.service.request.tab</field>
+            <field name="model">project.task</field>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+                <!-- Add Worksheets smart button -->
+                <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                    <button name="%(action_work_worksheet)d" type="action" class="oe_stat_button" icon="fa-file-text" context="{'default_task_id': id, 'search_default_task_id': id}">
+                        <field name="worksheet_count" widget="statinfo" string="Worksheets"/>
+                    </button>
+                </xpath>
+                
+                <xpath expr="//notebook" position="inside">
+                    <page string="Service Request" name="page_service_request_custom">
+                        <group>
+                            <group string="Estimate / Links" colspan="2">
+                                <field name="service_request_id" options="{'no_open': True}"/>
+<!--                                <field name="sale_order_id" options="{'no_open': True}"/>-->
+                                <field name="estimate_id" options="{'no_open': True}" string="Sale Order" readonly="1"/>
+                            </group>
+
+                            <group string="Secure Notes" colspan="2">
+                                <!-- Removed invisible; security is controlled via groups in model -->
+                                <field name="secure_notes" widget="textarea"/>
+                            </group>
+
+                            <group string="Communication">
+                                <field name="sms_thread"/>
+                            </group>
+
+                            <group string="Deposit &amp; Gating">
+                                <field name="deposit_status" readonly="1"/>
+                                <field name="gating_status" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+                    
+                    <page string="Worksheets" name="page_worksheets">
+                        <field name="worksheet_ids" nolabel="True">
+                            <list>
+                                <field name="name"/>
+                                <field name="technician_id"/>
+                                <field name="state"/>
+                                <field name="completion_date"/>
+                                <field name="timer_hours" widget="float_time"/>
+                                <field name="material_used"/>
+                                <field name="work_notes"/>
+                            </list>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <group>
+                                            <field name="name" readonly="True"/>
+                                            <field name="task_id" options="{'no_create': True, 'no_create_edit': True}" invisible="True"/>
+                                            <field name="service_request_id" readonly="True"/>
+                                            <field name="customer_id" readonly="True"/>
+                                        </group>
+                                        <group>
+                                            <field name="technician_id" readonly="True"/>
+                                            <field name="completion_date" readonly="True"/>
+                                            <field name="state"/>
+                                            <field name="gating_status" readonly="True"/>
+                                        </group>
+                                    </group>
+
+                                    <notebook>
+                                        <page string="Work Details" name="work_details">
+                                            <group>
+                                                <group string="Time Tracking">
+                                                    <field name="timer_hours" readonly="True"/>
+                                                    <field name="allocated_hours" readonly="True"/>
+                                                </group>
+                                                <group string="Service Information">
+                                                    <field name="service_address" readonly="True" nolabel="True"/>
+                                                </group>
+                                            </group>
+
+                                            <group string="Work Images">
+                                                <field name="work_images" nolabel="True"/>
+                                            </group>
+
+                                            <group string="Material Used">
+                                                <field name="material_used" nolabel="True"/>
+                                            </group>
+
+                                            <group string="Work Notes">
+                                                <field name="work_notes" nolabel="True"/>
+                                            </group>
+
+                                            <group string="SMS Message">
+                                                <field name="sms_message" nolabel="True" readonly="True"/>
+                                            </group>
+                                        </page>
+                                    </notebook>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

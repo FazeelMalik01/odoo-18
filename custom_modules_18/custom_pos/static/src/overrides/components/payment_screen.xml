@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+<!--    <t t-name="custom_pos.PaymentScreenUSDMode"-->
+<!--       t-inherit="point_of_sale.PaymentScreenButtons"-->
+<!--       t-inherit-mode="extension">-->
+
+<!--        &lt;!&ndash; Inject before PaymentScreenPaymentLines &ndash;&gt;-->
+<!--<xpath expr="//div[contains(@class,'payment-buttons d-flex flex-column gap-2')]" position="before">-->
+<!--    <div class="usd-toggle-container d-flex align-items-center justify-content-between rounded-3 px-3 py-2 mb-2 border shadow-sm"-->
+<!--         style="background-color: #f8f9fa;">-->
+
+<!--        &lt;!&ndash; Toggle Label &ndash;&gt;-->
+<!--        <label class="form-check-label fw-bold d-flex align-items-center text-dark mb-0">-->
+<!--            <input type="checkbox"-->
+<!--                   class="form-check-input me-2"-->
+<!--                   t-att-checked="state.isUsdPayment"-->
+<!--                   t-on-click="toggleCurrency"-->
+<!--                   style="transform: scale(1.2); cursor: pointer;" />-->
+<!--            <span t-esc="state.isUsdPayment ? 'Paying in USD' : 'Paying in LBP'"/>-->
+<!--        </label>-->
+
+<!--        &lt;!&ndash; Mode Badge &ndash;&gt;-->
+<!--        <t t-if="state.isUsdPayment">-->
+<!--            <span class="badge rounded-pill px-3 py-2"-->
+<!--                  style="background-color: #007bff; color: white; font-size: 0.85rem;">-->
+<!--                💵 USD Mode-->
+<!--            </span>-->
+<!--        </t>-->
+<!--        <t t-else="">-->
+<!--            <span class="badge rounded-pill px-3 py-2"-->
+<!--                  style="background-color: #6c757d; color: white; font-size: 0.85rem;">-->
+<!--                🇱🇧 LBP Mode-->
+<!--            </span>-->
+<!--        </t>-->
+<!--    </div>-->
+<!--</xpath>-->
+
+<!--    </t>-->
+
+</templates>

@@ -1,0 +1,8 @@
+<!-- views/action.xml -->
+<odoo>
+    <record id="action_owner_approval" model="ir.actions.act_window">
+        <field name="name">Owner Approvals</field>
+        <field name="res_model">owner.approval</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

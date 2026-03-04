@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+<!--            <t t-name="pos_customer_noteordersummary.OrderSummary"-->
+<!--       t-inherit="point_of_sale.OrderSummary"-->
+<!--       t-inherit-mode="extension"-->
+<!--       owl="1">-->
+
+<!--        <xpath expr="//OrderWidget" position="attributes">-->
+<!--            <attribute name="customNote">currentOrder.custom_note or ''</attribute>-->
+<!--        </xpath>-->
+
+<!--    </t>-->
+
+
+
+
+<t t-name="pos_customer_notenew.OrderWidget"
+   t-inherit="point_of_sale.OrderWidget"
+   t-inherit-mode="extension"
+   owl="1">
+
+<!--    <xpath expr="//Orderline" position="after">-->
+<!--    <div t-if="props.customNote">-->
+<!--        <strong>Customer Note:</strong>-->
+<!--        <div t-esc="props.customNote"/>-->
+<!--    </div>-->
+
+<!--    </xpath>-->
+
+
+      <xpath expr="//div[@class='order-summary d-flex flex-column gap-1 px-3 py-2 border-top fw-bolder lh-sm']" position="before">
+          <div t-if="props.customNote"
+               class="customer-note p-2 mt-2 rounded text-bg-warning bg-opacity-25"
+               style="font-weight: 500; font-size: 14px;">
+              <strong>General Note:</strong>
+              <t t-foreach="props.customNote.split('\n')" t-as="note" t-key="note_index">
+                  <br/>• <t t-esc="note"/>
+              </t>
+          </div>
+      </xpath>
+
+</t>
+</templates>

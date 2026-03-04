@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Vehicle Appointment Days -->
+        <record id="vehicle_appointment_monday" model="vehicle.appointment">
+            <field name="name">Monday</field>
+        </record>
+        <record id="vehicle_appointment_tuesday" model="vehicle.appointment">
+            <field name="name">Tuesday</field>
+        </record>
+        <record id="vehicle_appointment_wednesday" model="vehicle.appointment">
+            <field name="name">Wednesday</field>
+        </record>
+        <record id="vehicle_appointment_thursday" model="vehicle.appointment">
+            <field name="name">Thursday</field>
+        </record>
+        <record id="vehicle_appointment_friday" model="vehicle.appointment">
+            <field name="name">Friday</field>
+        </record>
+        <record id="vehicle_appointment_saturday" model="vehicle.appointment">
+            <field name="name">Saturday</field>
+        </record>
+        <record id="vehicle_appointment_sunday" model="vehicle.appointment">
+            <field name="name">Sunday</field>
+        </record>
+
+        <!-- Time Slots for Monday -->
+        <record id="vehicle_appointment_line_monday_1" model="vehicle.appointment.line">
+            <field name="time_slot">08:00 AM - 08:30 AM</field>
+            <field name="time_starting">8.0</field>
+            <field name="time_closing">8.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_2" model="vehicle.appointment.line">
+            <field name="time_slot">08:30 AM - 09:00 AM</field>
+            <field name="time_starting">8.5</field>
+            <field name="time_closing">9.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_3" model="vehicle.appointment.line">
+            <field name="time_slot">09:00 AM - 09:30 AM</field>
+            <field name="time_starting">9.0</field>
+            <field name="time_closing">9.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_4" model="vehicle.appointment.line">
+            <field name="time_slot">09:30 AM - 10:00 AM</field>
+            <field name="time_starting">9.5</field>
+            <field name="time_closing">10.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_5" model="vehicle.appointment.line">
+            <field name="time_slot">10:00 AM - 10:30 AM</field>
+            <field name="time_starting">10.0</field>
+            <field name="time_closing">10.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_6" model="vehicle.appointment.line">
+            <field name="time_slot">10:30 AM - 11:00 AM</field>
+            <field name="time_starting">10.5</field>
+            <field name="time_closing">11.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_7" model="vehicle.appointment.line">
+            <field name="time_slot">11:00 AM - 11:30 AM</field>
+            <field name="time_starting">11.0</field>
+            <field name="time_closing">11.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_8" model="vehicle.appointment.line">
+            <field name="time_slot">11:30 AM - 12:00 PM</field>
+            <field name="time_starting">11.5</field>
+            <field name="time_closing">12.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_9" model="vehicle.appointment.line">
+            <field name="time_slot">12:00 PM - 12:30 PM</field>
+            <field name="time_starting">12.0</field>
+            <field name="time_closing">12.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_10" model="vehicle.appointment.line">
+            <field name="time_slot">12:30 PM - 01:00 PM</field>
+            <field name="time_starting">12.5</field>
+            <field name="time_closing">13.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_11" model="vehicle.appointment.line">
+            <field name="time_slot">01:00 PM - 01:30 PM</field>
+            <field name="time_starting">13.0</field>
+            <field name="time_closing">13.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_12" model="vehicle.appointment.line">
+            <field name="time_slot">01:30 PM - 02:00 PM</field>
+            <field name="time_starting">13.5</field>
+            <field name="time_closing">14.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_13" model="vehicle.appointment.line">
+            <field name="time_slot">02:00 PM - 02:30 PM</field>
+            <field name="time_starting">14.0</field>
+            <field name="time_closing">14.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_14" model="vehicle.appointment.line">
+            <field name="time_slot">02:30 PM - 03:00 PM</field>
+            <field name="time_starting">14.5</field>
+            <field name="time_closing">15.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_15" model="vehicle.appointment.line">
+            <field name="time_slot">03:00 PM - 03:30 PM</field>
+            <field name="time_starting">15.0</field>
+            <field name="time_closing">15.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_16" model="vehicle.appointment.line">
+            <field name="time_slot">03:30 PM - 04:00 PM</field>
+            <field name="time_starting">15.5</field>
+            <field name="time_closing">16.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_17" model="vehicle.appointment.line">
+            <field name="time_slot">04:00 PM - 04:30 PM</field>
+            <field name="time_starting">16.0</field>
+            <field name="time_closing">16.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+        <record id="vehicle_appointment_line_monday_18" model="vehicle.appointment.line">
+            <field name="time_slot">04:30 PM - 05:00 PM</field>
+            <field name="time_starting">16.5</field>
+            <field name="time_closing">17.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_monday"/>
+        </record>
+
+        <!-- Time Slots for Tuesday -->
+        <record id="vehicle_appointment_line_tuesday_1" model="vehicle.appointment.line">
+            <field name="time_slot">08:00 AM - 08:30 AM</field>
+            <field name="time_starting">8.0</field>
+            <field name="time_closing">8.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_2" model="vehicle.appointment.line">
+            <field name="time_slot">08:30 AM - 09:00 AM</field>
+            <field name="time_starting">8.5</field>
+            <field name="time_closing">9.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_3" model="vehicle.appointment.line">
+            <field name="time_slot">09:00 AM - 09:30 AM</field>
+            <field name="time_starting">9.0</field>
+            <field name="time_closing">9.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_4" model="vehicle.appointment.line">
+            <field name="time_slot">09:30 AM - 10:00 AM</field>
+            <field name="time_starting">9.5</field>
+            <field name="time_closing">10.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_5" model="vehicle.appointment.line">
+            <field name="time_slot">10:00 AM - 10:30 AM</field>
+            <field name="time_starting">10.0</field>
+            <field name="time_closing">10.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_6" model="vehicle.appointment.line">
+            <field name="time_slot">10:30 AM - 11:00 AM</field>
+            <field name="time_starting">10.5</field>
+            <field name="time_closing">11.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_7" model="vehicle.appointment.line">
+            <field name="time_slot">11:00 AM - 11:30 AM</field>
+            <field name="time_starting">11.0</field>
+            <field name="time_closing">11.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_8" model="vehicle.appointment.line">
+            <field name="time_slot">11:30 AM - 12:00 PM</field>
+            <field name="time_starting">11.5</field>
+            <field name="time_closing">12.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_9" model="vehicle.appointment.line">
+            <field name="time_slot">12:00 PM - 12:30 PM</field>
+            <field name="time_starting">12.0</field>
+            <field name="time_closing">12.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_10" model="vehicle.appointment.line">
+            <field name="time_slot">12:30 PM - 01:00 PM</field>
+            <field name="time_starting">12.5</field>
+            <field name="time_closing">13.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_11" model="vehicle.appointment.line">
+            <field name="time_slot">01:00 PM - 01:30 PM</field>
+            <field name="time_starting">13.0</field>
+            <field name="time_closing">13.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_12" model="vehicle.appointment.line">
+            <field name="time_slot">01:30 PM - 02:00 PM</field>
+            <field name="time_starting">13.5</field>
+            <field name="time_closing">14.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_13" model="vehicle.appointment.line">
+            <field name="time_slot">02:00 PM - 02:30 PM</field>
+            <field name="time_starting">14.0</field>
+            <field name="time_closing">14.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_14" model="vehicle.appointment.line">
+            <field name="time_slot">02:30 PM - 03:00 PM</field>
+            <field name="time_starting">14.5</field>
+            <field name="time_closing">15.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_15" model="vehicle.appointment.line">
+            <field name="time_slot">03:00 PM - 03:30 PM</field>
+            <field name="time_starting">15.0</field>
+            <field name="time_closing">15.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_16" model="vehicle.appointment.line">
+            <field name="time_slot">03:30 PM - 04:00 PM</field>
+            <field name="time_starting">15.5</field>
+            <field name="time_closing">16.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_17" model="vehicle.appointment.line">
+            <field name="time_slot">04:00 PM - 04:30 PM</field>
+            <field name="time_starting">16.0</field>
+            <field name="time_closing">16.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+        <record id="vehicle_appointment_line_tuesday_18" model="vehicle.appointment.line">
+            <field name="time_slot">04:30 PM - 05:00 PM</field>
+            <field name="time_starting">16.5</field>
+            <field name="time_closing">17.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_tuesday"/>
+        </record>
+
+
+        <!-- Time Slots for Wednesday -->
+        <record id="vehicle_appointment_line_wednesday_1" model="vehicle.appointment.line">
+            <field name="time_slot">08:00 AM - 08:30 AM</field>
+            <field name="time_starting">8.0</field>
+            <field name="time_closing">8.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_2" model="vehicle.appointment.line">
+            <field name="time_slot">08:30 AM - 09:00 AM</field>
+            <field name="time_starting">8.5</field>
+            <field name="time_closing">9.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_3" model="vehicle.appointment.line">
+            <field name="time_slot">09:00 AM - 09:30 AM</field>
+            <field name="time_starting">9.0</field>
+            <field name="time_closing">9.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_4" model="vehicle.appointment.line">
+            <field name="time_slot">09:30 AM - 10:00 AM</field>
+            <field name="time_starting">9.5</field>
+            <field name="time_closing">10.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_5" model="vehicle.appointment.line">
+            <field name="time_slot">10:00 AM - 10:30 AM</field>
+            <field name="time_starting">10.0</field>
+            <field name="time_closing">10.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_6" model="vehicle.appointment.line">
+            <field name="time_slot">10:30 AM - 11:00 AM</field>
+            <field name="time_starting">10.5</field>
+            <field name="time_closing">11.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_7" model="vehicle.appointment.line">
+            <field name="time_slot">11:00 AM - 11:30 AM</field>
+            <field name="time_starting">11.0</field>
+            <field name="time_closing">11.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_8" model="vehicle.appointment.line">
+            <field name="time_slot">11:30 AM - 12:00 PM</field>
+            <field name="time_starting">11.5</field>
+            <field name="time_closing">12.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_9" model="vehicle.appointment.line">
+            <field name="time_slot">12:00 PM - 12:30 PM</field>
+            <field name="time_starting">12.0</field>
+            <field name="time_closing">12.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_10" model="vehicle.appointment.line">
+            <field name="time_slot">12:30 PM - 01:00 PM</field>
+            <field name="time_starting">12.5</field>
+            <field name="time_closing">13.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_11" model="vehicle.appointment.line">
+            <field name="time_slot">01:00 PM - 01:30 PM</field>
+            <field name="time_starting">13.0</field>
+            <field name="time_closing">13.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_12" model="vehicle.appointment.line">
+            <field name="time_slot">01:30 PM - 02:00 PM</field>
+            <field name="time_starting">13.5</field>
+            <field name="time_closing">14.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_13" model="vehicle.appointment.line">
+            <field name="time_slot">02:00 PM - 02:30 PM</field>
+            <field name="time_starting">14.0</field>
+            <field name="time_closing">14.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_14" model="vehicle.appointment.line">
+            <field name="time_slot">02:30 PM - 03:00 PM</field>
+            <field name="time_starting">14.5</field>
+            <field name="time_closing">15.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_15" model="vehicle.appointment.line">
+            <field name="time_slot">03:00 PM - 03:30 PM</field>
+            <field name="time_starting">15.0</field>
+            <field name="time_closing">15.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_16" model="vehicle.appointment.line">
+            <field name="time_slot">03:30 PM - 04:00 PM</field>
+            <field name="time_starting">15.5</field>
+            <field name="time_closing">16.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_17" model="vehicle.appointment.line">
+            <field name="time_slot">04:00 PM - 04:30 PM</field>
+            <field name="time_starting">16.0</field>
+            <field name="time_closing">16.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+        <record id="vehicle_appointment_line_wednesday_18" model="vehicle.appointment.line">
+            <field name="time_slot">04:30 PM - 05:00 PM</field>
+            <field name="time_starting">16.5</field>
+            <field name="time_closing">17.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_wednesday"/>
+        </record>
+
+        <!-- Time Slots for Thursday -->
+        <record id="vehicle_appointment_line_thursday_1" model="vehicle.appointment.line">
+            <field name="time_slot">08:00 AM - 08:30 AM</field>
+            <field name="time_starting">8.0</field>
+            <field name="time_closing">8.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_2" model="vehicle.appointment.line">
+            <field name="time_slot">08:30 AM - 09:00 AM</field>
+            <field name="time_starting">8.5</field>
+            <field name="time_closing">9.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_3" model="vehicle.appointment.line">
+            <field name="time_slot">09:00 AM - 09:30 AM</field>
+            <field name="time_starting">9.0</field>
+            <field name="time_closing">9.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_4" model="vehicle.appointment.line">
+            <field name="time_slot">09:30 AM - 10:00 AM</field>
+            <field name="time_starting">9.5</field>
+            <field name="time_closing">10.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_5" model="vehicle.appointment.line">
+            <field name="time_slot">10:00 AM - 10:30 AM</field>
+            <field name="time_starting">10.0</field>
+            <field name="time_closing">10.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_6" model="vehicle.appointment.line">
+            <field name="time_slot">10:30 AM - 11:00 AM</field>
+            <field name="time_starting">10.5</field>
+            <field name="time_closing">11.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_7" model="vehicle.appointment.line">
+            <field name="time_slot">11:00 AM - 11:30 AM</field>
+            <field name="time_starting">11.0</field>
+            <field name="time_closing">11.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_8" model="vehicle.appointment.line">
+            <field name="time_slot">11:30 AM - 12:00 PM</field>
+            <field name="time_starting">11.5</field>
+            <field name="time_closing">12.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_9" model="vehicle.appointment.line">
+            <field name="time_slot">12:00 PM - 12:30 PM</field>
+            <field name="time_starting">12.0</field>
+            <field name="time_closing">12.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_10" model="vehicle.appointment.line">
+            <field name="time_slot">12:30 PM - 01:00 PM</field>
+            <field name="time_starting">12.5</field>
+            <field name="time_closing">13.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_11" model="vehicle.appointment.line">
+            <field name="time_slot">01:00 PM - 01:30 PM</field>
+            <field name="time_starting">13.0</field>
+            <field name="time_closing">13.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_12" model="vehicle.appointment.line">
+            <field name="time_slot">01:30 PM - 02:00 PM</field>
+            <field name="time_starting">13.5</field>
+            <field name="time_closing">14.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_13" model="vehicle.appointment.line">
+            <field name="time_slot">02:00 PM - 02:30 PM</field>
+            <field name="time_starting">14.0</field>
+            <field name="time_closing">14.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_14" model="vehicle.appointment.line">
+            <field name="time_slot">02:30 PM - 03:00 PM</field>
+            <field name="time_starting">14.5</field>
+            <field name="time_closing">15.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_15" model="vehicle.appointment.line">
+            <field name="time_slot">03:00 PM - 03:30 PM</field>
+            <field name="time_starting">15.0</field>
+            <field name="time_closing">15.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_16" model="vehicle.appointment.line">
+            <field name="time_slot">03:30 PM - 04:00 PM</field>
+            <field name="time_starting">15.5</field>
+            <field name="time_closing">16.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_17" model="vehicle.appointment.line">
+            <field name="time_slot">04:00 PM - 04:30 PM</field>
+            <field name="time_starting">16.0</field>
+            <field name="time_closing">16.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+        <record id="vehicle_appointment_line_thursday_18" model="vehicle.appointment.line">
+            <field name="time_slot">04:30 PM - 05:00 PM</field>
+            <field name="time_starting">16.5</field>
+            <field name="time_closing">17.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_thursday"/>
+        </record>
+
+        <!-- Time Slots for Friday -->
+        <record id="vehicle_appointment_line_friday_1" model="vehicle.appointment.line">
+            <field name="time_slot">08:00 AM - 08:30 AM</field>
+            <field name="time_starting">8.0</field>
+            <field name="time_closing">8.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_2" model="vehicle.appointment.line">
+            <field name="time_slot">08:30 AM - 09:00 AM</field>
+            <field name="time_starting">8.5</field>
+            <field name="time_closing">9.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_3" model="vehicle.appointment.line">
+            <field name="time_slot">09:00 AM - 09:30 AM</field>
+            <field name="time_starting">9.0</field>
+            <field name="time_closing">9.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_4" model="vehicle.appointment.line">
+            <field name="time_slot">09:30 AM - 10:00 AM</field>
+            <field name="time_starting">9.5</field>
+            <field name="time_closing">10.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_5" model="vehicle.appointment.line">
+            <field name="time_slot">10:00 AM - 10:30 AM</field>
+            <field name="time_starting">10.0</field>
+            <field name="time_closing">10.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_6" model="vehicle.appointment.line">
+            <field name="time_slot">10:30 AM - 11:00 AM</field>
+            <field name="time_starting">10.5</field>
+            <field name="time_closing">11.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_7" model="vehicle.appointment.line">
+            <field name="time_slot">11:00 AM - 11:30 AM</field>
+            <field name="time_starting">11.0</field>
+            <field name="time_closing">11.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_8" model="vehicle.appointment.line">
+            <field name="time_slot">11:30 AM - 12:00 PM</field>
+            <field name="time_starting">11.5</field>
+            <field name="time_closing">12.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_9" model="vehicle.appointment.line">
+            <field name="time_slot">12:00 PM - 12:30 PM</field>
+            <field name="time_starting">12.0</field>
+            <field name="time_closing">12.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_10" model="vehicle.appointment.line">
+            <field name="time_slot">12:30 PM - 01:00 PM</field>
+            <field name="time_starting">12.5</field>
+            <field name="time_closing">13.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_11" model="vehicle.appointment.line">
+            <field name="time_slot">01:00 PM - 01:30 PM</field>
+            <field name="time_starting">13.0</field>
+            <field name="time_closing">13.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_12" model="vehicle.appointment.line">
+            <field name="time_slot">01:30 PM - 02:00 PM</field>
+            <field name="time_starting">13.5</field>
+            <field name="time_closing">14.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_13" model="vehicle.appointment.line">
+            <field name="time_slot">02:00 PM - 02:30 PM</field>
+            <field name="time_starting">14.0</field>
+            <field name="time_closing">14.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_14" model="vehicle.appointment.line">
+            <field name="time_slot">02:30 PM - 03:00 PM</field>
+            <field name="time_starting">14.5</field>
+            <field name="time_closing">15.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_15" model="vehicle.appointment.line">
+            <field name="time_slot">03:00 PM - 03:30 PM</field>
+            <field name="time_starting">15.0</field>
+            <field name="time_closing">15.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_16" model="vehicle.appointment.line">
+            <field name="time_slot">03:30 PM - 04:00 PM</field>
+            <field name="time_starting">15.5</field>
+            <field name="time_closing">16.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_17" model="vehicle.appointment.line">
+            <field name="time_slot">04:00 PM - 04:30 PM</field>
+            <field name="time_starting">16.0</field>
+            <field name="time_closing">16.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+        <record id="vehicle_appointment_line_friday_18" model="vehicle.appointment.line">
+            <field name="time_slot">04:30 PM - 05:00 PM</field>
+            <field name="time_starting">16.5</field>
+            <field name="time_closing">17.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_friday"/>
+        </record>
+
+        <!-- Time Slots for Saturday -->
+        <record id="vehicle_appointment_line_saturday_1" model="vehicle.appointment.line">
+            <field name="time_slot">08:00 AM - 08:30 AM</field>
+            <field name="time_starting">8.0</field>
+            <field name="time_closing">8.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_2" model="vehicle.appointment.line">
+            <field name="time_slot">08:30 AM - 09:00 AM</field>
+            <field name="time_starting">8.5</field>
+            <field name="time_closing">9.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_3" model="vehicle.appointment.line">
+            <field name="time_slot">09:00 AM - 09:30 AM</field>
+            <field name="time_starting">9.0</field>
+            <field name="time_closing">9.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_4" model="vehicle.appointment.line">
+            <field name="time_slot">09:30 AM - 10:00 AM</field>
+            <field name="time_starting">9.5</field>
+            <field name="time_closing">10.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_5" model="vehicle.appointment.line">
+            <field name="time_slot">10:00 AM - 10:30 AM</field>
+            <field name="time_starting">10.0</field>
+            <field name="time_closing">10.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_6" model="vehicle.appointment.line">
+            <field name="time_slot">10:30 AM - 11:00 AM</field>
+            <field name="time_starting">10.5</field>
+            <field name="time_closing">11.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_7" model="vehicle.appointment.line">
+            <field name="time_slot">11:00 AM - 11:30 AM</field>
+            <field name="time_starting">11.0</field>
+            <field name="time_closing">11.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_8" model="vehicle.appointment.line">
+            <field name="time_slot">11:30 AM - 12:00 PM</field>
+            <field name="time_starting">11.5</field>
+            <field name="time_closing">12.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_9" model="vehicle.appointment.line">
+            <field name="time_slot">12:00 PM - 12:30 PM</field>
+            <field name="time_starting">12.0</field>
+            <field name="time_closing">12.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_10" model="vehicle.appointment.line">
+            <field name="time_slot">12:30 PM - 01:00 PM</field>
+            <field name="time_starting">12.5</field>
+            <field name="time_closing">13.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_11" model="vehicle.appointment.line">
+            <field name="time_slot">01:00 PM - 01:30 PM</field>
+            <field name="time_starting">13.0</field>
+            <field name="time_closing">13.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_12" model="vehicle.appointment.line">
+            <field name="time_slot">01:30 PM - 02:00 PM</field>
+            <field name="time_starting">13.5</field>
+            <field name="time_closing">14.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_13" model="vehicle.appointment.line">
+            <field name="time_slot">02:00 PM - 02:30 PM</field>
+            <field name="time_starting">14.0</field>
+            <field name="time_closing">14.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_14" model="vehicle.appointment.line">
+            <field name="time_slot">02:30 PM - 03:00 PM</field>
+            <field name="time_starting">14.5</field>
+            <field name="time_closing">15.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_15" model="vehicle.appointment.line">
+            <field name="time_slot">03:00 PM - 03:30 PM</field>
+            <field name="time_starting">15.0</field>
+            <field name="time_closing">15.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_16" model="vehicle.appointment.line">
+            <field name="time_slot">03:30 PM - 04:00 PM</field>
+            <field name="time_starting">15.5</field>
+            <field name="time_closing">16.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_17" model="vehicle.appointment.line">
+            <field name="time_slot">04:00 PM - 04:30 PM</field>
+            <field name="time_starting">16.0</field>
+            <field name="time_closing">16.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+        <record id="vehicle_appointment_line_saturday_18" model="vehicle.appointment.line">
+            <field name="time_slot">04:30 PM - 05:00 PM</field>
+            <field name="time_starting">16.5</field>
+            <field name="time_closing">17.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_saturday"/>
+        </record>
+
+        <!-- Time Slots for Sunday -->
+    <record id="vehicle_appointment_line_sunday_1" model="vehicle.appointment.line">
+            <field name="time_slot">08:00 AM - 08:30 AM</field>
+            <field name="time_starting">8.0</field>
+            <field name="time_closing">8.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_2" model="vehicle.appointment.line">
+            <field name="time_slot">08:30 AM - 09:00 AM</field>
+            <field name="time_starting">8.5</field>
+            <field name="time_closing">9.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_3" model="vehicle.appointment.line">
+            <field name="time_slot">09:00 AM - 09:30 AM</field>
+            <field name="time_starting">9.0</field>
+            <field name="time_closing">9.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_4" model="vehicle.appointment.line">
+            <field name="time_slot">09:30 AM - 10:00 AM</field>
+            <field name="time_starting">9.5</field>
+            <field name="time_closing">10.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_5" model="vehicle.appointment.line">
+            <field name="time_slot">10:00 AM - 10:30 AM</field>
+            <field name="time_starting">10.0</field>
+            <field name="time_closing">10.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_6" model="vehicle.appointment.line">
+            <field name="time_slot">10:30 AM - 11:00 AM</field>
+            <field name="time_starting">10.5</field>
+            <field name="time_closing">11.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_7" model="vehicle.appointment.line">
+            <field name="time_slot">11:00 AM - 11:30 AM</field>
+            <field name="time_starting">11.0</field>
+            <field name="time_closing">11.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_8" model="vehicle.appointment.line">
+            <field name="time_slot">11:30 AM - 12:00 PM</field>
+            <field name="time_starting">11.5</field>
+            <field name="time_closing">12.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_9" model="vehicle.appointment.line">
+            <field name="time_slot">12:00 PM - 12:30 PM</field>
+            <field name="time_starting">12.0</field>
+            <field name="time_closing">12.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_10" model="vehicle.appointment.line">
+            <field name="time_slot">12:30 PM - 01:00 PM</field>
+            <field name="time_starting">12.5</field>
+            <field name="time_closing">13.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_11" model="vehicle.appointment.line">
+            <field name="time_slot">01:00 PM - 01:30 PM</field>
+            <field name="time_starting">13.0</field>
+            <field name="time_closing">13.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_12" model="vehicle.appointment.line">
+            <field name="time_slot">01:30 PM - 02:00 PM</field>
+            <field name="time_starting">13.5</field>
+            <field name="time_closing">14.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_13" model="vehicle.appointment.line">
+            <field name="time_slot">02:00 PM - 02:30 PM</field>
+            <field name="time_starting">14.0</field>
+            <field name="time_closing">14.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_14" model="vehicle.appointment.line">
+            <field name="time_slot">02:30 PM - 03:00 PM</field>
+            <field name="time_starting">14.5</field>
+            <field name="time_closing">15.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_15" model="vehicle.appointment.line">
+            <field name="time_slot">03:00 PM - 03:30 PM</field>
+            <field name="time_starting">15.0</field>
+            <field name="time_closing">15.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_16" model="vehicle.appointment.line">
+            <field name="time_slot">03:30 PM - 04:00 PM</field>
+            <field name="time_starting">15.5</field>
+            <field name="time_closing">16.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_17" model="vehicle.appointment.line">
+            <field name="time_slot">04:00 PM - 04:30 PM</field>
+            <field name="time_starting">16.0</field>
+            <field name="time_closing">16.5</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+        <record id="vehicle_appointment_line_sunday_18" model="vehicle.appointment.line">
+            <field name="time_slot">04:30 PM - 05:00 PM</field>
+            <field name="time_starting">16.5</field>
+            <field name="time_closing">17.0</field>
+            <field name="appointment_id" ref="vehicle_appointment_sunday"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="custom_quality_control.group_quality_manager" model="res.groups">
+            <field name="name">Quality Manager</field>
+            <field name="sequence">20</field>
+            <field name="privilege_id" ref="quality.res_groups_privilege_quality"/>
+            <field name="implied_ids" eval="[(4, ref('quality.group_quality_user'))]"/>
+            <field name="comment">The quality manager manages the quality process</field>
+        </record>
+    </data>
+</odoo>

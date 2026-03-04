@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="journal_entry_report_template">
+            <t t-foreach="docs" t-as="o">
+                <main>
+                    <t t-call="web.external_layout">
+                        <t t-set="o" t-value="o.with_context(lang=lang)" />
+                        <div class="page">
+                            <!-- Header Information -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h2>Journal Entry</h2>
+                                </div>
+                            </div>
+                            
+                            <!-- Journal Entry Details -->
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="mb-2">
+                                        <strong>Journal Entry:</strong>
+                                        <div t-field="o.name" t-options="{'widget': 'text'}"/>
+                                    </div>
+                                    <div class="mb-2" t-if="o.ref">
+                                        <strong>Reference:</strong>
+                                        <div t-field="o.ref" t-options="{'widget': 'text'}"/>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-2">
+                                        <strong>Accounting Date:</strong>
+                                        <div t-field="o.date"/>
+                                    </div>
+                                    <div class="mb-2">
+                                        <strong>Journal:</strong>
+                                        <div t-field="o.journal_id" t-options="{'widget': 'many2one', 'no_marker': True}"/>
+                                    </div>
+                                    <div class="mb-2" t-if="o.partner_id">
+                                        <strong>Partner:</strong>
+                                        <div t-field="o.partner_id" t-options="{'widget': 'many2one', 'no_marker': True}"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Journal Items Table -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">Account</th>
+                                                <th class="text-start">Partner</th>
+                                                <th class="text-start">Label</th>
+                                                <th class="text-start" groups="analytic.group_analytic_accounting">Analytic Distribution</th>
+                                                <th class="text-end">Debit</th>
+                                                <th class="text-end">Credit</th>
+                                                <th class="text-start">Tax Grids</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-set="filtered_lines" t-value="o.line_ids.filtered(lambda l: l.display_type not in ('line_section', 'line_note'))"/>
+                                            <t t-foreach="filtered_lines" t-as="line">
+                                                <tr>
+                                                    <td class="text-start">
+                                                        <span t-field="line.account_id" t-options="{'widget': 'many2one', 'no_marker': True}"/>
+                                                    </td>
+                                                    <td class="text-start">
+                                                        <t t-if="line.partner_id">
+                                                            <span t-field="line.partner_id" t-options="{'widget': 'many2one', 'no_marker': True}"/>
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                    <td class="text-start">
+                                                        <t t-if="line.name">
+                                                            <span t-field="line.name" t-options="{'widget': 'text'}"/>
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                    <td class="text-start" groups="analytic.group_analytic_accounting">
+                                                        <t t-if="line.analytic_distribution">
+                                                            <t t-set="analytic_dist_str" t-value="''"/>
+                                                            <t t-foreach="line.analytic_distribution" t-as="acc_id">
+                                                                <t t-set="analytic_acc" t-value="env['account.analytic.account'].browse(int(acc_id))"/>
+                                                                <t t-set="analytic_dist_str" t-value="analytic_dist_str + (', ' if analytic_dist_str else '') + analytic_acc.name"/>
+                                                            </t>
+                                                            <span t-esc="analytic_dist_str"/>
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span t-field="line.debit" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                                    </td>
+                                                    <td class="text-end">
+                                                        <span t-field="line.credit" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                                    </td>
+                                                    <td class="text-start">
+                                                        <t t-if="line.tax_tag_ids">
+                                                            <span t-foreach="line.tax_tag_ids" t-as="tag">
+                                                                <span t-esc="tag.name"/>
+                                                                <t t-if="tag_index != len(line.tax_tag_ids) - 1">, </t>
+                                                            </span>
+                                                        </t>
+                                                        <t t-else="">-</t>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="fw-bold">
+                                                <td class="text-end" groups="analytic.group_analytic_accounting" colspan="4">Total:</td>
+                                                <td class="text-end" groups="!analytic.group_analytic_accounting" colspan="3">Total:</td>
+                                                <td class="text-end">
+                                                    <t t-set="total_debit" t-value="sum([l.debit for l in filtered_lines])"/>
+                                                    <span t-out="total_debit" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <t t-set="total_credit" t-value="sum([l.credit for l in filtered_lines])"/>
+                                                    <span t-out="total_credit" t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Additional Information -->
+                            <div class="row mb-4" t-if="o.narration">
+                                <div class="col-12">
+                                    <strong>Internal Note:</strong>
+                                    <div t-field="o.narration" t-options="{'widget': 'text'}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </main>
+            </t>
+        </template>
+    </data>
+</odoo>

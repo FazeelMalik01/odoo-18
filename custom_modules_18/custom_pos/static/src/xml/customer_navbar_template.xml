@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Inherit original POS Navbar template -->
+    <t t-inherit="point_of_sale.Navbar" t-inherit-mode="extension">
+
+        <!-- Replace only the Print Report button -->
+<!--        <xpath expr="//DropdownItem[contains(@onSelected, 'showSaleDetails')]" position="replace">-->
+            <!-- Always visible Print Report button -->
+<!--            <DropdownItem onSelected="() => this.showSaleDetails()">-->
+<!--                Print Report-->
+<!--            </DropdownItem>-->
+<!--                                <DropdownItem onSelected="() => pos.closePos()">-->
+<!--                                    Backend !!-->
+<!--                                </DropdownItem>-->
+<!--        </xpath>-->
+        <xpath expr="//DropdownItem[contains(text(), 'Backend')]" position="attributes">
+            <attribute name="t-if">1</attribute>
+        </xpath>
+
+    </t>
+</templates>

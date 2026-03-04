@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Add custom fields (Title, Middle Name, Last Name, Mobile) to portal account form -->
+        <template id="portal_address_form_fields_custom_fields" inherit_id="portal.address_form_fields" name="Address Form Fields - Custom Fields">
+            <!-- Add Title field before name field (on top) -->
+            <xpath expr="//input[@id='o_name']/parent::div" position="before">
+                <t t-if="request.env.user.has_group('custom_laundry_service.group_customer') or request.env.user.has_group('custom_laundry_service.group_partner')">
+                    <!-- Title field -->
+                    <div class="col-lg-12 mb-2">
+                        <label class="col-form-label" for="title_selection">
+                            Title
+                        </label>
+                        <select
+                            id="title_selection"
+                            name="title_selection"
+                            class="form-select"
+                            t-att-value="partner_sudo.title_selection or ''">
+                            <option value="">Select title...</option>
+                            <option value="sir" t-att-selected="'selected' if partner_sudo.title_selection == 'sir' else None">Sir</option>
+                            <option value="madam" t-att-selected="'selected' if partner_sudo.title_selection == 'madam' else None">Madam</option>
+                        </select>
+                    </div>
+                </t>
+            </xpath>
+            
+            <!-- Add Mobile field after phone field div, with icon and placeholder like phone field -->
+            <xpath expr="//input[@id='o_phone']/parent::div" position="after">
+                <t t-if="request.env.user.has_group('custom_laundry_service.group_customer') or request.env.user.has_group('custom_laundry_service.group_partner')">
+                    <div class="col-lg-12 mb-2">
+                        <label class="col-form-label" for="mobile">
+                            Mobile
+                        </label>
+                        <input
+                            type="text"
+                            id="mobile"
+                            name="mobile"
+                            class="form-control"
+                            placeholder="Enter your mobile number"
+                            t-att-value="partner_sudo.mobile or ''"
+                            required="required"
+                        />
+                        <div class="invalid-feedback">Please provide mobile number.</div>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+        
+        <!-- Remove required attribute from phone field - must be after other templates -->
+        <!-- This template removes the required attribute from the phone input field and label asterisk -->
+        <template id="portal_address_form_fields_phone_optional" inherit_id="portal.address_form_fields" name="Address Form Fields - Phone Optional" priority="50">
+            <!-- Replace the phone input field without required attribute -->
+            <xpath expr="//input[@id='o_phone']" position="replace">
+                <input
+                    id="o_phone"
+                    type="tel"
+                    name="phone"
+                    class="form-control"
+                    t-att-value="partner_sudo.phone or ''"
+                    t-att-placeholder="partner_sudo.country_id and partner_sudo.country_id.phone_code or ''"
+                    t-att-required="None"
+                />
+            </xpath>
+            <!-- Replace the phone label to remove asterisk -->
+            <xpath expr="//label[@for='o_phone']" position="replace">
+                <label class="col-form-label" for="o_phone">Phone</label>
+            </xpath>
+        </template>
+        
+        <!-- Use JavaScript and CSS as fallback to ensure required attribute and asterisk are removed -->
+        <template id="portal_address_form_fields_phone_optional_js" inherit_id="portal.address_form_fields" name="Address Form Fields - Phone Optional JS" priority="60">
+            <xpath expr="//input[@id='o_phone']/parent::div" position="after">
+                <style>
+                    /* Hide asterisk for phone field label */
+                    label[for='o_phone']::after,
+                    label[for='o_phone'] .o_required,
+                    label[for='o_phone'] abbr.o_required {
+                        display: none !important;
+                    }
+                </style>
+                <script type="text/javascript">
+                    <![CDATA[
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var phoneInput = document.getElementById('o_phone');
+                        var phoneLabel = document.querySelector('label[for="o_phone"]');
+                        if (phoneInput) {
+                            phoneInput.removeAttribute('required');
+                            phoneInput.classList.remove('required');
+                        }
+                        if (phoneLabel) {
+                            // Remove any asterisk elements
+                            var asteriskElements = phoneLabel.querySelectorAll('.o_required, abbr.o_required, [class*="required"]');
+                            asteriskElements.forEach(function(el) {
+                                el.remove();
+                            });
+                            // Remove asterisk from label text if present
+                            if (phoneLabel.textContent && phoneLabel.textContent.includes('*')) {
+                                phoneLabel.textContent = phoneLabel.textContent.replace(/\s*\*\s*$/, '').trim();
+                            }
+                        }
+                    });
+                    // Also try immediately in case DOM is already loaded
+                    (function() {
+                        var phoneInput = document.getElementById('o_phone');
+                        var phoneLabel = document.querySelector('label[for="o_phone"]');
+                        if (phoneInput) {
+                            phoneInput.removeAttribute('required');
+                            phoneInput.classList.remove('required');
+                        }
+                        if (phoneLabel) {
+                            var asteriskElements = phoneLabel.querySelectorAll('.o_required, abbr.o_required, [class*="required"]');
+                            asteriskElements.forEach(function(el) {
+                                el.remove();
+                            });
+                            if (phoneLabel.textContent && phoneLabel.textContent.includes('*')) {
+                                phoneLabel.textContent = phoneLabel.textContent.replace(/\s*\*\s*$/, '').trim();
+                            }
+                        }
+                    })();
+                    ]]>
+                </script>
+            </xpath>
+        </template>
+        
+        <!-- Update default city field to show city_1 value -->
+        <template id="portal_address_form_fields_city_1" inherit_id="portal.address_form_fields" name="Address Form Fields - City_1">
+            <!-- Update city field to show city_1 value (keep name as city for compatibility) -->
+            <xpath expr="//input[@id='o_city']" position="replace">
+                <input
+                    id="o_city"
+                    type="text"
+                    name="city"
+                    class="form-control"
+                    t-att-value="partner_sudo.city_1 or partner_sudo.city or ''"
+                />
+            </xpath>
+        </template>
+        
+        <!-- Override portal account page to show zip code field based on user group -->
+        <!-- Partners: show assigned zip codes as badges (read-only) -->
+        <!-- Customers: show select dropdown with zip codes -->
+        <!-- Others: show default input field -->
+        <template id="portal_address_form_fields_inherit_zip_codes" inherit_id="portal.address_form_fields" name="Address Form Fields - Zip Code Override">
+            <!-- Replace the zip code input field (when zip_before_city is true) -->
+            <xpath expr="//t[@t-if='zip_before_city']//div[@id='div_zip']" position="replace">
+                <!-- Partner: Show assigned zip codes as badges -->
+                <t t-if="request.env.user.has_group('custom_laundry_service.group_partner')">
+                    <div id="div_zip" class="col-md-4 mb-2">
+                        <label class="col-form-label" for="assigned_zip_codes">
+                            Zip Code
+                        </label>
+                        <!-- Hidden input for JavaScript compatibility -->
+                        <input type="hidden" id="o_zip" name="zip" t-att-value="partner_sudo.zip or ''"/>
+                        <div id="assigned_zip_codes" class="form-control" style="min-height: 38px; padding: 0.375rem 0.75rem; background-color: #f8f9fa; border: 1px solid #ced4da;">
+                            <t t-set="current_user" t-value="request.env.user"/>
+                            <t t-set="PartnerZipCode" t-value="request.env['laundry.partner.zip.code'].sudo()"/>
+                            <t t-set="partner_zip_assignments" t-value="PartnerZipCode.search([('user_id', '=', current_user.id)])"/>
+                            <t t-set="zip_codes_seen" t-value="set()"/>
+                            <t t-set="has_zip_codes" t-value="False"/>
+                            <t t-foreach="partner_zip_assignments" t-as="assignment">
+                                <t t-foreach="assignment.zip_code_line_ids" t-as="zip_code_line">
+                                    <t t-if="zip_code_line.description and zip_code_line.id not in zip_codes_seen">
+                                        <t t-set="zip_codes_seen" t-value="zip_codes_seen | {zip_code_line.id}"/>
+                                        <t t-set="has_zip_codes" t-value="True"/>
+                                        <span class="badge bg-primary me-1 mb-1" style="display: inline-block;">
+                                            <t t-esc="zip_code_line.description"/>
+                                        </span>
+                                    </t>
+                                </t>
+                            </t>
+                            <t t-if="not has_zip_codes">
+                                <span class="text-muted">No zip codes assigned</span>
+                            </t>
+                        </div>
+                        <small class="form-text text-muted">These are the zip codes assigned to your account.</small>
+                    </div>
+                    <!-- Social Security Number field -->
+                    <div class="col-md-4 mb-2">
+                        <label class="col-form-label" for="social_security_no">
+                            Social Security No
+                        </label>
+                        <input
+                            type="text"
+                            id="social_security_no"
+                            name="social_security_no"
+                            class="form-control"
+                            placeholder="XXX.XXXX.XXXX.XX"
+                            maxlength="17"
+                            t-att-value="partner_sudo.social_security_no or ''"
+                        />
+                    </div>
+                    <!-- Partner Zip Code field -->
+                    <div class="col-md-4 mb-2">
+                        <label class="col-form-label" for="partner_zip_code">
+                            Partner Zip Code
+                        </label>
+                        <input
+                            type="text"
+                            id="partner_zip_code"
+                            name="partner_zip_code"
+                            class="form-control"
+                            placeholder="Enter zip code"
+                            t-att-value="partner_sudo.partner_zip_code or ''"
+                        />
+                    </div>
+                </t>
+                <!-- Customer: Show select dropdown with zip codes -->
+                <t t-elif="request.env.user.has_group('custom_laundry_service.group_customer')">
+                    <div id="div_zip" class="col-md-4 mb-2">
+                        <label class="col-form-label" for="o_zip">
+                            Zip Code
+                        </label>
+                        <select
+                            id="o_zip"
+                            name="zip"
+                            class="form-select"
+                            t-att-value="partner_sudo.zip"
+                        >
+                            <option value="">Select zip code...</option>
+                            <t t-foreach="available_zip_codes or []" t-as="zip_code">
+                                <option t-att-value="zip_code.get('code', '')" 
+                                        t-att-selected="'selected' if partner_sudo.zip == zip_code.get('code', '') else None">
+                                    <t t-esc="zip_code.get('code', '')"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                </t>
+                <!-- Default: Show input field -->
+                <t t-else="">
+                    <div id="div_zip" class="col-md-4 mb-2">
+                        <label class="col-form-label" for="o_zip">
+                            Zip Code
+                        </label>
+                        <input
+                            id="o_zip"
+                            type="text"
+                            name="zip"
+                            class="form-control"
+                            t-att-value="partner_sudo.zip"
+                        />
+                    </div>
+                    <!-- Social Security Number field -->
+                    <div class="col-md-4 mb-2">
+                        <label class="col-form-label" for="social_security_no">
+                            Social Security No
+                        </label>
+                        <input
+                            type="text"
+                            id="social_security_no"
+                            name="social_security_no"
+                            class="form-control"
+                            placeholder="XXX.XXXX.XXXX.XX"
+                            maxlength="17"
+                            t-att-value="partner_sudo.social_security_no or ''"
+                        />
+                    </div>
+                </t>
+            </xpath>
+            <!-- Replace the zip code input field (when zip_before_city is false) -->
+            <xpath expr="//t[@t-if='not zip_before_city']//div[@id='div_zip']" position="replace">
+                <!-- Partner: Show assigned zip codes as badges -->
+                <t t-if="request.env.user.has_group('custom_laundry_service.group_partner')">
+                    <div id="div_zip" class="col-md-4 mb-2">
+                        <label class="col-form-label" for="assigned_zip_codes">
+                            Zip Code
+                        </label>
+                        <!-- Hidden input for JavaScript compatibility -->
+                        <input type="hidden" id="o_zip" name="zip" t-att-value="partner_sudo.zip or ''"/>
+                        <div id="assigned_zip_codes" class="form-control" style="min-height: 38px; padding: 0.375rem 0.75rem; background-color: #f8f9fa; border: 1px solid #ced4da;">
+                            <t t-set="current_user" t-value="request.env.user"/>
+                            <t t-set="PartnerZipCode" t-value="request.env['laundry.partner.zip.code'].sudo()"/>
+                            <t t-set="partner_zip_assignments" t-value="PartnerZipCode.search([('user_id', '=', current_user.id)])"/>
+                            <t t-set="zip_codes_seen" t-value="set()"/>
+                            <t t-set="has_zip_codes" t-value="False"/>
+                            <t t-foreach="partner_zip_assignments" t-as="assignment">
+                                <t t-foreach="assignment.zip_code_line_ids" t-as="zip_code_line">
+                                    <t t-if="zip_code_line.description and zip_code_line.id not in zip_codes_seen">
+                                        <t t-set="zip_codes_seen" t-value="zip_codes_seen | {zip_code_line.id}"/>
+                                        <t t-set="has_zip_codes" t-value="True"/>
+                                        <span class="badge bg-primary me-1 mb-1" style="display: inline-block;">
+                                            <t t-esc="zip_code_line.description"/>
+                                        </span>
+                                    </t>
+                                </t>
+                            </t>
+                            <t t-if="not has_zip_codes">
+                                <span class="text-muted">No zip codes assigned</span>
+                            </t>
+                        </div>
+                        <small class="form-text text-muted">These are the zip codes assigned to your account.</small>
+                    </div>
+                    <!-- Social Security Number field -->
+                    <div class="col-md-4 mb-2">
+                        <label class="col-form-label" for="social_security_no">
+                            Social Security No
+                        </label>
+                        <input
+                            type="text"
+                            id="social_security_no"
+                            name="social_security_no"
+                            class="form-control"
+                            placeholder="XXX.XXXX.XXXX.XX"
+                            maxlength="17"
+                            t-att-value="partner_sudo.social_security_no or ''"
+                        />
+                    </div>
+                    <!-- Partner Zip Code field -->
+                    <div class="col-md-4 mb-2">
+                        <label class="col-form-label" for="partner_zip_code">
+                            Partner Zip Code
+                        </label>
+                        <input
+                            type="text"
+                            id="partner_zip_code"
+                            name="partner_zip_code"
+                            class="form-control"
+                            placeholder="Enter zip code"
+                            t-att-value="partner_sudo.partner_zip_code or ''"
+                        />
+                    </div>
+                    <!-- Availability field -->
+                    <div class="col-md-12 mb-2">
+                        <label class="col-form-label" for="availability_weekdays">
+                            Availability *
+                        </label>
+                        <t t-set="weekdays" t-value="[
+                            ('monday', 'Monday'),
+                            ('tuesday', 'Tuesday'),
+                            ('wednesday', 'Wednesday'),
+                            ('thursday', 'Thursday'),
+                            ('friday', 'Friday'),
+                            ('saturday', 'Saturday'),
+                            ('sunday', 'Sunday')
+                        ]"/>
+                        <t t-set="selected_weekdays" t-value="(partner_sudo.availability_weekdays or '').split(',') if partner_sudo.availability_weekdays else []"/>
+                        <div class="form-control" style="min-height: auto; padding: 0.75rem;">
+                            <div class="row">
+                                <t t-foreach="weekdays" t-as="weekday">
+                                    <div class="col-md-3 col-sm-4 col-6 mb-2">
+                                        <div class="form-check">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                t-att-id="'availability_' + weekday[0]"
+                                                t-att-name="'availability_weekdays'"
+                                                t-att-value="weekday[0]"
+                                                t-att-checked="'checked' if weekday[0] in selected_weekdays else None"
+                                            />
+                                            <label class="form-check-label" t-att-for="'availability_' + weekday[0]">
+                                                <t t-esc="weekday[1]"/>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">Select the days you are available.</small>
+                    </div>
+                </t>
+                <!-- Customer: Show select dropdown with zip codes -->
+                <t t-elif="request.env.user.has_group('custom_laundry_service.group_customer')">
+                    <div id="div_zip" class="col-md-4 mb-2">
+                        <label class="col-form-label" for="o_zip">
+                            Zip Code
+                        </label>
+                        <select
+                            id="o_zip"
+                            name="zip"
+                            class="form-select"
+                            t-att-value="partner_sudo.zip"
+                        >
+                            <option value="">Select zip code...</option>
+                            <t t-foreach="available_zip_codes or []" t-as="zip_code">
+                                <option t-att-value="zip_code.get('code', '')" 
+                                        t-att-selected="'selected' if partner_sudo.zip == zip_code.get('code', '') else None">
+                                    <t t-esc="zip_code.get('code', '')"/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                </t>
+                <!-- Default: Show input field -->
+                <t t-else="">
+                    <div id="div_zip" class="col-md-4 mb-2">
+                        <label class="col-form-label" for="o_zip">
+                            Zip Code
+                        </label>
+                        <input
+                            id="o_zip"
+                            type="text"
+                            name="zip"
+                            class="form-control"
+                            t-att-value="partner_sudo.zip"
+                        />
+                    </div>
+                    <!-- Social Security Number field -->
+                    <div class="col-md-4 mb-2">
+                        <label class="col-form-label" for="social_security_no">
+                            Social Security No
+                        </label>
+                        <input
+                            type="text"
+                            id="social_security_no"
+                            name="social_security_no"
+                            class="form-control"
+                            placeholder="XXX.XXXX.XXXX.XX"
+                            maxlength="17"
+                            t-att-value="partner_sudo.social_security_no or ''"
+                        />
+                    </div>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>
+

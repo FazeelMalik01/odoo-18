@@ -1,0 +1,73 @@
+<odoo>
+    <!-- Inherit base.view_users_tree to add dealer_status field with decorations -->
+    <record id="view_users_tree_inherit_dealer_status" model="ir.ui.view">
+        <field name="name">res.users.tree.inherit.dealer.status</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="dealer_status" decoration-danger="dealer_status == 'pending'" decoration-success="dealer_status == 'approved'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit base.view_users_simple_form to add dealer fields and Approve button -->
+    <record id="view_users_simple_form_inherit_dealer" model="ir.ui.view">
+        <field name="name">res.users.simple.form.inherit.dealer</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_simple_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <header>
+                    <button name="approve_dealer" string="Approve this dealer" type="object" 
+                            class="oe_highlight" 
+                            invisible="dealer_status == 'approved'"
+                            groups="base.group_system"/>
+                </header>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <group string="Dealer Information" groups="base.group_system">
+                    <field name="dealer_status" readonly="1"/>
+                    <field name="has_dealer_group" readonly="1"/>
+                    <field name="show_customers_on_portal"/>
+                    <field name="show_catalog"/>
+                    <field name="allowed_categories" widget="many2many_tags" options="{'no_create': True}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Action for dealer signups menu -->
+    <record id="action_dealer_signups" model="ir.actions.act_window">
+        <field name="name">Dealer Signups</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('dealer_status', '!=', False)]</field>
+        <field name="context">{'search_default_pending': 1, 'default_dealer_status': 'pending', 'active_test': False}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No dealer signups
+            </p>
+            <p>
+                Users who sign up via the dealer signup form will appear here. 
+                Click on a user to review and approve them.
+            </p>
+        </field>
+    </record>
+    
+    <!-- Add filter for pending dealers -->
+    <record id="filter_users_pending_dealers" model="ir.filters">
+        <field name="name">Pending</field>
+        <field name="model_id" ref="base.model_res_users"/>
+        <field name="domain">[('dealer_status', '=', 'pending')]</field>
+        <field name="context">{'group_by': [], 'active_test': False}</field>
+    </record>
+
+    <!-- Menu item for dealer signups -->
+    <menuitem id="menu_dealer_signups"
+              name="Dealer Signups"
+              parent="base.menu_users"
+              action="action_dealer_signups"
+              sequence="20"
+              groups="base.group_system"/>
+</odoo>

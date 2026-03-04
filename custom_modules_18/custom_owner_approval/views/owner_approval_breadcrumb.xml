@@ -1,0 +1,24 @@
+<odoo>
+    <template id="portal_owner_approval_breadcrumb"
+              inherit_id="portal.portal_breadcrumbs"
+              name="Owner Approval List Breadcrumb">
+        <xpath expr="//ol" position="inside">
+            <li t-if="page_name == 'Owner Approvals'"
+                class="breadcrumb-item active">
+                Owner Approvals List
+            </li>
+        </xpath>
+    </template>
+    <template id="portal_owner_approval_detail_breadcrumb"
+              inherit_id="portal.portal_breadcrumbs"
+              name="Owner Approval Detail Breadcrumb">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'Owner Approval Detail'" class="breadcrumb-item">
+                <a t-att-href="'/my/owner-approvals'">Owner Approvals List</a>
+            </li>
+            <li t-if="page_name == 'Owner Approval Detail'" class="breadcrumb-item active">
+                Owner Approvals Details
+            </li>
+        </xpath>
+    </template>
+</odoo>

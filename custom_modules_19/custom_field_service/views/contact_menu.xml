@@ -1,0 +1,21 @@
+<odoo>
+    <!-- Action to open the filtered contacts list -->
+    <record id="action_contacts_customers" model="ir.actions.act_window">
+        <field name="name">Customers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('sale_order_ids.state', '=', 'sale')]</field>
+        <field name="context">{}</field>
+    </record>
+    <!-- Inherit Configuration menu and update sequence -->
+    <record id="contacts.res_partner_menu_config" model="ir.ui.menu">
+        <field name="sequence">5</field> <!-- now after Customers -->
+    </record>
+    <!-- New menu item under Contacts root menu -->
+    <menuitem id="menu_contacts_customers"
+              name="Customers"
+              parent="contacts.menu_contacts"
+              action="action_contacts_customers"
+              sequence="3"/>
+    
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="custom_whatsapp.TicketScreen" t-inherit="point_of_sale.TicketScreen" t-inherit-mode="extension">
+        <!-- Add WhatsApp button after Print Receipt button -->
+        <!-- Target the last button in the control-buttons div (which is the Print Receipt button) -->
+        <xpath expr="//div[hasclass('control-buttons')]/button[last()]" position="after">
+            <button class="control-button btn btn-light btn-lg lh-lg flex-grow-1 flex-shrink-1 o_whatsapp_button" 
+                    t-on-click="() => this.onWhatsAppClick(this.getSelectedOrder())">
+                <i class="fa fa-whatsapp me-1" />Send WhatsApp
+            </button>
+        </xpath>
+    </t>
+</templates>
+

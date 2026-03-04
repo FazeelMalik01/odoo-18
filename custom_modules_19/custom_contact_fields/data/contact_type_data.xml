@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Contact Types Data -->
+        <record id="contact_type_main" model="contact.type">
+            <field name="name">Main Contact</field>
+            <field name="code">contact</field>
+            <field name="sequence">1</field>
+            <field name="description">Primary contact for general communications</field>
+        </record>
+        
+        <record id="contact_type_invoice" model="contact.type">
+            <field name="name">Accounting Contact</field>
+            <field name="code">invoice</field>
+            <field name="sequence">2</field>
+            <field name="description">Contact for invoices and billing matters</field>
+        </record>
+        
+        <record id="contact_type_delivery" model="contact.type">
+            <field name="name">Receiving Contact</field>
+            <field name="code">delivery</field>
+            <field name="sequence">3</field>
+            <field name="description">Contact for deliveries and shipping</field>
+        </record>
+        
+        <record id="contact_type_sale" model="contact.type">
+            <field name="name">Sale Contact</field>
+            <field name="code">sale_contact</field>
+            <field name="sequence">4</field>
+            <field name="description">Contact for sales and orders</field>
+        </record>
+        
+        <record id="contact_type_shipping_cc" model="contact.type">
+            <field name="name">Shipping Cc</field>
+            <field name="code">shipping_cc</field>
+            <field name="sequence">5</field>
+            <field name="description">Contact to be CC'd on shipping communications</field>
+        </record>
+        
+        <record id="contact_type_accounting_cc" model="contact.type">
+            <field name="name">Accounting Cc</field>
+            <field name="code">accounting_cc</field>
+            <field name="sequence">6</field>
+            <field name="description">Contact to be CC'd on accounting communications</field>
+        </record>
+        
+        <record id="contact_type_marketing" model="contact.type">
+            <field name="name">Marketing Contact</field>
+            <field name="code">marketing</field>
+            <field name="sequence">7</field>
+            <field name="description">Contact for marketing communications</field>
+        </record>
+        
+        <record id="contact_type_other" model="contact.type">
+            <field name="name">Other</field>
+            <field name="code">other</field>
+            <field name="sequence">8</field>
+            <field name="description">Other type of contact</field>
+        </record>
+    </data>
+</odoo>

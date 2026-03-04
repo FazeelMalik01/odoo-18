@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="OrderlineVariantInfo"
+       t-inherit="point_of_sale.Orderline"
+       t-inherit-mode="extension"
+       owl="1">
+        <xpath expr="//div[contains(@class, 'product-name')]" position="replace">
+            <div class="product-name d-inline-block flex-grow-1 fw-bolder pe-1">
+                <t t-set="full_name" t-value="line.productName or ''"/>
+                
+                <!-- Use bdi element for proper bidirectional text isolation -->
+                <!-- This handles RTL/LTR mixed text correctly without parsing -->
+                <bdi dir="auto" 
+                     class="text-wrap d-block"
+                     style="white-space: normal; word-break: break-word; unicode-bidi: plaintext;"
+                     t-esc="full_name"/>
+                
+                <t t-slot="product-name"/>
+            </div>
+        </xpath>
+    </t>
+</templates>

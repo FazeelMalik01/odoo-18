@@ -1,0 +1,10 @@
+<odoo>
+    <record id="delivery_carrier_smsa" model="delivery.carrier">
+        <field name="name">SMSA Delivery</field>
+        <field name="delivery_type">smsa</field>
+        <field name="product_id" ref="delivery.product_product_delivery"/>
+        <field name="smsa_rate_first_order">2.0</field>
+        <field name="smsa_rate_other_orders">1.0</field>
+        <field name="website_published">True</field>
+    </record>
+</odoo>

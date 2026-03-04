@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_inspection">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <center>
+                            <h2>
+                                Inspection Job Card Report
+                            </h2>
+                        </center>
+                        <div class="oe_structure"/>
+
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Job Card No:</strong>
+                                <span t-field="o.sequence_id"/>
+                                <br/>
+                                <br/>
+
+                                <strong>
+                                    <b>Vehicle Details</b>
+                                </strong>
+                                <br/>
+                                <strong>Name:</strong>
+                                <span t-field="o.brand_id"/>
+                                <br/>
+                                <strong>Fuel Type:</strong>
+                                <span t-field="o.fuel_type_id"/>
+                                <br/>
+                                <strong>Registration No:</strong>
+                                <span t-field="o.registration_no"/>
+                                <br/>
+                                <br/>
+
+                                <strong>
+                                    <b>Customer Details</b>
+                                </strong>
+                                <br/>
+                                <strong>Customer:</strong>
+                                <span t-field="o.customer_id"/>
+                                <br/>
+                                <strong>Phone:</strong>
+                                <span t-field="o.phone"/>
+                                <br/>
+                                <strong>Email:</strong>
+                                <span t-field="o.email"/>
+                                <br/>
+                                <br/>
+
+                                <strong>
+                                    <b>Inspection Details</b>
+                                </strong>
+                                <br/>
+                                <strong>Inspection Type:</strong>
+                                <span t-field="o.inspection_type"/>
+                            </div>
+
+                            <div class="col-6">
+                                <br/><br/><br/><br/>
+                                <strong>Model:</strong>
+                                <span t-field="o.model_id"/>
+                                <br/>
+                                <strong>Transmission Type:</strong>
+                                <span t-field="o.transmission_type"/>
+                                <br/>
+                                <strong>VIN No:</strong>
+                                <span t-field="o.vin_no"/>
+                                <br/><br/><br/>
+
+                                <strong>Address:</strong>
+                                <span t-field="o.street"/>
+                                <br/>
+                                <span t-field="o.city"/>
+                                <t t-if="o.city and o.state_id">,</t>
+                                <span t-field="o.state_id"/>
+                                <br/><br/><br/><br/><br/><br/>
+
+
+                                <strong>Inspected By:</strong>
+                                <span t-field="o.inspector_id"/>
+                                <br/>
+
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <t t-if="o.observations">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Customer Observations</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <span t-field="o.observations"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row mt16">
+                            <div class="col-12">
+                                <t t-if="o.parts_assessment_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Vehicle Spare Parts Assessments</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <tbody>
+                                            <tr t-foreach="o.parts_assessment_ids" t-as="assessments">
+                                                <td>
+                                                    <span t-field="assessments.name"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row mt16">
+                            <div class="col-12">
+                                <t t-if="o.inner_condition_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Vehicle Body Inner Conditions</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>Items</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>State</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Remarks</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.inner_condition_ids" t-as="inner">
+                                                <td>
+                                                    <span t-field="inner.vehicle_item_id"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="inner.state"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="inner.description"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row mt16">
+                            <div class="col-12">
+                                <t t-if="o.outer_condition_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Vehicle Body Outer Conditions</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>View</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Location</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Condition</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Condition Code</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.outer_condition_ids" t-as="outer">
+                                                <td>
+                                                    <span t-field="outer.state"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="outer.vehicle_location_id"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="outer.vehicle_outer_id"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="outer.short_code"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row mt16">
+                            <div class="col-12">
+                                <t t-if="o.mechanical_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Mechanical Conditions</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>Name</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Condition</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Remarks</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.mechanical_ids" t-as="mechanical">
+                                                <td>
+                                                    <span t-field="mechanical.vehicle_item_id"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="mechanical.state"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="mechanical.description"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row mt16">
+                            <div class="col-12">
+                                <t t-if="o.components_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Vehicle Components</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>Vehicle Side</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Component</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Present Condition</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Remarks</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.components_ids" t-as="component">
+                                                <td>
+                                                    <span t-field="component.component_side"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="component.vehicle_components_id"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="component.state"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="component.condition_remark"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <t t-if="o.fluid_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Vehicle Fluids</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>Vehicle Side</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Component</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Present Condition</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Remarks</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.fluid_ids" t-as="fluids">
+                                                <td>
+                                                    <span t-field="fluids.component_side"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="fluids.vehicle_fluids_id"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="fluids.state"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="fluids.condition_remark"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <t t-if="o.tyre_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Tyre Inspections</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>Tyre Location</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Present Condition</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Tread Wear(mm)</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Tread Depth(mm)</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Tyre Pressure(psi)</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Brake Pads(%)</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.tyre_ids" t-as="tyre">
+                                                <td>
+                                                    <span t-field="tyre.tyre_side"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="tyre.state"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="tyre.tread_wear"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="tyre.tread_depth"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="tyre.pressure"/>
+                                                </td>
+                                                <td>
+                                                    <span t-field="tyre.brake_pads"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <t t-if="o.checklist_ids">
+                                    <h5 style="margin-top: 32px; background-color: #f0f0f0; padding: 10px;">
+                                        <b>Inspection Checklist</b>
+                                    </h5>
+                                    <table class="table table-sm" style="page-break-inside: avoid;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start">
+                                                    <strong>Check</strong>
+                                                </th>
+                                                <th class="text-start">
+                                                    <strong>Name</strong>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="o.checklist_lines" t-as="checklist">
+                                                <td>
+                                                    <t t-if="checklist.is_checked">
+                                                        <span style="color: green; font-size: 18px;">☑</span>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <span t-field="checklist.name"/>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="row" style="page-break-inside: avoid; margin-top: 30px;">
+                            <div class="col-9"/>
+                            <div class="col-3">
+                                <center>
+                                    <t t-if="o.signature_img">
+                                        <span style="font-weight: bold;">
+                                            Date:
+                                            <span class="label label-default" t-field="o.signature_date"/>
+                                        </span>
+                                        <img t-att-src="'data:image/png;base64,' + o.signature_img.decode('utf-8')"
+                                             style="width: 170px; height: 100px;"/>
+                                        <h6 style="margin-top: 8px;">Authorised Signature</h6>
+                                    </t>
+                                </center>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

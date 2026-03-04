@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Vehicle Locations -->
+        <record id="vehicle_location_bumper_end" model="vehicle.location">
+            <field name="name">Bumper End</field>
+        </record>
+        <record id="vehicle_location_valance_panel" model="vehicle.location">
+            <field name="name">Valance Panel</field>
+        </record>
+        <record id="vehicle_location_front_fender" model="vehicle.location">
+            <field name="name">Front Fender</field>
+        </record>
+        <record id="vehicle_location_rear_bumper" model="vehicle.location">
+            <field name="name">Rear Bumper</field>
+        </record>
+        <record id="vehicle_location_side_skirt" model="vehicle.location">
+            <field name="name">Side Skirt</field>
+        </record>
+        <record id="vehicle_location_headlight" model="vehicle.location">
+            <field name="name">Headlight</field>
+        </record>
+        <record id="vehicle_location_tail_light" model="vehicle.location">
+            <field name="name">Tail Light</field>
+        </record>
+        <record id="vehicle_location_grille" model="vehicle.location">
+            <field name="name">Grille</field>
+        </record>
+        <record id="vehicle_location_hood" model="vehicle.location">
+            <field name="name">Hood</field>
+        </record>
+        <record id="vehicle_location_roof" model="vehicle.location">
+            <field name="name">Roof</field>
+        </record>
+        <record id="vehicle_location_door" model="vehicle.location">
+            <field name="name">Door</field>
+        </record>
+        <record id="vehicle_location_trunk" model="vehicle.location">
+            <field name="name">Trunk</field>
+        </record>
+        <record id="vehicle_location_fuel_door" model="vehicle.location">
+            <field name="name">Fuel Door</field>
+        </record>
+    </data>
+</odoo>

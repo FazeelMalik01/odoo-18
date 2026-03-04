@@ -1,0 +1,21 @@
+<odoo>
+    <record id="view_account_position_form_custom_tax_mapping" model="ir.ui.view">
+      <field name="name">account.fiscal.position.form.custom.tax.mapping</field>
+      <field name="model">account.fiscal.position</field>
+      <field name="inherit_id" ref="account.view_account_position_form"/>
+      <field name="arch" type="xml">
+      <xpath expr="//notebook/page[@name='account_mapping']" position="before">
+          <page name="custom_tax_mapping" string="Tax Mapping">
+            <group>
+              <field name="custom_tax_mapping_ids" nolabel="1">
+                <list editable="bottom">
+                  <field name="tax_src_id" string="Tax on Product"/>
+                  <field name="tax_dest_id" string="Tax to Apply"/>
+                </list>
+              </field>
+            </group>
+          </page>
+        </xpath>
+      </field>
+    </record>
+</odoo>

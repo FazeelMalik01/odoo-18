@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_scratch">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                   
+                    <div class="page">
+                        <div class="oe_structure"/>
+                         <center>
+                            <h5 style="background-color: #f0f0f0; padding: 10px;">
+                                <b>Scratch Report</b>
+                            </h5>
+                        </center>
+                        <div class="row mt8 mb8">
+                            <div class="col-4" style="text-align:left;">
+                                <strong><b>Inspection Number</b></strong><br/>
+                                <span t-field="o.sequence_id"/><br/><br/>
+
+                                <strong><b>Customer</b></strong><br/>
+                                <span t-field="o.customer_id"/>
+                            </div>
+
+                            <div class="col-4" style="text-align:center;">
+                                <strong><b>Vehicle</b></strong><br/>
+                                <span t-field="o.brand_id"/>&#160;-&#160;<span t-field="o.model_id"/><br/><br/>
+
+                                <strong><b>Responsible</b></strong><br/>
+                                <span t-field="o.inspector_id"/>
+                            </div>
+
+                            <div class="col-4" style="text-align:right;">
+                                <strong><b>Registration Number</b></strong><br/>
+                                <span t-field="o.registration_no"/><br/><br/>
+                            </div>
+                        </div>
+
+                        <center>
+                            <b>Inspect Vehicle with customer, Point out and mark on diagram any current damage or issues.</b>
+                        </center>
+                        <div class="row mt8">
+                            <div class="col-9">
+                                <center>
+                                    <img t-att-src="'/advance_vehicle_repair/static/src/img/scratch_report.jpg'" style="height: 610px;"/>
+                                </center>
+                            </div>
+                            <div class="col-3">
+                                <h3><center><b><u>Legent</u></b></center></h3><br/>
+                                <p><b>SH&#160;&#160;&#160;Swirls/Holograms</b></p>
+                                <p><b>WS&#160;&#160;&#160;Water Spots</b></p>
+                                <p><b>OX&#160;&#160;&#160;Oxidation</b></p>
+                                <p><b>CF&#160;&#160;&#160;Clearcoat Failure</b></p>
+                                <p><b>DS&#160;&#160;&#160;Deep Scratch</b></p>
+                                <p><b>BD&#160;&#160;&#160;Bird Dropping</b></p>
+                                <p><b>RP&#160;&#160;&#160;Rough Paint</b></p>
+                                <p><b>UD&#160;&#160;&#160;Unknown Defect</b></p>
+                                <p><b>PT&#160;&#160;&#160;Paint Transfer</b></p>
+                                <p><b>PC&#160;&#160;&#160;Pant Chip</b></p>
+                                <p><b>GS&#160;&#160;&#160;Glass Scratch</b></p>
+                                <p><b>GC&#160;&#160;&#160;Glass Chip</b></p>
+                                <p><b>DD&#160;&#160;&#160;Dents/Dings</b></p>
+                                <p><b>SS&#160;&#160;&#160;Side Swipe</b></p>
+                                <p><b>CR&#160;&#160;&#160;Curb Rash</b></p>
+                                <p><b>WD&#160;&#160;&#160;Wheel Damage</b></p>
+                                <p><b>GC&#160;&#160;&#160;Gouges/Crease</b></p>
+                                <p><b>LM&#160;&#160;&#160;Loose Molding</b></p>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 20px">
+                            <h5><b>Notes:</b></h5>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
+

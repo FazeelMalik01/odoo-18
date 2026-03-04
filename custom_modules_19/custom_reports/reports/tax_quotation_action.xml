@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Paper Format A4 -->
+        <record id="paperformat_tax_quotation" model="report.paperformat">
+            <field name="name">Tax Quotation A4</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">40</field>  <!-- Adjust based on header height -->
+            <field name="margin_bottom">15</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">10</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <!-- Report Action - Tax Quotation -->
+        <record id="action_report_tax_quotation" model="ir.actions.report">
+            <field name="name">Tax Quotation</field>
+            <field name="model">sale.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">custom_reports.tax_quotation_report</field>
+            <field name="report_file">custom_reports.tax_quotation_report</field>
+            <field name="paperformat_id" ref="paperformat_tax_quotation"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_type">report</field>
+            <field name="print_report_name">object.get_tax_quotation_filename()</field>
+            <field name="domain">[('state', 'in', ['draft', 'sale'])]</field>
+        </record>
+    </data>
+</odoo>

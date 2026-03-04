@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="portal_my_home_customer_title"
+              inherit_id="portal.portal_layout">
+
+        <xpath expr="//h3[@class='my-3']" position="replace">
+            <h3 class="my-3">
+                <t t-if="request.env.user.has_group('custom_laundry_service.group_customer')">
+                    Customer Portal
+                </t>
+                <t t-else="">
+                    My account
+                </t>
+            </h3>
+        </xpath>
+
+    </template>
+        <!-- Override portal_my_home to add Book Appointment card -->
+        <template id="portal_my_home_inherit_customer" inherit_id="portal.portal_my_home" name="Portal My Home - Book Appointment Card">
+            <xpath expr="//div[@id='portal_common_category']" position="inside">
+                <t t-call="portal.portal_docs_entry" groups="custom_laundry_service.group_customer">
+                    <t t-set="icon" t-value="'/portal/static/src/img/portal-addresses.svg'"/>
+                    <t t-set="title">Book Appointment</t>
+                    <t t-set="text">Schedule and manage your appointments</t>
+                    <t t-set="url" t-value="'/my/appointments'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </xpath>
+        </template>
+
+        <!-- Override portal breadcrumbs to add Appointments -->
+        <template id="portal_breadcrumbs_inherit_customer" inherit_id="portal.portal_breadcrumbs" name="Portal Breadcrumbs - Appointments">
+            <xpath expr="//ol[@class='o_portal_submenu breadcrumb mb-0 flex-grow-1 px-0']" position="inside">
+                <li t-if="page_name == 'my_appointments'" class="breadcrumb-item">Appointments</li>
+                <li t-if="page_name == 'book_appointment'" class="breadcrumb-item">
+                    <a href="/my/appointments" aria-label="Appointments" title="Appointments">Appointments</a>
+                </li>
+                <li t-if="page_name == 'book_appointment'" class="breadcrumb-item">Book Appointment</li>
+            </xpath>
+        </template>
+
+        <!-- Appointments List Page (Default View) -->
+        <template id="portal_my_appointments" name="My Appointments">
+            <t t-call="portal.portal_layout">
+                <t t-set="page_name" t-value="'my_appointments'"/>
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <div class="o_portal_my_appointments">
+                    <t t-call="portal.portal_searchbar">
+                        <t t-set="title">Appointments</t>
+                    </t>
+                    <div class="o_portal_docs">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="mb-0">My Appointments</h4>
+                            <a href="/my/appointments/book" class="btn btn-primary">
+                                <i class="fa fa-calendar-plus me-1"/> Book Appointment
+                            </a>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date &amp; Time</th>
+                                        <th>Service Type</th>
+                                        <th>Customer Name</th>
+                                        <th>Phone</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-if="appointments and len(appointments) > 0">
+                                        <tr t-foreach="appointments" t-as="appointment"
+                                            t-attf-class="{{ 'table-secondary text-muted' if appointment.get('status_value') == 'cancelled' else '' }}">
+                                            <td><t t-esc="appointment.get('date_time', '')"/></td>
+                                            <td><t t-esc="appointment.get('service_type', '')"/></td>
+                                            <td><t t-esc="appointment.get('customer_name', '')"/></td>
+                                            <td><t t-esc="appointment.get('phone', '')"/></td>
+                                            <td>
+                                                <span t-attf-class="badge bg-{{ appointment.get('status_color', 'secondary') }}">
+                                                    <t t-esc="appointment.get('status', '')"/>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a t-attf-href="/my/appointments/book?id={{ appointment.get('id') }}" 
+                                                   t-attf-class="btn btn-sm btn-outline-primary me-1 {{ 'disabled' if appointment.get('status_value') != 'pending' else '' }}"
+                                                   t-att-aria-disabled="'true' if appointment.get('status_value') != 'pending' else None"
+                                                   t-att-tabindex="'-1' if appointment.get('status_value') != 'pending' else None">
+                                                    <i class="fa fa-edit"/> Edit
+                                                </a>
+                                                <button type="button" 
+                                                        class="btn btn-sm btn-outline-danger cancel-appointment"
+                                                        t-att-data-appointment-id="appointment.get('id')"
+                                                        t-att-disabled="'disabled' if appointment.get('status_value') != 'pending' else None">
+                                                    <i class="fa fa-trash"/> Cancel
+                                                </button>
+                                                <!-- View Images button - only show if images exist -->
+                                                <t t-if="appointment.get('completion_images') and len(appointment.get('completion_images', [])) > 0">
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-outline-info view-images-btn-customer me-1"
+                                                            t-att-data-appointment-id="appointment.get('id')"
+                                                            t-att-data-images="json.dumps(appointment.get('completion_images', []))">
+                                                        <i class="fa fa-images me-1"></i>View Images (<t t-esc="len(appointment.get('completion_images', []))"/>)
+                                                    </button>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-else="">
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <p class="mb-2">No appointments found</p>
+                                                <a href="/my/appointments/book" class="btn btn-sm btn-primary">
+                                                    <i class="fa fa-calendar-plus me-1"/> Book Your First Appointment
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Book Appointment Form Page -->
+        <template id="portal_book_appointment" name="Book Appointment">
+            <t t-call="portal.portal_layout">
+                <t t-set="page_name" t-value="'book_appointment'"/>
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <div class="o_portal_book_appointment">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">
+                            <t t-if="appointment_id">Edit Appointment</t>
+                            <t t-else="">Book Appointment</t>
+                        </h4>
+                        <a href="/my/appointments" class="btn btn-light">
+                            <i class="fa fa-arrow-left me-1"/> Back to List
+                        </a>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-body">
+                            <t t-if="error">
+                                <div class="alert alert-danger" role="alert">
+                                    <t t-esc="error"/>
+                                </div>
+                            </t>
+                            <div id="form-validation-error" class="alert alert-danger" role="alert" style="display: none;">
+                                <i class="fa fa-exclamation-circle me-2"></i>
+                                <strong>Please fill in all required fields:</strong>
+                                <ul id="validation-error-list" class="mb-0 mt-2" style="padding-left: 20px;"></ul>
+                            </div>
+                            <form method="post" action="/my/appointments/book" id="appointment-booking-form" t-attf-class="needs-validation" novalidate="">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <t t-if="appointment_id">
+                                    <input type="hidden" name="id" t-att-value="appointment_id"/>
+                                </t>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="customer_name" class="form-label">Customer Name <span class="text-danger">*</span></label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="customer_name" 
+                                               name="customer_name" 
+                                               t-att-value="appointment and appointment.get('customer_name', '') or (customer_data and customer_data.get('customer_name', '')) or ''"
+                                               t-att-readonly="'readonly' if not appointment_id else None"
+                                               t-att-style="'background-color: #e9ecef; cursor: not-allowed;' if not appointment_id else ''"
+                                               required="required"/>
+                                        <div class="invalid-feedback">Please provide customer name.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Phone</label>
+                                        <input type="tel" 
+                                               class="form-control" 
+                                               id="phone" 
+                                               name="phone"
+                                               t-att-value="appointment and appointment.get('phone', '') or (customer_data and customer_data.get('phone', '')) or ''"
+                                               t-att-readonly="'readonly' if not appointment_id else None"
+                                               t-att-style="'background-color: #e9ecef; cursor: not-allowed;' if not appointment_id else ''"
+                                               />
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="mobile" class="form-label">Mobile <span class="text-danger">*</span></label>
+                                        <input type="tel" 
+                                               class="form-control" 
+                                               id="mobile" 
+                                               name="mobile"
+                                               t-att-value="appointment and appointment.get('mobile', '') or (customer_data and customer_data.get('mobile', '')) or ''"
+                                               t-att-readonly="'readonly' if not appointment_id else None"
+                                               t-att-style="'background-color: #e9ecef; cursor: not-allowed;' if not appointment_id else ''"
+                                               required="required"/>
+                                        <div class="invalid-feedback">Please provide mobile number.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" 
+                                               class="form-control" 
+                                               id="email" 
+                                               name="email"
+                                               t-att-value="appointment and appointment.get('email', '') or (customer_data and customer_data.get('email', '')) or ''"
+                                               t-att-readonly="'readonly' if not appointment_id else None"
+                                               t-att-style="'background-color: #e9ecef; cursor: not-allowed;' if not appointment_id else ''"/>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="zip_code" class="form-label">Zip Code</label>
+                                        <t t-if="not appointment_id">
+                                            <select class="form-select" 
+                                                    id="zip_code" 
+                                                    disabled="disabled"
+                                                    style="background-color: #e9ecef; cursor: not-allowed;">
+                                                <option value="">Select zip code...</option>
+                                                <t t-foreach="zip_codes or []" t-as="zc">
+                                                    <option t-att-value="zc.get('code')" 
+                                                            t-att-selected="'selected' if customer_data and customer_data.get('zip_code', '') == zc.get('code') else None">
+                                                        <t t-esc="zc.get('code')"/>
+                                                    </option>
+                                                </t>
+                                            </select>
+                                            <input type="hidden" 
+                                                   name="zip_code" 
+                                                   t-att-value="customer_data and customer_data.get('zip_code', '') or ''"/>
+                                        </t>
+                                        <t t-else="">
+                                        <select class="form-select" 
+                                                id="zip_code" 
+                                                name="zip_code"
+                                                t-att-value="appointment and appointment.get('zip_code', '') or ''">
+                                            <option value="">Select zip code...</option>
+                                            <t t-foreach="zip_codes or []" t-as="zc">
+                                                <option t-att-value="zc.get('code')" 
+                                                        t-att-selected="'selected' if appointment and appointment.get('zip_code', '') == zc.get('code') else None">
+                                                    <t t-esc="zc.get('code')"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                        </t>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label for="service_type_ids" class="form-label">Service Type <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="service_type_ids" name="service_type_ids" required="required"
+                                                t-attf-data-selected-value="#{appointment and appointment.get('service_type_ids', []) and appointment.get('service_type_ids', [])[0] or (preselected_product_id and str(preselected_product_id)) or ''}"
+                                                t-attf-data-preselected-product-id="#{preselected_product_id or ''}">
+                                            <option value="">Loading service types...</option>
+                                        </select>
+                                        <div class="invalid-feedback">Please select a service type.</div>
+                                    </div>
+                                </div>
+                                
+                                <t t-if="ironing_products">
+                                    <div class="row mb-3">
+                                        <div class="col-md-12">
+                                            <div class="form-check" id="ironing_product_container" 
+                                                 t-attf-data-ironing-products="#{json.dumps(ironing_products)}"
+                                                 style="display: none;">
+                                                <input class="form-check-input" type="checkbox" id="ironing_product_id" name="ironing_product_id" 
+                                                       t-attf-data-checked="#{appointment and appointment.get('ironing_product_id', False) and str(appointment.get('ironing_product_id')) or ''}"/>
+                                                <label class="form-check-label" for="ironing_product_id">
+                                                    <span id="ironing_product_label">Ironing Service</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="appointment_date" class="form-label">Date <span class="text-danger">*</span></label>
+                                        <input type="date" 
+                                               class="form-control" 
+                                               id="appointment_date" 
+                                               name="appointment_date"
+                                               t-att-value="appointment and appointment.get('appointment_date', '') or ''"
+                                               required="required"/>
+                                        <div class="invalid-feedback">Please select a date.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="time_slot_id" class="form-label">Time Slot <span class="text-danger">*</span></label>
+                                        <select class="form-select" 
+                                                id="time_slot_id" 
+                                                name="time_slot_id"
+                                                required="required"
+                                                disabled="disabled">
+                                            <option value="">Select a date first...</option>
+                                        </select>
+                                        <div class="invalid-feedback">Please select a date first, then choose a time slot.</div>
+                                        <div class="form-text text-muted" id="slot_loading_text" style="display: none;">
+                                            <i class="fa fa-spinner fa-spin"></i> Loading available slots...
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="pickup_address" class="form-label">Pickup Address</label>
+                                        <textarea class="form-control" 
+                                                  id="pickup_address" 
+                                                  name="pickup_address" 
+                                                  rows="3"
+                                                  placeholder="Enter the address where items will be picked up..."><t t-esc="appointment and appointment.get('pickup_address', '') or (customer_data and customer_data.get('street', '')) or ''"/></textarea>
+                                        
+                                        <div class="row mt-2">
+                                            <div class="col-md-6 mb-2">
+                                                <label for="pickup_city" class="form-label">City</label>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="pickup_city" 
+                                                       name="pickup_city"
+                                                       placeholder="City"
+                                                       t-att-value="appointment and appointment.get('pickup_city', '') or (customer_data and customer_data.get('city', '')) or ''"/>
+                                            </div>
+                                            <div class="col-md-6 mb-2">
+                                                <label for="pickup_country_id" class="form-label">Country</label>
+                                                <select class="form-select" 
+                                                        id="pickup_country_id" 
+                                                        name="pickup_country_id">
+                                                    <option value="">Select Country...</option>
+                                                    <t t-foreach="countries or []" t-as="country">
+                                                        <option t-att-value="country.get('id')"
+                                                                t-att-selected="'selected' if (appointment and appointment.get('pickup_country_id') and str(appointment.get('pickup_country_id')) == str(country.get('id'))) or (not appointment and customer_data and customer_data.get('country_id') and str(customer_data.get('country_id')) == str(country.get('id'))) else None">
+                                                            <t t-esc="country.get('name')"/>
+                                                        </option>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-2">
+                                                <label for="pickup_state_id" class="form-label">State/Province</label>
+                                                <select class="form-select" 
+                                                        id="pickup_state_id" 
+                                                        name="pickup_state_id"
+                                                        t-att-disabled="'disabled' if not selected_country_id else None"
+                                                        t-attf-data-selected-state-id="#{(appointment and appointment.get('pickup_state_id') and str(appointment.get('pickup_state_id'))) or (not appointment and customer_data and customer_data.get('state_id') and str(customer_data.get('state_id'))) or ''}">
+                                                    <option value="">Select Country first...</option>
+                                                    <t t-if="states and len(states) > 0">
+                                                        <t t-foreach="states or []" t-as="state">
+                                                            <option t-att-value="state.get('id')"
+                                                                    t-att-selected="'selected' if (appointment and appointment.get('pickup_state_id') and str(appointment.get('pickup_state_id')) == str(state.get('id'))) or (not appointment and customer_data and customer_data.get('state_id') and str(customer_data.get('state_id')) == str(state.get('id'))) else None">
+                                                                <t t-esc="state.get('name')"/>
+                                                            </option>
+                                                        </t>
+                                                    </t>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="delivery_address" class="form-label">Delivery Address</label>
+                                        <textarea class="form-control" 
+                                                  id="delivery_address" 
+                                                  name="delivery_address" 
+                                                  rows="3"
+                                                  placeholder="Enter the address where items will be delivered..."><t t-esc="appointment and appointment.get('delivery_address', '') or ''"/></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="notes" class="form-label">Notes / Special Instructions</label>
+                                    <textarea class="form-control" 
+                                              id="notes" 
+                                              name="notes" 
+                                              rows="4"
+                                              placeholder="Any special instructions or notes..."><t t-esc="appointment and appointment.get('notes', '') or ''"/></textarea>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="/my/appointments" class="btn btn-light">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-calendar-check me-1"/>
+                                        <t t-if="appointment_id">Update Appointment</t>
+                                        <t t-else="">Book Appointment</t>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Image Viewer Modal for Customers -->
+        <template id="customer_completion_images_modal" name="Customer Completion Images Modal">
+            <div class="modal fade" id="customerCompletionImagesModal" tabindex="-1" aria-labelledby="customerCompletionImagesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="customerCompletionImagesModalLabel">Completion Images</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="customer-modal-images-container" class="row g-3">
+                                <!-- Images will be loaded here via JavaScript -->
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </data>
+</odoo>
+

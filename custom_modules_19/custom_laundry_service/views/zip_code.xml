@@ -1,0 +1,91 @@
+<odoo>
+
+    <!-- Partner Zip Code Form View -->
+    <record id="view_partner_zip_code_form" model="ir.ui.view">
+        <field name="name">laundry.partner.zip.code.form</field>
+        <field name="model">laundry.partner.zip.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="user_id"/>
+                        <field name="zip_code_line_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Partner Zip Code List View -->
+    <record id="view_partner_zip_code_list" model="ir.ui.view">
+        <field name="name">laundry.partner.zip.code.list</field>
+        <field name="model">laundry.partner.zip.code</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="user_id"/>
+                <field name="zip_code_line_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- list View -->
+    <record id="view_zip_code_list" model="ir.ui.view">
+        <field name="name">laundry.zip.code.list</field>
+        <field name="model">laundry.zip.code</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_zip_code_form" model="ir.ui.view">
+        <field name="name">laundry.zip.code.form</field>
+        <field name="model">laundry.zip.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Zip Codes">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="description"/>
+                                    <field name="city_ids" widget="many2many_tags"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Partner Zip Codes">
+                            <field name="partner_zip_code_ids"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Window Action -->
+    <record id="action_zip_code" model="ir.actions.act_window">
+        <field name="name">Zip Codes</field>
+        <field name="res_model">laundry.zip.code</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Configuration Menu (under Service Requests) -->
+    <menuitem id="menu_laundry_configuration_root"
+              name="Configuration"
+              parent="custom_laundry_service.menu_laundry_appointment_root"
+              sequence="20"/>
+
+    <!-- Zip Code Menu -->
+    <menuitem id="menu_zip_code"
+              name="Zip Codes"
+              parent="menu_laundry_configuration_root"
+              action="action_zip_code"
+              sequence="10"/>
+
+</odoo>

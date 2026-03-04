@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="vehicle_teams_tree" model="ir.ui.view">
+        <field name="name">vehicle.teams.list</field>
+        <field name="model">vehicle.teams</field>
+        <field name="arch" type="xml">
+            <list string="Teams">
+                <field name="team_title"/>
+                <field name="responsible_id" class="oe_inline" widget="many2one_avatar_user"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="vehicle_teams_form" model="ir.ui.view">
+        <field name="name">vehicle.teams.form</field>
+        <field name="model">vehicle.teams</field>
+        <field name="arch" type="xml">
+            <form string="Teams Form">
+                <sheet>
+                    <div class="oe_title" style="margin-bottom: 30px">
+                        <h1>
+                            <label for="team_title" class="o_form_label">Title:</label>
+                            <field name="team_title"/>
+                        </h1>
+                    </div>
+                    <div>
+                        <group>
+                            <group>
+                                <field name="project"/>
+                            </group>
+                            <group>
+                                <field name="company_id"/>
+                                <field name="responsible_id" class="oe_inline" widget="many2one_avatar_user"/>
+                            </group>
+                        </group>
+                    </div>
+
+                    <notebook>
+                        <page string="Team Members">
+                            <field name="team_employee_ids">
+                                <list editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="emp_designation"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="vehicle_teams_action" model="ir.actions.act_window">
+        <field name="name">Team</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.teams</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Set up your teams here!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_teams"
+              name="Teams"
+              parent="root_vehicle_repair"
+              action="vehicle_teams_action"
+              groups="advance_vehicle_repair.group_vehicle_repair_manager"
+              sequence="7"/>
+
+</odoo>

@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_custom_cost_adjustment_custom_cost_adjustment,custom_cost_adjustment.custom_cost_adjustment,model_custom_cost_adjustment_custom_cost_adjustment,base.group_user,1,1,1,1
+access_custom_cost_adjustment_line,custom_cost_adjustment.line,model_custom_cost_adjustment_line,base.group_user,1,1,1,1

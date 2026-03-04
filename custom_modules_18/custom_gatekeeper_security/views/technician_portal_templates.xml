@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_technician_work_orders_list" name="Technician Portal - Work Orders List">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">Assigned Work Orders</t>
+            <div class="container mt-3">
+                <!-- Page Header -->
+                <div class="row mb-4">
+                    <div class="col">
+                        <h2 class="mb-0">Gate Lock Service Assigned</h2>
+                        <p class="text-muted">Your assigned work orders and service tasks</p>
+                    </div>
+                </div>
+
+                <!-- Work Orders Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">My Assigned Tasks</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Task Reference</th>
+                                        <th scope="col">Customer</th>
+                                        <th scope="col">Service Address</th>
+                                        <th scope="col">Requested Date</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Gating Status</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="tasks" t-as="task">
+                                        <tr>
+                                            <td><strong t-field="task.name"/></td>
+
+                                            <td><span t-field="task.service_request_id.customer_id.name"/></td>
+
+                                            <td><small class="text-muted" t-esc="task.service_request_id.service_address or 'N/A'"/></td>
+
+                                            <td><span t-field="task.service_request_id.requested_appointment"/></td>
+
+                                            <td>
+                                                <span t-attf-class="badge
+                                                    #{task.state == 'draft' and 'bg-secondary' or ''}
+                                                    #{task.state == 'in_progress' and 'bg-warning' or ''}
+                                                    #{task.state == 'done' and 'bg-success' or ''}">
+                                                    <t t-raw="task.state.replace('_', ' ').title()"/>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <span t-attf-class="badge
+                                                    #{task.state in ['01_in_progress','02_changes_requested','03_approved'] and 'bg-warning' or ''}
+                                                    #{task.state in ['04_done','1_done'] and 'bg-success' or ''}
+                                                    #{task.state in ['00_draft','draft'] and 'bg-secondary' or ''}">
+                                                    <t t-if="task.state == '00_draft'">Draft</t>
+                                                    <t t-elif="task.state == '01_in_progress'">In Progress</t>
+                                                    <t t-elif="task.state == '04_done'">Done</t>
+                                                    <t t-elif="task.state == '1_done'">Done</t>
+                                                    <t t-else=""><t t-raw="task.state or 'Draft'"/></t>
+                                                </span>
+                                            </td>
+
+                                            <td>
+                                                <a t-attf-href="/my/gate_lock_assigned/#{task.id}" class="btn btn-sm btn-outline-primary">
+                                                    View Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </t>
+
+                                    <t t-if="not tasks">
+                                        <tr>
+                                            <td colspan="7" class="text-center py-4">
+                                                <div class="text-muted">
+                                                    <i class="fa fa-tasks fa-3x mb-3"></i>
+                                                    <p class="mb-0">No work orders assigned to you yet.</p>
+                                                    <small>Contact your administrator if you believe this is an error.</small>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <t t-if="pager">
+                    <div class="row mt-4">
+                        <div class="col">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-center">
+
+                                    <!-- Prev -->
+                                    <li t-if="pager.get('page_previous')" class="page-item">
+                                        <a class="page-link" t-attf-href="#{pager['page_previous']['url']}">
+                                            <i class="fa fa-chevron-left me-1"></i> Previous
+                                        </a>
+                                    </li>
+
+                                    <!-- Numbers -->
+                                    <t t-foreach="pager.get('pages', [])" t-as="page_obj">
+                                        <li t-att-class="'page-item ' + ('active' if page_obj['num'] == pager['page']['num'] else '')">
+                                            <a class="page-link" t-attf-href="#{page_obj['url']}" t-esc="page_obj['num']"/>
+                                        </li>
+                                    </t>
+
+                                    <!-- Next -->
+                                    <li t-if="pager.get('page_next')" class="page-item">
+                                        <a class="page-link" t-attf-href="#{pager['page_next']['url']}">
+                                            Next <i class="fa fa-chevron-right ms-1"></i>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </t>
+
+                <div class="row mt-4">
+                    <div class="col">
+                        <a href="/my" class="btn btn-outline-secondary">
+                            <i class="fa fa-arrow-left me-2"></i> Back to Portal
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </t>
+    </template>
+
+</odoo>

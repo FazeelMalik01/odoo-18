@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Backend: National Address on partner form, visible when country is Saudi Arabia -->
+    <record id="view_partner_form_national_address" model="ir.ui.view">
+        <field name="name">res.partner.form.national.address</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='street2']" position="after">
+                <field name="national_address"
+                       placeholder="e.g. RRRD2929"
+                       invisible="country_id and country_id.code != 'SA'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,102 @@
+<odoo>
+    <template id="portal_product_catalog" name="Product Catalog">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">Product Catalog</t>
+            
+            <div class="container mt-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1>Product Catalog</h1>
+                    <a href="/my/purchase_orders_form" class="btn btn-secondary">Back to Order Form</a>
+                </div>
+                
+                <!-- Category Filter -->
+                <div class="mb-3">
+                    <label for="category_filter" class="form-label">Filter by Category:</label>
+                    <select class="form-select" id="category_filter" style="max-width: 300px;">
+                        <option value="">All Categories</option>
+                        <t t-foreach="categories" t-as="category">
+                            <option t-att-value="category.id">
+                                <t t-esc="category.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                
+                <!-- Products Grid (Kanban-like) -->
+                <div class="row" id="products_grid">
+                    <t t-foreach="products" t-as="product">
+                        <div class="col-md-3 mb-4 product-card" 
+                             t-att-data-category-id="product.get('categ_id') or ''"
+                             t-att-data-product-id="product.get('id')">
+                            <div class="card h-100 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <t t-esc="product.get('display_name', product.get('name', ''))"/>
+                                    </h5>
+                                    <p class="card-text text-muted">
+                                        <small>
+                                            <t t-esc="product.get('categ_name', 'N/A')"/>
+                                        </small>
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>$<t t-esc="'{:.2f}'.format(product.get('list_price', 0.0))"/></strong>
+                                    </p>
+                                    <button type="button" 
+                                            class="btn btn-primary btn-sm add-product-btn"
+                                            t-att-data-product-id="product.get('id')"
+                                            t-att-data-category-id="product.get('categ_id') or ''">
+                                        Add to Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                
+                <t t-if="not products">
+                    <div class="alert alert-info">
+                        No products available in your catalog.
+                    </div>
+                </t>
+            </div>
+            
+            <script><![CDATA[
+            document.addEventListener('DOMContentLoaded', function() {
+                const categoryFilter = document.getElementById('category_filter');
+                const productsGrid = document.getElementById('products_grid');
+                const productCards = productsGrid.querySelectorAll('.product-card');
+                
+                // Category filter
+                if (categoryFilter) {
+                    categoryFilter.addEventListener('change', function() {
+                        const selectedCategory = this.value;
+                        productCards.forEach(card => {
+                            const cardCategory = card.getAttribute('data-category-id');
+                            if (!selectedCategory || cardCategory === selectedCategory) {
+                                card.style.display = '';
+                            } else {
+                                card.style.display = 'none';
+                            }
+                        });
+                    });
+                }
+                
+                // Add product buttons
+                productsGrid.querySelectorAll('.add-product-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const productId = this.getAttribute('data-product-id');
+                        const categoryId = this.getAttribute('data-category-id');
+                        
+                        // Store product info in sessionStorage and redirect back
+                        sessionStorage.setItem('selectedProductId', productId);
+                        sessionStorage.setItem('selectedCategoryId', categoryId);
+                        
+                        // Redirect back to order form
+                        window.location.href = '/my/purchase_orders_form';
+                    });
+                });
+            });
+            ]]></script>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="customer_template_inherit_id" model="ir.ui.view">
+        <field name="name">customer.template.inheritance</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <div name="button_box" position="inside">
+                <button name="action_view_bookings" type="object" string="Bookings" class="oe_stat_button"
+                        icon="fa-solid fa-address-card">
+                    <field name="count" widget="statinfo"/>
+                </button>
+            </div>
+        </field>
+    </record>
+    <record id="action_inherited_res_partner" model="ir.actions.act_window">
+        <field name="name">Contacts</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+    <menuitem 
+        id="menu_customers"
+        name="Customers"
+        parent="root_vehicle_repair"
+        action="action_inherited_res_partner"
+        groups="advance_vehicle_repair.group_vehicle_repair_user,advance_vehicle_repair.group_vehicle_repair_manager"
+        sequence="6"/>
+    <record id="customer_template_inherit_id" model="ir.ui.view">
+        <field name="name">customer.template.inheritance</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Existing smart button -->
+            <div name="button_box" position="inside">
+                <button name="action_view_bookings" type="object" string="Bookings"
+                    class="oe_stat_button"
+                    icon="fa-solid fa-address-card">
+                    <field name="count" widget="statinfo"/>
+                </button>
+            </div>
+            <!-- New tab after Internal Notes -->
+            <xpath expr="//page[@name='internal_notes']" position="after">
+                <page string="Vehicles">
+                    <field name="vehicle_register_ids" nolabel="1">
+                        <list>
+                            <field name="registration_no"/>
+                            <field name="vin_no"/>
+                            <field name="brand_id"/>
+                            <field name="model_id"/>
+                            <field name="fuel_type_id"/>
+                            <field name="transmission_type"/>
+                            <field name="state"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

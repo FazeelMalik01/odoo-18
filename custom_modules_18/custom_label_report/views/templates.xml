@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Override label templates to always show product barcode instead of lot/serial number -->
+        
+        <!-- ZPL Template Override -->
+        <template id="label_transfer_template_view_zpl" inherit_id="stock.label_transfer_template_view_zpl">
+            <!-- Replace the entire tracking != 'none' block with product barcode -->
+            <xpath expr="//t[@t-if=&quot;move_line.product_id.tracking != 'none' and (move_line.lot_id or move_line.lot_name)&quot;]" position="replace">
+                <t t-if="move_line.product_id.barcode">
+                    ^FO100,150^BY3
+                    ^BCN,100,Y,N,N
+                    ^FD<t t-esc="move_line.product_id.barcode"/>^FS
+                </t>
+            </xpath>
+        </template>
+
+        <!-- PDF Template Override -->
+        <template id="label_transfer_template_view_pdf" inherit_id="stock.label_transfer_template_view_pdf">
+            <!-- Replace the entire tr block inside the tracking != 'none' condition -->
+            <xpath expr="//t[@t-if=&quot;move_line.product_id.tracking != 'none'&quot;]//tr" position="replace">
+                <tr>
+                    <td class="text-center align-middle">
+                        <t t-if="move_line.product_id.barcode">
+                            <div t-field="move_line.product_id.barcode" t-options="{'widget': 'barcode', 'width': 600, 'height': 150, 'img_style': 'width:100%;height:4rem'}"/>
+                            <span t-esc="move_line.product_id.barcode"/>
+                        </t>
+                        <t t-else="">
+                            <span class="text-muted">No barcode available</span>
+                        </t>
+                    </td>
+                </tr>
+            </xpath>
+        </template>
+    </data>
+</odoo>

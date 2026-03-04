@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="inherit_pos_session_sales_details" inherit_id="point_of_sale.pos_session_sales_details">
+        <xpath expr="//t[@t-if='session_name']" position="after">
+            <t t-if="config_names and len(config_names) == 1">
+                <br/>Point of Sale:
+                <span t-out="config_names[0]"/>
+            </t>
+        </xpath>
+        
+        <!-- Add Session Opened By and Closed By -->
+        <xpath expr="//div[@class='text-center'][@style='break-inside: avoid;']/t[@t-if='date_start and date_stop']" position="after">
+            <div class="text-center mt-2 mb-2" style="break-inside: avoid;">
+                <t t-if="opened_by">
+                    <strong>Session Opened By:</strong> <span t-out="opened_by"/>
+                    <br/>
+                </t>
+                <t t-if="closed_by">
+                    <strong>Session Closed By:</strong> <span t-out="closed_by"/>
+                </t>
+            </div>
+        </xpath>
+        
+        <!-- Hide individual product rows - Only show category totals -->
+        <xpath expr="//tr[@t-foreach=&quot;category['products']&quot;]" position="replace"/>
+    </template>
+</odoo>

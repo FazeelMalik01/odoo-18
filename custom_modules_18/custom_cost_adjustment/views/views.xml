@@ -1,0 +1,92 @@
+<odoo>
+  <data>
+    <!-- Sequence for Cost Adjustment -->
+    <record id="sequence_cost_adjustment" model="ir.sequence">
+      <field name="name">Cost Adjustment Sequence</field>
+      <field name="code">custom_cost_adjustment</field>
+      <field name="prefix">CA</field>
+      <field name="padding">5</field>
+      <field name="number_increment">1</field>
+      <field name="number_next">1</field>
+    </record>
+
+    <!-- List view definition -->
+    <record model="ir.ui.view" id="custom_cost_adjustment.list">
+      <field name="name">custom_cost_adjustment list</field>
+      <field name="model">custom_cost_adjustment.custom_cost_adjustment</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="status" widget="badge" decoration-success="status=='Posted'" decoration-warning="status=='Not Posted'"/>
+          <field name="date_posted" widget="datetime"/>
+          <field name="total_qty" sum="Total"/>
+          <field name="average_cost" sum="Average"/>
+          <field name="optional_note"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Form view definition -->
+    <record model="ir.ui.view" id="custom_cost_adjustment.form">
+      <field name="name">custom_cost_adjustment form</field>
+      <field name="model">custom_cost_adjustment.custom_cost_adjustment</field>
+      <field name="arch" type="xml">
+        <form>
+          <header>
+            <button name="action_post" string="Post" type="object"
+                    class="oe_highlight" invisible="date_posted"/>
+            <field name="posted_label" readonly="1" invisible="not date_posted" nolabel="1" class="text-success font-weight-bold"/>
+            <field name="date_posted" readonly="1" invisible="not date_posted"/>
+          </header>
+          <sheet>
+            <field name="name" invisible="1" column_invisible="1"/>
+            <group>
+              <group>
+                <field name="total_qty" readonly="1" invisible="1"/>
+                <field name="total_cost_sum" readonly="1" invisible="1"/>
+              </group>
+              <group>
+                <field name="average_cost" readonly="1" invisible="1"/>
+                <button name="action_apply_average_cost" string="Apply Average Cost" type="object" class="oe_highlight" invisible="1"/>
+                <field name="date_posted" readonly="1" invisible="not date_posted"/>
+              </group>
+            </group>
+            <notebook>
+              <page string="Cost Adjustment Lines" name="cost_adjustment_lines">
+                <field name="line_ids" mode="list" readonly="date_posted">
+                  <list string="Cost Adjustment Lines" editable="bottom">
+                    <control>
+                      <create name="add_line" string="Add a line" invisible="adjustment_id.date_posted"/>
+                    </control>
+                    <field name="product_id" force_save="1" options="{'no_create': True}"/>
+                    <button name="action_open_product_template" string="Open Product" type="object" icon="fa-external-link" invisible="not product_id" title="Open Product Template Form"/>
+                    <field name="qty" readonly="1"/>
+                    <field name="cost_price" readonly="adjustment_id.date_posted"/>
+                    <field name="total_cost" readonly="1"/>
+                    <field name="cost_after_adjustment" readonly="not adjustment_id.date_posted"/>
+                  </list>
+                </field>
+              </page>
+            </notebook>
+            <group string="Notes">
+              <field name="optional_note" placeholder="Optional Note - User can write any notes here" readonly="date_posted" nolabel="1"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- Action opening the list view -->
+    <record model="ir.actions.act_window" id="custom_cost_adjustment.action_window">
+      <field name="name">Cost Adjustment</field>
+      <field name="res_model">custom_cost_adjustment.custom_cost_adjustment</field>
+      <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Cost submenu under Inventory > Operations > Adjustments -->
+    <menuitem name="Cost" id="custom_cost_adjustment.menu_cost"
+              parent="stock.menu_stock_adjustments"
+              action="custom_cost_adjustment.action_window"
+              sequence="10"/>
+  </data>
+</odoo>

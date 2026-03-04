@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="custom_pos_add.Orderline" 
+   t-inherit="point_of_sale.Orderline" 
+   t-inherit-mode="extension">
+        <xpath expr="//div[@class='d-flex justify-content-between']" position="before">
+            <div t-if="props.line.barcode" class="product-barcode" style="font-size: 0.8rem; color: #666; margin-bottom: 2px; margin-top: 2px;">
+                <span>Barcode: </span>
+                <span t-esc="props.line.barcode"/>
+            </div>
+        </xpath>
+        <!-- Discount is now formatted in the model (get_discount_str) to 2 decimal places -->
+    </t>
+</templates>

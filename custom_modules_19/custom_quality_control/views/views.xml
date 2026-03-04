@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- This file is kept for backward compatibility but main views are in custom_worksheet_views.xml -->
+    </data>
+</odoo>

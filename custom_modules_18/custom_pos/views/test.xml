@@ -1,0 +1,89 @@
+<odoo>
+    <template id="pos_session_sales_details_inherit_employee_detail" inherit_id="point_of_sale.pos_session_sales_details">
+        <xpath expr="//div[@id='sales']" position="before">
+            <t t-if="employee_orders">
+                <div id="employee_sales">
+                    <h6 class="bg-secondary p-1 fw-bold">Employee Sales Details</h6>
+                    <div class="oe_structure"></div>
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            <tr t-foreach="employee_orders.items()" t-as="emp_data" class="border-bottom border-secondary">
+                                <!-- Employee Name Row (like category row) -->
+                                <td class="ps-2 fw-bold">
+                                    <span t-out="emp_data[0]">Employee Name</span>
+                                </td>
+                                <td class="fw-bold"/>
+                                <td class="text-end fw-bold">
+                                    <span t-out="emp_data[1] and len(emp_data[1]) or 0">0</span>
+                                </td>
+                                <td class="text-end fw-bold">
+                                    <t t-set="emp_total" t-value="sum(order['total'] for order in emp_data[1])"/>
+                                    <t t-if="currency['position']">
+                                        <span t-out="emp_total" t-options="{'widget': 'float', 'precision': currency['precision']}">0.00</span>
+                                        <span t-out="currency['symbol']">$</span>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-out="currency['symbol']">$</span>
+                                        <span t-out="emp_total" t-options="{'widget': 'float', 'precision': currency['precision']}">0.00</span>
+                                    </t>
+                                </td>
+
+                                <!-- Orders under Employee -->
+                                <tr t-foreach="emp_data[1]" t-as="order" class="border-bottom border-secondary">
+                                    <td class="ps-5">
+                                        <span t-out="order['order_name']">Order Name</span>
+                                    </td>
+                                    <td/>
+                                    <td class="text-end">
+                                        <span>1.0</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-if="currency['position']">
+                                            <span t-out="order['total']" t-options="{'widget': 'float', 'precision': currency['precision']}">0.00</span>
+                                            <span t-out="currency['symbol']">$</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-out="currency['symbol']">$</span>
+                                            <span t-out="order['total']" t-options="{'widget': 'float', 'precision': currency['precision']}">0.00</span>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </tr>
+
+                            <!-- Final Total Row -->
+                            <tr class="border-top border-secondary">
+                                <td><strong>Total</strong></td>
+                                <td/>
+                                <td class="text-end">
+                                    <strong>
+                                        <span t-out="sum(len(v) for v in employee_orders.values())">0</span>
+                                    </strong>
+                                </td>
+                                <td class="text-end">
+                                    <t t-set="grand_total" t-value="sum(sum(order['total'] for order in v) for v in employee_orders.values())"/>
+                                    <t t-if="currency['position']">
+                                        <strong>
+                                            <span t-out="grand_total" t-options="{'widget': 'float', 'precision': currency['precision']}">0.00</span>
+                                            <span t-out="currency['symbol']">$</span>
+                                        </strong>
+                                    </t>
+                                    <t t-else="">
+                                        <strong>
+                                            <span t-out="currency['symbol']">$</span>
+                                            <span t-out="grand_total" t-options="{'widget': 'float', 'precision': currency['precision']}">0.00</span>
+                                        </strong>
+                                    </t>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </xpath>
+        <xpath expr="//div[@id='sales']/table/tbody/tr[hasclass('border-bottom')]/tr/td[hasclass('text-end')]/t[@t-if=&quot;['discount'] != 0&quot;]" position="replace">
+                <t t-set="discount_one" t-value="(line['discount'] || '0').toString().split('.')[0]"/>
+                <t t-set="discount_two" t-value="(((line['discount']  || '0').toString().split('.')[1] || '00') + '00').substring(0,2)"/>
+                Disc: <span t-esc="discount_one + '.' + discount_two">45</span>%
+        </xpath>
+    </template>
+</odoo>

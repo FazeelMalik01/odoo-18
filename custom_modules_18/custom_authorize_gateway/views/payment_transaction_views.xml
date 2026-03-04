@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend payment transaction form with Authorize.Net full API fields -->
+    <record id="payment_transaction_form_authorize_extra" model="ir.ui.view">
+        <field name="name">payment.transaction.form.authorize.extra</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.payment_transaction_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='transaction_details']" position="after">
+                <group string="Authorize.Net request (optional)" name="authorize_extra"
+                       invisible="provider_code != 'authorize'">
+                    <field name="authorize_ref_id" placeholder="e.g. 123456"/>
+                    <field name="authorize_request_extra" nolabel="1" readonly="1"
+                           placeholder="Set via code: lineItems, tax, duty, shipping, shipTo, userFields, ..."/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

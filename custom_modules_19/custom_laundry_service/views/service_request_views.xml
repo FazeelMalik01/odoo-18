@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Service Request List View -->
+        <record id="view_laundry_appointment_list" model="ir.ui.view">
+            <field name="name">laundry.appointment.list</field>
+            <field name="model">laundry.appointment</field>
+            <field name="arch" type="xml">
+                <list string="Service Requests"
+                      decoration-info="status == 'confirmed' or status == 'pickup'"
+                      decoration-warning="status == 'pending'"
+                      decoration-success="status == 'completed'"
+                      decoration-danger="status == 'cancelled'"
+                      decoration-muted="status == 'in_progress' or status == 'delivery'">
+
+                    <field name="name" string="Reference"/>
+                    <field name="customer_name" string="Customer Name"/>
+                    <field name="partner_id" string="Partner"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="zip_code" string="Zip Code"/>
+                    <field name="appointment_date" string="Date"/>
+                    <field name="appointment_time" string="Time"/>
+                    <field name="service_type_ids" string="Service Types" widget="many2many_tags"/>
+                    <field name="status"
+                           widget="badge"
+                           decoration-info="status == 'confirmed' or status == 'pickup'"
+                           decoration-warning="status == 'pending'"
+                           decoration-success="status == 'completed'"
+                           decoration-danger="status == 'cancelled'"
+                           decoration-muted="status == 'in_progress' or status == 'delivery'"/>
+                    <field name="assigned_partner_id" string="Assigned To"/>
+                    <field name="user_id" string="User"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Service Request Form View -->
+        <record id="view_laundry_appointment_form" model="ir.ui.view">
+            <field name="name">laundry.appointment.form</field>
+            <field name="model">laundry.appointment</field>
+            <field name="arch" type="xml">
+                <form string="Service Request">
+                    <header>
+                        <field name="status"
+                               widget="statusbar"
+                               statusbar_visible="pending,confirmed,pickup,in_progress,completed,delivery"/>
+                    </header>
+
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_sale_order" 
+                                    type="object" 
+                                    class="oe_stat_button" 
+                                    icon="fa-dollar"
+                                    invisible="sale_order_count == 0">
+                                <field name="sale_order_count" widget="statinfo" string="Sales Order"/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name" readonly="1"/>
+                                <field name="customer_name" required="1" readonly="1"/>
+                                <field name="partner_id"
+                                       options="{'no_create': True, 'no_create_edit': True}" readonly="1"/>
+                                <field name="user_id" readonly="1"/>
+                                <field name="assigned_partner_id" readonly="1"/>
+                            </group>
+
+                            <group>
+                                <field name="phone" required="1" readonly="1"/>
+                                <field name="email" readonly="1"/>
+                                <field name="zip_code" readonly="1"/>
+                                <field name="appointment_date" required="1" readonly="1"/>
+                                <field name="appointment_time" required="1" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <group string="Addresses">
+                            <group>
+                                <field name="pickup_address" readonly="1" placeholder="Pickup address will be displayed here..."/>
+                            </group>
+                            <group>
+                                <field name="delivery_address" readonly="1" placeholder="Delivery address will be displayed here..."/>
+                            </group>
+                        </group>
+
+                        <notebook>
+                            <page string="Service Types">
+                                <field name="service_type_ids"
+                                       nolabel="1"
+                                       options="{'no_create': True, 'no_create_edit': True}">
+                                    <list create="0" delete="0" string="Service Types">
+                                        <field name="name" string="Product"/>
+                                        <field name="list_price" string="Unit Price"/>
+                                        <field name="list_price" string="Amount" readonly="1" widget="monetary"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="User Responses">
+                                <field name="user_response_ids" nolabel="1">
+                                    <list create="0" delete="0" string="User Responses">
+                                        <field name="user_id" string="User"/>
+                                        <field name="status" string="Status"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="Images">
+                                <field name="completion_image_ids" nolabel="1" widget="many2many_images">
+                                    <list create="0" delete="0" string="Completion Images">
+                                        <field name="name" string="Image Name"/>
+                                        <field name="mimetype" string="Type"/>
+                                        <field name="file_size" string="Size"/>
+                                        <field name="datas" widget="image" string="Preview"/>
+                                        <field name="create_date" string="Uploaded On"/>
+                                        <field name="create_uid" string="Uploaded By"/>
+                                    </list>
+                                </field>
+                            </page>
+
+                            <page string="Notes">
+                                <group>
+                                    <field name="notes"
+                                           nolabel="1"
+                                           placeholder="Add any special instructions or notes here..."/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Service Request Action -->
+        <record id="action_laundry_appointment" model="ir.actions.act_window">
+            <field name="name">Service Requests</field>
+            <field name="res_model">laundry.appointment</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create your first service request!
+                </p>
+                <p>
+                    Service requests help you manage customer appointments and service bookings.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu -->
+        <menuitem id="menu_laundry_appointment_root"
+                  name="Service Requests"
+                  web_icon="custom_laundry_service,static/src/img/service.png"
+                  sequence="10"/>
+
+        <menuitem id="menu_laundry_appointment"
+                  name="Service Requests"
+                  parent="menu_laundry_appointment_root"
+                  action="action_laundry_appointment"
+                  sequence="10"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="vehicle_fuel_petrol" model="vehicle.fuel.type">
+            <field name="name">Petrol</field>
+        </record>
+        <record id="vehicle_fuel_diesel" model="vehicle.fuel.type">
+            <field name="name">Diesel</field>
+        </record>
+        <record id="vehicle_fuel_lpg" model="vehicle.fuel.type">
+            <field name="name">LPG</field>
+        </record>
+        <record id="vehicle_fuel_cng" model="vehicle.fuel.type">
+            <field name="name">CNG</field>
+        </record>
+        <record id="vehicle_fuel_ethanol" model="vehicle.fuel.type">
+            <field name="name">Ethanol</field>
+        </record>
+        <record id="vehicle_fuel_biodiesel" model="vehicle.fuel.type">
+            <field name="name">Biodiesel</field>
+        </record>
+        <record id="vehicle_fuel_electric" model="vehicle.fuel.type">
+            <field name="name">Electricity</field>
+        </record>
+        <record id="vehicle_fuel_hydrogen" model="vehicle.fuel.type">
+            <field name="name">Hydrogen</field>
+        </record>
+        <record id="vehicle_fuel_methanol" model="vehicle.fuel.type">
+            <field name="name">Methanol</field>
+        </record>
+    </data>
+</odoo>

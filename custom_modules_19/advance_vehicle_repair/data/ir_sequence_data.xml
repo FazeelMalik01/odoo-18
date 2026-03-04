@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="seq_vehicle_booking" model="ir.sequence">
+        <field name="name">Vehicle Bookings</field>
+        <field name="code">vehicle.booking</field>
+        <field name="prefix">BN/VE-</field>
+        <field name="padding">6</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_vehicle_register" model="ir.sequence">
+        <field name="name">Vehicle Register</field>
+        <field name="code">vehicle.register</field>
+        <field name="prefix">VR-</field>
+        <field name="padding">6</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_vehicle_jobcard" model="ir.sequence">
+        <field name="name">Vehicle Jobcard</field>
+        <field name="code">vehicle.jobcard</field>
+        <field name="prefix">JC-</field>
+        <field name="padding">6</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</odoo>

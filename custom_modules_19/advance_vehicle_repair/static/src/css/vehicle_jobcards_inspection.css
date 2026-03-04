@@ -1,0 +1,27 @@
+/*parts assessments*/
+.o_vehicle_parts{
+    width: 100% !important;
+}
+.o_vehicle_parts div:first-child{
+    column-count: 2;
+    column-width: 30px;
+    font-size: 13px;
+    padding-top: 4px;
+}
+
+/*notebook images */
+.custom-image-size {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+/*notebook inspection images */
+.inspection-image-size {
+    width: 320px;
+    height: 250px;
+    object-fit: cover;
+}
+
+
+

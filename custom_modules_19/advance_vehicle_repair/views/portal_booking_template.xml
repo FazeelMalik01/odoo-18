@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <template id="portal_breadcrumbs_bookings" name="Portal layout : pos order menu entries" inherit_id="portal.portal_breadcrumbs" priority="21">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'vehicle_bookings' or vehicle_booking" t-attf-class="breadcrumb-item #{'active ' if not vehicle_booking else ''}">
+                    <a t-if="vehicle_booking" t-attf-href="/my/vehicle_bookings?{{ keep_query() }}">Vehicle Bookings</a>
+                    <t t-else="">Vehicle Bookings</t>
+                </li>
+                <li t-if="vehicle_booking" class="breadcrumb-item active">
+                    <span t-field="vehicle_booking.sequence"/>
+                </li>
+
+                <li t-if="page_name == 'vehicle_registers' or vehicle_registers" t-attf-class="breadcrumb-item #{'active ' if not vehicle_registers else ''}">
+                    <a t-if="vehicle_registers" t-attf-href="/my/vehicle_registers?{{ keep_query() }}">Vehicle Register</a>
+                    <t t-else="">Vehicle Register</t>
+                </li>
+            </xpath>
+        </template>
+
+        <template id="portal_my_home_vehicle_booking" name="Vehicle Booking" customize_show="True" inherit_id="portal.portal_my_home">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Vehicle Booking</t>
+                    <t t-set="url" t-value="'/my/vehicle_bookings'"/>
+                    <t t-set="placeholder_count" t-value="'vehicle_booking_count'"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="portal_my_home_vehicle_register" name="Vehicle Register" customize_show="True" inherit_id="portal.portal_my_home">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Vehicle Register</t>
+                    <t t-set="url" t-value="'/my/vehicle_registers'"/>
+                    <t t-set="placeholder_count" t-value="'vehicle_register_count'"/>
+                </t>
+            </xpath>
+        </template>
+
+        <!-- Registers -->
+        <template id="register_list_view_portal" name="Booking List View Portal">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Vehicle Registers</t>
+                    <div class="form-inline ml-lg-4" t-if="request.env.user">
+                        <button class="btn btn-sm btn-primary ml8" name='create_new_vehicle' data-bs-toggle="modal" data-bs-target=".modal_create_new_vehicle"
+                            title="Create New Vehicle" aria-label="Create New Booking">
+                            <i class="fa fa-plus"/> Create New
+                        </button>
+                    </div>
+                </t>
+                <t t-if="not vehicle_registers">
+                    <div class="alert alert-warning mt8" role="alert">
+                        There are currently no vehicle for your account.
+                    </div>
+                </t>
+
+                <t t-if="vehicle_registers" t-call="portal.portal_table">
+                    <t t-foreach="grouped_registers" t-as="vehicle_register">
+                        <thead>
+                            <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}">
+                                <t t-if="groupby == 'none'">
+                                    <th class="text-left">Reference #</th>
+                                </t>
+                                <t t-elif="groupby == 'state'">
+                                    <th class="text-left">
+                                        <em class="font-weight-normal text-muted">Reference #:</em>
+                                        <span t-field="vehicle_register[0].state"/>
+                                    </th>
+                                </t>
+                                <th class="text-center">Customer</th>
+                                <th class="text-center">Vehicle Brand</th>
+                                <th class="text-center">Model</th>
+                                <th class="text-center">Registration No</th>
+                                <th class="text-center">State</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="vehicle_registers" t-as="vehicle_register">
+                                <tr>
+                                    <td>
+                                        <a>
+                                            <t t-esc="vehicle_register.sequence"/>
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="vehicle_register.customer_id.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="vehicle_register.brand_id.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="vehicle_register.model_id.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="vehicle_register.registration_no"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="small badge text-bg-secondary orders_label_text_align" t-field="vehicle_register.state"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </t>
+
+                <div class="modal fade modal_create_new_vehicle" role="form">
+                    <div class="modal-dialog modal-lg">
+                    <form action="/advance_vehicle_repair/create_vehicle" method="post" class="modal-content">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <header class="modal-header">
+                            <h4 class="modal-title">Create New Vehicle</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </header>
+
+                        <main class="modal-body" id="new-timeoff-dialog">
+                            <div class="row mt16">
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="vehicle_brand_id">Select Brand</label>
+                                        <select name="vehicle_brand_id" class="form-control vehicle_brand_id" required="True">
+                                            <option value="">Brand</option>
+                                            <t t-foreach="brands or []" t-as="brand">
+                                                <option t-att-value="brand['id']"><t t-esc="brand['name']"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="vehicle_model_id">Select Model</label>
+                                        <select name="vehicle_model_id" class="form-control vehicle_model_id" required="True">
+                                            <option value="">Model</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="vehicle_fuel_type_id">Select Fuel Type</label>
+                                        <select name="vehicle_fuel_type_id" class="form-control vehicle_fuel_type_id" required="True">
+                                            <option value="">Fuel Type</option>
+                                            <t t-foreach="fuel_types or []" t-as="fuel_type">
+                                                <option t-att-value="fuel_type['id']"><t t-esc="fuel_type['name']"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="vehicle_transmission_type">Select Transmission Type</label>
+                                        <select name="vehicle_transmission_type" class="form-control vehicle_transmission_type" required="True">
+                                            <option value="manual" selected="selected">Manual</option>
+                                            <option value="automatic">Automatic</option>
+                                            <option value="cvt">CVT</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="vehicle_registration_no">Registration No</label>
+                                        <input type="text" class="form-control name" name="vehicle_registration_no" id="vehicle_registration_no" placeholder="" autocomplete="off" required="True"/>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="vehicle_vin_no">VIN No</label>
+                                        <input type="text" class="form-control name" name="vehicle_vin_no" id="vehicle_vin_no" placeholder="" autocomplete="off" required="True"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+
+                        <footer class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button t-attf-class="btn btn-primary create_new_timeoff_confirm">Confirm</button>
+                        </footer>
+                    </form>
+                </div>
+            </div>
+            </t>
+        </template>
+
+        <!-- Bookigns -->
+        <template id="booking_list_view_portal" name="Booking List View Portal">
+            <t t-call="portal.portal_layout">
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Vehicles</t>
+                    <div class="form-inline ml-lg-4" t-if="request.env.user">
+                        <button class="btn btn-sm btn-primary ml8" name='create_new_booking' data-bs-toggle="modal" data-bs-target=".modal_create_new_booking"
+                            title="Create New Booking" aria-label="Create New Booking">
+                            <i class="fa fa-plus"/> Create New
+                        </button>
+                    </div>
+                </t>
+                <t t-if="not vehicle_bookings">
+                    <div class="alert alert-warning mt8" role="alert">
+                        There are currently no vehicle booking for your account.
+                    </div>
+                </t>
+
+                <t t-if="vehicle_bookings" t-call="portal.portal_table">
+                    <t t-foreach="grouped_bookings" t-as="booking">
+                        <thead>
+                            <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}">
+                                <t t-if="groupby == 'none'">
+                                    <th class="text-left">Reference #</th>
+                                </t>
+                                <t t-elif="groupby == 'state'">
+                                    <th class="text-left">
+                                        <em class="font-weight-normal text-muted">Reference #:</em>
+                                        <span t-field="booking[0].state"/>
+                                    </th>
+                                </t>
+                                <th class="text-center">Customer</th>
+                                <th class="text-center">Vehicle Brand</th>
+                                <th class="text-center">Model</th>
+                                <th class="text-center">Registration No</th>
+                                <th class="text-center">State</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="vehicle_bookings" t-as="booking">
+                                <tr>
+                                    <td>
+                                        <a t-att-href="booking.get_portal_url()">
+                                            <t t-esc="booking.sequence"/>
+                                        </a>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="booking.customer_id.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="booking.brand_id.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="booking.model_id.name"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-out="booking.registration_no"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="small badge text-bg-secondary orders_label_text_align" t-field="booking.state"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </t>
+
+                <div class="modal fade modal_create_new_booking" role="form">
+                    <div class="modal-dialog modal-lg">
+                    <form action="/advance_vehicle_repair/create_booking" method="post" class="modal-content">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <header class="modal-header">
+                            <h4 class="modal-title">Create New Booking</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </header>
+
+                        <main class="modal-body" id="new-timeoff-dialog">
+                            <div class="row mt16">
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="vehicle_register_id">Select Vehicle</label>
+                                        <select name="vehicle_register_id" class="form-control vehicle_register_id" required="True">
+                                            <t t-foreach="vehicles or []" t-as="vehicle">
+                                                <option t-att-value="vehicle['id']"><t t-esc="vehicle['registration_no']"/></option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="booking_type">Booking Type</label>
+                                        <select name="booking_type" class="form-control booking_type" required="True">
+                                            <option value="vehicle_inspection" selected="selected">Vehicle Inspection</option>
+                                            <option value="vehicle_repair">Vehicle Repair</option>
+                                            <option value="both">Vehicle Inspection + Repair</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="booking_date">Booking Date</label>
+                                        <input type="date" name="booking_date" class="form-control booking_date" data-date-format="YYYY-MM-DD" placeholder="YYYY-MM-DD" required="True"/>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mt16">
+                                    <div class="form-group">
+                                        <label for="available_slot">Booking Slot</label>
+                                        <select name="available_slot" class="form-control available_slot" required="True">
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt16">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="observations">Note</label>
+                                        <input type="text" class="form-control name" name="observations" id="observations" placeholder="" autocomplete="off" required="True"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+
+                        <footer class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button t-attf-class="btn btn-primary create_new_timeoff_confirm">Confirm</button>
+                        </footer>
+                    </form>
+                </div>
+            </div>
+            </t>
+        </template>
+
+        <template id="booking_form_view_portal" name="Booking Portal Template" inherit_id="portal.portal_sidebar">
+            <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+                <t t-if="page_name == 'vehicle_booking'">
+
+                    <div class="row mt16 ">
+                        <t t-call="portal.portal_record_sidebar">
+                            <t t-set="classes" t-value="'col-lg-auto d-print-none'"/>
+
+                            <t t-set="title">
+                                <h2 class="mb-0">
+                                    <b>Booking</b>
+                                </h2>
+                            </t>
+                            <t t-set="entries">
+                                <ul class="list-group list-group-flush flex-wrap flex-row flex-lg-column">
+                                    <li class="list-group-item flex-grow-1 d-none">
+                                        <div class="o_download_pdf btn-toolbar flex-sm-nowrap">
+                                            <div class="btn-group flex-grow-1 me-1 mb-1">
+                                                <a class="btn btn-secondary btn-block o_download_btn"
+                                                   title="Download">
+                                                    <i class="fa fa-download"/>
+                                                    Download
+                                                </a>
+                                            </div>
+                                            <div class="btn-group flex-grow-1 mb-1">
+                                                <a class="btn btn-secondary btn-block o_print_btn o_portal_invoice_print"
+                                                   id="print_invoice_report" title="Print" target="_blank">
+                                                    <i class="fa fa-print"/>Print
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </li>
+
+                                    <li class="navspy list-group-item ps-0 flex-grow-1" t-ignore="true"
+                                        role="complementary">
+                                        <ul class="nav flex-column bs-sidenav"/>
+                                    </li>
+
+                                    <li t-if="vehicle_booking.responsible_id" class="list-group-item flex-grow-1">
+                                        <div class="small mb-1"><strong class="text-muted">Responsible</strong></div>
+                                        <div class="row flex-nowrap">
+                                            <div class="col pe-2">
+                                                <img
+                                                    class="rounded-circle mr4 float-left o_portal_contact_img"
+                                                    t-if="vehicle_booking.responsible_id.image_1024"
+                                                    t-att-src="image_data_uri(vehicle_booking.responsible_id.image_1024)"
+                                                    alt="Contact"/>
+                                                <img
+                                                    class="rounded-circle mr4 float-left o_portal_contact_img"
+                                                    t-if="not vehicle_booking.responsible_id.image_1024"
+                                                    src="/web/static/src/img/placeholder.png"
+                                                    alt="Contact"/>
+                                            </div>
+                                            <div class="col ps-0" style="min-width: 150px">
+                                                <span t-field="vehicle_booking.responsible_id" t-options='{"widget": "contact", "fields": ["name", "phone"], "no_marker": True}'/>
+                                                <a href="#discussion" class="small"><i class="fa fa-comment"/> Send message</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </t>
+                        </t>
+
+                        <div id="quote_content" class="col-12 col-lg justify-content-end"
+                             style="padding-bottom: 50px;">
+
+                            <div class="row" style="background-color: white;">
+                                <h2 style="padding-top: 13px; padding-bottom: 4px;">
+                                    <b><t t-esc="vehicle_booking.sequence"/></b>
+                                </h2>
+                            </div>
+
+                            <div class="row" style="border-top: 1px solid black; background-color: white; ">
+                                <div class="col-6" style="padding: 13px;">
+                                    <div class="mb-3 col-6">
+                                        <t t-if="vehicle_booking.booking_date">
+                                            <strong>Booking Date:</strong>
+                                        </t>
+                                        <span t-field="vehicle_booking.booking_date" t-options='{"widget": "date"}'/>
+                                    </div>
+
+                                    <strong>Customer Name &amp; Address:</strong>
+                                    <br/>
+                                    <span t-field="vehicle_booking.customer_id.name"/>
+                                    <br/>
+                                    <span t-field="vehicle_booking.street"/>
+                                    <br/>
+                                    <span t-field="vehicle_booking.city"/>
+                                    <t t-if="vehicle_booking.city and vehicle_booking.state">,</t>
+                                    <span t-field="vehicle_booking.state"/>
+                                    <br/>
+                                    <span t-field="vehicle_booking.country_id"/>
+                                    <t t-if="vehicle_booking.country_id and vehicle_booking.pin_code">-</t>
+                                    <span t-field="vehicle_booking.pin_code"/>
+                                    <br/>
+                                    <br/>
+                                </div>
+
+                                <div class="col-6" style="padding: 13px;">
+                                    <div class="mb-3 col-6 d-flex flex-wrap align-items-center justify-content-between">
+                                        <span t-if="vehicle_booking.state == 'draft'"
+                                              class="small badge text-bg-primary orders_label_text_align">
+                                            <i class="fa fa-fw fa-check"/>
+                                            <b>Draft</b>
+                                        </span>
+                                        <span t-elif="vehicle_booking.state == 'create'"
+                                              class="small badge text-bg-success orders_label_text_align">
+                                            <i class="fa fa-fw fa-check"/>
+                                            <b>Booking Created</b>
+                                        </span>
+                                        <span t-elif="vehicle_booking.state == 'cancel'"
+                                              class="small badge text-bg-primary orders_label_text_align">
+                                            <i class="fa fa-fw fa-check"/>
+                                            <b>Cancelled</b>
+                                        </span>
+                                    </div>
+                                    <strong>Vehicle Details:</strong>
+                                    <br/>
+                                    <span t-field="vehicle_booking.brand_id"/>
+                                    <t t-if="vehicle_booking.brand_id and vehicle_booking.model_id">-</t>
+                                    <span t-field="vehicle_booking.model_id"/>
+                                    <br/>
+                                    <label>Fuel Type:</label>
+                                    <span t-field="vehicle_booking.fuel_type_id"/>
+                                    <br/>
+                                    <label>Registration No:</label>
+                                    <span t-field="vehicle_booking.registration_no"/>
+                                    <br/>
+                                    <label>VIN No:</label>
+                                    <span t-field="vehicle_booking.vin_no"/>
+                                    <br/>
+                                    <label>Transmission Type:</label>
+                                    <span t-field="vehicle_booking.transmission_type"/>
+                                    <br/>
+                                </div>
+                            </div>
+
+                            <div class="row" style="page-break-inside: auto; background-color: white;">
+                                <div class="col-6" style="padding: 13px;">
+                                    <t t-if="vehicle_booking.booking_type">
+                                        <label>
+                                            <b>Booking Type:</b>
+                                        </label>
+                                        <span t-field="vehicle_booking.booking_type"/>
+                                    </t>
+                                </div>
+
+                                <div class="col-6" style="padding: 13px;">
+                                    <t t-if="vehicle_booking.jobcard_id">
+                                        <label>
+                                            <b>Job Card Id:</b>
+                                        </label>
+                                        <span t-field="vehicle_booking.jobcard_id"/>
+                                    </t>
+
+                                </div>
+                            </div>
+
+                            <div class="row py-5 mt-5">
+                                <h1>History</h1>
+                                <t t-call="portal.message_thread">
+                                    <t t-set="object" t-value="vehicle_booking"/>
+                                </t>
+                            </div>
+
+                        </div>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>
+

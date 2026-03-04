@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_order_form_inherit_custom_fields" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.custom.fields</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Insert fields AFTER product_uom inside order_line tree view -->
+            <xpath expr="//field[@name='order_line']/list//field[@name='product_packaging_qty']" position="before">
+                <field name="specifications"/>
+                <field name="manufacturer"/>
+                <field name="product_no"/>
+                <field name="lead_time"/>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

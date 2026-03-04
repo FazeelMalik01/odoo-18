@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit partner form view to add custom fields -->
+        <record id="view_partner_form_inherit_custom_fields" model="ir.ui.view">
+            <field name="name">res.partner.form.inherit.custom.fields</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <!-- Change name field placeholder to First Name for person -->
+                <xpath expr="//field[@name='name'][@invisible='is_company']" position="attributes">
+                    <attribute name="placeholder">e.g. First Name</attribute>
+                </xpath>
+                
+                <!-- Add Title field before h1 (above name field), visible only for person -->
+                <xpath expr="//h1[@class='mb-0 w-md-75']" position="before">
+                    <field name="title_selection" string="Title" placeholder="e.g. Sir/Madam" invisible="company_type != 'person'"/>
+                </xpath>
+
+                <!-- Add Mobile field after phone field div, with icon and placeholder like phone field -->
+                <xpath expr="//div[@class='d-flex align-items-baseline w-md-50'][.//field[@name='phone']]" position="after">
+                    <div class="d-flex align-items-baseline w-md-50">
+                        <i class="fa fa-fw me-1 fa-mobile text-primary" title="Mobile"/>
+                        <field name="mobile" class="w-100" widget="phone" placeholder="Mobile"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

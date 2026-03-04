@@ -1,0 +1,167 @@
+<odoo>
+    <template id="portal_customers_breadcrumb" inherit_id="portal.portal_breadcrumbs" name="customers List Breadcrumb">
+        <xpath expr="//ol" position="inside">
+            <li t-if="page_name == 'customers_list'" class="breadcrumb-item active">Customers List</li>
+        </xpath>
+    </template>
+
+    <template id="portal_customers_list" name="Customers List Portal Page">
+        <t t-call="portal.portal_layout">
+            <t t-set="title">Customers</t>
+            <t t-set="is_edit" t-value="False" />
+            <t t-set="edit_customer_id" t-value="False" />
+
+            <!-- Store CSRF token in a meta tag -->
+            <t t-if="request.csrf_token()">
+                <meta name="csrf-token" t-att-content="request.csrf_token()" id="csrf_meta_token"/>
+            </t>
+
+            <div class="container mt-4">
+                <h1 class="mb-4">My Customers</h1>
+
+                <!-- ADD/EDIT BUTTON -->
+                <button type="button"
+                    class="btn btn-primary mb-3"
+                    id="add_customer_btn">
+                + Add Customer
+                </button>
+
+                <!-- ADD/EDIT FORM -->
+                <div id="customer_form_row" class="mb-4 d-none">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0" id="form_title">Add New Customer</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-2">
+                                <input type="hidden" id="customer_id" value="" />
+                                <div class="col-md-4">
+                                    <label class="form-label">Customer Name *</label>
+                                    <input type="text"
+                                       id="customer_name"
+                                       class="form-control"
+                                       placeholder="Customer Name"
+                                       required="1"/>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Email</label>
+                                    <input type="email"
+                                       id="customer_email"
+                                       class="form-control"
+                                       placeholder="Email"/>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Phone</label>
+                                    <input type="text"
+                                       id="customer_phone"
+                                       class="form-control"
+                                       placeholder="Phone"/>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Mobile</label>
+                                    <input type="text"
+                                       id="customer_mobile"
+                                       class="form-control"
+                                       placeholder="Mobile"/>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Notes</label>
+                                    <textarea
+                                       id="customer_comment"
+                                       class="form-control"
+                                       placeholder="Notes"
+                                       rows="2"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Shipping Option for Dropship</label>
+                                    <select id="customer_shipping_option" class="form-select">
+                                        <option value="">Select Shipping Option</option>
+                                        <option value="rate_quote">Provide a rate quote before shipping</option>
+                                        <option value="cheapest_rate">Please ship at cheapest rate</option>
+                                        <option value="own_carrier">Client will use their own carrier</option>
+                                        <option value="client_pickup">Client will pickup</option>
+                                        <option value="yannick_pickup">Yannick will pickup this order</option>
+                                        <option value="dhc_courier">Ship with DHC's courier and add cost to invoice</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <button class="btn btn-success me-2"
+                                        id="save_customer_btn">
+                                        Save
+                                    </button>
+                                    <button class="btn btn-secondary"
+                                        id="cancel_customer_btn">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CUSTOMER TABLE -->
+                <t t-if="customers">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Mobile</th>
+                                <th>Notes</th>
+                                <th>Shipping Option for Dropship</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="customers" t-as="customer">
+                                <t t-set="row_id" t-value="'customer_row_' + str(customer.id)"/>
+                                <tr t-att-id="row_id">
+                                    <td class="customer-name">
+                                        <t t-esc="customer.name"/>
+                                    </td>
+                                    <td class="customer-email">
+                                        <t t-esc="customer.email or 'N/A'"/>
+                                    </td>
+                                    <td class="customer-phone">
+                                        <t t-esc="customer.phone or 'N/A'"/>
+                                    </td>
+                                    <td class="customer-mobile">
+                                        <t t-esc="customer.mobile_number or 'N/A'"/>
+                                    </td>
+                                    <td class="customer-comment" data-comment-text="">
+                                        <t t-esc="(customer.comment or '').replace('&lt;', '&lt;').replace('&gt;', '&gt;') if customer.comment else 'N/A'"/>
+                                    </td>
+                                    <td class="customer-shipping-option">
+                                        <t t-if="customer.shipping_option_dropship">
+                                            <t t-if="customer.shipping_option_dropship == 'rate_quote'">Provide a rate quote before shipping</t>
+                                            <t t-if="customer.shipping_option_dropship == 'cheapest_rate'">Please ship at cheapest rate</t>
+                                            <t t-if="customer.shipping_option_dropship == 'own_carrier'">Client will use their own carrier</t>
+                                            <t t-if="customer.shipping_option_dropship == 'client_pickup'">Client will pickup</t>
+                                            <t t-if="customer.shipping_option_dropship == 'yannick_pickup'">Yannick will pickup this order</t>
+                                            <t t-if="customer.shipping_option_dropship == 'dhc_courier'">Ship with DHC's courier and add cost to invoice</t>
+                                        </t>
+                                        <t t-if="not customer.shipping_option_dropship">N/A</t>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning edit-customer-btn"
+                                                t-att-data-customer-id="customer.id">
+                                            Edit
+                                        </button>
+                                        <button class="btn btn-sm btn-danger delete-customer-btn ms-1"
+                                                t-att-data-customer-id="customer.id">
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </t>
+                <t t-if="not customers">
+                    <p>No customers assigned yet.</p>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

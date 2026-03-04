@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Paper Format A4 with minimal margins -->
+        <record id="paperformat_tax_invoice" model="report.paperformat">
+            <field name="name">Tax Invoice A4</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>  <!-- Reduced from default 20-40 -->
+            <field name="margin_bottom">25</field>
+            <field name="margin_left">10</field>
+            <field name="margin_right">10</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <!-- Report Action - Tax Invoice on account.move (Invoices), NOT on sale.order -->
+        <record id="action_report_tax_invoice" model="ir.actions.report">
+            <field name="name">Tax Invoice</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">custom_reports.tax_invoice_report</field>
+            <field name="report_file">custom_reports.tax_invoice_report</field>
+            <field name="paperformat_id" ref="paperformat_tax_invoice"/>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="print_report_name">object.get_tax_invoice_filename()</field>
+            <!-- Show when payment_state is paid (no move_type/state filter) -->
+            <field name="domain">[('payment_state', '=', 'paid')]</field>
+        </record>
+
+        <!-- Footer template: Instagram left, Page center, Signature right (called early so it stays in view) -->
+        <template id="tax_invoice_footer">
+            <div class="footer" style="font-family: Arial, sans-serif; font-size: 12px; padding-top: 20px;">
+                <table style="width: 100%; border: none; border-color: #fff;">
+                    <tr>
+                        <td style="width: 33%; text-align: left; vertical-align: middle; border: none;">
+                            <img src="/custom_reports/static/src/img/instagram.png" style="max-height: 28px; max-width: 120px;" alt="Instagram"/>
+                        </td>
+                        <td style="width: 34%; text-align: center; vertical-align: middle; border: none;">
+                            Page <span class="page"/> of <span class="topage"/>
+                        </td>
+                        <td style="width: 33%; text-align: right; vertical-align: middle; border: none;">
+                            Customer Signature __________________
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </template>
+
+        <!-- Report Template -->
+        <template id="custom_reports.tax_invoice_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <!-- Shared header from Tax Quotation -->
+                        <t t-call="custom_reports.tax_quotation_header"/>
+                        <t t-call="custom_reports.tax_invoice_footer"/>
+                        <div class="page" style="font-family: Arial, sans-serif; padding: 10px 30px 40px 30px; position: relative; margin-top: 0;">
+                        <!-- Title: Tax Invoice - Reduced top margin -->
+                        <div style="margin: 15px 0 15px 0; margin-top: 20%;">
+                            <h1 style="font-size: 38px; font-weight: bold; color: #898f91; text-align: left; margin-top: 60px;">TAX INVOICE</h1>
+                        </div>
+
+                        <!-- Invoice NO, DATE - left/right aligned, then separator line -->
+                        <div style="margin: 15px 0;">
+                            <div style="width: 100%; overflow: hidden;">
+                                <div style="float: left; width: 50%; padding: 5px 0; text-align: left;">
+                                    <strong>INVOICE NO:</strong> <t t-esc="doc.name or ''"/>
+                                </div>
+                                <div style="float: right; width: 50%; padding: 5px 0; text-align: left;">
+                                    <strong>DATE:</strong> <t t-esc="doc.get_invoice_date_formatted()"/>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Customer Details and Payment Info - table with header row and vertical divider -->
+                        <div style="margin: 15px 0; width: 100%;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="border-top: 1px solid #000; border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 5px; text-align: center; font-weight: bold;">CUSTOMER DETAILS:</th>
+                                        <th style="border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 5px; text-align: center; font-weight: bold;">PAYMENT INFO:</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border-right: 1px solid #fff; border-left: 1px solid #fff; border-bottom: 1px solid #fff; padding: 6px 8px; vertical-align: top; width: 50%;">
+                                            <div style="margin-bottom: 12px;"><span>TO:</span> <t t-esc="doc.get_sale_partner_name()"/></div>
+                                            <div style="margin-bottom: 12px;"><span>SITE:</span> <t t-esc="doc.get_sale_site()"/></div>
+                                            <div style="margin-bottom: 12px; visibility: hidden;"><span>ATT:</span> <t t-esc="doc.get_sale_att()"/></div>
+                                            <div style="margin-bottom: 12px;"><span>SUBJECT:</span> <t t-esc="doc.get_sale_subject()"/></div>
+                                            <div style="margin-bottom: 12px;"><span>TRN#:</span> <t t-esc="doc.get_customer_vat()"/></div>
+                                        </td>
+                                        <td style="border-right: 1px solid #fff; border-bottom: 1px solid #fff;padding: 6px 8px; vertical-align: top; width: 50%;">
+                                            <div style="margin-bottom: 7px;"><strong>METHOD:</strong> <t t-esc="doc.get_invoice_payment_method()"/></div>
+                                            <div style="margin-bottom: 7px;"><strong>CHEQUE NO.:</strong> <t t-esc="doc.cheque_no or ''"/></div>
+                                            <div style="margin-bottom: 7px;"><strong>BANK NAME:</strong> <t t-esc="doc.bank_name or ''"/></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Item Description Table; QR absolutely positioned on far right so it doesn't add vertical gap -->
+                        <div style="margin: 0; position: relative;">
+                            <!-- Product table (slightly narrower so it doesn't touch QR) -->
+                            <div style="width: 100%; padding-right: 0px;">
+                                <table style="width: 100%; border-collapse: collapse; border: none; border-color:#fff;">
+                                    <thead>
+                                        <tr style="color: #666; text-decoration: underline;">
+                                            <th style="border: none; border-bottom: 1px solid #ddd; padding: 8px; text-align: left;"><strong>ITEM DESCRIPTION</strong></th>
+                                            <th style="border: none; border-bottom: 1px solid #ddd; padding: 8px; text-align: center;"><strong>QTY</strong></th>
+                                            <th style="border: none; border-bottom: 1px solid #ddd; padding: 8px; text-align: right;"><strong>AMOUNT</strong></th>
+                                            <th style="border: none; border-bottom: 1px solid #ddd; padding: 8px; text-align: right;"><strong>VAT 5%</strong></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="payment_term_label" t-value="doc.invoice_payment_term_id.name if doc.invoice_payment_term_id else 'Payment'"/>
+                                        <tr>
+                                            <td style="border: none; border-top: 2px solid #ddd; border-bottom: 2px solid #ddd; padding: 10px; text-align: left; font-weight: bold; white-space: pre-line;">
+                                                <span>
+                                                    1
+                                                    <t t-esc="payment_term_label"/>   Payment:
+                                                </span>
+                                                <span>
+                                                    &#10;Reff. QUOTATION
+                                                    <t t-esc="doc._get_linked_sale_order().name or ''"/> - <t t-esc="doc.get_sale_subject()"/>
+                                                </span>
+                                            </td>
+                                            <td style="border: none; border-top: 2px solid #ddd; border-bottom: 2px solid #ddd; padding: 10px; text-align: center;">1</td>
+                                            <td style="border: none; border-top: 2px solid #ddd; border-bottom: 2px solid #ddd; padding: 10px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(doc.amount_untaxed)"/>
+                                            </td>
+                                            <td style="border: none; border-top: 2px solid #ddd; border-bottom: 2px solid #ddd; padding: 10px; text-align: right;">
+                                                <t t-esc="'{:,.2f}'.format(doc.amount_tax)"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- QR image on the extreme right, overlaid so it doesn't push content down -->
+<!--                            <div style="position: absolute; top: 0; right: 0; text-align: right;">-->
+<!--                                <img t-if="doc.get_qr_logo()"-->
+<!--                                     t-att-src="'data:image/png;base64,' + doc.get_qr_logo()"/>-->
+<!--                            </div>-->
+                        </div>
+
+                        <!-- Totals + Terms Side by Side (match reference: Terms left ~45%, Totals right ~55%) -->
+                        <div style="margin: 0 0 10px 0; overflow: hidden;">
+
+                            <!-- LEFT: Terms & Conditions (~45%) -->
+                            <div style="float: left; width: 45%;">
+                                <strong style="font-size: 12px; color: #666; margin-top: 4px;">Terms &amp; Conditions</strong>
+                                <div style="font-size: 11px; margin-top: 3px; color: #666;">
+                                    Payment received and acknowledged. For discrepancies,<br/>
+                                    contact us within 15 days of receipt.
+                                </div>
+                            </div>
+
+                            <!-- RIGHT: Totals (~55%) - like reference: labels left (SUBTOTAL:, VAT 5%:, TOTAL:), values right (AED x,xxx.xx) -->
+                            <div style="float: right; width: 55%;">
+                                <table style="width: 100%; border: none; border-collapse: collapse; border-color: #fff;" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td style="border: none; padding: 4px 0; text-align: left;">SUBTOTAL:</td>
+                                        <td style="border: none; padding: 4px 0; text-align: right;">AED <t t-esc="doc.get_tax_invoice_amount_untaxed()"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: none; padding: 8px 0 4px 0; text-align: left;">VAT 5%:</td>
+                                        <td style="border: none; padding: 8px 0 4px 0; text-align: right;">AED <t t-esc="doc.get_tax_invoice_amount_tax()"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: none; padding: 12px 0 4px 0; font-weight: bold; text-align: left;">TOTAL:</td>
+                                        <td style="border: none; padding: 12px 0 4px 0; font-weight: bold; font-size: 18px; text-align: right;">AED <t t-esc="doc.get_tax_invoice_amount_total()"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Amount in Words - bordered box, centered, below Terms and Totals -->
+                        <div style="clear: both; margin-top: 12px; padding: 10px 16px; text-align: center; border: 1px solid #999; width: 75%; margin-left: auto; margin-right: 30px;">
+                            <span style="font-size: 12px; color: #333;">
+                                <t t-esc="doc._get_amount_in_words_invoice(doc.amount_total)"/>
+                            </span>
+                        </div>
+
+                        <!-- Bank Info (left) + PAID stamp only (right), same horizontal level as reference -->
+                        <div style="margin: 15px 0 0 0; width: 100%; overflow: hidden;">
+                            <!-- Left: Bank account information (~75%) -->
+                            <div style="float: left; width: 75%; font-size: 12px;">
+                                <strong style="font-size: 14px;">BANK ACCOUNT INFORMATION:</strong>
+                                <div style="margin-top: 8px;">
+                                    <div style="margin-bottom: 4px;"><strong>Account Name:</strong> HONEST MASTERS DECOR L.L.C</div>
+                                    <div style="margin-bottom: 4px;"><strong>Account Number:</strong> 019100023308</div>
+                                    <div style="margin-bottom: 4px;"><strong>IBAN Number:</strong> AE960330000019100023308</div>
+                                    <div style="margin-bottom: 4px;"><strong>Bank Name:</strong> Mashreq Bank Rigga Branch Dubai UAE</div>
+                                    <div style="margin-bottom: 4px;"><strong>Swift Code:</strong> BOMLAEAD</div>
+                                </div>
+                            </div>
+                            <!-- Right: PAID stamp closer to bank details -->
+                            <div style="float: right; width: 22%; text-align: right; padding-top: 0; margin-right: 200px; margin-top: -110px;">
+                                <img src="/custom_reports/static/src/img/paid.png" style="max-width: 200px; max-height: 200px; display: inline-block; transform: rotate(3deg);"/>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,56 @@
+// Order Lines Table Styling - Odoo-like appearance
+#order_lines_table {
+    .table-light {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .order_line_row {
+        td {
+            vertical-align: middle;
+            padding: 0.5rem;
+        }
+
+        .form-select-sm,
+        .form-control-sm {
+            font-size: 0.875rem;
+        }
+
+        .tax_checkboxes_container {
+            min-width: 200px;
+            
+            .form-check {
+                margin-bottom: 0.25rem;
+                
+                .form-check-label {
+                    font-size: 0.75rem;
+                    margin-left: 0.25rem;
+                }
+            }
+        }
+
+        .amount_display {
+            font-weight: 500;
+            background-color: #f8f9fa;
+        }
+    }
+}
+
+// Improve button styling
+#add_line_btn {
+    margin-top: 0.5rem;
+}
+
+.remove_line_btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1;
+}
+
+// Form validation styling
+.was-validated {
+    .form-select:invalid,
+    .form-control:invalid {
+        border-color: #dc3545;
+    }
+}

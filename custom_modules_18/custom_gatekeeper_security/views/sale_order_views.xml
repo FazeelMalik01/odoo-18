@@ -1,0 +1,73 @@
+<odoo>
+    <data>
+
+        <!-- Work Order Button in Header-->
+        <record id="view_order_form_work_order_button" model="ir.ui.view">
+            <field name="name">sale.order.form.work.order.button</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_create_work_order"
+                            string="Create Work Order"
+                            type="object"
+                            class="btn-primary"
+                            invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add Service Request Tab to Sale Order Form -->
+        <record id="view_order_form_add_service_request_tab" model="ir.ui.view">
+            <field name="name">sale.order.form.service.request.tab</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Service Request" name="service_request_tab">
+                        <field name="service_request_ids" nolabel="1">
+                            <form>
+                                <sheet>
+                                    <!-- Customer Info -->
+                                    <group string="Customer Info" colspan="2">
+                                        <group>
+                                            <field name="city"/>
+                                            <field name="state_id"/>
+                                            <field name="zip"/>
+                                            <field name="primary_phone"/>
+                                            <field name="email"/>
+                                            <field name="preferred_contact_method"/>
+                                            <field name="requested_appointment"/>
+                                        </group>
+                                    </group>
+
+                                    <!-- Service Location -->
+                                    <group string="Service Location">
+                                        <field name="service_location"/>
+                                    </group>
+
+                                    <!-- Description -->
+                                    <group string="Description">
+                                        <field name="description"/>
+                                    </group>
+
+                                    <!-- Access Instructions -->
+                                    <group string="Access Instruction">
+                                        <field name="gate_code"/>
+                                        <field name="pets_on_site"/>
+                                        <field name="technician_notes"/>
+                                    </group>
+
+                                    <!-- Billing Info -->
+                                    <group string="Billing Info">
+                                        <field name="billing_address"/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

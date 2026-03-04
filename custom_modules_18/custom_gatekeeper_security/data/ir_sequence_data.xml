@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Sequence for Service Request -->
+        <record id="sequence_service_request" model="ir.sequence">
+            <field name="name">Service Request</field>
+            <field name="code">service.request</field>
+            <field name="prefix">SR-</field>
+            <field name="padding">4</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <!-- Sequence for Work Order Worksheet -->
+        <record id="sequence_work_order_worksheet" model="ir.sequence">
+            <field name="name">Work Order Worksheet</field>
+            <field name="code">work.order.worksheet</field>
+            <field name="prefix">WS</field>
+            <field name="padding">5</field>
+            <field name="number_increment">1</field>
+            <field name="number_next">1</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>
+

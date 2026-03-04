@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_custom_falcon_rep_custom_falcon_rep,custom_falcon_rep.custom_falcon_rep,model_custom_falcon_rep_custom_falcon_rep,base.group_user,1,1,1,1

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Vehicle Components -->
+        <record id="vehicle_component_engine_block" model="vehicle.components">
+            <field name="name">Engine Block</field>
+            <field name="side">center</field>
+        </record>
+        <record id="vehicle_component_cylinder_head" model="vehicle.components">
+            <field name="name">Cylinder Head</field>
+            <field name="side">center</field>
+        </record>
+        <record id="vehicle_component_piston" model="vehicle.components">
+            <field name="name">Piston</field>
+            <field name="side">center</field>
+        </record>
+        <record id="vehicle_component_crankshaft" model="vehicle.components">
+            <field name="name">Crankshaft</field>
+            <field name="side">center</field>
+        </record>
+        <record id="vehicle_component_camshaft" model="vehicle.components">
+            <field name="name">Camshaft</field>
+            <field name="side">center</field>
+        </record>
+        <record id="vehicle_component_oil_pan" model="vehicle.components">
+            <field name="name">Oil Pan</field>
+            <field name="side">bottom</field>
+        </record>
+        <record id="vehicle_component_fuel_injector" model="vehicle.components">
+            <field name="name">Fuel Injector</field>
+            <field name="side">center</field>
+        </record>
+        <record id="vehicle_component_fuel_tank" model="vehicle.components">
+            <field name="name">Fuel Tank</field>
+            <field name="side">rear</field>
+        </record>
+        <record id="vehicle_component_fuel_pump" model="vehicle.components">
+            <field name="name">Fuel Pump</field>
+            <field name="side">rear</field>
+        </record>
+        <record id="vehicle_component_radiator" model="vehicle.components">
+            <field name="name">Radiator</field>
+            <field name="side">front</field>
+        </record>
+        <record id="vehicle_component_water_pump" model="vehicle.components">
+            <field name="name">Water Pump</field>
+            <field name="side">front</field>
+        </record>
+        <record id="vehicle_component_spark_plug" model="vehicle.components">
+            <field name="name">Spark Plug</field>
+            <field name="side">center</field>
+        </record>
+        <record id="vehicle_component_alternator" model="vehicle.components">
+            <field name="name">Alternator</field>
+            <field name="side">front</field>
+        </record>
+        <record id="vehicle_component_starter_motor" model="vehicle.components">
+            <field name="name">Starter Motor</field>
+            <field name="side">front</field>
+        </record>
+        <record id="vehicle_component_brake_pad" model="vehicle.components">
+            <field name="name">Brake Pad</field>
+            <field name="side">front</field>
+        </record>
+        <record id="vehicle_component_brake_disc" model="vehicle.components">
+            <field name="name">Brake Disc</field>
+            <field name="side">front</field>
+        </record>
+        <record id="vehicle_component_shock_absorber" model="vehicle.components">
+            <field name="name">Shock Absorber</field>
+            <field name="side">left</field>
+        </record>
+        <record id="vehicle_component_control_arm" model="vehicle.components">
+            <field name="name">Control Arm</field>
+            <field name="side">right</field>
+        </record>
+        <record id="vehicle_component_exhaust_muffler" model="vehicle.components">
+            <field name="name">Exhaust Muffler</field>
+            <field name="side">rear</field>
+        </record>
+        <record id="vehicle_component_catalytic_converter" model="vehicle.components">
+            <field name="name">Catalytic Converter</field>
+            <field name="side">center</field>
+        </record>
+    </data>
+</odoo>

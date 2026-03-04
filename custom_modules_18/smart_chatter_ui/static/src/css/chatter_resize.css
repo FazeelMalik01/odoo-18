@@ -1,0 +1,9 @@
+.o_Chatter {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 4px;
+    resize: vertical;  /* allow resizing height */
+    overflow: auto;
+    min-height: 200px;
+    max-height: 80vh;
+}

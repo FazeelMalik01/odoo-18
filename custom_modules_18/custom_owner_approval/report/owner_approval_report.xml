@@ -1,0 +1,147 @@
+<odoo>
+    <!-- Report Action -->
+    <record id="action_owner_approval_report" model="ir.actions.report">
+        <field name="name">Owner Approval</field>
+        <field name="model">owner.approval</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_owner_approval.owner_approval_report_template</field>
+        <field name="report_file">custom_owner_approval.owner_approval_report_template</field>
+        <field name="print_report_name">'Owner Approval - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="model_owner_approval"/>
+        <field name="binding_type">report</field>
+    </record>
+    <!-- QWeb Template -->
+    <template id="owner_approval_report_template">
+        <div id="wrapwrap">
+            <t t-call="web.external_layout">
+                <main>
+                    <t t-foreach="docs" t-as="o">
+                        <div class="page">
+                            <h2>
+                        Owner Approval Report
+                    </h2>
+                            <h3>
+                        Reference:
+                                <span t-esc="o.name"/>
+                            </h3>
+                            <br/>
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <strong>Title</strong>
+                                        </td>
+                                        <td t-esc="o.title"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Approval Type</strong>
+                                        </td>
+                                        <td t-esc="o.approval_type"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Project</strong>
+                                        </td>
+                                        <td t-esc="o.project_id.name"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Task</strong>
+                                        </td>
+                                        <td t-esc="o.task_id.name"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>BOQ Reference</strong>
+                                        </td>
+                                        <td t-esc="o.boq_ref"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Approval Description</strong>
+                                        </td>
+                                        <td t-esc="o.location"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Owner / Consultant</strong>
+                                        </td>
+                                        <td t-esc="o.owner_partner_id.name"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Responsible</strong>
+                                        </td>
+                                        <td t-esc="o.responsible_user_id.name"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Submission Date</strong>
+                                        </td>
+                                        <td t-esc="o.submission_date"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Due Date</strong>
+                                        </td>
+                                        <td t-esc="o.due_date"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Status</strong>
+                                        </td>
+                                        <td t-esc="o.state"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Decision</strong>
+                                        </td>
+                                        <td t-esc="o.decision"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Owner Response Date</strong>
+                                        </td>
+                                        <td t-esc="o.owner_response_date"/>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Owner Comments</strong>
+                                        </td>
+                                        <td t-esc="o.owner_comments"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+                    <br/>
+                    <div style="margin-top:80px; width:100%;">
+                        <!-- Responsible -->
+                        <div style="width:49%; display:inline-block; vertical-align:bottom;">
+                            <t t-if="o.responsible_signature">
+                                <div style="height:95px;">
+                                    <img t-att-src="'/web/image/%s/%s/responsible_signature' % (o._name, o.id)"
+                     style="height:90px; width:220px; max-width:220px; display:block;"/>
+                                </div>
+                                <div style="border-top:1px solid #000; width:220px;"></div>
+                                <div>Responsible Signature</div>
+                            </t>
+                        </div>
+                        <!-- Owner -->
+                        <div style="width:49%; display:inline-block; vertical-align:bottom; text-align:right;">
+                            <t t-if="o.owner_signature">
+                                <div style="height:95px;">
+                                    <img t-att-src="'/web/image/%s/%s/owner_signature' % (o._name, o.id)"
+                     style="height:90px; width:220px; max-width:220px; display:inline-block;"/>
+                                </div>
+                                <div style="border-top:1px solid #000; width:220px; margin-left:auto;"></div>
+                                <div>Owner Signature</div>
+                            </t>
+                        </div>
+                    </div>
+                </main>
+            </t>
+        </div>
+    </template>
+</odoo>

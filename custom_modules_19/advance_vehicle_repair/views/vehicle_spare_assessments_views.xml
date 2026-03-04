@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="vehicle_parts_assessments_tree" model="ir.ui.view">
+        <field name="name">vehicle.parts.assessments.list</field>
+        <field name="model">vehicle.parts.assessments</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"></field>
+            </list>
+        </field>
+    </record>
+
+    <record id="vehicle_parts_assessments_action" model="ir.actions.act_window">
+        <field name="name">Spare Parts Assessments</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.parts.assessments</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add your assessments here!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_spare_parts_assessments"
+              name="Spare Parts Assessments"
+              parent="menu_spare_parts"
+              action="vehicle_parts_assessments_action"
+              sequence="3"/>
+</odoo>
+

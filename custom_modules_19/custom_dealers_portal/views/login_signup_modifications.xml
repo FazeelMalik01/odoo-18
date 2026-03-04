@@ -1,0 +1,47 @@
+<odoo>
+    <!-- Add "Sign up as a dealer" link on login page using JavaScript -->
+    <template id="web_login_inherit_dealer_signup" inherit_id="web.login" name="Login Page - Dealer Signup Link">
+        <xpath expr="." position="inside">
+            <script type="text/javascript"><![CDATA[
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Find the login form
+                    var loginForm = document.querySelector('form[action*="login"]') || document.querySelector('form');
+                    if (loginForm) {
+                        // Create the dealer signup link
+                        var dealerLink = document.createElement('div');
+                        dealerLink.className = 'text-center';
+                        dealerLink.style.marginTop = '15px';
+                        dealerLink.style.marginBottom = '15px';
+                        dealerLink.innerHTML = '<a href="/dealers/signup" style="color: #6B46C1; text-decoration: none; font-weight: 500; font-size: 14px;">Sign up as a dealer</a>';
+                        // Insert after the form
+                        loginForm.parentNode.insertBefore(dealerLink, loginForm.nextSibling);
+                    }
+                });
+            ]]></script>
+        </xpath>
+    </template>
+
+    <!-- Add "Sign up as a dealer" link on signup page -->
+    <!-- Note: Commented out due to XPath issues - can be added manually if needed -->
+    <!--
+    <template id="web_signup_inherit_dealer_signup" inherit_id="web.signup" name="Signup Page - Dealer Signup Link">
+        <xpath expr="//div[contains(@class, 'oe_signup')]" position="inside">
+            <div class="text-center mt-3 mb-3">
+                <a href="/dealers/signup" class="btn btn-link" style="color: #6B46C1; text-decoration: none; font-weight: 500;">
+                    Sign up as a dealer
+                </a>
+            </div>
+        </xpath>
+    </template>
+    -->
+
+    <!-- Hide "Don't have an account?" on signup page -->
+    <!-- Note: Commented out due to XPath issues - can be added manually if needed -->
+    <!--
+    <template id="web_signup_inherit_hide_account_link" inherit_id="web.signup" name="Signup Page - Hide Account Link">
+        <xpath expr="//a[contains(@href, '/web/login')]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+    </template>
+    -->
+</odoo>

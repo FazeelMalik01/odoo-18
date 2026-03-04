@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Action to open the form view -->
+    <record id="action_vehicle_booking_request" model="ir.actions.act_window">
+        <field name="name">Booking Requests</field>
+        <field name="res_model">vehicle.booking.request</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to create a new vehicle booking request.
+            </p>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_vehicle_booking_request_form" model="ir.ui.view">
+        <field name="name">vehicle.booking.request.form</field>
+        <field name="model">vehicle.booking.request</field>
+        <field name="arch" type="xml">
+            <form string="Vehicle Booking Request">
+                <header>
+                    <field name="customer_id" invisible="1"/>
+                    <field name="vehicle_register_id" invisible="1"/>
+
+                    <button 
+                        name="action_find_and_update_customer" 
+                        type="object" string="Find or Create Customer" 
+                        class="btn-secondary" 
+                        icon="fa-search"
+                        invisible="customer_id != False"/>
+
+                    <button 
+                        name="action_find_and_update_vehicle" 
+                        type="object" string="Find or Create Vehicle" 
+                        class="btn-secondary" 
+                        icon="fa-search"
+                        invisible="vehicle_register_id != False"/>
+                    
+                    <button 
+                        name="action_cancel_button" 
+                        string="Cancel" 
+                        type="object" 
+                        class="oe_highlight"
+                        invisible="state != 'create'"/>
+
+                    <button 
+                        name="action_create_booking" 
+                        string="Create Booking" 
+                        type="object" 
+                        class="oe_highlight"
+                        invisible="state == 'create'"/>
+
+                    <field name="state" widget="statusbar" statusbar_visible="draft,create,cancel"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="customer_name" readonly="state == 'create'"/>
+                            <field name="customer_mobile" readonly="state == 'create'"/>
+                            <field name="customer_email" readonly="state == 'create'"/>
+                            
+                            <field name="brand_id" readonly="state == 'create'"/>
+                            <field name="model_id" readonly="state == 'create'"/>
+                            <field name="fuel_type_id" readonly="state == 'create'"/>
+                            <field name="transmission_type" readonly="state == 'create'"/>
+                        </group>
+                        <group>
+                            <field name="registration_no" readonly="state == 'create'"/>
+                            <field name="vin_no" readonly="state == 'create'"/>
+                            <field name="booking_date" readonly="state == 'create'"/>
+                            <field name="request_date" readonly="1"/>
+                            <field name="booking_id" invisible="booking_id == False" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="responsible_id" class="oe_inline" widget="many2one_avatar_user" readonly="0"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Customer and Vehicle Details" name="customer_vehicle_details">
+                            <group>
+                                <group>
+                                    <field name="customer_id" readonly="state == 'create'"/>
+                                    <field name="vehicle_register_id" readonly="state == 'create'"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_vehicle_booking_request_kanban" model="ir.ui.view">
+        <field name="name">vehicle.booking.request.kanban</field>
+        <field name="model">vehicle.booking.request</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="customer_name"/>
+                <field name="registration_no"/>
+                <field name="state"/>
+                <templates>
+                  <t t-name="card">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <strong><field name="customer_name"/></strong>
+                                <div class="text-muted">
+                                    <field name="vehicle_register_id" options="{'no_create': True}"/>
+                                </div>
+                                <div>
+                                    <strong>Registration No:</strong>
+                                    <span><field name="registration_no"/></span>
+                                </div>
+                            </div>
+                            <div class="oe_kanban_bottom_left">
+                                <span class="badge badge-info">
+                                    <field name="state"/>
+                                </span>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <!-- List View -->
+    <record id="view_vehicle_booking_request_tree" model="ir.ui.view">
+        <field name="name">vehicle.booking.request.list</field>
+        <field name="model">vehicle.booking.request</field>
+        <field name="arch" type="xml">
+            <list string="Vehicle Booking Requests">
+                <field name="customer_name"/>
+                <field name="brand_id"/>
+                <field name="model_id"/>
+                <field name="fuel_type_id"/>
+                <field name="transmission_type"/>
+                <field name="registration_no"/>
+                <field name="vin_no"/>
+                <field name="request_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem 
+        id="menu_vehicle_booking_request" 
+        name="Website Booking Requests"
+        parent="root_vehicle_bookings"
+        action="action_vehicle_booking_request"
+        sequence="1"/>
+</odoo>

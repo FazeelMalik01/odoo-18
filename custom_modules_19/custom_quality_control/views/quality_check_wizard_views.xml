@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- View for quality check images -->
+        <record id="view_quality_check_image_list" model="ir.ui.view">
+            <field name="name">quality.check.image.list</field>
+            <field name="model">quality.check.image</field>
+            <field name="arch" type="xml">
+                <list editable="bottom">
+                    <field name="sequence" widget="handle"/>
+                    <field name="image" widget="image"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Extend quality check wizard to show multiple images -->
+        <record id="view_quality_check_wizard_form_inherit_multiple_images" model="ir.ui.view">
+            <field name="name">quality.check.wizard.form.inherit.multiple.images</field>
+            <field name="model">quality.check.wizard</field>
+            <field name="inherit_id" ref="quality_control.view_quality_check_wizard"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='picture']" position="replace">
+                    <field name="picture" invisible="1"/>
+                    <field name="image_ids" nolabel="1" readonly="quality_state != 'none'" invisible="test_type != 'picture'">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="image" widget="image"/>
+                        </list>
+                    </field>
+                </xpath>
+                
+                <!-- Add groups restriction to Validate button (do_measure) -->
+                <xpath expr="//footer/button[@name='do_measure' and @data-hotkey='q']" position="attributes">
+                    <attribute name="groups">custom_quality_control.group_quality_manager</attribute>
+                </xpath>
+                
+                <!-- Add groups restriction to Validate button (do_pass for picture/instructions) -->
+                <xpath expr="//footer/button[@name='do_pass' and @class='btn-primary' and @data-hotkey='w']" position="attributes">
+                    <attribute name="groups">custom_quality_control.group_quality_manager</attribute>
+                </xpath>
+                
+                <!-- Add groups restriction to Pass button -->
+                <xpath expr="//footer/button[@name='do_pass' and @class='btn-success ' and @data-hotkey='w']" position="attributes">
+                    <attribute name="groups">custom_quality_control.group_quality_manager</attribute>
+                </xpath>
+                
+                <!-- Add groups restriction to Fail button -->
+                <xpath expr="//footer/button[@name='do_fail' and @data-hotkey='k']" position="attributes">
+                    <attribute name="groups">custom_quality_control.group_quality_manager</attribute>
+                </xpath>
+                
+                <!-- Add Submit button in footer after Fail button -->
+                <xpath expr="//footer/button[@name='do_fail' and @data-hotkey='k']" position="after">
+                    <button name="do_submit" type="object" class="btn-primary" invisible="quality_state != 'none'" string="Submit" data-hotkey="s"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

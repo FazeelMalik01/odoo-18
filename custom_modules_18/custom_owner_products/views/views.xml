@@ -1,0 +1,100 @@
+<odoo>
+  <data>
+    <!-- List view for consignment report -->
+    <record model="ir.ui.view" id="consignment_report_list_view">
+      <field name="name">consignment.report.list</field>
+      <field name="model">consignment.report</field>
+      <field name="arch" type="xml">
+        <list string="Consignment Reports">
+          <field name="name"/>
+          <field name="vendor_id"/>
+          <field name="from_date"/>
+          <field name="to_date"/>
+          <field name="total_quantity"/>
+        </list>
+      </field>
+    </record>
+
+    <!-- Form view for consignment report -->
+    <record model="ir.ui.view" id="consignment_report_form_view">
+      <field name="name">consignment.report.form</field>
+      <field name="model">consignment.report</field>
+      <field name="arch" type="xml">
+        <form string="Consignment Report">
+          <header>
+            <button name="action_create_vendor_bill" string="Create Vendor Bill" type="object" class="btn-primary" 
+                    invisible="not product_line_ids or has_vendor_bill"/>
+            <button name="action_view_vendor_bill" string="View Vendor Bill" type="object" class="btn-secondary" 
+                    invisible="not has_vendor_bill"/>
+          </header>
+          <sheet>
+            <div class="oe_button_box" name="button_box">
+              <div class="oe_stat_button" invisible="not product_line_ids">
+                <span class="fa fa-file-invoice"/>
+                <field name="total_quantity" widget="statinfo" string="Total Quantity"/>
+              </div>
+            </div>
+            <group>
+              <group>
+                <field name="vendor_id" options="{'no_create': True, 'no_create_edit': True}"/>
+                <field name="from_date"/>
+                <field name="to_date"/>
+              </group>
+            </group>
+            <notebook>
+              <page string="Products" name="products">
+                <field name="product_line_ids" nolabel="1">
+                  <list>
+                    <field name="product_id"/>
+                    <field name="quantity"/>
+                    <field name="uom_id"/>
+                  </list>
+                </field>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <!-- Inherit stock.picking form view to add Create Vendor Bill button -->
+    <record id="view_stock_picking_form_consignment" model="ir.ui.view">
+        <field name="name">stock.picking.form.consignment</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button name="action_create_vendor_bill_from_picking" 
+                        string="Create Vendor Bill" 
+                        type="object" 
+                        class="btn-primary"
+                        invisible="state != 'done' or picking_type_code != 'outgoing' or not has_move_lines_with_owner"
+                        groups="account.group_account_invoice"/>
+            </header>
+        </field>
+    </record>
+
+    <!-- Action for consignment report -->
+    <record model="ir.actions.act_window" id="consignment_report_action">
+      <field name="name">Consignment</field>
+      <field name="res_model">consignment.report</field>
+      <field name="view_mode">list,form</field>
+      <field name="view_id" ref="consignment_report_list_view"/>
+      <field name="help" type="html">
+        <p class="o_view_nocontent_empty_folder">
+          No consignment reports yet
+        </p>
+        <p>
+          Create a new consignment report to view products sold by vendors in a specific date range.
+        </p>
+      </field>
+    </record>
+
+    <!-- Menu item under Accounting > Vendors > Consignment -->
+    <menuitem name="Consignment" 
+              id="consignment_report_menu" 
+              parent="account.menu_finance_payables"
+              action="consignment_report_action"
+              sequence="20"/>
+  </data>
+</odoo>

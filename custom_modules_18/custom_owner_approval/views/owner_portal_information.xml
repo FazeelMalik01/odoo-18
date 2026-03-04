@@ -1,0 +1,28 @@
+<odoo>
+    <template id="portal_my_details_inherit_signature"
+          inherit_id="portal.portal_my_details_fields"
+          name="Add Owner Signature After Country">
+        <xpath expr="//select[@name='country_id']/.." position="after">
+            <t t-set="owner_user" t-value="request.env.user"/>
+            <div class="mb-3 col-xl-6">
+                <label class="col-form-label">Owner Signature</label>
+                <input type="file" name="owner_signature" accept="image/*" class="form-control"/>
+                <div t-if="owner_user and owner_user.sign_signature" class="mt-2">
+                    <span class="form-text d-block">Current signature:</span>
+                    <img t-att-src="'/web/image/res.users/%s/sign_signature' % owner_user.id"
+                         alt="Current signature"
+                         class="border rounded w-20 object-fit-cover" style="height: 32vh !important"
+                         loading="lazy"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="portal_my_details_enctype_signature"
+          inherit_id="portal.portal_my_details"
+          name="Enable multipart form for owner signature">
+        <xpath expr="//form[@action='/my/account']" position="attributes">
+            <attribute name="enctype">multipart/form-data</attribute>
+        </xpath>
+    </template>
+</odoo>

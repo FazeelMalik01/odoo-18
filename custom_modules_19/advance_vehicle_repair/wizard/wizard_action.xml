@@ -1,0 +1,8 @@
+<odoo>
+    <record id="action_jobcard_booking_type_wizard" model="ir.actions.act_window">
+        <field name="name">Select Booking Type</field>
+        <field name="res_model">jobcard.booking.type.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

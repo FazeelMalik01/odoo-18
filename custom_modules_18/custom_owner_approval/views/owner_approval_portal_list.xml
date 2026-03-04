@@ -1,0 +1,224 @@
+<odoo>
+    <template id="owner_approval_list_template" name="Owner Approval List">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-4">
+                <h1 class="mb-4" t-esc="page_name"/>
+                <!-- Summary Cards Row -->
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="card text-white bg-primary h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Submitted</h5>
+                                <p class="card-text h3">
+                                    <t t-esc="len(approvals.filtered(lambda a: a.state=='submitted'))"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white bg-warning h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Under Review</h5>
+                                <p class="card-text h3">
+                                    <t t-esc="len(approvals.filtered(lambda a: a.state=='revise'))"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white bg-danger h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Overdue</h5>
+                                <p class="card-text h3">
+                                    <t t-esc="len(approvals.filtered(lambda a: a.is_overdue))"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white bg-success h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Approved</h5>
+                                <p class="card-text h3">
+                                    <t t-esc="len(approvals.filtered(lambda a: a.state=='approved'))"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white bg-info h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Late Approved</h5>
+                                <p class="card-text h3">
+                                    <t t-esc="len(approvals.filtered(lambda a: a.state=='late'))"/>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Filters Row (UI only) -->
+                <div class="card mb-4">
+                    <div class="card-body py-3">
+                        <div class="row g-2 align-items-center">
+                            <!-- Search -->
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fa fa-search"/>
+                                    </span>
+                                    <input type="text"
+                                           id="owner_approval_search"
+                                           class="form-control"
+                                           placeholder="Search by Ref, Title, Type..."
+                                           autocomplete="off"/>
+                                </div>
+                            </div>
+                            <!-- Status -->
+                            <div class="col-md">
+                                <select id="owner_status_filter" class="form-select">
+                                    <option value="">Status: All</option>
+                                    <option value="submitted">Submitted</option>
+                                    <option value="approved">Approved</option>
+                                    <option value="rejected">Rejected</option>
+                                    <option value="revise">Revise</option>
+                                    <option value="late">Late Approved</option>
+                                </select>
+                            </div>
+                            <!-- Type -->
+                            <div class="col-md">
+                                <select id="owner_type_filter" class="form-select">
+                                    <option value="">Type: All</option>
+                                    <option value="drawing">Drawing</option>
+                                    <option value="material">Material</option>
+                                    <option value="method">Method Statement</option>
+                                    <option value="rfi">RFI</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <!-- Project -->
+                            <div class="col-md">
+                                <select id="owner_project_filter" class="form-select">
+                                    <option value="">Project: All</option>
+                                    <t t-foreach="approvals.mapped('project_id')" t-as="proj">
+                                        <t t-if="proj">
+                                            <option t-att-value="proj.id" t-esc="proj.name"/>
+                                        </t>
+                                    </t>
+                                </select>
+                            </div>
+                            <!-- Task -->
+                            <div class="col-md">
+                                <select id="owner_task_filter" class="form-select">
+                                    <option value="">Task: All</option>
+                                    <t t-foreach="approvals.mapped('task_id')" t-as="task_option">
+                                        <t t-if="task_option">
+                                            <option t-att-value="task_option.id" t-esc="task_option.name"/>
+                                        </t>
+                                    </t>
+                                </select>
+                            </div>
+                            <!-- Clear Filters -->
+                            <div class="col-md-auto">
+                                <a href="#" id="owner_clear_filters" class="text-decoration-none fw-semibold">
+                                    Clear filters
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <t t-if="approvals">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Reference</th>
+                                <th>Title</th>
+                                <th>Type</th>
+                                <th>Project</th>
+                                <th>Task</th>
+                                <th>Status</th>
+                                <th>Submission</th>
+                                <th>Due</th>
+                                <th>Overdue</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="owner_approval_tbody">
+                            <t t-foreach="approvals" t-as="approval">
+                                <tr class="approval-row"
+                                    t-att-data-name="approval.name or ''"
+                                    t-att-data-title="approval.title or ''"
+                                    t-att-data-type="approval.approval_type or ''"
+                                    t-att-data-state="approval.state or ''"
+                                    t-att-data-project="approval.project_id.id or ''"
+                                    t-att-data-task="approval.task_id.id if approval.task_id else ''">
+                                    <td>
+                                        <span t-esc="approval.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="approval.title"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="approval.approval_type"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="approval.project_id.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="approval.task_id.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="approval.state"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="approval.submission_date"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="approval.due_date"/>
+                                    </td>
+                                    <td>
+                                        <t t-if="approval.state == 'late'">
+                                            <span class="badge bg-danger">
+                                                Late (
+                                                <t t-esc="approval.days_late"/> days)
+                                            </span>
+                                        </t>
+                                        <t t-elif="approval.is_overdue">
+                                            <span class="badge bg-danger">
+                                                Late (
+                                                <t t-esc="approval.days_late"/> days)
+                                            </span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge bg-success">On Time</span>
+                                        </t>
+                                    </td>
+                                    <td>
+                                        <a t-att-href="'/my/owner-approval/%s' % approval.id"
+                                            class="btn btn-sm btn-primary">
+                                                View
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                            <tr id="owner_approval_no_results" class="d-none">
+                                <td colspan="10" class="text-center text-muted py-4">
+                                    No matching approvals. Try a different search.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+                <t t-else="">
+                    <div class="alert alert-info">
+                        No owner approvals found.
+                    </div>
+                </t>
+            </div>
+            <div class="d-flex justify-content-center mt-3">
+                <nav>
+                    <ul id="owner_approval_pagination" class="pagination"></ul>
+                </nav>
+            </div>
+        </t>
+    </template>
+</odoo>

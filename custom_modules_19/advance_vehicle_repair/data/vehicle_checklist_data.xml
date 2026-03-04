@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Vehicle Checklist -->
+        <record id="vehicle_checklist_maintenance" model="vehicle.checklist">
+            <field name="name">Maintenance Checklist</field>
+        </record>
+
+        <!-- Vehicle Checklist Lines for Maintenance Checklist -->
+        <record id="vehicle_checklist_line_1" model="vehicle.checklist.line">
+            <field name="name">Check Fluid Levels</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_maintenance"/>
+        </record>
+
+        <record id="vehicle_checklist_line_2" model="vehicle.checklist.line">
+            <field name="name">Inspect Brake Pads</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_maintenance"/>
+        </record>
+
+        <record id="vehicle_checklist_line_3" model="vehicle.checklist.line">
+            <field name="name">Check Tire Pressure</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_maintenance"/>
+        </record>
+
+        <record id="vehicle_checklist_line_4" model="vehicle.checklist.line">
+            <field name="name">Body Inspection</field>
+            <field name="display_type">line_section</field>
+            <field name="checklist_id" ref="vehicle_checklist_maintenance"/>
+        </record>
+
+        <record id="vehicle_checklist_line_5" model="vehicle.checklist.line">
+            <field name="name">Check for Body Damage</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_maintenance"/>
+        </record>
+
+        <record id="vehicle_checklist_line_6" model="vehicle.checklist.line">
+            <field name="name">Inspect Lights</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_maintenance"/>
+        </record>
+
+        <record id="vehicle_checklist_line_7" model="vehicle.checklist.line">
+            <field name="name">Test Drive</field>
+            <field name="display_type">line_note</field>
+            <field name="checklist_id" ref="vehicle_checklist_maintenance"/>
+        </record>
+
+        <!-- Vehicle Checklist for Tires and Wheels -->
+        <record id="vehicle_checklist_tires_and_wheels" model="vehicle.checklist">
+            <field name="name">Tires And Wheels Checklist</field>
+        </record>
+
+        <!-- Vehicle Checklist Lines for Tires and Wheels Checklist -->
+        <record id="vehicle_checklist_line_tires_1" model="vehicle.checklist.line">
+            <field name="name">Check Tire Pressure</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_tires_and_wheels"/>
+        </record>
+
+        <record id="vehicle_checklist_line_tires_2" model="vehicle.checklist.line">
+            <field name="name">Inspect Tire Tread Depth</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_tires_and_wheels"/>
+        </record>
+
+        <record id="vehicle_checklist_line_tires_3" model="vehicle.checklist.line">
+            <field name="name">Check for Tire Damage</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_tires_and_wheels"/>
+        </record>
+
+        <record id="vehicle_checklist_line_tires_4" model="vehicle.checklist.line">
+            <field name="name">Inspect Wheel Alignment</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_tires_and_wheels"/>
+        </record>
+
+        <record id="vehicle_checklist_line_tires_5" model="vehicle.checklist.line">
+            <field name="name">Check Wheel Lug Nuts</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_tires_and_wheels"/>
+        </record>
+
+        <record id="vehicle_checklist_line_tires_6" model="vehicle.checklist.line">
+            <field name="name">Inspect Spare Tire</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_tires_and_wheels"/>
+        </record>
+
+        <record id="vehicle_checklist_line_tires_7" model="vehicle.checklist.line">
+            <field name="name">Rotation and Balancing</field>
+            <field name="display_type">line_note</field>
+            <field name="checklist_id" ref="vehicle_checklist_tires_and_wheels"/>
+        </record>
+
+        <!-- Vehicle Checklist for Air Conditioning -->
+        <record id="vehicle_checklist_air_conditioning" model="vehicle.checklist">
+            <field name="name">Air Conditioning Checklist</field>
+        </record>
+
+        <!-- Vehicle Checklist Lines for Air Conditioning Checklist -->
+        <record id="vehicle_checklist_line_ac_1" model="vehicle.checklist.line">
+            <field name="name">Check Air Conditioning Operation</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_air_conditioning"/>
+        </record>
+
+        <record id="vehicle_checklist_line_ac_2" model="vehicle.checklist.line">
+            <field name="name">Inspect AC Compressor</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_air_conditioning"/>
+        </record>
+
+        <record id="vehicle_checklist_line_ac_3" model="vehicle.checklist.line">
+            <field name="name">Check Refrigerant Level</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_air_conditioning"/>
+        </record>
+
+        <record id="vehicle_checklist_line_ac_4" model="vehicle.checklist.line">
+            <field name="name">Inspect AC Hoses and Connections</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_air_conditioning"/>
+        </record>
+
+        <record id="vehicle_checklist_line_ac_5" model="vehicle.checklist.line">
+            <field name="name">Inspect AC Condenser</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_air_conditioning"/>
+        </record>
+
+        <record id="vehicle_checklist_line_ac_6" model="vehicle.checklist.line">
+            <field name="name">Inspect Cabin Air Filter</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_air_conditioning"/>
+        </record>
+
+        <record id="vehicle_checklist_line_ac_7" model="vehicle.checklist.line">
+            <field name="name">Check Blower Motor Operation</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_air_conditioning"/>
+        </record>
+
+        <record id="vehicle_checklist_line_ac_8" model="vehicle.checklist.line">
+            <field name="name">Check for AC System Leaks</field>
+            <field name="display_type">line_item</field>
+            <field name="checklist_id" ref="vehicle_checklist_air_conditioning"/>
+        </record>
+
+
+    </data>
+</odoo>

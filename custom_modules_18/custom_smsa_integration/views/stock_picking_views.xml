@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add Waybill PDF download below carrier_tracking_ref -->
+    <record id="view_picking_form_waybill" model="ir.ui.view">
+        <field name="name">stock.picking.form.waybill</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock_delivery.view_picking_withcarrier_out_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='tracking']" position="after">
+                <label for="carrier_waybill_attachment_id" string="Waybill PDF"/>
+                <div class="o_row">
+                    <field name="carrier_waybill_attachment_id" readonly="1" nolabel="1"
+                           options="{'no_create': True}"/>
+                    <button name="action_download_waybill" type="object"
+                            string="Download"
+                            class="oe_link"
+                            icon="fa-download"
+                            invisible="not carrier_waybill_attachment_id"/>
+                </div>
+                <label for="carrier_tracking_ref" string="Tracking"/>
+                <div class="o_row">
+                    <field name="carrier_tracking_ref" readonly="1" nolabel="1" invisible="1"/>
+                    <button type="object" name="open_website_url" string="Track Shipment"
+                            class="oe_link" icon="fa-external-link"
+                            invisible="not carrier_tracking_ref or not carrier_id"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

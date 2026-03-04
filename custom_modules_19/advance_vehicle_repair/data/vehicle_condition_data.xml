@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Vehicle Conditions -->
+        <record id="vehicle_condition_broken" model="vehicle.condition">
+            <field name="name">Broken</field>
+            <field name="short_code">BRK</field>
+        </record>
+        <record id="vehicle_condition_cracked" model="vehicle.condition">
+            <field name="name">Cracked</field>
+            <field name="short_code">CRK</field>
+        </record>
+        <record id="vehicle_condition_damaged" model="vehicle.condition">
+            <field name="name">Damaged</field>
+            <field name="short_code">DMG</field>
+        </record>
+        <record id="vehicle_condition_scratched" model="vehicle.condition">
+            <field name="name">Scratched</field>
+            <field name="short_code">SCR</field>
+        </record>
+        <record id="vehicle_condition_faded" model="vehicle.condition">
+            <field name="name">Faded</field>
+            <field name="short_code">FAD</field>
+        </record>
+        <record id="vehicle_condition_rusty" model="vehicle.condition">
+            <field name="name">Rusty</field>
+            <field name="short_code">RUS</field>
+        </record>
+        <record id="vehicle_condition_missed_paint" model="vehicle.condition">
+            <field name="name">Missed Paint</field>
+            <field name="short_code">MPA</field>
+        </record>
+        <record id="vehicle_condition_dented" model="vehicle.condition">
+            <field name="name">Dented</field>
+            <field name="short_code">DNT</field>
+        </record>
+        <record id="vehicle_condition_worn_out" model="vehicle.condition">
+            <field name="name">Worn Out</field>
+            <field name="short_code">WOT</field>
+        </record>
+        <record id="vehicle_condition_fallen_off" model="vehicle.condition">
+            <field name="name">Fallen Off</field>
+            <field name="short_code">FOF</field>
+        </record>
+    </data>
+</odoo>

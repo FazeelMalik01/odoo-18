@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_field_service_manager" model="res.groups">
+            <field name="name">Field Service Manager</field>
+            <field name="sequence">20</field>
+            <field name="privilege_id" ref="industry_fsm.res_groups_privilege_field_service"/>
+            <field name="implied_ids" eval="[(4, ref('industry_fsm.group_fsm_user'))]"/>
+            <field name="comment">Field Service Manager can approve and reject quality checks</field>
+        </record>
+    </data>
+</odoo>

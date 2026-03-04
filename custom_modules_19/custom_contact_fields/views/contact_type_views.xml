@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Contact Type List View -->
+        <record id="view_contact_type_tree" model="ir.ui.view">
+            <field name="name">contact.type.list</field>
+            <field name="model">contact.type</field>
+            <field name="arch" type="xml">
+                <list string="Contact Types">
+                    <field name="sequence" widget="handle"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="active"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Contact Type Form View -->
+        <record id="view_contact_type_form" model="ir.ui.view">
+            <field name="name">contact.type.form</field>
+            <field name="model">contact.type</field>
+            <field name="arch" type="xml">
+                <form string="Contact Type">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="sequence"/>
+                            </group>
+                            <group>
+                                <field name="active"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Contact Type Action -->
+        <record id="action_contact_type" model="ir.actions.act_window">
+            <field name="name">Contact Types</field>
+            <field name="res_model">contact.type</field>
+            <field name="view_mode">list,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create a new contact type
+                </p>
+                <p>
+                    Contact types allow you to categorize contacts and control which fields are visible based on the selected types.
+                </p>
+            </field>
+        </record>
+
+     
+    </data>
+</odoo>

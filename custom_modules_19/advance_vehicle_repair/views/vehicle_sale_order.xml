@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!--    adding new fields in sales module -->
+    <record id="sale_order_inheritance" model="ir.ui.view">
+        <field name="name">sale.order.inheritance</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='partner_details']" position="inside">
+                <field name="jobcard_id" readonly="1" invisible="jobcard_id == False"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+
+

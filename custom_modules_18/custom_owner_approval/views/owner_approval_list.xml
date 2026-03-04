@@ -1,0 +1,18 @@
+<odoo>
+    <record id="view_owner_approval_list" model="ir.ui.view">
+        <field name="name">owner.approval.list</field>
+        <field name="model">owner.approval</field>
+        <field name="arch" type="xml">
+            <list string="Owner Approvals">
+                <field name="name"/>
+                <field name="title"/>
+                <field name="project_id"/>
+                <field name="approval_type"/>
+                <field name="state"/>
+                <field name="submission_date"/>
+                <field name="due_date"/>
+                <field name="is_overdue"/>
+            </list>
+        </field>
+    </record>
+</odoo>

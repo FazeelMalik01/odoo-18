@@ -1,0 +1,762 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!--        Activity View-->
+        <record id="vehicle_jobcards_inspection_activity" model="ir.ui.view">
+            <field name="name">vehicle.jobcards.inspection.activity</field>
+            <field name="model">vehicle.jobcards.inspection</field>
+            <field name="arch" type="xml">
+                <activity string="activity">
+                    <templates>
+                        <div t-name="activity-box">
+                            <div>
+                                <field name="sequence_id" display="full"/>
+                                <field name="customer_id" muted="1" display="full"/>
+                            </div>
+                        </div>
+                    </templates>
+                </activity>
+            </field>
+        </record>
+        <!--     Pivot View -->
+        <record id="vehicle_jobcards_inspection_pivot" model="ir.ui.view">
+            <field name="name">vehicle.jobcards.inspection.pivot</field>
+            <field name="model">vehicle.jobcards.inspection</field>
+            <field name="arch" type="xml">
+                <pivot string="Pivot">
+                    <field name="transmission_type" type="row"/>
+                    <field name="state" type="col"/>
+                </pivot>
+            </field>
+        </record>
+        <!-- search view and group by-->
+        <record id="vehicle_jobcards_inspection_search" model="ir.ui.view">
+            <field name="name">vehicle.jobcards.inspection.search</field>
+            <field name="model">vehicle.jobcards.inspection</field>
+            <field name="arch" type="xml">
+                <search string="Inspection">
+                    <field name="customer_id"/>
+                    <field name="transmission_type"/>
+                    <field name="brand_id"/>
+                    <field name="state"/>
+                    <separator/>
+                    <group>
+                        <filter name="transmission_type_sorting" string="Transmission Type"
+                                context="{'group_by':'transmission_type'}"/>
+                        <filter name="customer_sorting" string="Customer" context="{'group_by':'customer_id'}"/>
+                        <filter name="brand_sorting" string="Vehicle Brands" context="{'group_by':'brand_id'}"/>
+                        <filter name="state_sorting" string="State" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <!-- List View -->
+        <record id="vehicle_jobcards_inspection_tree" model="ir.ui.view">
+            <field name="name">vehicle.jobcards.inspection.list</field>
+            <field name="model">vehicle.jobcards.inspection</field>
+            <field name="arch" type="xml">
+                <list decoration-info="state == 'new'"
+                      decoration-muted="state == 'cancel'">
+                    <field name="sequence_id"/>
+                    <field name="booking_id" column_invisible="True"/>
+                    <field name="booking_date"/>
+                    <field name="brand_id" optional="hide"/>
+                    <field name="model_id" optional="hide"/>
+                    <!-- <field name="booking_type"/> -->
+                    <field name="activity_ids" widget="list_activity" optional="hide"/>
+                    <field name="inspection_type"/>
+                    <field name="customer_id"/>
+                    <field name="state" widget="badge"
+                           decoration-info="state == 'new'"
+                           decoration-primary="state in ('in_progress', 'in_review')"
+                           decoration-success="state in ('completed', 'sale_order', 'repair_order')"
+                           decoration-muted="state == 'cancel'"/>
+                </list>
+            </field>
+        </record>
+        <!-- Kanban View -->
+        <record id="vehicle_jobcards_inspection_kanban" model="ir.ui.view">
+            <field name="name">vehicle.jobcards.inspection.kanban</field>
+            <field name="model">vehicle.jobcards.inspection</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="sequence_id"/>
+                    <field name="brand_id"/>
+                    <field name="model_id"/>
+                    <field name="booking_date"/>
+                    <field name="customer_id"/>
+                    <field name="state"/>
+                    <field name="activity_ids"/>
+                    <templates>
+                        <t t-name="card">
+                            <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                                <div class="o_kanban_record_top mb16">
+                                    <div class="o_kanban_record_headings mt4">
+                                        <strong class="o_kanban_record_title">
+                                            <span t-esc="record.sequence_id.value"/>
+                                        </strong>
+                                    </div>
+                                    <strong>
+                                        <span t-esc="record.booking_date.value"/>
+                                    </strong>
+                                </div>
+                                <div class="o_kanban_tags_section oe_kanban_partner_categories">
+                                    <div>
+                                        <span t-esc="record.brand_id.value"/>
+                                        <t t-if="record.brand_id.value and record.model_id.value">
+                                            <b>-</b>
+                                        </t>
+                                        <span t-esc="record.model_id.value"/>
+                                    </div>
+                                    <div>
+                                        <span t-esc="record.customer_id.value"/>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom text-muted">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="activity_ids" widget="kanban_activity"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <span>
+                                            <field name="inspector_id" widget="many2one_avatar_user"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        <!--        Form view-->
+        <record id="vehicle_jobcards_inspection_form" model="ir.ui.view">
+            <field name="name">vehicle.jobcards.inspection.form</field>
+            <field name="model">vehicle.jobcards.inspection</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button
+                                name="button_inprogress"
+                                string="In Progress"
+                                type="object"
+                                states='new,cancel'
+                                class="btn-primary"
+                                attrs="{'invisible': [('state', '!=', 'new'),('state', '!=', 'cancel')]}"/>
+                        <button
+                                name="button_inreview"
+                                string="In Review"
+                                type="object"
+                                class="btn-primary"
+                                attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                        <button
+                                name="button_confirm"
+                                string="Confirm"
+                                type="object"
+                                class="btn-primary"
+                                attrs="{'invisible': [('state', '!=', 'in_review')]}"/>
+                        <button
+                                name="button_sale_order"
+                                string="Create Sale Order"
+                                type="object"
+                                attrs="{'invisible': [('state', '!=', 'completed')]}"
+                                class="btn-primary"/>
+                        <!-- <button
+                            name="button_repair_order"
+                            string="Create Repair Order"
+                            type="object"
+                            attrs="{'invisible': ['|', ('state', '!=', 'completed')]}"
+                            class="btn-primary"/> -->
+                        <button
+                                name="button_cancel"
+                                string="Cancel"
+                                type="object"
+                                attrs="{'invisible': [('state', '=', 'cancel')]}"
+                                class="btn-primary"/>
+                        <field name="state" widget="statusbar" statusbar_visible="new,in_progress,in_review,completed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_sale_order" type="object" class="oe_stat_button"
+                                    icon="fa-solid fa-file" string="Sale Orders">
+                                <field name="sale_order_count" widget="statinfo"/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="sequence_id" readonly="1"/>
+                            </h1>
+                            <div class="o_vehicle_booking">
+                                <field name="vehicle_source" widget="radio" readonly="1"
+                                       class="horizontal-radio"/>
+                            </div>
+                        </div>
+                        <section string="vehicle_booking_details">
+                            <group>
+                                <group>
+                                    <separator string="Vehicle Booking Details"/>
+                                    <field name="booking_id" readonly="1"/>
+                                    <field name="vehicle_repair_id" readonly="1"
+                                           attrs="{'invisible' : [('vehicle_repair_id', '=', False)]}"/>
+                                    <field name="responsible_id" class="oe_inline" widget="many2one_avatar_user"
+                                           attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                    <field name="sale_order_id" invisible="1"/>
+                                </group>
+                                <group>
+                                    <separator string="Inspection Date"/>
+                                    <field name="booking_date"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                </group>
+                            </group>
+                        </section>
+                        <section string="vehicle_details">
+                            <separator string="Vehicle Details"/>
+                            <group>
+                                <group>
+                                    <field name="customer_id"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                    <!-- <field name="inspec_reg_vehicle" attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/> -->
+                                    <field name="brand_id"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                    <field name="registration_no"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                </group>
+                                <group>
+                                    <field name="model_id"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                    <field name="fuel_type_id"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                    <field name="vin_no"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                    <field name="transmission_type" widget="radio" class="horizontal-radio"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                </group>
+                            </group>
+                        </section>
+                        <section string="Address Details">
+                            <separator string="Address Details"/>
+                            <group>
+                                <group>
+                                    <span class="o_form_label o_td_label" name="address_name">
+                                        <b>Address</b>
+                                    </span>
+                                    <div class="o_address_format">
+                                        <field name="street" placeholder="Street..." class="o_address_street"
+                                               readonly="0"
+                                               attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                        <field name="street2" placeholder="Street 2..." class="o_address_street"
+                                               readonly="0"
+                                               attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                        <field name="city" placeholder="City" class="o_address_city"
+                                               readonly="0"
+                                               attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                        <field name="state_id" class="o_address_state" placeholder="State"
+                                               readonly="0"
+                                               attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                        <field name="pin_code" placeholder="Pin Code" class="o_address_zip"
+                                               readonly="0"
+                                               attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                        <div name="partner_address_country" class="d-flex justify-content-between"
+                                             readonly="0">
+                                            <field name="country_id" placeholder="Country" class="o_address_country"
+                                                   readonly="0"
+                                                   attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                        </div>
+                                    </div>
+                                </group>
+                                <group>
+                                    <field name="phone" widget="phone"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                    <field name="email" widget="email"
+                                           attrs="{'readonly': [('state', 'in', ('completed', 'sale_order', 'repair_order'))]}"/>
+                                </group>
+                            </group>
+                        </section>
+                        <section string="inspection_details">
+                            <separator string="Inspection Details"/>
+                            <group>
+                                <group>
+                                    <field name="inspection_type" widget="radio" class="horizontal-radio"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group attrs="{'invisible': [('inspection_type', '!=', 'specific_inspection')]}">
+                                    <field name="is_part_assessment" string="Part Assessment"/>
+                                    <field name="is_inner_body_inspection" string="Inner Body Inspection"/>
+                                    <field name="is_outer_body_inspection" string="Outer Body Inspection"/>
+                                    <field name="is_tyre_inspection" string="Tyre Inspection"/>
+                                    <field name="is_mechanical_condition" string="Mechanical Condition"/>
+                                    <field name="is_vehicle_component" string="Vehicle Component"/>
+                                    <field name="is_vehicle_fluid" string="Vehicle Fluid"/>
+                                </group>
+                                <group>
+                                    <field name="currency_id" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="inspector_id" class="oe_inline" widget="many2one_avatar_user"/>
+                                    <field name="inspection_amount" widget="monetary"
+                                           options="{'currency_field': 'currency_id'}"/>
+                                </group>
+                            </group>
+                        </section>
+                        <notebook>
+                            <page string="Parts Assessments" name="parts_assessments"
+                                  attrs="{'invisible': ['!', '|', ('is_part_assessment', '=', True), ('inspection_type', '=', 'full_inspection')]}">
+                                <div style="background-color: #f0f0f0; padding: 5px 10px;">
+                                    <center>
+                                        <b>Vehicle Spare Parts Assessments</b>
+                                    </center>
+                                </div>
+                                <b>
+                                    <field name="vehicle_parts_assessment_ids" widget="many2many_checkboxes"
+                                           class="o_field_widget o_quick_editable o_vehicle_parts"/>
+                                </b>
+                            </page>
+                            <page string="Vehicle Body Inner Conditions" name="vehicle_inner_conditions"
+                                  attrs="{'invisible': ['!', '|', ('is_inner_body_inspection', '=', True), ('inspection_type', '=', 'full_inspection')]}">
+                                <field name="vehicle_inner_ids" widget="one2many">
+                                    <kanban class="o_kanban_mobile">
+                                        <field name="id"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="oe_kanban_global_click d-flex flex-column oe_kanban_global_area o_kanban_tours_travels_image">
+                                                    <div class="o_kanban_record_top">
+                                                        <div class="o_kanban_inner_body_image"
+                                                             style="margin-right: 15px;">
+                                                            <div name="document_preview"
+                                                                 class="o_kanban_image_wrapper oe_kanban_previewer"
+                                                                 title="">
+                                                                <div class="o_tours_travels_image">
+                                                                    <img t-att-src="o_kanban_image_fill('vehicle.jobcard.inner.condition', 'image', record.id.raw_value)"
+                                                                         alt="img" class="custom-image-size"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="o_kanban_record_headings">
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong class="o_kanban_record_title">
+                                                                    <field name="vehicle_item_id"/>
+                                                                </strong>
+                                                                <strong class="o_kanban_record_title">
+                                                                    <field name="state"
+                                                                           decoration-success="state == 'good'"
+                                                                           decoration-info="state == 'ripped'"
+                                                                           decoration-warning="state == 'worn'"
+                                                                           decoration-danger="state == 'other'"
+                                                                           widget="badge"/>
+                                                                </strong>
+                                                            </div>
+                                                            <hr/>
+                                                            <div class="o_kanban_details">
+                                                                <div class="o_kanban_details_wrapper mt8">
+                                                                    <b>Note:&#160;</b>
+                                                                    <field name="description"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                    <form string="Inner Body Condition">
+                                        <sheet>
+                                            <field name="image" widget="image" class="oe_avatar"/>
+                                            <group>
+                                                <group>
+                                                    <!--                                                    <field name="vehicle_category_id"/-->
+                                                    <field name="vehicle_item_id"/>
+                                                    <field name="state"/>
+                                                    <field name="description"/>
+                                                </group>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Vehicle Body Outer Conditions" name="outer_condition"
+                                  attrs="{'invisible': ['!', '|', ('is_outer_body_inspection', '=', True), ('inspection_type', '=', 'full_inspection')]}">
+                                <field name="vehicle_outer_ids" widget="one2many">
+                                    <kanban class="o_kanban_mobile">
+                                        <field name="id"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="oe_kanban_global_click d-flex flex-column oe_kanban_global_area">
+                                                    <div class="o_kanban_record_top">
+                                                        <div class="o_kanban_component_image"
+                                                             style="margin-right: 15px;">
+                                                            <div name="document_preview"
+                                                                 class="o_kanban_image_wrapper oe_kanban_previewer"
+                                                                 title="">
+                                                                <div class="o_tours_travels_image">
+                                                                    <img t-att-src="o_kanban_image_fill('vehicle.jobcard.outer.condition', 'image', record.id.raw_value)"
+                                                                         alt="img" class="custom-image-size"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="o_kanban_record_headings">
+                                                            <div style="justify-content: space-between;">
+                                                                <strong class="o_kanban_record_title">
+                                                                    <b>
+                                                                        <field name="state" optional="show"
+                                                                               style="font-size: 15px;"/>
+                                                                    </b>
+                                                                </strong>
+                                                            </div>
+                                                            <hr/>
+                                                            <div class="o_kanban_details">
+                                                                <div class="o_kanban_details_wrapper mt8">
+                                                                    <b>Location:&#160;</b>
+                                                                    <field name="vehicle_location_id"/>
+                                                                </div>
+                                                                <div class="o_kanban_details_wrapper mt8">
+                                                                    <b>Condition:&#160;</b>
+                                                                    <field name="vehicle_outer_id"/>
+                                                                    [
+                                                                    <field name="short_code"/>]
+
+                                                                </div>
+                                                                <div class="o_kanban_details_wrapper mt8">
+                                                                    <b>Note:&#160;</b>
+                                                                    <field name="description"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                    <form string="Outer Body Condition">
+                                        <sheet>
+                                            <field name="image" widget="image" class="oe_avatar"/>
+                                            <group>
+                                                <group>
+                                                    <field name="vehicle_outer_id"/>
+                                                    <field name="vehicle_location_id"/>
+                                                    <field name="state"/>
+                                                </group>
+                                                <group>
+                                                    <field name="short_code"/>
+                                                    <field name="description"/>
+                                                </group>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Mechanical Condition" name="is_mechanical_condition"
+                                  attrs="{'invisible': ['!', '|', ('is_mechanical_condition', '=', True), ('inspection_type', '=', 'full_inspection')]}">
+                                <field name="vehicle_mechanical_ids" widget="one2many">
+                                    <kanban class="o_kanban_mobile o_tours_travels_kanban_view">
+                                        <field name="id"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="oe_kanban_global_click d-flex flex-column oe_kanban_global_area o_kanban_tours_travels_image">
+                                                    <div class="o_kanban_record_top">
+                                                        <div class="o_kanban_component_image"
+                                                             style="margin-right: 15px;">
+                                                            <div name="document_preview"
+                                                                 class="o_kanban_image_wrapper oe_kanban_previewer"
+                                                                 title="">
+                                                                <div class="o_tours_travels_image">
+                                                                    <img t-att-src="o_kanban_image_fill('vehicle.jobcard.mechanical.condition', 'image', record.id.raw_value)"
+                                                                         alt="img" class="custom-image-size"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="o_kanban_record_headings">
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <div>
+                                                                    <strong class="o_kanban_record_title">
+                                                                        <field name="vehicle_category_id"
+                                                                               style="font-size: 15px;"/>
+                                                                    </strong>
+                                                                    <br/>
+
+                                                                        <field name="vehicle_item_id"
+                                                                               style="font-size: 15px;"/>
+
+                                                                </div>
+                                                                <strong class="o_kanban_record_title">
+                                                                    <field name="state"
+                                                                           decoration-danger="state == 'not_working'"
+                                                                           decoration-warning="state == 'average'"
+                                                                           decoration-success="state == 'good'"
+                                                                           widget="badge" optional="show"/>
+                                                                </strong>
+                                                            </div>
+                                                            <hr/>
+                                                            <div class="o_kanban_details">
+                                                                <div class="o_kanban_details_wrapper mt8">
+                                                                    <b>Note:&#160;</b>
+                                                                    <field name="description"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                    <form>
+                                        <sheet>
+                                            <field name="image" widget="image" class="oe_avatar"/>
+                                            <group>
+                                                <group>
+                                                    <field name="vehicle_item_id"/>
+                                                    <field name="vehicle_category_id"/>
+                                                    <field name="state"/>
+                                                    <field name="description"/>
+                                                </group>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Vehicle Components" name="vehicle_components"
+                                  attrs="{'invisible': ['!', '|', ('is_vehicle_component', '=', True), ('inspection_type', '=', 'full_inspection')]}">
+                                <field name="vehicle_components_ids" widget="one2many">
+                                    <kanban class="o_kanban_mobile o_tours_travels_kanban_view">
+                                        <field name="id"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="oe_kanban_global_click d-flex flex-column oe_kanban_global_area o_kanban_tours_travels_image">
+                                                    <div class="o_kanban_record_top">
+                                                        <div class="o_kanban_component_image"
+                                                             style="margin-right: 15px;">
+                                                            <div name="document_preview"
+                                                                 class="o_kanban_image_wrapper oe_kanban_previewer"
+                                                                 title="">
+                                                                <div class="o_tours_travels_image">
+                                                                    <img t-att-src="o_kanban_image_fill('vehicle.jobcard.components.notebook', 'image', record.id.raw_value)"
+                                                                         alt="img" class="custom-image-size"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="o_kanban_record_headings">
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong class="o_kanban_record_title"
+                                                                        style="font-size: 14px;">
+                                                                    <field name="vehicle_components_id"/>
+                                                                    [
+                                                                    <field name="component_side"/>]
+
+                                                                </strong>
+                                                            </div>
+                                                            <hr/>
+                                                            <div>
+                                                                <field name="state"
+                                                                       decoration-info="state == 'future_attention'"
+                                                                       decoration-warning="state == 'immediate_attention'"
+                                                                       decoration-success="state == 'checked_and_okay'"
+                                                                       widget="badge" optional="show"/>
+                                                            </div>
+                                                            <div class="o_kanban_details_wrapper mt8">
+                                                                <b>Remarks:&#160;</b>
+                                                                <field name="condition_remark"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                    <form>
+                                        <sheet>
+                                            <field name="image" widget="image" class="oe_avatar"/>
+                                            <group>
+                                                <group>
+                                                    <field name="vehicle_components_id"/>
+                                                    <field name="state"/>
+                                                </group>
+                                                <group>
+                                                    <field name="component_side"/>
+                                                    <field name="condition_remark"/>
+                                                </group>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Vehicle Fluid" name="is_vehicle_fluid"
+                                  attrs="{'invisible': ['!', '|', ('is_vehicle_fluid', '=', True), ('inspection_type', '=', 'full_inspection')]}">
+                                <field name="vehicle_fluid_ids" widget="one2many">
+                                    <kanban class="o_kanban_mobile o_tours_travels_kanban_view">
+                                        <field name="id"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="oe_kanban_global_click d-flex flex-column oe_kanban_global_area o_kanban_tours_travels_image">
+                                                    <div class="o_kanban_record_top">
+                                                        <div class="o_kanban_component_image"
+                                                             style="margin-right: 15px;">
+                                                            <div name="document_preview"
+                                                                 class="o_kanban_image_wrapper oe_kanban_previewer"
+                                                                 title="">
+                                                                <div class="o_tours_travels_image">
+                                                                    <img t-att-src="o_kanban_image_fill('vehicle.jobcard.fluids.notebook', 'image', record.id.raw_value)"
+                                                                         alt="img" class="custom-image-size"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="o_kanban_record_headings">
+                                                            <div style="display: flex; justify-content: space-between;">
+                                                                <strong class="o_kanban_record_title">
+                                                                    <field name="vehicle_fluids_id"/>
+                                                                    [
+                                                                    <field name="component_side"/>]
+
+                                                                </strong>
+                                                            </div>
+                                                            <hr/>
+                                                            <div>
+                                                                <field name="state"
+                                                                       decoration-info="state == 'future_attention'"
+                                                                       decoration-danger="state == 'immediate_attention'"
+                                                                       decoration-success="state == 'checked_and_okay'"
+                                                                       widget="badge" optional="show"/>
+                                                            </div>
+                                                            <div class="o_kanban_details_wrapper mt8">
+                                                                <b>Remarks:&#160;</b>
+                                                                <field name="condition_remark"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                    <form>
+                                        <sheet>
+                                            <field name="image" widget="image" class="oe_avatar"/>
+                                            <group>
+                                                <group>
+                                                    <field name="vehicle_fluids_id"/>
+                                                    <field name="state"/>
+                                                </group>
+                                                <group>
+                                                    <field name="component_side"/>
+                                                    <field name="condition_remark"/>
+                                                </group>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Tyre Inspection" name="is_tyre_inspection"
+                                  attrs="{'invisible': ['!', '|', ('is_tyre_inspection', '=', True), ('inspection_type', '=', 'full_inspection')]}">
+                                <field name="vehicle_tyre_ids">
+                                    <list editable="bottom">
+                                        <field name="tyre_side"/>
+                                        <field name="state"/>
+                                        <field name="tread_wear"/>
+                                        <field name="tread_depth"/>
+                                        <field name="pressure"/>
+                                        <field name="brake_pads"/>
+                                        <field name="description" optional="hide"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Checklists" name="checklists">
+                                <div class=" w-100oe_inline">
+                                    <label for="vehicle_dschecklist_ids" class="w-100"/>
+                                    <field name="vehicle_dschecklist_ids" string="Template"
+                                           widget="many2many_checkboxes" nolabel="1" class="mt16 oe_inline w-100"/>
+                                </div>
+                                <div class="w-100 oe_inline mt16">
+                                    <field name="checklist_lines" widget="section_and_note_one2many" nolabel="1"
+                                           string="Checklist Lines">
+                                        <list editable="bottom">
+                                            <control>
+                                                <create name="add_line_control" string="Add a line"/>
+                                                <create name="add_section_control" string="Add a section"
+                                                        context="{'default_display_type': 'line_section'}"/>
+                                            </control>
+                                            <field name="display_type" column_invisible="True"/>
+                                            <field name="name" widget="section_and_note_text" string="Checklist"/>
+                                            <field name="is_checked"/>
+                                        </list>
+                                    </field>
+                                </div>
+                            </page>
+                        </notebook>
+                        <notebook>
+                            <page string="Customer Observations" name="customer_observations">
+                                <field name="observations" string="Observations"
+                                       placeholder="Enter your observations here!"/>
+                            </page>
+                            <page string="Signature" name="signature">
+                                <group>
+                                    <field name="signed_by"/>
+                                    <field name="signature_date"/>
+                                    <field name="signature_img" widget="image"/>
+                                </group>
+                            </page>
+                            <page string="Inspection Images" name="inspection_images">
+                                <field name="inspec_image_ids" widget="one2many">
+                                    <kanban class="o_kanban_mobile">
+                                        <field name="id"/>
+                                        <templates>
+                                            <t t-name="card">
+                                                <div class="oe_kanban_global_click d-flex flex-column oe_kanban_global_area">
+                                                    <div class="o_kanban_record_top">
+                                                        <div class="o_kanban_component_image"
+                                                             style="margin-right: 15px;">
+                                                            <div name="document_preview"
+                                                                 class="o_kanban_image_wrapper oe_kanban_previewer"
+                                                                 title="">
+                                                                <div class="inspection_image">
+                                                                    <img t-att-src="o_kanban_image_fill('vehicle.jobcard.inspection.image', 'image', record.id.raw_value)"
+                                                                         alt="img" class="inspection-image-size"/>
+                                                                </div>
+                                                                <center>
+                                                                    <b>
+                                                                        <field name="note"/>
+                                                                    </b>
+                                                                </center>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </templates>
+                                    </kanban>
+                                    <form>
+                                        <sheet>
+                                            <field name="image" widget="image" class="oe_avatar"/>
+                                            <group>
+                                                <field name="note"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </page>
+                            <page string="Review Notes" name="review_notes"
+                                  attrs="{'invisible': ['!', '|', ('state', '=', 'in_review'), ('state', '=', 'completed')]}">
+                                <field name="review_notes" placeholder="Review notes..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+        <!-- Define the action for vehicle.jobcards.inspection -->
+        <record id="action_vehicle_jobcards_inspection" model="ir.actions.act_window">
+            <field name="name">Inspection Job Card</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">vehicle.jobcards.inspection</field>
+            <field name="view_mode">kanban,list,pivot,form,activity</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add your job cards here!
+                </p>
+            </field>
+        </record>
+        <!-- Define the menu item for Inspection Job Cards -->
+        <menuitem
+                id="menu_jobcards_inspection"
+                name="Inspection Job Cards"
+                parent="menu_job_cards"
+                action="action_vehicle_jobcards_inspection"
+                sequence="2"/>
+    </data>
+</odoo>

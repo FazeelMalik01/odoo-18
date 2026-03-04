@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_rental_zipcode"
+        name="Zip Codes"
+        parent="sale_renting.menu_rental_config"
+        action="custom_rental.action_rental_zipcode"
+        groups="sales_team.group_sale_manager"
+        sequence="15"/>
+</odoo>

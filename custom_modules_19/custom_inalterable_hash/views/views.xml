@@ -1,0 +1,79 @@
+<odoo>
+  <data>
+    <!-- Extend account move form view to add button for clearing hash and moving to draft -->
+    <record id="view_move_form_inherit_inalterable_hash" model="ir.ui.view">
+      <field name="name">account.move.form.inherit.inalterable.hash</field>
+      <field name="model">account.move</field>
+      <field name="inherit_id" ref="account.view_move_form"/>
+      <field name="arch" type="xml">
+        <!-- Add button in header to clear hash and move to draft -->
+        <xpath expr="//button[@name='button_draft']" position="after">
+          <button name="button_draft_clear_hash" 
+                  string="Reset to Draft (Clear Hash)" 
+                  type="object" 
+                  groups="account.group_account_invoice"
+                  invisible="state not in ('posted', 'cancel') or not inalterable_hash"
+                  class="btn-warning"
+                  confirm="This will clear the inalterability hash and reset the entry to draft. Continue?"/>
+        </xpath>
+      </field>
+    </record>
+    
+    <!-- explicit list view definition -->
+<!--
+    <record model="ir.ui.view" id="custom_inalterable_hash.list">
+      <field name="name">custom_inalterable_hash list</field>
+      <field name="model">custom_inalterable_hash.custom_inalterable_hash</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </list>
+      </field>
+    </record>
+-->
+
+    <!-- actions opening views on models -->
+<!--
+    <record model="ir.actions.act_window" id="custom_inalterable_hash.action_window">
+      <field name="name">custom_inalterable_hash window</field>
+      <field name="res_model">custom_inalterable_hash.custom_inalterable_hash</field>
+      <field name="view_mode">list,form</field>
+    </record>
+-->
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="custom_inalterable_hash.action_server">
+      <field name="name">custom_inalterable_hash server</field>
+      <field name="model_id" ref="model_custom_inalterable_hash_custom_inalterable_hash"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "list,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <!-- Top menu item -->
+<!--
+    <menuitem name="custom_inalterable_hash" id="custom_inalterable_hash.menu_root"/>
+-->
+    <!-- menu categories -->
+<!--
+    <menuitem name="Menu 1" id="custom_inalterable_hash.menu_1" parent="custom_inalterable_hash.menu_root"/>
+    <menuitem name="Menu 2" id="custom_inalterable_hash.menu_2" parent="custom_inalterable_hash.menu_root"/>
+-->
+    <!-- actions -->
+<!--
+    <menuitem name="List" id="custom_inalterable_hash.menu_1_list" parent="custom_inalterable_hash.menu_1"
+              action="custom_inalterable_hash.action_window"/>
+    <menuitem name="Server to list" id="custom_inalterable_hash" parent="custom_inalterable_hash.menu_2"
+              action="custom_inalterable_hash.action_server"/>
+-->
+  </data>
+</odoo>

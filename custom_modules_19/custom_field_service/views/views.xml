@@ -1,0 +1,196 @@
+<odoo>
+  <data>
+    <!-- List view for problem images -->
+    <record id="view_quality_check_problem_image_list" model="ir.ui.view">
+      <field name="name">project.task.quality.check.problem.image.list</field>
+      <field name="model">project.task.quality.check.problem.image</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="image" widget="image"/>
+        </list>
+      </field>
+    </record>
+    <!-- Form view for problem images -->
+    <record id="view_quality_check_problem_image_form" model="ir.ui.view">
+      <field name="name">project.task.quality.check.problem.image.form</field>
+      <field name="model">project.task.quality.check.problem.image</field>
+      <field name="arch" type="xml">
+        <form>
+          <group>
+            <field name="image" widget="image" filename="image_filename"/>
+          </group>
+        </form>
+      </field>
+    </record>
+    <!-- List view for after problem images -->
+    <record id="view_quality_check_after_image_list" model="ir.ui.view">
+      <field name="name">project.task.quality.check.after.image.list</field>
+      <field name="model">project.task.quality.check.after.image</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="image" widget="image"/>
+        </list>
+      </field>
+    </record>
+    <!-- Form view for after problem images -->
+    <record id="view_quality_check_after_image_form" model="ir.ui.view">
+      <field name="name">project.task.quality.check.after.image.form</field>
+      <field name="model">project.task.quality.check.after.image</field>
+      <field name="arch" type="xml">
+        <form>
+          <group>
+            <field name="image" widget="image" filename="image_filename"/>
+          </group>
+        </form>
+      </field>
+    </record>
+    <!-- Extend project.task form view to add Quality Check notebook page -->
+    <record id="view_task_form2_inherit_quality_check" model="ir.ui.view">
+      <field name="name">project.task.form.inherit.quality.check</field>
+      <field name="model">project.task</field>
+      <field name="inherit_id" ref="project.view_task_form2"/>
+      <field name="arch" type="xml">
+        <!-- Find the Extra Info notebook page and add Quality Check after it -->
+        <!-- Add Field Service Manager field after Assignees field -->
+        <xpath expr="//field[@name='user_ids'][@widget='many2many_avatar_user']" position="after">
+          <field name="field_service_manager_id" string="Field service manager"/>
+        </xpath>
+        <xpath expr="//page[@name='extra_info']" position="after">
+          <page string="Quality Check" name="quality_check">
+            <group>
+              <button name="action_quality_check_approve" type="object" string="Approve" class="btn-primary" invisible="quality_check_state != 'pending'" groups="custom_field_service.group_field_service_manager"/>
+              <button name="action_quality_check_reject" type="object" string="Reject" class="btn-secondary" invisible="quality_check_state != 'pending'" groups="custom_field_service.group_field_service_manager"/>
+              <field name="quality_check_state" widget="statusbar" statusbar_visible="pending,approved,rejected" readonly="1" nolabel="1"/>
+            </group>
+            <group>
+              <field name="quality_check_description" placeholder="Enter description..."/>
+            </group>
+            <separator string="Images of Problem"/>
+            <field name="quality_check_problem_images" nolabel="1" context="{'default_task_id': id}"/>
+            <separator string="Pictures after Problem Solved"/>
+            <field name="quality_check_after_problem_images" nolabel="1" context="{'default_task_id': id}"/>
+            <group>
+              <field name="quality_check_optical_power"/>
+              <field name="quality_check_dns_setting"/>
+            </group>
+          </page>
+          <!-- Daily Fiber Usage & Work Record Form -->
+          <page string="Daily Fiber Usage &amp; Work Record" name="daily_fiber_usage">
+            <group>
+              <group>
+                <field name="daily_fiber_company_project"/>
+                <field name="daily_fiber_technician_name"/>
+              </group>
+              <group>
+                <field name="daily_fiber_date"/>
+              </group>
+            </group>
+            <separator string="1. Fiber Used Today"/>
+            <group>
+              <group>
+                <field name="daily_fiber_total_length_m"/>
+                <field name="daily_fiber_start_point"/>
+                <field name="daily_fiber_end_point"/>
+              </group>
+              <group>
+                <field name="daily_fiber_purpose"/>
+              </group>
+            </group>
+            <separator string="2. Work Location Details"/>
+            <group>
+              <group>
+                <field name="daily_fiber_area_street"/>
+                <field name="daily_fiber_landmark"/>
+              </group>
+              <group>
+                <field name="daily_fiber_work_type"/>
+              </group>
+            </group>
+            <separator string="3. Pole (NguZO) Information"/>
+            <group>
+              <group>
+                <field name="daily_fiber_pole_number"/>
+                <field name="daily_fiber_gps_location"/>
+              </group>
+              <group>
+                <field name="daily_fiber_pole_condition"/>
+              </group>
+            </group>
+            <group>
+              <field name="daily_fiber_pole_notes" nolabel="1" placeholder="Notes about pole condition..."/>
+            </group>
+            <separator string="4. Remarks / Additional Notes"/>
+            <group>
+              <field name="daily_fiber_remarks" nolabel="1" placeholder="Additional notes..."/>
+            </group>
+            <separator string="5. Daily Confirmation"/>
+            <group>
+              <group>
+                <field name="daily_fiber_technician_signature"/>
+                <field name="daily_fiber_supervisor_signature"/>
+              </group>
+              <group>
+                <field name="daily_fiber_signed_date"/>
+              </group>
+            </group>
+            <separator string="6. For Office Use Only"/>
+            <group>
+              <group>
+                <field name="daily_fiber_verified_by"/>
+                <field name="daily_fiber_verified_date"/>
+              </group>
+            </group>
+            <group>
+              <field name="daily_fiber_office_comments" nolabel="1" placeholder="Office comments..."/>
+            </group>
+          </page>
+        </xpath>
+      </field>
+    </record>
+    <!-- Quality Check List View -->
+    <record id="view_quality_check_list" model="ir.ui.view">
+      <field name="name">project.task.quality.check.list</field>
+      <field name="model">project.task</field>
+      <field name="arch" type="xml">
+        <list string="Quality Checks" default_order="create_date desc" create="0" delete="0">
+          <field name="name" string="Task" readonly="1"/>
+          <field name="partner_id" string="Customer" readonly="1"/>
+          <field name="user_ids" widget="many2many_tags" string="Assignees" readonly="1"/>
+          <field name="quality_check_state" string="Status" widget="badge" decoration-success="quality_check_state == 'approved'" decoration-danger="quality_check_state == 'rejected'" decoration-info="quality_check_state == 'pending'" readonly="1"/>
+          <field name="quality_check_description" string="Description" readonly="1"/>
+          <field name="quality_check_optical_power" string="Optical Power Values" readonly="1"/>
+          <field name="quality_check_dns_setting" string="DNS Setting" widget="boolean_toggle" readonly="1"/>
+          <field name="quality_check_problem_images_count" string="Problem Images" readonly="1"/>
+          <field name="quality_check_after_images_count" string="After Images" readonly="1"/>
+          <field name="stage_id" string="Stage" readonly="1"/>
+          <field name="project_id" string="Project" readonly="1"/>
+        </list>
+      </field>
+    </record>
+    <record id="action_quality_check_list" model="ir.actions.act_window">
+      <field name="name">Quality Checks</field>
+      <field name="res_model">project.task</field>
+      <field name="view_mode">list,form</field>
+      <field name="view_id" ref="custom_field_service.view_quality_check_list"/>
+    </record>
+    <!-- Quality Check Menu Item -->
+    <menuitem id="menu_quality_check"
+              name="Quality Checks"
+              action="action_quality_check_list"
+              parent="industry_fsm.fsm_menu_root"
+              sequence="16"
+              groups="industry_fsm.group_fsm_manager"/>
+    <!-- Server Action for Print PDF -->
+    <record id="action_task_print_pdf" model="ir.actions.server">
+      <field name="name">Print PDF</field>
+      <field name="model_id" ref="project.model_project_task"/>
+      <field name="binding_model_id" ref="project.model_project_task"/>
+      <field name="binding_view_types">list</field>
+      <field name="binding_type">action</field>
+      <field name="state">code</field>
+      <field name="code">action = records.action_print_pdf()</field>
+    </record>
+    <!-- Note: The server action with binding_model_id will automatically appear 
+         in the action menu (gear icon dropdown) for project.task list views -->
+  </data>
+</odoo>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Extend POS Control Buttons -->
+    <t t-name="pos_customer_note.ControlButtons"
+       t-inherit="point_of_sale.ControlButtons"
+       t-inherit-mode="extension"
+       owl="1">
+
+        <xpath expr="//t[@t-if='props.showRemainingButtons']/div/OrderlineNoteButton"
+               position="after">
+            <button class="btn btn-secondary btn-lg me-2"
+                    t-on-click="onClickAddCustomerNote">
+                <i class="fa fa-comment me-1" role="img"
+                   aria-label="Add General Note" title="Add General Note"/>
+                General Note
+            </button>
+        </xpath>
+
+    </t>
+
+    <!-- Add Customer Note to Receipt -->
+    <t t-name="pos_customer_note.OrderReceipt"
+       t-inherit="point_of_sale.OrderReceipt"
+       t-inherit-mode="extension"
+       owl="1">
+
+
+
+        <!-- Add Customer Note Before Footer -->
+        <xpath expr="//div[@class='before-footer']" position="before">
+            <t t-if="props.data.custom_note">
+<!--                <div class="pos-receipt-order-data mb-2">-->
+                <!--                    <strong>General Note:</strong>-->
+                <!--                    <div><t t-esc="props.data.custom_note"/></div>-->
+                <!--                </div>-->
+                <div class="pos-receipt-order-data mb-2" style="font-size: 16px; font-weight: bold;">
+<!--                    <strong style="text-transform: uppercase; text-decoration: underline;">-->
+                    <strong style="text-transform: uppercase;">
+                        General Note:
+                    </strong>
+                    <div style="margin-top: 4px; font-size: 14px; font-weight: 300;">
+                        <t t-esc="props.data.custom_note"/>
+                    </div>
+                </div>
+                <div class="text-center">--------------------------------</div>
+            </t>
+        </xpath>
+    </t>
+
+    <!-- Correct inheritance -->
+        <t t-name="pos_customer_note.OrderWidget"
+           t-inherit="point_of_sale.OrderWidget"
+           t-inherit-mode="extension"
+           owl="1">
+
+            <!-- Replace "General Note" with "Printed Note" -->
+            <xpath expr="//b[normalize-space(text())='General Note']" position="replace">
+    <!--            <b class="fw-bolder">Printed Note</b>-->
+                <b class="fw-bolder">
+                    <i class="fa fa-print" style="margin-right: 4px;"/>
+                    Printed Note
+                </b>
+            </xpath>
+
+        </t>
+
+
+
+    <t t-name="pos_customer_note.RemoveOrderWidget"
+       t-inherit="point_of_sale.OrderReceipt"
+       t-inherit-mode="extension"
+       owl="1">
+
+        <!-- Remove only the generalNote by replacing OrderWidget with itself but without the attribute -->
+
+        <xpath expr="//OrderWidget" position="replace">
+            <OrderWidget
+                t-if="props.data.orderlines?.length"
+                lines="props.data.orderlines"
+                t-slot-scope="scope"
+                screenName="props.data.screenName">
+
+                <t t-set="line" t-value="scope.line"/>
+
+                <Orderline
+                    basic_receipt="props.basic_receipt"
+                    line="omit(scope.line, 'customerNote')"
+                    class="{ 'px-0': true }"
+                    showTaxGroupLabels="showTaxGroupLabels">
+
+                    <li t-if="line.customerNote"
+                        class="customer-note w-100 p-2 my-1 rounded text-break">
+                        <i class="fa fa-sticky-note me-1"
+                           role="img"
+                           aria-label="Customer Note"
+                           title="Customer Note"/>
+                        <t t-esc="line.customerNote"/>
+                    </li>
+
+                </Orderline>
+            </OrderWidget>
+        </xpath>
+
+    </t>
+
+
+
+</templates>

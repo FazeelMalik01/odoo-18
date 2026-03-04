@@ -1,0 +1,11 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_laundry_appointment_user,laundry.appointment.user,model_laundry_appointment,base.group_user,1,1,1,1
+access_laundry_appointment_portal,laundry.appointment.portal,model_laundry_appointment,base.group_portal,1,1,1,1
+access_laundry_appointment_booking_user,laundry.appointment.booking.user,model_laundry_appointment_booking,base.group_user,1,1,1,1
+access_laundry_appointment_booking_portal,laundry.appointment.booking.portal,model_laundry_appointment_booking,base.group_portal,1,1,1,0
+access_laundry_appointment_user_response_user,laundry.appointment.user.response.user,model_laundry_appointment_user_response,base.group_user,1,1,1,1
+access_laundry_appointment_user_response_portal,laundry.appointment.user.response.portal,model_laundry_appointment_user_response,base.group_portal,1,1,1,1
+access_laundry_zip_code_user,laundry.zip.code.user,model_laundry_zip_code,base.group_user,1,1,1,1
+access_laundry_zip_code_line_user,laundry.zip.code.line.user,model_laundry_zip_code_line,base.group_user,1,1,1,1
+access_laundry_partner_zip_code_user,laundry.partner.zip.code.user,model_laundry_partner_zip_code,base.group_user,1,1,1,1
+access_laundry_city_user,laundry.city.user,model_laundry_city,base.group_user,1,1,1,1

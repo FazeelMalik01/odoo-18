@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Extend the base SaleDetailsReport template -->
+    <t t-name="custom_pos.SaleDetailsReport"
+       t-inherit="point_of_sale.SaleDetailsReport"
+       t-inherit-mode="extension">
+
+       <xpath expr="//t[h1]" position="replace">
+            <div style="text-align: center; font-weight: bold;">
+                <h1 t-esc="pos.company.name" style="margin: 0;"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[normalize-space(text())='SOLD:']" position="replace">
+            <div><b>SOLD:</b></div>
+        </xpath>
+
+        <xpath expr="//div[normalize-space(text())='REFUNDED:']" position="replace">
+            <div><b>REFUNDED:</b></div>
+        </xpath>
+
+        <!-- Bold 'Payments:' -->
+        <xpath expr="//div[normalize-space(text())='Payments:']" position="replace">
+            <div><b>Payments:</b></div>
+        </xpath>
+
+        <!-- Bold 'Taxes:' -->
+        <xpath expr="//div[normalize-space(text())='Taxes:']" position="replace">
+            <div><b>Taxes:</b></div>
+        </xpath>
+
+        <!-- Bold 'Total:' -->
+        <xpath expr="//div[normalize-space(text())='Total:']" position="replace">
+            <b><div>
+                Total:
+                <span t-esc="formatCurrency(currency.total_paid, false)" class="pos-receipt-right-align"/>
+            </div></b>
+        </xpath>
+
+        <xpath expr="//div[@class='pos-receipt-order-data']/div" position="replace">
+            <div><b><span t-esc='date'/></b></div>
+        </xpath>
+
+
+        <xpath expr="//div[b[normalize-space(text())='SOLD:']]" position="before">
+<!--        <xpath expr="//div[contains(normalize-space(.), 'SOLD:')]" position="before">-->
+
+            <t t-if="employee_orders_list and employee_orders_list.length">
+                            <div class="pos-receipt-center-align" style="margin-top:5px; font-weight:bold;">
+                                Employee Sales Details
+                            </div>
+
+                <t t-foreach="employee_orders_list" t-as="emp" t-key="emp.employee">
+                                <div class="responsive-price" style="margin-top:2px;">
+                                    <b><t t-esc="emp.employee" /></b>
+                                    <span class="pos-receipt-right-align">
+                                        <t t-esc="emp.count"/>
+                                        /
+                                        <t t-esc="formatCurrency(emp.total, false)"/>
+                                    </span>
+                                </div>
+
+                    <t t-foreach="emp.orders" t-as="order" t-key="order.order_name">
+                                    <div class="pos-receipt-left-padding">
+                                        <t t-esc="order.order_name"/>
+                                        <span class="pos-receipt-right-align">
+                                            <t t-esc="formatCurrency(order.total, false)"/>
+                                        </span>
+                                    </div>
+                                </t>
+                            </t>
+
+                <div>------------------------</div>
+                        </t>
+
+            <!-- ========== PRICELIST SUMMARY ========== -->
+            <t t-if="pricelist_summary_list and pricelist_summary_list.length">
+        <div class="pos-receipt-center-align" style="margin-top:5px; font-weight:bold;">
+            Pricelist Summary
+        </div>
+
+                <t t-foreach="pricelist_summary_list" t-as="pl" t-key="pl.name">
+            <div class="responsive-price">
+                <t t-esc="pl.name"/>
+                <span class="pos-receipt-right-align">
+                    <t t-esc="pl.count"/>
+                    /
+                    <t t-esc="formatCurrency(pl.total, false)"/>
+                </span>
+            </div>
+        </t>
+
+                <t t-set="total_amount"
+                   t-value="pricelist_summary_list.reduce((acc, v) => acc + (v.total || 0), 0)"/>
+
+                <div class="pos-receipt-left-padding" style="font-weight:bold; margin-top:3px;">
+            Total:
+            <span class="pos-receipt-right-align">
+                <t t-esc="formatCurrency(total_amount, false)"/>
+            </span>
+        </div>
+
+                <div>------------------------</div>
+    </t>
+
+            <!-- ========== WHO REFUNDED SECTION ========== -->
+            <t t-if="refund_summary_list and refund_summary_list.length">
+                            <div class="pos-receipt-center-align" style="margin-top:5px; font-weight:bold;">
+                                Who Refunded
+                            </div>
+
+                <t t-foreach="refund_summary_list" t-as="refund" t-key="refund.user">
+                                <div class="responsive-price">
+                                    <b><t t-esc="refund.user"/></b>
+                                    <span class="pos-receipt-right-align">
+                                        <t t-esc="refund.count"/>
+                                        /
+                                        <t t-esc="formatCurrency(refund.total, false)"/>
+                                    </span>
+                                </div>
+
+                    <t t-foreach="refund.orders" t-as="rorder" t-key="rorder.order_name">
+                                    <div class="pos-receipt-left-padding">
+                                        <t t-esc="rorder.order_name"/>
+                                        <span class="pos-receipt-right-align">
+                                            <t t-esc="formatCurrency(rorder.total, false)"/>
+                                        </span>
+                                    </div>
+                                </t>
+                            </t>
+
+                <div>------------------------</div>
+                        </t>
+
+            <!-- ========== CASH IN / OUT SUMMARY ========== -->
+            <t t-if="cash_summary_list and cash_summary_list.length">
+                <div class="pos-receipt-center-align" style="margin-top:5px; font-weight:bold;">
+                    Cash In / Out Summary
+                </div>
+
+                <t t-foreach="cash_summary_list" t-as="cash" t-key="cash.user">
+                    <div class="responsive-price" style="margin-top:2px;">
+                        <b><t t-esc="cash.user"/></b>
+                        <span class="pos-receipt-right-align">
+                            IN: <t t-esc="formatCurrency(cash.cash_in, false)"/>
+                            /
+                            OUT: <t t-esc="formatCurrency(cash.cash_out, false)"/>
+                        </span>
+                    </div>
+
+                    <t t-foreach="cash.lines" t-as="line" t-key="line.reason">
+                        <div class="pos-receipt-left-padding">
+                            <t t-esc="line.type"/>:
+                            <t t-esc="line.reason"/>
+                            <span class="pos-receipt-right-align">
+                                <t t-esc="formatCurrency(line.amount, false)"/>
+                            </span>
+                        </div>
+                    </t>
+                </t>
+
+                <div>------------------------</div>
+            </t>
+
+        </xpath>
+
+    </t>
+
+</templates>

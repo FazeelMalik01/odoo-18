@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Inherit Product Template Form View -->
+        <record id="view_product_template_form_inherit_sku" model="ir.ui.view">
+            <field name="name">product.template.form.inherit.sku</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+
+                <!-- Change Label from Reference to SKU -->
+                <xpath expr="//field[@name='default_code']" position="attributes">
+                    <attribute name="string">SKU</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Change Quotation Description Label -->
+        <record id="view_product_template_change_quotation_label" model="ir.ui.view">
+            <field name="name">product.template.form.change.quotation.label</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//group[@name='description']" position="attributes">
+                    <attribute name="string">Product Description</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Change validity_date label in Sale Order Form -->
+        <record id="view_sale_order_form_change_validity_label" model="ir.ui.view">
+            <field name="name">sale.order.form.change.validity.label</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='validity_date']" position="attributes">
+                    <attribute name="string">Best-Before Date</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Add Dimensions After Weight -->
+        <record id="view_product_template_add_dimensions" model="ir.ui.view">
+            <field name="name">product.template.form.add.dimensions</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+
+                <!-- Insert after weight's parent group -->
+                <xpath expr="//field[@name='weight']/ancestor::group[1]" position="after">
+                    <group string="Dimensions">
+                        <field name="length"/>
+                        <field name="width"/>
+                        <field name="height"/>
+                    </group>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

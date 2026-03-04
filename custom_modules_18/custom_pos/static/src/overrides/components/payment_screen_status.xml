@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+<!--    <t t-name="custom_pos.PaymentScreenStatus" t-inherit="point_of_sale.PaymentScreenStatus" t-inherit-mode="extension">-->
+
+<!--        &lt;!&ndash; ✅ Add currency toggle &ndash;&gt;-->
+<!--&lt;!&ndash;        <xpath expr="//div[contains(@class,'payment-status-remaining')]" position="before">&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="d-flex align-items-center justify-content-between p-2 border-bottom">&ndash;&gt;-->
+<!--&lt;!&ndash;                <label class="form-check-label fw-bold">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <input type="checkbox"&ndash;&gt;-->
+<!--&lt;!&ndash;                           t-model="state.isUsdPayment"&ndash;&gt;-->
+<!--&lt;!&ndash;                           t-on-click="toggleCurrency"&ndash;&gt;-->
+<!--&lt;!&ndash;                           class="form-check-input me-2"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                    Paying in USD&ndash;&gt;-->
+<!--&lt;!&ndash;                </label>&ndash;&gt;-->
+<!--&lt;!&ndash;                <t t-if="state.isUsdPayment">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span class="badge bg-primary">USD Mode</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                </t>&ndash;&gt;-->
+<!--&lt;!&ndash;                <t t-else="">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <span class="badge bg-secondary">LBP Mode</span>&ndash;&gt;-->
+<!--&lt;!&ndash;                </t>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;        </xpath>&ndash;&gt;-->
+
+<!--        &lt;!&ndash; existing remaining + change sections &ndash;&gt;-->
+<!--        <xpath expr="//div[contains(@class,'payment-status-remaining')]" position="replace">-->
+<!--            <div class="payment-status-remaining d-flex flex-column flex-grow-1">-->
+<!--                <div class="d-flex justify-content-between">-->
+<!--                    <span class="label pe-2">Remaining (USD)</span>-->
+<!--                    <span class="amount align-self-end pe-5 highlight text-danger fw-bolder">-->
+<!--                        <t t-esc="remainingText.usd" />-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <div class="d-flex justify-content-between">-->
+<!--                    <span class="label pe-2">Remaining (LBP)</span>-->
+<!--                    <span class="amount align-self-end pe-5 highlight text-danger fw-bolder">-->
+<!--                        <t t-esc="remainingText.lbp" />-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </xpath>-->
+
+<!--        <xpath expr="//div[contains(@class,'payment-status-change')]" position="replace">-->
+<!--            <div class="payment-status-change d-flex flex-column flex-grow-1">-->
+<!--                <div class="d-flex justify-content-between">-->
+<!--                    <span class="label pe-2">Change (USD)</span>-->
+<!--                    <span class="amount align-self-end pe-5 highlight text-success fw-bolder">-->
+<!--                        <t t-esc="changeText.usd" />-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <div class="d-flex justify-content-between">-->
+<!--                    <span class="label pe-2">Change (LBP)</span>-->
+<!--                    <span class="amount align-self-end pe-5 highlight text-success fw-bolder">-->
+<!--                        <t t-esc="changeText.lbp" />-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </xpath>-->
+
+<!--    </t>-->
+</templates>

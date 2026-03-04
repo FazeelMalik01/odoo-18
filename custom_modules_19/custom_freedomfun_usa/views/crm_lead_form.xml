@@ -1,0 +1,39 @@
+<odoo>
+    <record id="view_crm_lead_form_inherit_webflow_tab" model="ir.ui.view">
+        <field name="name">crm.lead.form.inherit.webflow.tab</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Insert new page after Contacts page -->
+            <xpath expr="//page[@name='lead']" position="after">
+                <page name="webflow_info" string="Webflow Info">
+                    <group col="2">
+                        <field name="partner_id"/>
+                        <field name="email_from"/>
+                        <field name="phone"/>
+                        <field name="zip"/>
+                        <field name="event_type"/>
+                        <field name="contact_type"/>
+                        <field name="page_url" colspan="2" invisible="1"/>
+                        <field name="party_notes" colspan="2"/>
+                        <field name="delay_status"/>
+                        <field name="submitted_at"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="crm_lead_list_add_delay_status" model="ir.ui.view">
+        <field name="name">crm.lead.list.delay.status</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_tree_reporting"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='team_id']" position="after">
+                    <field name="delay_status"
+                       widget="badge"
+                       decoration-info="delay_status == 'on_time'"
+                       decoration-warning="delay_status == 'delayed'"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

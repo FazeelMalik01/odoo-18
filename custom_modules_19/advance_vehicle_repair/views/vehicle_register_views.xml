@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="vehicle_register_form_view" model="ir.ui.view">
+            <field name="name">vehicle.register.form.view</field>
+            <field name="model">vehicle.register</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button
+                                name="action_activate"
+                                string="Acticate"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'canceled'"
+                        />
+                        <button
+                                name="action_cancel"
+                                string="Cancel"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'active'"
+                        />
+                        <button
+                                name="create_vehicle_booking"
+                                string="Vehicle Booking"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'active'"
+                        />
+                        <button
+                                name="create_job_card"
+                                string="Job Card"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'active'"
+                        />
+                        <field name="state" widget="statusbar" statusbar_visible="active,canceled"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="sequence" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="customer_id" required="1"/>
+                                <field name="brand_id" required="1"/>
+                                <field name="registration_no" required="1"/>
+                                <field name="fuel_type_id" required="1"/>
+                                <field name="model_year"/>
+                            </group>
+                            <group>
+                                <field name="model_id" required="1" domain="[('brand_id', '=', brand_id)]"/>
+                                <field name="vin_no"/>
+                                <field name="transmission_type" widget="radio" options="{'horizontal': true}"/>
+                                <field name="color"/>
+                                <field name="kilometer"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Kilometer History">
+                                <field name="kilometer_log_ids" readonly="1">
+                                    <list>
+                                        <field name="date"/>
+                                        <field name="kilometer"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="vehicle_register_tree_view" model="ir.ui.view">
+            <field name="name">vehicle.register.list.view</field>
+            <field name="model">vehicle.register</field>
+            <field name="arch" type="xml">
+                <list>
+                    <field name="customer_id"/>
+                    <field name="brand_id"/>
+                    <field name="model_id"/>
+                    <field name="registration_no"/>
+                    <field name="fuel_type_id"/>
+                    <field name="vin_no"/>
+                    <field name="transmission_type"/>
+                </list>
+            </field>
+        </record>
+        <record id="vehicle_register_kanban_view" model="ir.ui.view">
+            <field name="name">vehicle.register.kanban</field>
+            <field name="model">vehicle.register</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_vehicle_register">
+                    <field name="registration_no"/>
+                    <field name="vin_no"/>
+                    <field name="customer_id"/>
+                    <field name="brand_id"/>
+                    <field name="model_id"/>
+                    <field name="fuel_type_id"/>
+                    <field name="transmission_type"/>
+                    <templates>
+                        <t t-name="card">
+                            <div class="oe_kanban_global_click">
+                                <div class="o_kanban_image_fill">
+                                    <img t-attf-src="/web/image?model=vehicle.brand&amp;field=image&amp;id=#{record.brand_id.raw_value}"
+                                         alt="Avatar"/>
+                                </div>
+                                <div class="o_kanban_details">
+                                    <strong t-esc="record.registration_no.value" class="o_kanban_record_title"/>
+                                    <div>
+                                        <span t-esc="record.customer_id.value"/>
+                                    </div>
+                                    <div>
+                                        <span t-esc="record.brand_id.value"/>
+                                        -
+                                        <span t-esc="record.model_id.value"/>
+                                    </div>
+                                    <div>
+                                        <span t-esc="record.fuel_type_id.value"/>
+                                        -
+                                        <span t-esc="record.transmission_type.value"/>
+                                    </div>
+                                    <div>
+                                        <small t-esc="record.vin_no.value"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+        <record id="vehicle_register_search_view" model="ir.ui.view">
+            <field name="name">vehicle.register.search.view</field>
+            <field name="model">vehicle.register</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="registration_no"/>
+                    <field name="vin_no"/>
+                    <field name="customer_id"/>
+                    <field name="phone"/>
+                    <field name="brand_id"/>
+                    <field name="model_id"/>
+                    <field name="fuel_type_id"/>
+                    <field name="transmission_type"/>
+                    <filter name="active" string="Active" domain="[('state','=','active')]"/>
+                    <filter name="canceled" string="Canceled" domain="[('state','=','canceled')]"/>
+                    <filter string="Customer" name="group_customer" context="{'group_by': 'customer_id'}"/>
+                    <filter string="phone" name="group_phone" context="{'group_by': 'phone'}"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_register_vehicle" model="ir.actions.act_window">
+            <field name="name">Vehicle Register</field>
+            <field name="res_model">vehicle.register</field>
+            <field name="view_mode">kanban,list,form</field>
+            <field name="search_view_id" ref="vehicle_register_search_view"/>
+        </record>
+        <!--    Menu-->
+        <menuitem
+                id="menu_vehicle_register"
+                name="Vehicle Register"
+                parent="root_vehicle_register"
+                action="action_register_vehicle"
+                groups="advance_vehicle_repair.group_vehicle_repair_user,advance_vehicle_repair.group_vehicle_repair_manager"
+                sequence="7"/>
+    </data>
+</odoo>

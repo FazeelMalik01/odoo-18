@@ -1,0 +1,16 @@
+<odoo>
+    <template id="portal_my_invoices_add_project"
+              inherit_id="account.portal_my_invoices"
+              name="Add Project Column to Portal Invoices">
+        <xpath expr="//th[@name='due_date']" position="after">
+            <th name="project" class="d-none d-md-table-cell">Project</th>
+        </xpath>
+        <xpath expr="//tbody//td[.//span[@t-field='invoice.invoice_date_due']]" position="after">
+            <td class="d-none d-md-table-cell">
+                <t t-if="invoice.x_studio_project_1">
+                    <span t-esc="invoice.x_studio_project_1.sudo().name"/>
+                </t>
+            </td>
+        </xpath>
+    </template>
+</odoo>

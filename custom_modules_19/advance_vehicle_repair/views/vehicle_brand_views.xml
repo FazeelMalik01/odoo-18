@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="vehicle_brand_tree" model="ir.ui.view">
+        <field name="name">vehicle.brand.list</field>
+        <field name="model">vehicle.brand</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="vehicle_brand_kanban_view" model="ir.ui.view">
+        <field name="name">vehicle.brand.kanban</field>
+        <field name="model">vehicle.brand</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_vehicle_register">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="image"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_image_fill">
+                                <img t-attf-src="/web/image?model=vehicle.brand&amp;field=image&amp;id=#{record.id.value}"
+                                     alt="Avatar"/>
+                            </div>
+                            <div class="o_kanban_details"
+                                 style="display: flex; justify-content: center; align-items: center; height: 100%; ">
+                                <div class="o_kanban_name_container">
+                                    <strong t-esc="record.name.value" class="o_kanban_record_title"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="vehicle_brand_form" model="ir.ui.view">
+        <field name="name">vehicle.brand.form</field>
+        <field name="model">vehicle.brand</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1>
+                            <label for="name" class="o_form_label">Name:</label>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vehicle_brand" model="ir.actions.act_window">
+        <field name="name">Vehicle Brands</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">vehicle.brand</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Organize your vehicle brands here!
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_brands"
+              name="Brands"
+              parent="menu_vehicle_details"
+              action="action_vehicle_brand"
+              sequence="1"/>
+
+</odoo>

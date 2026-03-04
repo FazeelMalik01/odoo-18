@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="vehicle_brand_toyota" model="vehicle.brand">
+            <field name="name">Toyota</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/toyota.png"/>
+        </record>
+        
+        <record id="vehicle_brand_honda" model="vehicle.brand">
+            <field name="name">Honda</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/honda.png"/>
+        </record>
+        
+        <record id="vehicle_brand_ford" model="vehicle.brand">
+            <field name="name">Ford</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/ford.png"/>
+        </record>
+        
+        <record id="vehicle_brand_chevrolet" model="vehicle.brand">
+            <field name="name">Chevrolet</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/chevrolet.png"/>
+        </record>
+        
+        <record id="vehicle_brand_mercedes_benz" model="vehicle.brand">
+            <field name="name">Mercedes-Benz</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/mercedes-benz.png"/>
+        </record>
+        
+        <record id="vehicle_brand_bmw" model="vehicle.brand">
+            <field name="name">BMW</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/mercedes-benz.png"/>
+        </record>
+        
+        <record id="vehicle_brand_audi" model="vehicle.brand">
+            <field name="name">Audi</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/bmw.png"/>
+        </record>
+        
+        <record id="vehicle_brand_volkswagen" model="vehicle.brand">
+            <field name="name">Volkswagen</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/volkswagen.png"/>
+        </record>
+        
+        <record id="vehicle_brand_nissan" model="vehicle.brand">
+            <field name="name">Nissan</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/nissan.png"/>
+        </record>
+        
+        <record id="vehicle_brand_hyundai" model="vehicle.brand">
+            <field name="name">Hyundai</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/Hyundai.png"/>
+        </record>
+        
+        <record id="vehicle_brand_kia" model="vehicle.brand">
+            <field name="name">Kia</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/kia.png"/>
+        </record>
+        
+        <record id="vehicle_brand_subaru" model="vehicle.brand">
+            <field name="name">Subaru</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/subaru.png"/>
+        </record>
+        
+        <record id="vehicle_brand_mazda" model="vehicle.brand">
+            <field name="name">Mazda</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/mazda.png"/>
+        </record>
+        
+        <record id="vehicle_brand_jeep" model="vehicle.brand">
+            <field name="name">Jeep</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/jeep.png"/>
+        </record>
+        
+        <record id="vehicle_brand_tesla" model="vehicle.brand">
+            <field name="name">Tesla</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/tesla.png"/>
+        </record>
+        
+        <record id="vehicle_brand_volvo" model="vehicle.brand">
+            <field name="name">Volvo</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/volvo.png"/>
+        </record>
+        
+        <record id="vehicle_brand_land_rover" model="vehicle.brand">
+            <field name="name">Land Rover</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/land-rover.png"/>
+        </record>
+        
+        <record id="vehicle_brand_jaguar" model="vehicle.brand">
+            <field name="name">Jaguar</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/jaguar.png"/>
+        </record>
+        
+        <record id="vehicle_brand_porsche" model="vehicle.brand">
+            <field name="name">Porsche</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/porsche.png"/>
+        </record>
+        
+        <record id="vehicle_brand_ferrari" model="vehicle.brand">
+            <field name="name">Ferrari</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/ferrari.png"/>
+        </record>
+        
+        <record id="vehicle_brand_lamborghini" model="vehicle.brand">
+            <field name="name">Lamborghini</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/lamborghini.png"/>
+        </record>
+        
+        <record id="vehicle_brand_bentley" model="vehicle.brand">
+            <field name="name">Bentley</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/bentley.png"/>
+        </record>
+        
+        <record id="vehicle_brand_rolls_royce" model="vehicle.brand">
+            <field name="name">Rolls-Royce</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/rolls-royce.png"/>
+        </record>
+        
+        <record id="vehicle_brand_maserati" model="vehicle.brand">
+            <field name="name">Maserati</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/maserati.png"/>
+        </record>
+        
+        <record id="vehicle_brand_acura" model="vehicle.brand">
+            <field name="name">Acura</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/acura.png"/>
+        </record>
+        
+        <record id="vehicle_brand_lexus" model="vehicle.brand">
+            <field name="name">Lexus</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/alfa-romeo.png"/>
+        </record>
+        
+        <record id="vehicle_brand_alfa_romeo" model="vehicle.brand">
+            <field name="name">Alfa Romeo</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/alfa-romeo.png"/>
+        </record>
+        
+        <record id="vehicle_brand_peugeot" model="vehicle.brand">
+            <field name="name">Peugeot</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/peugeot.png"/>
+        </record>
+        
+        <record id="vehicle_brand_citroen" model="vehicle.brand">
+            <field name="name">Citroen</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/citroen.png"/>
+        </record>
+        
+        <record id="vehicle_brand_renault" model="vehicle.brand">
+            <field name="name">Renault</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/fiat.png"/>
+        </record>
+        
+        <record id="vehicle_brand_fiat" model="vehicle.brand">
+            <field name="name">Fiat</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/fiat.png"/>
+        </record>
+        
+        <record id="vehicle_brand_mitsubishi" model="vehicle.brand">
+            <field name="name">Mitsubishi</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/mitsubishi.png"/>
+        </record>
+        
+        <record id="vehicle_brand_suzuki" model="vehicle.brand">
+            <field name="name">Suzuki</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/suzuki.png"/>
+        </record>
+        
+        <record id="vehicle_brand_saab" model="vehicle.brand">
+            <field name="name">Saab</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/saab.png"/>
+        </record>
+        
+        <record id="vehicle_brand_chrysler" model="vehicle.brand">
+            <field name="name">Chrysler</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/chrysler.png"/>
+        </record>
+        
+        <record id="vehicle_brand_ram" model="vehicle.brand">
+            <field name="name">Ram</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/ram.png"/>
+        </record>
+
+        <record id="vehicle_brand_dodge" model="vehicle.brand">
+            <field name="name">Dodge</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/dodge.png"/>
+        </record>
+        
+        <record id="vehicle_brand_gmc" model="vehicle.brand">
+            <field name="name">GMC</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/gmc.png"/>
+        </record>
+        
+        <record id="vehicle_brand_cadillac" model="vehicle.brand">
+            <field name="name">Cadillac</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/cadillac.png"/>
+        </record>
+
+        <record id="vehicle_brand_infiniti" model="vehicle.brand">
+            <field name="name">Infiniti</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/infiniti.png"/>
+        </record>
+        
+        
+        <record id="vehicle_brand_buick" model="vehicle.brand">
+            <field name="name">Buick</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/buick.png"/>
+        </record>
+        
+        <record id="vehicle_brand_lincoln" model="vehicle.brand">
+            <field name="name">Lincoln</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/lincoln.png"/>
+        </record>
+        
+        <record id="vehicle_brand_mini" model="vehicle.brand">
+            <field name="name">Mini</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/mini.png"/>
+        </record>
+
+        <record id="vehicle_brand_skoda" model="vehicle.brand">
+            <field name="name">Skoda</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/skoda.png"/>
+        </record>
+
+        <record id="vehicle_brand_opel" model="vehicle.brand">
+            <field name="name">Opel</field>
+            <field name="image" type="base64" file="advance_vehicle_repair/static/src/img/brand/opel.png"/>
+        </record>
+
+    </data>
+</odoo>

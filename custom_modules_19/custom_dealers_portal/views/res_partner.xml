@@ -1,0 +1,26 @@
+<odoo>
+    <record id="view_partner_form_inherit_custom_dealer_field" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.custom.dealer.fields</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lang']" position="after">
+                <field name="dealer"/>
+            </xpath>
+            <xpath expr="//page[@name='internal_notes']" position="before">
+                <page string="Customer Info" name="customer_info">
+                    <group>
+                        <field name="customer_ids" nolabel='1'>
+                            <list string="Dealer Customers">
+                                <field name="name"/>
+                                <field name="email"/>
+                                <field name="phone"/>
+                                <field name="mobile_number"/>
+                            </list>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,36 @@
+<odoo>
+  <data>
+    <!-- 20 Age Tab -->
+    <record id="custom__payroll_salary_calculation_rule_form_inherit_age_20" model="ir.ui.view">
+      <field name="name">custom__payroll.salary_calculation_rule.form.inherit.age_20</field>
+      <field name="model">custom__payroll.salary_calculation_rule</field>
+      <field name="inherit_id" ref="custom__payroll_salary_calculation_rule_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//notebook" position="inside">
+          <page string="20 Age" name="age_20">
+            <field name="age_20_ids" nolabel="1" context="{'default_rule_id': id}">
+              <list editable="bottom">
+                <field name="age_from"/>
+                <field name="age_to"/>
+                <field name="employment_type"/>
+                <field name="classification"/>
+                <field name="weekly_pay_rate"/>
+                <field name="hourly_pay_rate"/>
+                <field name="evening_work_rate"/>
+                <field name="evening_work_rate_midnight"/>
+                <field name="saturday_rate"/>
+                <field name="sunday_rate"/>
+                <field name="overtime_first_2_hours"/>
+                <field name="overtime_after_2_hours"/>
+                <field name="overtime_sunday"/>
+                <field name="public_holiday_rate"/>
+                <field name="overtime_public_holiday"/>
+              </list>
+            </field>
+          </page>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>
+

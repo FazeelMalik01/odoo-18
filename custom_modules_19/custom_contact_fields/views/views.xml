@@ -1,0 +1,293 @@
+<odoo>
+  <data>
+      <!-- Main form override - replace company_type radio with checkboxes -->
+      <record id="view_partner_form_inherit_custom_contact_fields" model="ir.ui.view">
+          <field name="name">res.partner.form.inherit.custom.contact.fields</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="arch" type="xml">
+            <!-- Replace email field div with two-column layout for Person contacts -->
+            <xpath expr="//div[contains(@class, 'd-flex') and contains(@class, 'align-items-baseline')]//field[@name='email']/parent::div" position="replace">
+              <!-- Two-column layout for Person contacts -->
+              <div class="d-flex flex-wrap gap-3 w-100" invisible="is_company">
+                <!-- Left Column: All Email Fields -->
+                <div class="d-flex flex-column" style="flex: 1; min-width: 300px;">
+                  <!-- Main Email -->
+                  <div class="d-flex align-items-baseline mb-2">
+                    <i class="fa fa-fw me-1 fa-envelope text-primary" title="Email"/>
+                    <field name="email" class="w-100" widget="email" required="user_ids" placeholder="Email"/>
+                  </div>
+                  <!-- Email Home -->
+                  <div class="d-flex align-items-baseline mb-2">
+                    <i class="fa fa-fw me-1 fa-envelope text-primary" title="Email Home"/>
+                    <field name="email_home" class="w-100" widget="email" placeholder="Email Home"/>
+                  </div>
+                  <!-- Email Other -->
+                  <div class="d-flex align-items-baseline mb-2" invisible="1">
+                    <i class="fa fa-fw me-1 fa-envelope text-primary" title="Email Other"/>
+                    <field name="email_other" class="w-100" widget="email" placeholder="Email Other"/>
+                  </div>
+                </div>
+                <!-- Right Column: All Phone Fields -->
+                <div class="d-flex flex-column" style="flex: 1; min-width: 300px;">
+                  <!-- Main Phone -->
+                  <div class="d-flex align-items-baseline mb-2">
+                    <i class="fa fa-fw me-1 fa-phone text-primary" title="Phone"/>
+                    <field name="phone" class="w-100" widget="phone" placeholder="Phone"/>
+                  </div>
+                  <!-- Phone Home -->
+                  <div class="d-flex align-items-baseline mb-2">
+                    <i class="fa fa-fw me-1 fa-phone text-primary" title="Phone Home"/>
+                    <field name="phone_home" class="w-100" widget="phone" placeholder="Phone Home"/>
+                  </div>
+                  <!-- Mobile Number -->
+                  <div class="d-flex align-items-baseline mb-2">
+                    <i class="fa fa-fw me-1 fa-mobile text-primary" title="Mobile Number"/>
+                    <field name="mobile_number" class="w-100" widget="phone" placeholder="Mobile Number"/>
+                  </div>
+                  <!-- Other Phone -->
+                  <div class="d-flex align-items-baseline mb-2" invisible="1">
+                    <i class="fa fa-fw me-1 fa-phone text-primary" title="Other Phone"/>
+                    <field name="other_phone" class="w-100" widget="phone" placeholder="Other Phone"/>
+                  </div>
+                </div>
+              </div>
+              <!-- Original email field for Company contacts -->
+              <div class="d-flex align-items-baseline w-md-50" invisible="not is_company">
+                <i class="fa fa-fw me-1 fa-envelope text-primary" title="Email"/>
+                <field name="email" class="w-100" widget="email" required="user_ids" placeholder="Email"/>
+              </div>
+            </xpath>
+            <!-- Hide the original phone field for Person contacts (it's now in the two-column layout) -->
+            <!-- Keep it visible for Company contacts -->
+            <xpath expr="//div[contains(@class, 'd-flex') and contains(@class, 'align-items-baseline') and contains(@class, 'w-md-50')]//field[@name='phone']/parent::div[not(.//field[@name='email'])]" position="attributes">
+              <attribute name="invisible">not is_company</attribute>
+            </xpath>
+
+            <!-- Contact Types removed from form view - only show in dialog -->
+
+            <!-- Add GLN field - visible when delivery type is selected -->
+            <xpath expr="//field[@name='category_id']" position="after">
+              <field name="global_location_number"
+                     invisible="not show_delivery_fields"
+                     string="GLN"
+                     placeholder="Global Location Number"/>
+            </xpath>
+          </field>
+      </record>
+
+      <!-- Simplified form override (popup) -->
+      <record id="view_partner_simple_form_inherit_custom_contact_fields" model="ir.ui.view">
+          <field name="name">res.partner.simplified.form.inherit.custom.contact.fields</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_simple_form"/>
+          <field name="arch" type="xml">
+            <!-- Replace company_type radio buttons with horizontal checkboxes -->
+            <xpath expr="//field[@name='company_type']" position="after">
+              <div invisible="is_company" groups="base.group_no_one">
+                <label for="contact_type_ids" string="Contact Types"/>
+                <field name="contact_type_ids" widget="many2many_checkboxes" options="{'no_create': True}"/>
+              </div>
+            </xpath>
+          </field>
+      </record>
+
+      <!-- Embedded form override (child_ids kanban) - This is the main contact form -->
+      <record id="view_partner_form_child_ids_inherit_custom_contact_fields" model="ir.ui.view">
+          <field name="name">res.partner.form.child_ids.inherit.custom.contact.fields</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="arch" type="xml">
+            <!-- Replace type radio buttons with horizontal checkboxes -->
+            <xpath expr=".//page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='type']" position="replace">
+              <div>
+                <label for="contact_type_ids" string="Contact Types"/>
+                <field name="contact_type_ids" widget="many2many_checkboxes"
+                       options="{'no_create': True, 'horizontal': true}"
+                       required="1"/>
+              </div>
+            </xpath>
+
+            <!-- Match original behavior: show/hide fields based on type selection -->
+            <!-- Contact = Main Contact: hide address group when ONLY contact is selected -->
+            <xpath expr=".//page[@name='contact_addresses']/field[@name='child_ids']/form//group[@name='other_info']" position="attributes">
+              <attribute name="invisible">is_only_contact</attribute>
+            </xpath>
+
+            <!-- Delivery = Receiving Contact: show GLN field -->
+            <xpath expr=".//page[@name='contact_addresses']/field[@name='child_ids']/form//field[@name='company_id']" position="after">
+              <field name="global_location_number"
+                     invisible="not show_delivery_fields"
+                     string="GLN"
+                     placeholder="Global Location Number"/>
+            </xpath>
+
+            <!-- Function field visibility - show if contact type is selected -->
+            <xpath expr=".//page[@name='contact_addresses']/field[@name='child_ids']/form//div[contains(@class, 'd-flex')]//field[@name='function']/parent::div" position="attributes">
+              <attribute name="invisible">is_company or not show_contact_fields</attribute>
+            </xpath>
+          </field>
+      </record>
+    
+      <!-- Add custom fields below category_id in main form -->
+      <record id="view_partner_form_custom_fields" model="ir.ui.view">
+          <field name="name">res.partner.form.custom.fields</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="arch" type="xml">
+            <!-- Add fields below category_id -->
+            <xpath expr="//field[@name='category_id']" position="after">
+              <!-- Company only fields -->
+              <field name="google_drive" invisible="not is_company"/>
+              <field name="qbo_profile" invisible="not is_company"/>
+              <!-- Person only fields -->
+              <field name="person_salutation" invisible="is_company"/>
+              <field name="person_occupation" invisible="is_company"/>
+              <field name="occupation_notes" invisible="is_company"/>
+              <field name="lead_source" invisible="is_company"/>
+            </xpath>
+            <xpath expr="//field[@name='function']" position="attributes">
+              <attribute name="invisible">1</attribute>
+            </xpath>
+          </field>
+      </record>
+    
+      <!-- Hide VAT field when Person is selected -->
+      <record id="view_partner_form_hide_vat_field" model="ir.ui.view">
+          <field name="name">res.partner.form.hide.vat.field</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="attributes">
+              <attribute name="invisible">not is_company</attribute>
+            </xpath>
+          </field>
+      </record>
+
+      <!-- Hide PST field when Company is selected (opposite of existing logic) -->
+      <record id="view_partner_form_hide_pst_company" model="ir.ui.view">
+          <field name="name">res.partner.form.hide.pst.company</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="l10n_ca.res_partner_form_inherit_ca"/>
+          <field name="arch" type="xml">
+            <xpath expr="//field[@name='l10n_ca_pst']" position="attributes">
+              <attribute name="invisible">is_company</attribute>
+            </xpath>
+          </field>
+      </record>
+    
+      <!-- Hide Sales Order warning group when Person is selected -->
+      <record id="view_partner_form_hide_sale_warnings" model="ir.ui.view">
+          <field name="name">res.partner.form.hide.sale.warnings</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="arch" type="xml">
+            <xpath expr="//group[@name='warnings']/group[@groups='sale.group_warning_sale']" position="attributes">
+              <attribute name="invisible">not is_company</attribute>
+            </xpath>
+          </field>
+      </record>
+    
+      <!-- Hide Sales & Purchase tab when Person is selected -->
+      <record id="view_partner_form_hide_sales_purchase_tab" model="ir.ui.view">
+          <field name="name">res.partner.form.hide.sales.purchase.tab</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="arch" type="xml">
+            <xpath expr="//page[@name='sales_purchases']" position="attributes">
+              <attribute name="invisible">not is_company</attribute>
+            </xpath>
+          </field>
+      </record>
+    
+      <!-- Hide 'Contacts' tab when Person is selected -->
+      <record id="view_partner_form_hide_contacts_tab" model="ir.ui.view">
+          <field name="name">res.partner.form.hide.contacts.tab</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="arch" type="xml">
+            <xpath expr="//page[@name='contact_addresses']" position="attributes">
+              <attribute name="invisible">not is_company</attribute>
+            </xpath>
+          </field>
+      </record>
+    
+      <!-- Rename Address to Mailing Address and add Shipping Address (company only) -->
+      <record id="view_partner_form_address_labels" model="ir.ui.view">
+          <field name="name">res.partner.form.address.labels</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="priority">50</field>
+          <field name="arch" type="xml">
+            <!-- Hide type_address_label field (shows "Address" for persons) -->
+            <xpath expr="//span[@name='address_name']/field[@name='type_address_label']" position="attributes">
+              <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Change "Address" text to "Mailing Address" for companies -->
+            <xpath expr="//span[@name='address_name']/span" position="replace">
+              <span class="fw-bold">Mailing Address</span>
+            </xpath>
+
+            <!-- Add Shipping Address section after the address block (company only) -->
+            <xpath expr="//group/div[@class='o_address_format']" position="after">
+              <span class="o_form_label o_td_label o_address_type" invisible="not is_company">
+                <span>Shipping Address</span>
+              </span>
+              <div class="o_address_format" invisible="not is_company">
+                <field name="shipping_street" placeholder="Street..." class="o_address_street"/>
+                <field name="shipping_street2" placeholder="Street 2..." class="o_address_street"/>
+                <field name="shipping_city" placeholder="City" class="o_address_city"/>
+                <field name="shipping_state_id" placeholder="State" class="o_address_state"
+                       options="{'no_open': True, 'no_quick_create': True}"
+                       context="{'country_id': shipping_country_id, 'default_country_id': shipping_country_id}"/>
+                <field name="shipping_zip" placeholder="ZIP" class="o_address_zip"/>
+                <div name="partner_shipping_address_country" class="d-flex justify-content-between">
+                  <field name="shipping_country_id" placeholder="Country" class="o_address_country"
+                         options='{"no_open": True, "no_create": True}'/>
+                </div>
+              </div>
+            </xpath>
+          </field>
+    </record>
+
+      <!-- Hide website field when Person is selected -->
+      <record id="view_partner_form_hide_website_person" model="ir.ui.view">
+          <field name="name">res.partner.form.hide.website.person</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="arch" type="xml">
+            <xpath expr="//field[@name='website']" position="attributes">
+              <attribute name="invisible">not is_company</attribute>
+            </xpath>
+          </field>
+      </record>
+    
+      <!-- Hide dealer field when Person is selected -->
+      <record id="view_partner_form_hide_dealer_person" model="ir.ui.view">
+          <field name="name">res.partner.form.hide.dealer.person</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="custom_dealers_portal.view_partner_form_inherit_custom_dealer_field"/>
+          <field name="priority">100</field>
+          <field name="arch" type="xml">
+            <xpath expr="//field[@name='dealer']" position="attributes">
+              <attribute name="invisible">not is_company</attribute>
+            </xpath>
+          </field>
+      </record>
+
+      <!-- Hide Customer Info Page when Person is selected (show only for Company) -->
+      <record id="view_partner_form_hide_customer_info_tab" model="ir.ui.view">
+          <field name="name">res.partner.form.customer.info.company.only</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="custom_dealers_portal.view_partner_form_inherit_custom_dealer_field"/>
+          <field name="priority">110</field>
+          <field name="arch" type="xml">
+              <xpath expr="//page[@name='customer_info']" position="attributes">
+                  <!-- Visible for Company, Hidden for Person -->
+                  <attribute name="invisible">not is_company</attribute>
+              </xpath>
+          </field>
+      </record>
+  </data>
+</odoo> 

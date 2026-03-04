@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Toyota Models -->
+        <record id="vehicle_model_corolla" model="vehicle.model">
+            <field name="name">Corolla</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_toyota"/>
+        </record>
+        <record id="vehicle_model_camry" model="vehicle.model">
+            <field name="name">Camry</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_toyota"/>
+        </record>
+        <record id="vehicle_model_rav4" model="vehicle.model">
+            <field name="name">RAV4</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_toyota"/>
+        </record>
+
+        <!-- Honda Models -->
+        <record id="vehicle_model_civic" model="vehicle.model">
+            <field name="name">Civic</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_honda"/>
+        </record>
+        <record id="vehicle_model_accord" model="vehicle.model">
+            <field name="name">Accord</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_honda"/>
+        </record>
+        <record id="vehicle_model_crv" model="vehicle.model">
+            <field name="name">CR-V</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_honda"/>
+        </record>
+
+        <!-- Ford Models -->
+        <record id="vehicle_model_f150" model="vehicle.model">
+            <field name="name">F-150</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_ford"/>
+        </record>
+        <record id="vehicle_model_mustang" model="vehicle.model">
+            <field name="name">Mustang</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_ford"/>
+        </record>
+        <record id="vehicle_model_escape" model="vehicle.model">
+            <field name="name">Escape</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_ford"/>
+        </record>
+
+        <!-- Chevrolet Models -->
+        <record id="vehicle_model_silverado" model="vehicle.model">
+            <field name="name">Silverado</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_chevrolet"/>
+        </record>
+        <record id="vehicle_model_camaro" model="vehicle.model">
+            <field name="name">Camaro</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_chevrolet"/>
+        </record>
+        <record id="vehicle_model_tahoe" model="vehicle.model">
+            <field name="name">Tahoe</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_chevrolet"/>
+        </record>
+
+        <!-- Mercedes-Benz Models -->
+        <record id="vehicle_model_class_s" model="vehicle.model">
+            <field name="name">Class S</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_mercedes_benz"/>
+        </record>
+        <record id="vehicle_model_g_class" model="vehicle.model">
+            <field name="name">G-Class</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_mercedes_benz"/>
+        </record>
+        <record id="vehicle_model_cls" model="vehicle.model">
+            <field name="name">CLS</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_mercedes_benz"/>
+        </record>
+
+        <!-- BMW Models -->
+        <record id="vehicle_model_3_series" model="vehicle.model">
+            <field name="name">3 Series</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_bmw"/>
+        </record>
+        <record id="vehicle_model_5_series" model="vehicle.model">
+            <field name="name">5 Series</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_bmw"/>
+        </record>
+        <record id="vehicle_model_x5" model="vehicle.model">
+            <field name="name">X5</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_bmw"/>
+        </record>
+
+        <!-- Audi Models -->
+        <record id="vehicle_model_a4" model="vehicle.model">
+            <field name="name">A4</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_audi"/>
+        </record>
+        <record id="vehicle_model_a6" model="vehicle.model">
+            <field name="name">A6</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_audi"/>
+        </record>
+        <record id="vehicle_model_q7" model="vehicle.model">
+            <field name="name">Q7</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_audi"/>
+        </record>
+
+        <!-- Volkswagen Models -->
+        <record id="vehicle_model_golf" model="vehicle.model">
+            <field name="name">Golf</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_volkswagen"/>
+        </record>
+        <record id="vehicle_model_passat" model="vehicle.model">
+            <field name="name">Passat</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_volkswagen"/>
+        </record>
+        <record id="vehicle_model_tiguan" model="vehicle.model">
+            <field name="name">Tiguan</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_volkswagen"/>
+        </record>
+
+        <!-- Nissan Models -->
+        <record id="vehicle_model_altima" model="vehicle.model">
+            <field name="name">Altima</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_nissan"/>
+        </record>
+        <record id="vehicle_model_sentra" model="vehicle.model">
+            <field name="name">Sentra</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_nissan"/>
+        </record>
+        <record id="vehicle_model_rogue" model="vehicle.model">
+            <field name="name">Rogue</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_nissan"/>
+        </record>
+
+        <!-- Hyundai Models -->
+        <record id="vehicle_model_elantra" model="vehicle.model">
+            <field name="name">Elantra</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_hyundai"/>
+        </record>
+        <record id="vehicle_model_sonata" model="vehicle.model">
+            <field name="name">Sonata</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_hyundai"/>
+        </record>
+        <record id="vehicle_model_santa_fe" model="vehicle.model">
+            <field name="name">Santa Fe</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_hyundai"/>
+        </record>
+
+        <!-- Kia Models -->
+        <record id="vehicle_model_sportage" model="vehicle.model">
+            <field name="name">Sportage</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_kia"/>
+        </record>
+        <record id="vehicle_model_optima" model="vehicle.model">
+            <field name="name">Optima</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_kia"/>
+        </record>
+        <record id="vehicle_model_sorento" model="vehicle.model">
+            <field name="name">Sorento</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_kia"/>
+        </record>
+
+        <!-- Subaru Models -->
+        <record id="vehicle_model_outback" model="vehicle.model">
+            <field name="name">Outback</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_subaru"/>
+        </record>
+        <record id="vehicle_model_forester" model="vehicle.model">
+            <field name="name">Forester</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_subaru"/>
+        </record>
+        <record id="vehicle_model_impreza" model="vehicle.model">
+            <field name="name">Impreza</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_subaru"/>
+        </record>
+
+        <!-- Mazda Models -->
+        <record id="vehicle_model_mazda3" model="vehicle.model">
+            <field name="name">Mazda3</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_mazda"/>
+        </record>
+        <record id="vehicle_model_mazda6" model="vehicle.model">
+            <field name="name">Mazda6</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_mazda"/>
+        </record>
+        <record id="vehicle_model_cx_5" model="vehicle.model">
+            <field name="name">CX-5</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_mazda"/>
+        </record>
+
+        <!-- Jeep Models -->
+        <record id="vehicle_model_wrangler" model="vehicle.model">
+            <field name="name">Wrangler</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_jeep"/>
+        </record>
+        <record id="vehicle_model_grand_cherokee" model="vehicle.model">
+            <field name="name">Grand Cherokee</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_jeep"/>
+        </record>
+    
+        <!-- Jeep Models Continued -->
+        <record id="vehicle_model_cherokee" model="vehicle.model">
+            <field name="name">Cherokee</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_jeep"/>
+        </record>
+        <record id="vehicle_model_compass" model="vehicle.model">
+            <field name="name">Compass</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_jeep"/>
+        </record>
+
+        <!-- Dodge Models -->
+        <record id="vehicle_model_charger" model="vehicle.model">
+            <field name="name">Charger</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_dodge"/>
+        </record>
+        <record id="vehicle_model_challenger" model="vehicle.model">
+            <field name="name">Challenger</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_dodge"/>
+        </record>
+        <record id="vehicle_model_durango" model="vehicle.model">
+            <field name="name">Durango</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_dodge"/>
+        </record>
+
+        <!-- Ram Models -->
+        <record id="vehicle_model_ram_1500" model="vehicle.model">
+            <field name="name">Ram 1500</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_ram"/>
+        </record>
+        <record id="vehicle_model_ram_2500" model="vehicle.model">
+            <field name="name">Ram 2500</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_ram"/>
+        </record>
+        <record id="vehicle_model_ram_3500" model="vehicle.model">
+            <field name="name">Ram 3500</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_ram"/>
+        </record>
+
+        <!-- GMC Models -->
+        <record id="vehicle_model_sierra_1500" model="vehicle.model">
+            <field name="name">Sierra 1500</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_gmc"/>
+        </record>
+        <record id="vehicle_model_acadia" model="vehicle.model">
+            <field name="name">Acadia</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_gmc"/>
+        </record>
+        <record id="vehicle_model_terrain" model="vehicle.model">
+            <field name="name">Terrain</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_gmc"/>
+        </record>
+
+        <!-- Lexus Models -->
+        <record id="vehicle_model_es" model="vehicle.model">
+            <field name="name">ES</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_lexus"/>
+        </record>
+        <record id="vehicle_model_rx" model="vehicle.model">
+            <field name="name">RX</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_lexus"/>
+        </record>
+        <record id="vehicle_model_gx" model="vehicle.model">
+            <field name="name">GX</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_lexus"/>
+        </record>
+
+        <!-- Infiniti Models -->
+        <record id="vehicle_model_q50" model="vehicle.model">
+            <field name="name">Q50</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_infiniti"/>
+        </record>
+        <record id="vehicle_model_qx60" model="vehicle.model">
+            <field name="name">QX60</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_infiniti"/>
+        </record>
+        <record id="vehicle_model_qx80" model="vehicle.model">
+            <field name="name">QX80</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_infiniti"/>
+        </record>
+
+        <!-- Volvo Models -->
+        <record id="vehicle_model_s60" model="vehicle.model">
+            <field name="name">S60</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_volvo"/>
+        </record>
+        <record id="vehicle_model_xc90" model="vehicle.model">
+            <field name="name">XC90</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_volvo"/>
+        </record>
+        <record id="vehicle_model_xc60" model="vehicle.model">
+            <field name="name">XC60</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_volvo"/>
+        </record>
+
+        <!-- Porsche Models -->
+        <record id="vehicle_model_cayenne" model="vehicle.model">
+            <field name="name">Cayenne</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_porsche"/>
+        </record>
+        <record id="vehicle_model_911" model="vehicle.model">
+            <field name="name">911</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_porsche"/>
+        </record>
+        <record id="vehicle_model_macan" model="vehicle.model">
+            <field name="name">Macan</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_porsche"/>
+        </record>
+
+        <!-- Tesla Models -->
+        <record id="vehicle_model_model_s" model="vehicle.model">
+            <field name="name">Model S</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_tesla"/>
+        </record>
+        <record id="vehicle_model_model_x" model="vehicle.model">
+            <field name="name">Model X</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_tesla"/>
+        </record>
+        <record id="vehicle_model_model_3" model="vehicle.model">
+            <field name="name">Model 3</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_tesla"/>
+        </record>
+
+        <!-- Jaguar Models -->
+        <record id="vehicle_model_f_type" model="vehicle.model">
+            <field name="name">F-Type</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_jaguar"/>
+        </record>
+        <record id="vehicle_model_xe" model="vehicle.model">
+            <field name="name">XE</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_jaguar"/>
+        </record>
+        <record id="vehicle_model_f_pace" model="vehicle.model">
+            <field name="name">F-Pace</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_jaguar"/>
+        </record>
+
+        <!-- Land Rover Models -->
+        <record id="vehicle_model_range_rover" model="vehicle.model">
+            <field name="name">Range Rover</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_land_rover"/>
+        </record>
+        <record id="vehicle_model_discovery" model="vehicle.model">
+            <field name="name">Discovery</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_land_rover"/>
+        </record>
+        <record id="vehicle_model_defender" model="vehicle.model">
+            <field name="name">Defender</field>
+            <field name="brand_id" ref="advance_vehicle_repair.vehicle_brand_land_rover"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,9 @@
+<!-- data/sequence.xml -->
+<odoo>
+    <record id="seq_owner_approval" model="ir.sequence">
+        <field name="name">Owner Approval</field>
+        <field name="code">owner.approval</field>
+        <field name="prefix">OA-</field>
+        <field name="padding">5</field>
+    </record>
+</odoo>

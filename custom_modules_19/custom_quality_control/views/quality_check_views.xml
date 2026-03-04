@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Extend quality check form to hide picture field and add notebook page for images -->
+        <record id="view_quality_check_form_inherit_images" model="ir.ui.view">
+            <field name="name">quality.check.form.inherit.images</field>
+            <field name="model">quality.check</field>
+            <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
+            <field name="arch" type="xml">
+                <!-- Hide the picture field group -->
+                <xpath expr="//group[field[@name='picture']]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                
+                <!-- Update Pass button (first one) - show only on submitted state, not on none -->
+                <xpath expr="//header/button[@name='do_pass' and @class='btn-primary' and @data-hotkey='q']" position="attributes">
+                    <attribute name="groups">custom_quality_control.group_quality_manager</attribute>
+                    <attribute name="invisible">quality_state != 'submitted'</attribute>
+                </xpath>
+                
+                <!-- Update groups restriction for Pass button (for fail state) - targets button with existing groups attribute -->
+                <xpath expr="//header/button[@name='do_pass' and @groups='custom_quality_control.group_quality_manager']" position="attributes">
+                    <attribute name="groups">custom_quality_control.group_quality_manager</attribute>
+                </xpath>
+                
+                <!-- Update Fail button (first one) - show only on submitted state, not on none -->
+                <xpath expr="//header/button[@name='do_fail' and @class='btn-primary' and @data-hotkey='w']" position="attributes">
+                    <attribute name="groups">custom_quality_control.group_quality_manager</attribute>
+                    <attribute name="invisible">quality_state != 'submitted'</attribute>
+                </xpath>
+                
+                <!-- Update groups restriction for Fail button (for pass state) - targets button with existing groups attribute -->
+                <xpath expr="//header/button[@name='do_fail' and @groups='quality.group_quality_manager']" position="attributes">
+                    <attribute name="groups">custom_quality_control.group_quality_manager</attribute>
+                </xpath>
+                
+                <!-- Add groups restriction to Measure button -->
+                <xpath expr="//header/button[@name='do_measure']" position="attributes">
+                    <attribute name="groups">custom_quality_control.group_quality_manager</attribute>
+                </xpath>
+                
+                <!-- Add Submitted button in header after Fail button -->
+                <xpath expr="//header/button[@name='do_fail' and @data-hotkey='w']" position="after">
+                    <button name="do_submit" type="object" class="btn-primary" invisible="quality_state != 'none'" string="Submit" data-hotkey="s"/>
+                </xpath>
+                
+                <!-- Add notebook page for images -->
+                <xpath expr="//notebook" position="inside">
+                    <page string="Images" name="images" invisible="test_type != 'picture'">
+                        <field name="image_ids" nolabel="1">
+                            <list editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="image" widget="image"/>
+                            </list>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+

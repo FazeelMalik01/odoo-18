@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_owner_approval_user,owner.approval user,model_owner_approval,base.group_user,1,1,1,1
+access_owner_approval_portal,owner.approval portal,model_owner_approval,base.group_portal,1,1,1,1
+access_project_portal,access.project.portal,project.model_project_project,base.group_portal,1,1,1,1

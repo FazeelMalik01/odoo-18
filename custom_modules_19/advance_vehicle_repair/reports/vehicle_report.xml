@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        <record id="action_report_inspection" model="ir.actions.report">-->
+<!--            <field name="name">Inspection Report</field>-->
+<!--            <field name="model">vehicle.jobcards.inspection</field>-->
+<!--            <field name="report_type">qweb-pdf</field>-->
+<!--            <field name="report_name">advance_vehicle_repair.report_inspection</field>-->
+<!--            <field name="report_file">advance_vehicle_repair.report_inspection</field>-->
+<!--            <field name="binding_model_id" ref="model_vehicle_jobcards_inspection"/>-->
+<!--            <field name="binding_type">report</field>-->
+<!--        </record>-->
+
+<!--        <record id="action_report_scratch" model="ir.actions.report">-->
+<!--            <field name="name">Scratch Report</field>-->
+<!--            <field name="model">vehicle.jobcards.inspection</field>-->
+<!--            <field name="report_type">qweb-pdf</field>-->
+<!--            <field name="report_name">advance_vehicle_repair.report_scratch</field>-->
+<!--            <field name="report_file">advance_vehicle_repair.report_scratch</field>-->
+<!--            <field name="binding_model_id" ref="model_vehicle_jobcards_inspection"/>-->
+<!--            <field name="binding_type">report</field>-->
+<!--        </record>-->
+
+<!--        <record id="action_report_repair" model="ir.actions.report">-->
+<!--            <field name="name">Repair Report</field>-->
+<!--            <field name="model">vehicle.jobcards.repair</field>-->
+<!--            <field name="report_type">qweb-pdf</field>-->
+<!--            <field name="report_name">advance_vehicle_repair.report_repair</field>-->
+<!--            <field name="report_file">advance_vehicle_repair.report_repair</field>-->
+<!--            <field name="binding_model_id" ref="model_vehicle_jobcards_repair"/>-->
+<!--            <field name="binding_type">report</field>-->
+<!--        </record>-->
+
+<!--        ==================================================================================-->
+
+        <record id="action_scratch_report" model="ir.actions.report">
+            <field name="name">Scratch Report</field>
+            <field name="model">vehicle.jobcard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">advance_vehicle_repair.report_scratch</field>
+            <field name="report_file">advance_vehicle_repair.report_scratch</field>
+            <field name="binding_model_id" ref="model_vehicle_jobcard"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_inspection_report" model="ir.actions.report">
+            <field name="name">Inspection Report</field>
+            <field name="model">vehicle.jobcard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">advance_vehicle_repair.report_inspection</field>
+            <field name="report_file">advance_vehicle_repair.report_inspection</field>
+            <field name="binding_model_id" ref="model_vehicle_jobcard"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_repair_report" model="ir.actions.report">
+            <field name="name">Repair Report</field>
+            <field name="model">vehicle.jobcard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">advance_vehicle_repair.report_repair</field>
+            <field name="report_file">advance_vehicle_repair.report_repair</field>
+            <field name="binding_model_id" ref="model_vehicle_jobcard"/>
+            <field name="binding_type">report</field>
+        </record>
+
+    </data>
+</odoo>
+

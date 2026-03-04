@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Website Menu for Pricing -->
+    <record id="website_menu_pricing" model="website.menu">
+        <field name="name">Laundry Services</field>
+        <field name="url">/pricing</field>
+        <field name="sequence" eval="15"/>
+    </record>
+
+    <template id="pricing_page_template" name="Pricing Page">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <!-- Error message if redirected from booking page -->
+                <t t-if="request.params.get('error') == 'not_customer'">
+                    <div class="container mt-3">
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert" style="border-radius: 10px;">
+                            <strong><i class="fa fa-exclamation-triangle me-2"></i>Access Restricted:</strong> Only customers can book appointments. 
+                            <a href="/web/signup?signup_type=customer" class="alert-link">Sign up as Customer</a> to continue.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </t>
+                <!-- Banner Section -->
+                <section class="s_pricing_banner" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 80px 0; text-align: center; color: white;">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12">
+                                <h1 style="font-size: 3.5rem; font-weight: 700; margin-bottom: 20px;">Choose Your Plan</h1>
+                                <p style="font-size: 1.25rem; opacity: 0.9; max-width: 600px; margin: 0 auto;">Select the perfect package for your laundry service needs</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pricing Cards Section -->
+                <section class="s_pricing_cards" style="padding: 80px 0; background-color: #f8f9fa;">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <!-- Small Package Card (Left) -->
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <t t-if="small_product">
+                                    <div class="card h-100 shadow-sm" style="border-radius: 15px; border: none; transition: transform 0.3s ease;">
+                                        <div class="card-body text-center" style="padding: 40px 30px;">
+                                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                                                <h3 style="font-size: 1.5rem; font-weight: 600; margin: 0;"><t t-esc="small_product.get('name', 'Small')"/></h3>
+                                            </div>
+                                            <div style="margin-bottom: 30px;">
+                                                <span style="font-size: 3rem; font-weight: 700; color: #667eea;">
+                                                    <t t-esc="small_product.get('currency', '$')"/><t t-esc="small_product.get('price_formatted', '0.00')"/>
+                                                </span>
+                                            </div>
+                                            <a t-attf-href="/my/appointments/book?product_id=#{small_product.get('id')}" class="btn btn-primary btn-lg" style="width: 100%; border-radius: 50px; padding: 12px; font-weight: 600; text-decoration: none; display: inline-block;">
+                                                Book Appointment
+                                            </a>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <!-- Medium Package Card (Center - Featured) -->
+                            <div class="col-lg-4 col-md-6 mb-4" style="position: relative; z-index: 1;">
+                                <t t-if="medium_product">
+                                    <div class="card h-100 shadow-lg" style="border-radius: 15px; border: 3px solid #667eea; transform: scale(1.05); transition: transform 0.3s ease; position: relative; overflow: visible;">
+                                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #667eea; color: white; padding: 5px 20px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; z-index: 10; white-space: nowrap;">
+                                            MOST POPULAR
+                                        </div>
+                                        <div class="card-body text-center" style="padding: 40px 30px;">
+                                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                                                <h3 style="font-size: 1.5rem; font-weight: 600; margin: 0;"><t t-esc="medium_product.get('name', 'Medium')"/></h3>
+                                            </div>
+                                            <div style="margin-bottom: 30px;">
+                                                <span style="font-size: 3rem; font-weight: 700; color: #667eea;">
+                                                    <t t-esc="medium_product.get('currency', '$')"/><t t-esc="medium_product.get('price_formatted', '0.00')"/>
+                                                </span>
+                                            </div>
+                                            <a t-attf-href="/my/appointments/book?product_id=#{medium_product.get('id')}" class="btn btn-primary btn-lg" style="width: 100%; border-radius: 50px; padding: 12px; font-weight: 600; border: none; text-decoration: none; display: inline-block;">
+                                                Book Appointment
+                                            </a>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <!-- Large Package Card (Right) -->
+                            <div class="col-lg-4 col-md-6 mb-4">
+                                <t t-if="large_product">
+                                    <div class="card h-100 shadow-sm" style="border-radius: 15px; border: none; transition: transform 0.3s ease;">
+                                        <div class="card-body text-center" style="padding: 40px 30px;">
+                                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                                                <h3 style="font-size: 1.5rem; font-weight: 600; margin: 0;"><t t-esc="large_product.get('name', 'Large')"/></h3>
+                                            </div>
+                                            <div style="margin-bottom: 30px;">
+                                                <span style="font-size: 3rem; font-weight: 700; color: #667eea;">
+                                                    <t t-esc="large_product.get('currency', '$')"/><t t-esc="large_product.get('price_formatted', '0.00')"/>
+                                                </span>
+                                            </div>
+                                            <a t-attf-href="/my/appointments/book?product_id=#{large_product.get('id')}" class="btn btn-primary btn-lg" style="width: 100%; border-radius: 50px; padding: 12px; font-weight: 600; text-decoration: none; display: inline-block;">
+                                                Book Appointment
+                                            </a>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>
+

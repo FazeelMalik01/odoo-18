@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Vehicle Team Records -->
+        <record id="vehicle_team_engine" model="vehicle.teams">
+            <field name="team_title">Engine Repair Team</field>
+            <field name="project">Engine Overhaul Project</field>
+            <field name="responsible_id" ref="base.partner_root"/>
+        </record>
+
+        <record id="vehicle_team_body" model="vehicle.teams">
+            <field name="team_title">Body Repair Team</field>
+            <field name="project">Body Restoration Project</field>
+            <field name="responsible_id" ref="base.partner_root"/>
+        </record>
+
+        <record id="vehicle_team_ac" model="vehicle.teams">
+            <field name="team_title">Air Conditioning Team</field>
+            <field name="project">AC Repair Project</field>
+            <field name="responsible_id" ref="base.partner_root"/>
+        </record>
+
+    </data>
+</odoo>

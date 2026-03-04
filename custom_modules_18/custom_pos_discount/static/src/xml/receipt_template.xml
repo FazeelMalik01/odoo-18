@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="custom_pos_add.OrderReceipt" 
+       t-inherit="point_of_sale.OrderReceipt" 
+       t-inherit-mode="extension">
+        <!-- Add Tax Invoice heading after ReceiptHeader -->
+        <xpath expr="//ReceiptHeader" position="after">
+            <div class="text-center" style="font-size: 1.2rem; font-weight: bold; margin: 0.5rem 0;">
+                Tax Invoice
+            </div>
+        </xpath>
+        <!-- Removed custom total discount block to rely on default totals -->
+        <!-- Hide "Powered by Odoo" text -->
+        <!-- Make Discounts row left-aligned instead of centered -->
+        <xpath expr="//t[@t-if='props.data.total_discount']/div" position="replace">
+            <div class="text-start">
+                <t t-out="props.data.label_discounts"/>
+                <span t-esc="props.formatCurrency(props.data.total_discount)" class="pos-receipt-right-align"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[@class='pos-receipt-order-data']/p[text()='Powered by Odoo']" position="replace">
+            <!-- Hidden -->
+        </xpath>
+        <!-- Hide customer info from pos_loyalty module -->
+        <xpath expr="//div[@class='before-footer']//div[contains(text(), 'Customer') and .//span[@class='pos-receipt-right-align']]" position="replace">
+            <!-- Hidden -->
+        </xpath>
+        <!-- Pass customer data to OrderWidget -->
+        <xpath expr="//OrderWidget" position="attributes">
+            <attribute name="customer">props.data.customer</attribute>
+        </xpath>
+    </t>
+    
+    <!-- Replace fallback 'Tax ID' label with 'VAT ID' in receipt header -->
+    <t t-name="custom_pos_add.ReceiptHeader" 
+       t-inherit="point_of_sale.ReceiptHeader" 
+       t-inherit-mode="extension">
+        <xpath expr="//img[@class='pos-receipt-logo']" position="replace">
+            <t>
+                <t t-if="env.services.pos.config.receipt_logo">
+                    <img t-attf-src="/web/image?model=pos.config&amp;id={{env.services.pos.config.id}}&amp;field=receipt_logo" alt="Logo" class="pos-receipt-logo"/>
+                </t>
+                <t t-else="">
+                    <img t-attf-src="/web/image?model=res.company&amp;id={{props.data.company.id}}&amp;field=logo" alt="Logo" class="pos-receipt-logo"/>
+                </t>
+            </t>
+        </xpath>
+        <!-- Replace company name with custom Store Name from pos.config when provided -->
+        <xpath expr="//div[@class='pos-receipt-contact']/div[@t-if='props.data.company.name']" position="replace">
+            <t>
+                <div t-if="env.services.pos.config.company_name" t-esc="env.services.pos.config.company_name"/>
+                <div t-else="" t-esc="props.data.company.name"/>
+            </t>
+        </xpath>
+        <xpath expr="//t[@t-if='props.data.company.vat']/div[@t-esc='vatText']" position="replace">
+            <div t-esc="props.data.company.country_id?.vat_label
+                ? (props.data.company.country_id.vat_label + ': ' + props.data.company.vat)
+                : ('VAT ID: ' + props.data.company.vat)"/>
+        </xpath>
+    </t>
+    
+    <!-- Show tax "Label on Invoices" under the Units line on the receipt -->
+    <t t-name="custom_pos_add.Orderline_InvoiceTaxLabel"
+       t-inherit="point_of_sale.Orderline"
+       t-inherit-mode="extension">
+        <!-- Insert label right after the price-per-unit line (Units line) -->
+        <xpath expr="//li[@class='price-per-unit']" position="after">
+            <li t-if="line.invoiceTaxLabels" class="fw-bolder text-decoration-underline" style="font-size: 0.9rem; padding-left: 0.5rem; padding-top: 2px;">
+                <t t-out="line.invoiceTaxLabels"/>
+            </li>
+        </xpath>
+    </t>
+    
+    <!-- Add customer information before orderlines in OrderWidget -->
+    <t t-name="custom_pos_add.OrderWidget"
+       t-inherit="point_of_sale.OrderWidget"
+       t-inherit-mode="extension">
+        <!-- Add customer information before the orderlines -->
+        <xpath expr="//div[@class='order-container d-flex flex-column flex-grow-1 overflow-y-auto text-start']" position="before">
+            <div t-if="props.customer" class="pos-receipt-customer-info" style="padding: 0.5rem; border-bottom: 1px solid #dee2e6; margin-bottom: 0.5rem;">
+                <div t-if="props.customer.name" class="d-flex justify-content-between">
+                    <span>Customer</span>
+                    <span t-esc="props.customer.name" style="text-align: right;"/>
+                </div>
+                <div t-if="props.customer.address" class="d-flex justify-content-between">
+                    <span>Address</span>
+                    <span t-esc="props.customer.address" style="text-align: right;"/>
+                </div>
+                <div t-if="props.customer.phone" class="d-flex justify-content-between">
+                    <span>Phone</span>
+                    <span t-esc="props.customer.phone" style="text-align: right;"/>
+                </div>
+                <div t-if="props.customer.mobile" class="d-flex justify-content-between">
+                    <span>Mobile</span>
+                    <span t-esc="props.customer.mobile" style="text-align: right;"/>
+                </div>
+            </div>
+        </xpath>
+    </t>
+</templates>

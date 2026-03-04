@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- 1) Technicians can read/write ONLY their tasks -->
+        <record id="rule_technician_read_service_request" model="ir.rule">
+            <field name="name">Technician: Access Own Assigned Tasks</field>
+            <field name="model_id" ref="model_project_task"/>
+            <field name="domain_force">[('user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('custom_gatekeeper_security.group_gatekeeper_technician'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- 2) Technicians can read service requests linked to their tasks -->
+        <record id="rule_technician_read_related_service_request" model="ir.rule">
+            <field name="name">Technician: Read Linked Service Requests</field>
+            <field name="model_id" ref="model_service_request"/>
+            <!-- This domain works: service requests that have tasks assigned to this technician -->
+            <field name="domain_force">[('task_ids.user_ids', 'in', [user.id])]</field>
+            <field name="groups" eval="[(4, ref('custom_gatekeeper_security.group_gatekeeper_technician'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="custom_laundry_service.login_signup_links" inherit_id="web.login" name="Login - Signup Links">
+        <!-- Hide "Don't have an account?" link -->
+        <xpath expr="//div[hasclass('oe_login_buttons')]/a[contains(text(), &quot;Don't have an account&quot;)]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[hasclass('oe_login_buttons')]" position="inside">
+            <a href="/web/signup?signup_type=partner" class="btn btn-link btn-sm">Signup as Partner</a>
+            <a href="/web/signup?signup_type=customer" class="btn btn-link btn-sm">Signup as Customer</a>
+        </xpath>
+    </template>
+
+    <!-- Add Title field for customer and partner signup (above First Name) -->
+    <template id="custom_laundry_service.signup_customer_title" inherit_id="auth_signup.signup" name="Signup - Customer Title">
+        <xpath expr="//div[hasclass('field-name')]" position="before">
+            <t t-if="request.params.get('signup_type') == 'customer' or request.session.get('signup_type') == 'customer'">
+                <div class="mb-3 field-title_selection">
+                    <label for="title_selection" class="form-label">Title <span class="text-danger">*</span></label>
+                    <select
+                        id="title_selection"
+                        name="title_selection"
+                        class="form-select"
+                        required="required"
+                        t-att-value="request.params.get('title_selection', '')">
+                        <option value="">Select title...</option>
+                        <option value="sir" t-att-selected="'selected' if request.params.get('title_selection', '') == 'sir' else None">Sir</option>
+                        <option value="madam" t-att-selected="'selected' if request.params.get('title_selection', '') == 'madam' else None">Madam</option>
+                    </select>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Change name field label to "First Name" and update placeholder -->
+    <template id="custom_laundry_service.signup_name_field" inherit_id="auth_signup.signup" name="Signup - First Name Field">
+        <xpath expr="//label[@for='name']" position="replace">
+            <label for="name" class="form-label">First Name <span class="text-danger">*</span></label>
+        </xpath>
+        <xpath expr="//input[@name='name' and @id='name']" position="attributes">
+            <attribute name="placeholder">Enter your first name</attribute>
+        </xpath>
+    </template>
+
+    <!-- Add Title field for partner signup (above First Name) -->
+    <template id="custom_laundry_service.signup_partner_title" inherit_id="auth_signup.signup" name="Signup - Partner Title">
+        <xpath expr="//div[hasclass('field-name')]" position="before">
+            <t t-if="request.params.get('signup_type') == 'partner' or request.session.get('signup_type') == 'partner'">
+                <div class="mb-3 field-title_selection">
+                    <label for="title_selection" class="form-label">Title <span class="text-danger">*</span></label>
+                    <select
+                        id="title_selection"
+                        name="title_selection"
+                        class="form-select"
+                        required="required"
+                        t-att-value="request.params.get('title_selection', '')">
+                        <option value="">Select title...</option>
+                        <option value="sir" t-att-selected="'selected' if request.params.get('title_selection', '') == 'sir' else None">Sir</option>
+                        <option value="madam" t-att-selected="'selected' if request.params.get('title_selection', '') == 'madam' else None">Madam</option>
+                    </select>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Add Middle name and Last name fields for customer and partner signup -->
+    <template id="custom_laundry_service.signup_customer_name_fields" inherit_id="auth_signup.signup" name="Signup - Customer Name Fields">
+        <xpath expr="//div[hasclass('field-name')]" position="after">
+            <t t-if="request.params.get('signup_type') == 'customer' or request.session.get('signup_type') == 'customer'">
+                <div class="row">
+                    <div class="col-md-6 mb-3 field-middle_name">
+                    <label for="middle_name" class="form-label">Middle Name</label>
+                    <input type="text" 
+                           name="middle_name" 
+                           id="middle_name" 
+                           class="form-control" 
+                           placeholder="Enter your middle name"
+                           t-att-value="request.params.get('middle_name', '')"/>
+                </div>
+                    <div class="col-md-6 mb-3 field-last_name">
+                    <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                    <input type="text" 
+                           name="last_name" 
+                           id="last_name" 
+                           class="form-control" 
+                           placeholder="Enter your last name"
+                           required="required"
+                           t-att-value="request.params.get('last_name', '')"/>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Add Middle name and Last name fields for partner signup -->
+    <template id="custom_laundry_service.signup_partner_name_fields" inherit_id="auth_signup.signup" name="Signup - Partner Name Fields">
+        <xpath expr="//div[hasclass('field-name')]" position="after">
+            <t t-if="request.params.get('signup_type') == 'partner' or request.session.get('signup_type') == 'partner'">
+                <div class="row">
+                    <div class="col-md-6 mb-3 field-middle_name">
+                    <label for="middle_name" class="form-label">Middle Name</label>
+                    <input type="text" 
+                           name="middle_name" 
+                           id="middle_name" 
+                           class="form-control" 
+                           placeholder="Enter your middle name"
+                           t-att-value="request.params.get('middle_name', '')"/>
+                </div>
+                    <div class="col-md-6 mb-3 field-last_name">
+                    <label for="last_name" class="form-label">Last Name <span class="text-danger">*</span></label>
+                    <input type="text" 
+                           name="last_name" 
+                           id="last_name" 
+                           class="form-control" 
+                           placeholder="Enter your last name"
+                           required="required"
+                           t-att-value="request.params.get('last_name', '')"/>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Add Phone, Mobile, Zip Code, City, Address, and Social Security Number fields to partner signup form -->
+    <template id="custom_laundry_service.signup_partner_fields" inherit_id="auth_signup.signup" name="Signup - Partner Fields">
+        <xpath expr="//t[@t-call='auth_signup.fields']" position="after">
+            <t t-if="request.params.get('signup_type') == 'partner' or request.session.get('signup_type') == 'partner'">
+                <div class="row">
+                    <div class="col-md-6 mb-3 field-phone">
+                        <label for="phone" class="form-label">Phone Number</label>
+                    <input type="text" 
+                           name="phone" 
+                           id="phone" 
+                           class="form-control" 
+                           placeholder="Enter your phone number"
+                           t-att-value="request.params.get('phone', '')"/>
+                </div>
+                    <div class="col-md-6 mb-3 field-mobile">
+                    <label for="mobile" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                    <input type="text" 
+                           name="mobile" 
+                           id="mobile" 
+                           class="form-control" 
+                           placeholder="Enter your mobile number"
+                           required="required"
+                           t-att-value="request.params.get('mobile', '')"/>
+                </div>
+                </div>
+                  <div class="row">
+                    <div class="col-md-8 mb-3 field-street">
+                        <label for="street" class="form-label">Address <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               name="street" 
+                               id="street" 
+                               class="form-control" 
+                               placeholder="Enter your address"
+                               required="required"
+                               t-att-value="request.params.get('street', '')"/>
+                    </div>
+                    <div class="col-md-4 mb-3 field-street2">
+                        <label for="street2" class="form-label">Address Supplement</label>
+                        <input type="text" 
+                               name="street2" 
+                               id="street2" 
+                               class="form-control" 
+                               placeholder="Floor or apartment (optional)"
+                               t-att-value="request.params.get('street2', '')"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3 field-zip">
+                    <label for="zip" class="form-label">Zip Code <span class="text-danger">*</span></label>
+                    <t t-set="ZipCodeLine" t-value="request.env['laundry.zip.code.line'].sudo()"/>
+                    <t t-set="zip_codes_raw" t-value="ZipCodeLine.search([])"/>
+                    <t t-set="zip_codes_list" t-value="[{'id': zc.id, 'code': zc.description, 'city_ids': [(city.id, city.name) for city in zc.city_ids]} for zc in zip_codes_raw if zc.description]"/>
+                        <div class="position-relative">
+                            <input type="text" 
+                                   id="zip_search" 
+                                   class="form-control" 
+                                   placeholder="Search zip code..."
+                                   autocomplete="off"
+                                   t-att-value="request.params.get('zip', '')"/>
+                    <select
+                        id="zip"
+                        name="zip"
+                        class="form-select"
+                        required="required"
+                                style="display: none;"
+                        t-att-value="request.params.get('zip', '')">
+                        <option value="">Select zip code...</option>
+                        <t t-foreach="zip_codes_list" t-as="zip_code">
+                            <option t-att-value="zip_code.get('code', '')" 
+                                    t-att-data-city-ids="','.join([str(city[0]) for city in zip_code.get('city_ids', [])])"
+                                    t-att-data-city-names="','.join([str(city[1]) for city in zip_code.get('city_ids', [])])"
+                                    t-att-selected="'selected' if request.params.get('zip', '') == zip_code.get('code', '') else None">
+                                <t t-esc="zip_code.get('code', '')"/>
+                            </option>
+                        </t>
+                    </select>
+                            <div id="zip_dropdown" class="position-absolute w-100 bg-white border border-top-0 rounded-bottom" style="max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
+                        </div>
+                </div>
+                    <div class="col-md-6 mb-3 field-city">
+                    <label for="city_1" class="form-label">City <span class="text-danger">*</span></label>
+                    <select
+                        id="city_1"
+                        name="city_1"
+                        class="form-select"
+                        required="required"
+                        t-att-value="request.params.get('city_1', '')">
+                        <option value="">Select city...</option>
+                    </select>
+                </div>
+                </div>
+              
+                <div class="row">
+                    <div class="col-md-6 mb-3 field-social_security_no">
+                    <label for="social_security_no" class="form-label">Social Security No <span class="text-danger">*</span></label>
+                    <input type="text" 
+                           name="social_security_no" 
+                           id="social_security_no" 
+                           class="form-control" 
+                           placeholder="XXX.XXXX.XXXX.XX"
+                           maxlength="17"
+                           required="required"
+                           t-att-value="request.params.get('social_security_no', '')"/>
+                    </div>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Add Phone, Mobile, Zip Code, City, and Address fields to customer signup form -->
+    <template id="custom_laundry_service.signup_customer_fields" inherit_id="auth_signup.signup" name="Signup - Customer Fields">
+        <xpath expr="//t[@t-call='auth_signup.fields']" position="after">
+            <t t-if="request.params.get('signup_type') == 'customer' or request.session.get('signup_type') == 'customer'">
+                <div class="row">
+                    <div class="col-md-6 mb-3 field-phone">
+                        <label for="phone" class="form-label">Phone Number</label>
+                    <input type="text" 
+                           name="phone" 
+                           id="phone" 
+                           class="form-control" 
+                           placeholder="Enter your phone number"
+                           t-att-value="request.params.get('phone', '')"/>
+                </div>
+                    <div class="col-md-6 mb-3 field-mobile">
+                    <label for="mobile" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                    <input type="text" 
+                           name="mobile" 
+                           id="mobile" 
+                           class="form-control" 
+                           placeholder="Enter your mobile number"
+                           required="required"
+                           t-att-value="request.params.get('mobile', '')"/>
+                </div>
+                </div>
+                  <div class="row">
+                    <div class="col-md-8 mb-3 field-street">
+                        <label for="street" class="form-label">Address <span class="text-danger">*</span></label>
+                        <input type="text" 
+                               name="street" 
+                               id="street" 
+                               class="form-control" 
+                               placeholder="Enter your address"
+                               required="required"
+                               t-att-value="request.params.get('street', '')"/>
+                    </div>
+                    <div class="col-md-4 mb-3 field-street2">
+                        <label for="street2" class="form-label">Address Supplement</label>
+                        <input type="text" 
+                               name="street2" 
+                               id="street2" 
+                               class="form-control" 
+                               placeholder="Floor or apartment (optional)"
+                               t-att-value="request.params.get('street2', '')"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3 field-zip">
+                    <label for="zip" class="form-label">Zip Code <span class="text-danger">*</span></label>
+                    <t t-set="ZipCodeLine" t-value="request.env['laundry.zip.code.line'].sudo()"/>
+                    <t t-set="zip_codes_raw" t-value="ZipCodeLine.search([])"/>
+                    <t t-set="zip_codes_list" t-value="[{'id': zc.id, 'code': zc.description, 'city_ids': [(city.id, city.name) for city in zc.city_ids]} for zc in zip_codes_raw if zc.description]"/>
+                        <div class="position-relative">
+                            <input type="text" 
+                                   id="zip_search" 
+                                   class="form-control" 
+                                   placeholder="Search zip code..."
+                                   autocomplete="off"
+                                   t-att-value="request.params.get('zip', '')"/>
+                    <select
+                        id="zip"
+                        name="zip"
+                        class="form-select"
+                        required="required"
+                                style="display: none;"
+                        t-att-value="request.params.get('zip', '')">
+                        <option value="">Select zip code...</option>
+                        <t t-foreach="zip_codes_list" t-as="zip_code">
+                            <option t-att-value="zip_code.get('code', '')" 
+                                    t-att-data-city-ids="','.join([str(city[0]) for city in zip_code.get('city_ids', [])])"
+                                    t-att-data-city-names="','.join([str(city[1]) for city in zip_code.get('city_ids', [])])"
+                                    t-att-selected="'selected' if request.params.get('zip', '') == zip_code.get('code', '') else None">
+                                <t t-esc="zip_code.get('code', '')"/>
+                            </option>
+                        </t>
+                    </select>
+                            <div id="zip_dropdown" class="position-absolute w-100 bg-white border border-top-0 rounded-bottom" style="max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
+                        </div>
+                </div>
+                    <div class="col-md-6 mb-3 field-city">
+                    <label for="city_1" class="form-label">City <span class="text-danger">*</span></label>
+                    <select
+                        id="city_1"
+                        name="city_1"
+                        class="form-select"
+                        required="required"
+                        t-att-value="request.params.get('city_1', '')">
+                        <option value="">Select city...</option>
+                    </select>
+                </div>
+                </div>
+              
+            </t>
+        </xpath>
+    </template>
+</odoo>
+

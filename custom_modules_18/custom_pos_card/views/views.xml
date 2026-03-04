@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- 
+    The card_no field is already defined in the base pos.payment model
+    and is already displayed in the pos.order form view (point_of_sale.view_pos_pos_form)
+    in the Payments tab with: <field name="card_no" invisible="not card_no"/>
+    
+    No additional backend view customization is needed.
+    -->
+</odoo>

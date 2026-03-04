@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_service_request_user,service.request user,model_service_request,base.group_portal,1,0,1,0
+access_service_request_line_user,service.request.line user,model_service_request_line,base.group_portal,1,0,1,0
+access_service_request_manager,service.request manager,model_service_request,,1,1,1,1
+access_service_request_line_manager,service.request.line manager,model_service_request_line,,1,1,1,1
+access_project_task_technician,project.task technician,model_project_task,custom_gatekeeper_security.group_gatekeeper_technician,1,1,0,0
+access_service_request_technician,service.request technician,model_service_request,custom_gatekeeper_security.group_gatekeeper_technician,1,0,0,0
+access_work_worksheet_technician,work.order.worksheet technician,model_work_order_worksheet,custom_gatekeeper_security.group_gatekeeper_technician,1,0,0,0
+access_work_worksheet_manager,work.order.worksheet manager,model_work_order_worksheet,,1,1,1,1

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="custom_pos.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension">
+        <xpath expr="//ul[hasclass('info-list')]/li[@t-if=&quot;line.price !== 0 and line.discount and line.discount !== '0' and !props.basic_receipt&quot;]" position="replace">
+            <li t-if="line.price !== 0 and line.discount and line.discount !== '0' and !props.basic_receipt">
+                <t t-set="discount_one" t-value="(line.discount || '0').toString().split('.')[0]"/>
+                <t t-set="discount_two" t-value="(((line.discount || '0').toString().split('.')[1] || '00') + '00').substring(0,2)"/>
+                <t t-esc="line.price_without_discount"/> With a
+                <em><t t-esc="discount_one + '.' + discount_two" />% </em> discount
+            </li>
+        </xpath>
+    </t>
+</templates>

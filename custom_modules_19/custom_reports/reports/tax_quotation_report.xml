@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Custom Header Template -->
+        <template id="tax_quotation_header">
+            <div class="header" style="font-family: Arial, sans-serif; padding-top:20px !important;">
+                <div style="width: 100%; border-bottom: 2px solid #666; padding-bottom: 10px;">
+                    <!-- Left: Company details -->
+                    <div style="float: left; width: 60%; text-align: left; font-size: 10px;">
+                        <div style="margin-bottom: 2px; font-size: 16px; font-weight: bold;">
+                            HONEST MASTERS DECOR LLC
+                        </div>
+                        <div style="margin-bottom: 1px;">
+                            PO BOX 181603, WAREHOUSE #22, AL QUOZ 2,
+                        </div>
+                        <div style="margin-bottom: 1px;">
+                            DUBAI, UNITED ARAB EMIRATES
+                        </div>
+                        <div style="margin-bottom: 1px;">
+                            <span>TRN:</span>
+                            100003844600003
+                        </div>
+                        <div style="margin-bottom: 1px;">
+                            <span>T:</span>
+                            +971 55 8874072 |
+                            <span>F:</span> 04 589 8785
+                        </div>
+                    </div>
+                    <!-- Right: Logo -->
+                    <div style="float: right; width: 40%; text-align: right;">
+                        <img t-if="doc.get_hmd1_logo()"
+                             t-att-src="'data:image/png;base64,' + doc.get_hmd1_logo()"
+                             style="max-height: 80px; max-width: 180px;"/>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
+        </template>
+        <!-- Custom Footer Template: Instagram left, Page center, Customer Signature right (same line) -->
+        <template id="tax_quotation_footer">
+            <div class="footer" style="font-family: Arial, sans-serif; font-size: 12px; padding-top: 20px;">
+                <table style="width: 100%; border: none; border-color: #fff;">
+                    <tr>
+                        <td style="width: 33%; text-align: left; vertical-align: middle; border: none;">
+                            <img src="/custom_reports/static/src/img/instagram.png" style="max-height: 28px; max-width: 120px;" alt="Instagram"/>
+                        </td>
+                        <td style="width: 34%; text-align: center; vertical-align: middle; border: none;">
+                            Page
+                            <span class="page"/> of
+                            <span class="topage"/>
+                        </td>
+                        <td style="width: 33%; text-align: right; vertical-align: middle; border: none;">
+                            Customer Signature __________________
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </template>
+        <template id="tax_quotation_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <!-- Custom Header Call -->
+                        <t t-call="custom_reports.tax_quotation_header"/>
+                        <!-- Custom Footer Call -->
+                        <t t-call="custom_reports.tax_quotation_footer"/>
+                        <div class="page" style="font-family: Arial, sans-serif; padding-top:10px !important;">
+                            <!-- Title: Tax Quotation - centered, large, bold, dark grey -->
+                            <div style="text-align: center; margin: 30px 0; margin-top: 20px;">
+                                <h1 style="font-size: 28px; font-weight: bold; color: #666; margin: 0; letter-spacing: 2px;">
+                                    TAX QUOTATION
+                                </h1>
+                            </div>
+                            <!-- Quotation Details - Left Aligned Labels -->
+                            <div style="margin: 30px 0; font-size: 11px; margin-left: 30%; font-family: Arial, sans-serif; line-height: 1.4;">
+                                <div style="margin-bottom: 2px;">
+                                    <span style="display:inline-block; width:140px; font-weight:bold; white-space: nowrap; text-align: left; padding-right: 15px;">
+                                        QUOTATION NO:
+                                    </span>
+                                    <span>
+                                        <t t-esc="doc.name or ''"/>
+                                    </span>
+                                </div>
+                                <div style="margin-bottom: 2px;">
+                                    <span style="display:inline-block; width:140px; font-weight:bold; text-align: left; padding-right: 15px;">
+                                        CUSTOMER NAME:
+                                    </span>
+                                    <strong>
+                                        <t t-esc="doc.partner_id.name or ''"/>
+                                    </strong>
+                                </div>
+                                <!--                                <div style="margin-bottom: 2px;">-->
+                                <!--                                    <span style="display:inline-block; width:140px; font-weight: bold; text-align: left; padding-right: 15px;">-->
+                                <!--                                        Att:-->
+                                <!--                                    </span>-->
+                                <!--                                    <span>-->
+                                <!--                                        <t t-esc="doc.att or ''"/>-->
+                                <!--                                    </span>-->
+                                <!--                                </div>-->
+                                <div style="margin-bottom: 2px;">
+                                    <span style="display:inline-block; width:140px; font-weight:bold; text-align: left; padding-right: 15px;">
+                                        LOCATION:
+                                    </span>
+                                    <span>
+                                        <t t-if="doc.site">
+                                            <t t-esc="doc.site"/>
+                                        </t>
+                                    </span>
+                                </div>
+                                <div style="margin-bottom: 2px;">
+                                    <span style="display:inline-block; width:140px; font-weight:bold; text-align: left; padding-right: 15px;">
+                                        CUSTOMER'S TRN:
+                                    </span>
+                                    <span>
+                                        <!-- Customer TRN should come from partner.vat -->
+                                        <t t-esc="doc.partner_id.vat or 'N/A'"/>
+                                    </span>
+                                </div>
+                                <div style="margin-bottom: 2px;">
+                                    <span style="display:inline-block; width:140px; font-weight:bold; text-align: left; padding-right: 15px;">
+                                        DATE CREATED:
+                                    </span>
+                                    <span>
+                                        <t t-esc="doc.get_date_created_formatted()"/>
+                                    </span>
+                                </div>
+                                <div style="margin-bottom: 2px;">
+                                    <span style="display:inline-block; width:140px; font-weight:bold; text-align: left; padding-right: 15px;">
+                                        DATE REVISED:
+                                    </span>
+                                    <span>
+                                        <t t-esc="doc.get_date_revised_formatted() or ''"/>
+                                    </span>
+                                </div>
+                                <div style="margin-bottom: 2px;">
+                                    <span style="display:inline-block; width:140px; font-weight:bold; text-align: left; padding-right: 15px;">
+                                        SUBJECT:
+                                    </span>
+                                    <span>
+                                        <t t-esc="doc.subject or ''"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Products Table - Bottom borders only -->
+                            <div style="margin: 10px 0;">
+                                <t t-set="lines" t-value="doc.get_order_lines_with_sr()"/>
+                                    <table style="width: 100%;font-size: 12px; border: none; page-break-inside: avoid;">
+                                        <thead style="border:none;">
+                                            <tr style="background-color: #D3D3D3; color: #555555; font-weight:bold;border:none; border-bottom: 2px solid #555;">
+                                                <th style="padding: 8px 3px; width: 45px; text-align: center; border: none;">
+                                                    Sr.#
+                                                </th>
+                                                <th style="padding: 8px 3px; text-align: center; border: none;">
+                                                    DESCRIPTION
+                                                </th>
+                                                <th style="padding: 8px 3px; width: 55px; text-align: center; border: none;">
+                                                    QTY
+                                                </th>
+                                                <th style="padding: 8px 3px; width: 55px; text-align: center; border: none;">
+                                                    UNIT
+                                                </th>
+                                                <th style="padding: 8px 3px; width: 65px; text-align: right; border: none;">
+                                                    RATE
+                                                </th>
+                                                <th style="padding: 8px 3px; width: 75px; text-align: right; border: none;">
+                                                    AMOUNT
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody style="border:none;">
+                                            <t t-foreach="lines[start:end]" t-as="item">
+                                                <t t-if="item['is_section']">
+                                                    <tr style="border:none;border-bottom: 1px solid #bfbfbf;">
+                                                        <td style="padding: 8px 3px; text-align: center; font-weight: bold; background-color: #ffe4d8; border: none;">
+                                                            <t t-esc="item['sr']"/>
+                                                        </td>
+                                                        <td colspan="5"
+                                                                    style="padding: 8px 3px;
+                                                                        font-weight: bold;
+                                                                        background-color: #ffe4d8;
+                                                                        text-decoration: underline;
+                                                                        line-height: 1.2;
+                                                                        border: none;">
+                                                            <div style="display:flex; justify-content: space-between; align-items: center;">
+                                                                <span>
+                                                                    <t t-esc="item['line'].name or ''"/>
+                                                                </span>
+                                                                <span t-if="item.get('subtotal')" style="font-weight: bold;">
+                                                                            AED
+                                                                    <t t-esc="'{:,.2f}'.format(item.get('subtotal') or 0.0)"/>
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                                <t t-if="not item['is_section']">
+                                                    <tr style="border:none;border-bottom: 1px solid #bfbfbf;">
+                                                        <td style="padding: 8px 3px; text-align: center; vertical-align: top; border: none;">
+                                                            <t t-esc="item['sr']"/>
+                                                        </td>
+                                                        <td style="padding: 8px 3px; line-height: 1.2; border: none;">
+                                                            <t t-set="line_img_src" t-value="doc.get_line_product_image_src(product_id=item['line'].product_id.id) if item['line'].product_id else ''"/>
+                                                            <div style="overflow: hidden;">
+                                                                <t t-if="line_img_src">
+                                                                    <img t-att-src="line_img_src"
+                                                                                style="float: right; max-height: 40px; max-width: 60px; object-fit: contain; margin-left: 6px;" alt=""/>
+                                                                </t>
+                                                                <span t-esc="item['line'].product_id.name if item['line'].product_id else (item['line'].name or '')"/>
+                                                            </div>
+                                                        </td>
+                                                        <td style="padding: 8px 4px; text-align: center; line-height: 1.2; border: none;">
+                                                            <t t-esc="'{:.2f}'.format(item['line'].product_uom_qty)"/>
+                                                        </td>
+                                                        <td style="padding: 8px 4px; text-align: center; line-height: 1.2; border: none;">
+                                                            <t t-esc="item['line'].product_uom_id.name if item['line'].product_uom_id else ''"/>
+                                                        </td>
+                                                        <td style="padding: 8px 4px; text-align: right; line-height: 1.2; border: none;">
+                                                            <t t-esc="'{:,.2f}'.format(item['line'].price_unit)"/>
+                                                        </td>
+                                                        <td style="padding: 8px 4px; text-align: right; line-height: 1.2; border: none;">
+                                                            <t t-esc="'{:,.2f}'.format(item['line'].price_subtotal)"/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                            </div>
+                            <!-- Totals Section - Reduced whitespace, no boxes, strictly row borders. Keep with last products (avoid breaking alone). -->
+                            <div style="margin: 15px 0; font-size: 10px; page-break-inside: avoid; orphans: 3;">
+                                <!--  Totals (aligned above grand total)  -->
+                                <div style="width: 55%; margin-left: auto; margin-right: auto; font-size: 14px;">
+                                    <table style="width: 100%; border-collapse: collapse; border: none; border-color: #fff;">
+                                        <tr>
+                                            <td style="text-align: right; padding: 2px 10px; border: none;">TOTAL
+                                                AMOUNT
+                                            </td>
+                                            <td style="text-align: right; padding: 2px 0; border: none;">
+                                                AED
+                                                <t t-esc="'{:,.2f}'.format(doc.amount_untaxed)"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right; padding: 2px 10px; border: none;">5% VAT</td>
+                                            <td style="text-align: right; padding: 2px 0; border: none;">
+                                                AED
+                                                <t t-esc="'{:,.2f}'.format(doc.amount_tax)"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: right; padding: 2px 10px; border: none;">Discount
+                                            </td>
+                                            <td style="text-align: right; padding: 2px 0; border: none;">
+                                                AED
+                                                <t t-esc="'{:,.2f}'.format(doc.amount_total - (doc.amount_untaxed + doc.amount_tax))"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <!--  Dashed line  -->
+                                <div style="border-top: 1px dashed #666; padding: 6px 0; margin-top: 6px; width: 95%; margin-left:2.5%;"/>
+                                <!--  Grand total  -->
+                                <div style="width: 55%; margin-left: auto; margin-right: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; border: none; border-color: #fff;">
+                                        <tr>
+                                            <td style="text-align:border:1px solid dotted; center;font-size:19px; font-weight: bold; padding: 4px 10px; border: none; border-color: #fff;">
+                                                GRAND TOTAL AMOUNT
+                                            </td>
+                                            <td style="text-align: right;font-size:19px; font-weight: bold; padding: 4px 0; border: none;">
+                                                AED
+                                                <t t-esc="'{:,.2f}'.format(doc.amount_total)"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <!--  Amount in words  -->
+                                <div style="border-top: 2px solid #666;padding: 6px 0; margin-top: 6px; width: 95%; margin-left:2.5%;"/>
+                                <div style="text-align: center; padding: 6px 0; font-weight: bold; color: #666; width: 95%;">
+                                    <t t-esc="doc._get_amount_in_words(doc.amount_total)"/>
+                                </div>
+                                <div style="border-top: 2px solid #666;padding: 6px 0; margin-top: 6px; width: 95%;margin-left:2.5%;"/>
+                            </div>
+                            <!-- Forced Page Break before Notes -->
+                            <div style="page-break-before: always;"></div>
+                            <!-- Static Terms and Conditions Section (compact spacing to fit Notes–Bank on one page) -->
+                            <div style="margin: 12px 0; text-align: left;">
+                                <div style="margin-bottom: 6px; margin-top: 4px;">
+                                    <span style="font-size: 14px; color: #666; text-decoration: underline;">NOTES &amp;
+                                        EXCLUSIONS:
+                                    </span>
+                                    <div style="margin-top: 3px; font-size: 12px; line-height: 1.4;">
+                                        <div style="padding-left: 20px; position: relative; line-height: 1.4;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            Fire Fighting work Excluded.
+                                        </div>
+                                        <div style="padding: 1px 0; padding-left: 20px; position: relative;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            All Bathroom Acceosires / Sanitary Wraes to be Provided by Client.
+                                        </div>
+                                        <div style="padding: 1px 0; padding-left: 20px; position: relative;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            Swithces and Sockets to be Provided by Client..
+                                        </div>
+                                        <div style="padding: 1px 0; padding-left: 20px; position: relative;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            Anything which is not mentioned in our quote will be charged Seperately.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 6px;">
+                                    <span style="font-size: 14px; color: #666;">
+                                        WARRANTY FOR WORKMANSHIP &amp; MATERIALS:
+                                    </span>
+                                    <br/>
+                                    <div style="font-size: 12px; margin-top: 3px;">
+                                        <div style="margin-bottom: 3px;">
+                                            <strong>HMD Responsibility:</strong>
+                                            The warranty covers defects in workmanship for a period of one year from the
+                                            date the work was completed or the project was delivered.
+                                            It will not cover the damages caused by external factors, misuse, or lack of
+                                            proper maintenance.
+                                        </div>
+                                        <div>
+                                            <strong>Supplier Responsibility:</strong>
+                                            The warranty for materials is the responsibility of the supplier or
+                                            manufacturer.
+                                            They guarantee the quality and performance of the materials for a specified
+                                            period.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 6px;">
+                                    <span style="font-size: 14px; color: #666;">TERMS &amp; CONDITIONS:</span>
+                                    <div style="margin-top: 2px; font-size: 12px; line-height: 1.4;">
+                                        <div>
+                                            <strong>VALIDITY:</strong>
+                                        </div>
+                                        <div>30 days from the date of this quotation.</div>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 5px;">
+                                    <span style="font-size: 14px; color: #666;">PAYMENT TERMS:</span>
+                                    <div style="margin-top: 2px; font-size: 12px; line-height: 1.4;">
+                                        <t t-if="doc.payment_term_id and doc.payment_term_id.note">
+                                            <div style="padding-left: 20px;">
+                                                <t t-esc="doc.payment_term_id.note"/>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div style="padding-left: 20px;">
+                                                Immediate Payment
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 6px;">
+                                    <span style="font-size: 14px;">PROJECT DURATION:</span>
+                                    <div style="margin-top: 2px; font-size: 12px; line-height: 1.4;">
+                                        <div style="padding-left: 20px; position: relative;">
+                                            <span style="position:absolute; left:0; top:0;">&#8226;</span>
+                                            The project duration of 150 working days will commence after the contract is
+                                            signed
+                                            and the advance payment is received and obtaining NOC / approval from all
+                                            concerned
+                                            authorities.
+                                        </div>
+                                        <div style="padding-left: 20px; position: relative;">
+                                            <span style="position:absolute; left:0; top:0;">&#8226;</span>
+                                            The project duration will not include any weekends or public holidays.
+                                        </div>
+                                        <div style="padding-left: 20px; position: relative;">
+                                            <span style="position:absolute; left:0; top:0;">&#8226;</span>
+                                            Any delays caused by late payments, delayed material selection, NOCs, work
+                                            permits,
+                                            or other authority clearances will be excluded from the project duration
+                                            timeframe.
+                                        </div>
+                                        <div style="padding-left: 20px; position: relative;">
+                                            <span style="position:absolute; left:0; top:0;">&#8226;</span>
+                                            HMD will not be held liable for any additional costs incurred due to project
+                                            delays
+                                            caused by third parties.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 6px;">
+                                    <span style="font-size: 14px; color:#666;">GENERAL TERMS:</span>
+                                    <div style="margin-top: 2px; font-size: 12px; line-height: 1.4;">
+                                        <div style="padding: 1px 0; padding-left: 20px; position: relative;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            All Kind of Fee for Approval / NOC from Authorities to be Paid by Client.
+                                        </div>
+                                        <div style="padding: 1px 0; padding-left: 20px; position: relative;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            Any additional services required that are not mentioned in our quotation
+                                            will be provided upon written agreement and additional charges may apply.
+                                        </div>
+                                        <div style="padding: 1px 0; padding-left: 20px; position: relative;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            The client is responsible for providing the necessary supply of electricity
+                                            and water at the site for HMD's team during working hours.
+                                        </div>
+                                        <div style="padding: 1px 0; padding-left: 20px; position: relative;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            Prior to commencement of project, all requirements - including drawings,
+                                            schedules, and other necessary documentation - must be definitively approved
+                                            by the client. After this point, no changes will be accepted. If there are
+                                            any modifications necessitated, these will be considered as variations and
+                                            may incur additional charges
+                                        </div>
+                                        <div style="padding: 1px 0; padding-left: 20px; position: relative;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            Our quotation for the items is based on the dimensions provided either in
+                                            the AutoCAD file or as given by the client or their representative. In the
+                                            event of any discrepancies from the actual site measurements, additional
+                                            charges as variations will be applied to the quoted items.
+                                        </div>
+                                        <div style="padding: 1px 0; padding-left: 20px; position: relative;">
+                                            <span style="position: absolute; left: 0; top: 2px;">&#8226;</span>
+                                            The sales order will remain valid for up to six months from the date of
+                                            order confirmation and issuance of payment. Beyond this period, if the order
+                                            is still in process, a variation considering the prevailing market rate will
+                                            be added.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 6px;">
+                                    <strong style="font-size: 14px; color:#666;">VAT DETAILS:</strong>
+                                    <div style="margin-top: 3px; font-size: 12px; line-height: 1.35;">
+                                        <div style="margin-bottom: 1px;">
+                                            <strong>Company Name:</strong>
+                                            HONEST MASTERS DECOR L.L.C
+                                        </div>
+                                        <div style="margin-bottom: 1px;">
+                                            <strong>Tax Registration Number (TRN):</strong>
+                                            100003844600003
+                                        </div>
+                                        <div style="margin-bottom: 1px;">
+                                            <strong>Registered Address:</strong>
+                                            Creek Tower Deira, Office 1B, Rigga, Rigga Al Buteen, DEIRA, Dubai
+                                        </div>
+                                        <div style="margin-bottom: 1px;">
+                                            <strong>PO BOX:</strong>
+                                            181603
+                                        </div>
+                                        <div style="margin-bottom: 1px;">
+                                            <strong>Contact Number:</strong>
+                                            +971 55 8874072
+                                        </div>
+                                        <!-- Bank account section - spacing before/after to match other headings -->
+                                        <div style="margin-top: 10px; margin-bottom: 6px; color: #666666;">
+                                            <strong style="font-size: 14px; color:#666;">BANK ACCOUNT INFORMATION:</strong>
+                                            <div style="margin-top: 4px; font-size: 12px; line-height: 1.35;">
+                                                <div style="margin-bottom: 1px; color: #000;">
+                                                    <strong>Account Name:</strong>
+                                                HONEST MASTERS DECOR L.L.C
+                                                </div>
+                                                <div style="margin-bottom: 1px;">
+                                                    <strong>Account Number:</strong>
+                                                019100023308
+                                                </div>
+                                                <div style="margin-bottom: 1px;">
+                                                    <strong>IBAN Number:</strong>
+                                                AE960330000019100023308
+                                                </div>
+                                                <div style="margin-bottom: 1px;">
+                                                    <strong>Bank Name:</strong>
+                                                Mashreq Bank Rigga Branch Dubai UAE
+                                                </div>
+                                                <div style="margin-bottom: 1px;">
+                                                    <strong>Swift Code:</strong>
+                                                BOMLAEAD
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.wt_pos_access_right</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+
+
+        	<xpath expr="//block[@id='pos_interface_section']" position="after">
+        		<block title="PoS Restriction" id="pos_restrict_section" invisible="is_kiosk_mode">
+                    <div>
+                        Those settings provide selected employee to restrict pos buttons and some actions.
+                    </div>
+                    <field name="pos_module_pos_hr" invisible="1"/>
+                    <setting id="pos_restrict_controll_button_setting" title="Sected Employee can't acess controll buttons" string="Employee can't acess controll buttons" invisible="not pos_module_pos_hr">
+                    	<div class="content-group mt16">
+			                <div class="row">
+			                    <label for="pos_restrict_remove_line_employee_ids" string="Restrict Remove Line" class="col-lg-4 o_light_label" />
+			                    <field name="pos_restrict_remove_line_employee_ids" widget="many2many_tags" placeholder="Select Employee(s)" domain="[('company_id', '=', company_id),('id','in',(pos_basic_employee_ids + pos_advanced_employee_ids))]" />
+			                </div>
+                    	</div>
+                    </setting>
+                    <setting id="pos_restrict_action_button_setting" title="Sected Employee can't acess action buttons" string="Employee can't acess action buttons" invisible="not pos_module_pos_hr">
+                    	<div class="content-group mt16">
+			                <div class="row">
+			                    <label for="pos_restrict_cancel_order_employee_ids" string="Restrict Cancel Order" class="col-lg-4 o_light_label" />
+			                    <field name="pos_restrict_cancel_order_employee_ids" widget="many2many_tags" placeholder="Select Employee(s)" domain="[('company_id', '=', company_id),('id','in',(pos_basic_employee_ids + pos_advanced_employee_ids))]" />
+			                </div>
+                    	</div>
+                    </setting>
+
+                    <setting id="pos_restrict_product_info_setting"
+                             string="Restrict Product Info (per employee)"
+                             title="Select employees who cannot open Product Info in POS"
+                             invisible="not pos_module_pos_hr">
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <label for="pos_restrict_product_info_employee_ids"
+                                       string="Restrict Product Info"
+                                       class="col-lg-4 o_light_label"/>
+                                <field name="pos_restrict_product_info_employee_ids"
+                                       widget="many2many_tags"
+                                       placeholder="Select Employee(s)"
+                                       domain="[('company_id','=',company_id),('id','in',(pos_basic_employee_ids + pos_advanced_employee_ids))]"/>
+                            </div>
+
+
+                        </div>
+                    </setting>
+                </block>
+        	</xpath>
+<!--            <xpath expr="//block[@id='pos_restrict_section']" position="after">-->
+<!--        		<block title="USD to LBP Currency Rate" id="pos_currency" invisible="is_kiosk_mode">-->
+<!--                    <setting  title="Enter USD LBP Currency Rate" >-->
+<!--                    	<div class="content-group mt16">-->
+<!--			                <div class="row">-->
+<!--			                    <label for="dual_currency_rate" string="USD TO LBP Currency Rate" class="col-lg-4 o_light_label" />-->
+<!--			                    <field name="dual_currency_rate"  />-->
+<!--			                </div>-->
+<!--                    	</div>-->
+<!--                    </setting>-->
+
+<!--                </block>-->
+<!--        	</xpath>-->
+
+
+
+
+        </field>
+    </record>
+</odoo>

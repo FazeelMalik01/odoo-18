@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Show PO Number on customer invoice PDF -->
+    <template id="report_invoice_document_inherit_po_number_custom" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[@id='informations']" position="inside">
+            <div class="col" t-if="o.po_number" name="po_number">
+                <strong>PO Number</strong>
+                <div t-field="o.po_number"/>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
+

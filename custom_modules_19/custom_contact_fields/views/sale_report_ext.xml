@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Show PO Number on Sales Order / Quotation PDF -->
+    <template id="report_saleorder_document_inherit_po_number_custom" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//div[@id='informations']/div[@name='informations_reference']" position="after">
+            <div t-if="doc.po_number" class="col" name="informations_po_number">
+                <strong>PO Number</strong>
+                <div t-field="doc.po_number"/>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
+
