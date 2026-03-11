@@ -91,16 +91,24 @@
             <field name="event_city" string="City" readonly="event_same_as_billing"/>
             <field name="event_state_id" string="State" readonly="event_same_as_billing"/>
             <field name="event_zip" string="Zip/Postal code" readonly="event_same_as_billing"/>
-            <label for="event_zip_verification_id" string="Zip verification"/>
-            <field name="event_zip_verification_id" nolabel="1" options="{'no_create': True}" />
+            <span class="o_form_label">Zip availability</span>
+            <div class="custom_rental_zip_availability d-inline-block">
+              <span class="badge rounded-pill bg-success text-white"
+                    invisible="event_zip_verification_status != 'available'">
+                Available
+              </span>
+              <span class="badge rounded-pill bg-danger text-white"
+                    invisible="event_zip_verification_status != 'not_available'">
+                Not available
+              </span>
+            </div>
             <div colspan="2" class="text-muted small mt-1 mb-2" style="white-space: normal;">
               *IMPORTANT ZIP CODE VERIFICATION STEP* The zip code selected MUST MATCH the EVENT ZIP CODE / NOT the BILLING ZIP CODE (If different) CAUTION!! If Zip Code is not listed, you must verify franchise territory ownership with zip code file on intranet or by contacting corporate office.
             </div>
             <label for="event_type" string="Type of event"/>
-            <field name="event_type" nolabel="1" />
-            <div colspan="2" class="text-muted small mt-1 mb-2" style="white-space: normal;">
-              Type of Event? Birthday Party - Age of guests? Wedding, Bachelor Party, Corporate, School, etc.
-            </div>
+            <field name="event_type"
+                   nolabel="1"
+                   help="Type of Event? Birthday Party - Age of guests? Wedding, Bachelor Party, Corporate, School, etc."/>
             <label for="damage_waiver" string="Damage waiver"/>
             <field name="damage_waiver" nolabel="1" placeholder="Select..."/>
             <div colspan="2" class="text-muted small mt-1 mb-2" style="white-space: normal;">

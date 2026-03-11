@@ -31,7 +31,7 @@ class VehicleRegister(models.Model):
     )
     color = fields.Char(string='Color')
     kilometer = fields.Float(string='Current Kilometer')
-    model_year = fields.Char(string='Model Year')
+    model_year = fields.Many2one('vehicle.model.year', string="Model Year")
     kilometer_log_ids = fields.One2many(
     'vehicle.kilometer.log',
     'vehicle_id',

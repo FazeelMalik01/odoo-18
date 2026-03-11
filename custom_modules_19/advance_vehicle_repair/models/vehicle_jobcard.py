@@ -66,12 +66,12 @@ class VehicleJobcard(models.Model):
         ('automatic', "Automatic"),
         ('cvt', "CVT")
     ], string='Transmission Type', default='manual', store=True)
-
+    kilometer = fields.Float(string='Current Kilometer')
     inspection_type = fields.Selection([
         ('full_inspection', 'Full Inspection'),
         ('specific_inspection', 'Specific Inspection')
     ], string="Type of Inspection", default="specific_inspection", store=True)
-
+    model_year = fields.Many2one('vehicle.model.year', string="Model Year")
     is_part_assessment = fields.Boolean(string="Part Assessment", default=True)
     is_inner_body_inspection = fields.Boolean(string="Inner Body Inspection", default=True)
     is_outer_body_inspection = fields.Boolean(string="Outer Body Inspection")
@@ -124,7 +124,10 @@ class VehicleJobcard(models.Model):
     task_count = fields.Integer(string="Task", compute='_compute_task_count')
 
     #Technicians
-    technician_ids = fields.Many2many('res.users', string="Technicians", compute="_compute_technicians", store=True)
+    technician_ids = fields.Many2many('res.partner', string="Technicians", compute="_compute_technicians", store=True)
+
+    #bundle
+    bundle_id = fields.Many2one('auto.service.bundle')
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -233,6 +236,8 @@ class VehicleJobcard(models.Model):
                 self.fuel_type_id = False
                 self.vin_no = False
                 self.transmission_type = False
+                self.kilometer = False
+                self.model_year = False
 
         else:
             self.street = ''
@@ -251,6 +256,7 @@ class VehicleJobcard(models.Model):
             self.fuel_type_id = False
             self.vin_no = False
             self.transmission_type = False
+            self.model_year = False
 
     @api.onchange('vehicle_register_id')
     def _onchange_vehicle_register_id(self):
@@ -264,6 +270,8 @@ class VehicleJobcard(models.Model):
             self.fuel_type_id = vehicle.fuel_type_id.id
             self.vin_no = vehicle.vin_no
             self.transmission_type = vehicle.transmission_type
+            self.kilometer = vehicle.kilometer
+            self.model_year = vehicle.model_year
 
         else:
             self.brand_id = False
@@ -272,6 +280,8 @@ class VehicleJobcard(models.Model):
             self.fuel_type_id = False
             self.vin_no = False
             self.transmission_type = False
+            self.kilometer = False
+            self.model_year = False
 
     def _compute_sale_count(self):
         for record in self:
@@ -530,5 +540,93 @@ class VehicleJobcard(models.Model):
     @api.depends('service_ids.assigners')
     def _compute_technicians(self):
         for record in self:
-            users = record.service_ids.mapped('assigners_user_ids')
-            record.technician_ids = [(6, 0, users.ids)]
+            partners = record.service_ids.mapped('assigners.employee_id.work_contact_id')
+            record.technician_ids = [(6, 0, partners.ids)]
+
+    
+    @api.constrains('kilometer')
+    def _check_and_update_kilometer(self):
+        for record in self:
+            if record.vehicle_register_id:
+                current_km = record.vehicle_register_id.kilometer or 0
+                # Validation: new km cannot be lower
+                if record.kilometer < current_km:
+                    raise ValidationError(
+                        f"New kilometer ({record.kilometer}) cannot be lower than current vehicle kilometer ({current_km})!"
+                    )
+                # Only add log if kilometer increased
+                if record.kilometer > current_km:
+                    # Update vehicle register km
+                    record.vehicle_register_id.kilometer = record.kilometer
+    
+    @api.onchange('parts_ids')
+    def _onchange_parts_ids_add_service(self):
+        for jobcard in self:
+            existing_services = jobcard.service_ids.mapped('service_id.id')
+
+            commands = []
+
+            for line in jobcard.parts_ids:
+                spare_product = line.spare_id
+
+                if spare_product.linked_service_id and spare_product.linked_service_id.id not in existing_services:
+                    commands.append((0, 0, {
+                        'service_id': spare_product.linked_service_id.id,
+                    }))
+
+            if commands:
+                jobcard.service_ids = commands
+
+    
+    @api.onchange('bundle_id')
+    def _onchange_bundle_id(self):
+        """Populate services and spare parts from selected bundle"""
+        for jobcard in self:
+            if not jobcard.bundle_id:
+                continue
+
+            service_commands = []
+            spare_commands = []
+
+            for line in jobcard.bundle_id.line_ids:
+                if line.type == 'service' and line.service_id:
+                    service_commands.append((0, 0, {
+                        'service_id': line.service_id.id,
+                    }))
+                elif line.type == 'spare' and line.spare_id:
+                    spare_commands.append((0, 0, {
+                        'spare_id': line.spare_id.id,
+                        'quantity': line.quantity,
+                    }))
+
+            # Replace existing lines with bundle lines (optional: can append instead)
+            jobcard.service_ids = service_commands
+            jobcard.parts_ids = spare_commands
+
+    
+    # @api.onchange('model_id', 'model_year')
+    # def _onchange_model_spare_parts(self):
+    #     """Populate spare parts lines based on selected vehicle model and year"""
+    #     for jobcard in self:
+    #         if not jobcard.model_id:
+    #             jobcard.parts_ids = [(5, 0, 0)]  # clear lines if no model
+    #             continue
+
+    #         # Find all spare products compatible with this model and model year
+    #         compatible_products = self.env['product.vehicle.compatibility'].search([
+    #             ('model_id', '=', jobcard.model_id.id),
+    #             ('model_year_ids', 'in', jobcard.model_year.id) if jobcard.model_year else ('id', '!=', 0)  # all years if not selected
+    #         ])
+
+    #         spare_products = compatible_products.mapped('product_id').filtered(lambda p: p.spare_part)
+
+    #         # Create commands to add to parts_ids
+    #         parts_commands = []
+    #         for product in spare_products:
+    #             parts_commands.append((0, 0, {
+    #                 'spare_id': product.id,
+    #                 'quantity': 1,
+    #             }))
+
+    #         # Replace current lines with these parts
+    #         jobcard.parts_ids = parts_commands

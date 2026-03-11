@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_repair_technician_wizard" model="ir.ui.view">
+        <field name="name">repair.technician.wizard.form</field>
+        <field name="model">repair.technician.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Technician">
+                <group>
+                    <field name="employee_id"
+                       domain="[('id','in',team_employee_ids)]"/>
+                </group>
+                <footer>
+                    <button name="action_start_timer"
+                        string="Start Timer"
+                        type="object"
+                        class="btn-primary"/>
+                    <button string="Cancel"
+                        special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

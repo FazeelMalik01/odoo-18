@@ -26,3 +26,6 @@ from . import jobcard_type_wizard
 from . import vehicle_kilometer_logs
 from . import jobcard_inspector_wizard
 from . import vehicle_analytic_account
+from . import vehicle_task_assigner_wizard
+from . import vehicle_service_bundle
+from . import vehicle_compatibility

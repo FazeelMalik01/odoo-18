@@ -14,3 +14,4 @@ class VehicleServices(models.Model):
     colr_picker = fields.Integer(string="color", tracking=True)
     is_recurring = fields.Boolean(string="Recurring", tracking=True)
     recurring_days = fields.Integer(string="Days After", help="Number of days after which service repeats")
+    estimated_time = fields.Float( string="Estimated Time", help="Estimated service duration")

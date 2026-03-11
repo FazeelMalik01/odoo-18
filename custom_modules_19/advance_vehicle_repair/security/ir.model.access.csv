@@ -55,10 +55,16 @@ access_select_inspector_wizard,select.inspector.wizard,model_select_inspector_wi
 
 access_vehicle_kilometer_log_user,access.vehicle.kilometer.log.user,model_vehicle_kilometer_log,base.group_user,1,1,1,1
 
+access_repair_technician_wizard,access_repair_technician_wizard,model_repair_technician_wizard,,1,1,1,1
 
+access_service_bundle_manager,access_service_bundle_manager,model_auto_service_bundle,base.group_user,1,1,1,1
+access_service_bundle_line_manager,access_service_bundle_line_manager,model_auto_service_bundle_line,base.group_user,1,1,1,1
 
+access_product_vehicle_compatibility,access_product_vehicle_compatibility,model_product_vehicle_compatibility,base.group_user,1,1,1,1
 
+access_vehicle_model_year,access_product_vehicle_compatibility,model_product_vehicle_compatibility,base.group_user,1,1,1,1
 
+access_vehicle_model_year_user,vehicle.model.year user,model_vehicle_model_year,base.group_user,1,1,1,1
 
 
 

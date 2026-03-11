@@ -36,13 +36,14 @@
                                 <field name="product_id"/>
                                 <field name="service_team_id"/>
                                 <field name="is_recurring"/>
-                                <field name="recurring_days" invisible="not is_recurring"/>  
+                                <field name="recurring_days" invisible="not is_recurring"/>
                             </group>
                             <group>
                                 <field name="company_id" invisible="1"/>
                                 <field name="company_currency"/>
                                 <field name="service_amount" widget="monetary"
                                        options="{'currency_field': 'company_currency'}"/>
+                                <field name="estimated_time" widget="float_time"/>
                             </group>
                         </group>
                     </div>

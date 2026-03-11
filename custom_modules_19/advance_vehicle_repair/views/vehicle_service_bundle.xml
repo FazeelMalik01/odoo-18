@@ -1,0 +1,53 @@
+<odoo>
+    <record id="vehicle_services_bundle_list" model="ir.ui.view">
+        <field name="name">auto.service.bundle.list</field>
+        <field name="model">auto.service.bundle</field>
+        <field name="arch" type="xml">
+            <list string="Vehicle Service Bundle">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_auto_service_bundle_form" model="ir.ui.view">
+        <field name="name">auto.service.bundle.form</field>
+        <field name="model">auto.service.bundle</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <notebook>
+                        <page string="Bundle Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="type"/>
+                                    <field name="spare_id"/>
+                                    <field name="service_id"/>
+                                    <field name="quantity"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_service_bundle" model="ir.actions.act_window">
+        <field name="name">Service Bundles</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">auto.service.bundle</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            Create reusable service bundles here!
+        </p>
+        </field>
+    </record>
+    <menuitem
+    id="menu_service_bundles"
+    name="Service Bundles"
+    parent="root_vehicle_repair"
+    action="action_service_bundle"
+    sequence="8"/>
+</odoo>

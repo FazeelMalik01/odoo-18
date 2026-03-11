@@ -52,6 +52,8 @@ class VehicleRepairServicesLine(models.Model):
     # spare parts
     parts_ids = fields.One2many(related='jobcard_id.parts_ids', string="Spare Parts", readonly=False)
 
+    current_employee_id = fields.Many2one('hr.employee', string="Current Employee Timer")
+
     @api.depends('assigners')
     def _compute_assigners_user_ids(self):
         for record in self:
@@ -157,14 +159,33 @@ class VehicleRepairServicesLine(models.Model):
 
     def action_start_timer(self):
         self.ensure_one()
+        
+        employees = self.assigners.mapped('employee_id')
+        
+        # No assigners or multiple assigners → open wizard
+        if not employees or len(employees) > 1:
+            return self._open_technician_wizard()
+        
+        # Only one assigner → start timer directly
+        self._start_employee_timer(employees[0])
 
-        if not self.assigners_user_ids:
-            raise ValidationError("Assign at least one user before starting the timer.")
-
+    def _open_technician_wizard(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Select Technician',
+            'res_model': 'repair.technician.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_repair_line_id': self.id,
+            }
+        }
+    def _start_employee_timer(self, employee):
         self.timer_start = fields.Datetime.now()
         self.is_timer_running = True
         self.state = 'in_progress'
-    
+        self.current_employee_id = employee.id
+
     def action_pause_timer(self):
         self.ensure_one()
 
@@ -179,9 +200,11 @@ class VehicleRepairServicesLine(models.Model):
         self.timer_start = False
         self.is_timer_running = False
 
+        employee = self.current_employee_id
+
         self.env['account.analytic.line'].create({
             'name': self.title,
-            'user_id': self.env.user.id,
+            'employee_id': employee.id,
             'unit_amount': duration,
             'date': fields.Date.today(),
             'account_id': self.analytic_account_id.id,

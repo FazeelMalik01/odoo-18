@@ -1,0 +1,6 @@
+<odoo>
+    <record id="action_rental_pos_page" model="ir.actions.client">
+        <field name="name">Rental POS</field>
+        <field name="tag">rental_pos_page</field>
+    </record>
+</odoo>

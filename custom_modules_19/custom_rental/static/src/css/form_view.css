@@ -23,3 +23,18 @@
 .custom_rental_event_block {
     min-width: 490px;
 }
+
+/* Zip availability: pill-shaped tags with green/red */
+.custom_rental_zip_availability .badge {
+    border-radius: 9999px;
+    padding: 0.25rem 0.65rem;
+    font-weight: 500;
+}
+.custom_rental_zip_availability .badge.bg-success {
+    background-color: #198754 !important;
+    color: #fff !important;
+}
+.custom_rental_zip_availability .badge.bg-danger {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+}

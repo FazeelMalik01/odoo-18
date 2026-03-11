@@ -55,9 +55,21 @@
                 <!-- Insert after weight's parent group -->
                 <xpath expr="//field[@name='weight']/ancestor::group[1]" position="after">
                     <group string="Dimensions">
-                        <field name="length"/>
-                        <field name="width"/>
-                        <field name="height"/>
+                        <label for="length"/>
+                        <div class="o_row" name="length_row">
+                            <field name="length" class="oe_inline" style="max-width: 7rem;"/>
+                            <field name="length_uom_name"/>
+                        </div>
+                        <label for="width"/>
+                        <div class="o_row" name="width_row">
+                            <field name="width" class="oe_inline" style="max-width: 7rem;"/>
+                            <field name="width_uom_name"/>
+                        </div>
+                        <label for="height"/>
+                        <div class="o_row" name="height_row">
+                            <field name="height" class="oe_inline" style="max-width: 7rem;"/>
+                            <field name="height_uom_name"/>
+                        </div>
                     </group>
                 </xpath>
 

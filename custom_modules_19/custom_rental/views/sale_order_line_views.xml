@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Add per-line rental period and duration to order lines (form) -->
+    <record id="view_order_form_order_line_rental_period" model="ir.ui.view">
+        <field name="name">sale.order.form.order.line.rental.period</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_renting.rental_order_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Form: rental period and duration per line (when is_rental) -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='price_unit']" position="after">
+                <field name="return_date" invisible="1"/>
+                <label for="start_date" string="Rental period" invisible="not is_rental"/>
+                <div class="o_row" invisible="not is_rental">
+                    <field name="start_date"
+                           string="Rental period"
+                           widget="daterange"
+                           options="{'end_date_field': 'return_date'}"/>
+                </div>
+                <label for="duration_hours" string="Duration" invisible="not is_rental or not start_date"/>
+                <div class="o_row" invisible="not is_rental or not start_date">
+                    <field name="duration_hours" class="oe_inline" style="max-width: 3rem" invisible="duration_hours == 0"/>
+                    <span class="ms-1"> hours</span>
+                </div>
+            </xpath>
+            <!-- List: columns for rental period and duration -->
+            <xpath expr="//field[@name='order_line']//list//field[@name='qty_returned']" position="after">
+                <field name="start_date"
+                       string="Start"
+                       optional="show"
+                       column_invisible="not parent.is_rental_order"/>
+                <field name="return_date"
+                       string="Return"
+                       optional="show"
+                       column_invisible="not parent.is_rental_order"/>
+                <field name="duration_hours"
+                       string="Duration (hours)"
+                       optional="show"
+                       column_invisible="not parent.is_rental_order"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

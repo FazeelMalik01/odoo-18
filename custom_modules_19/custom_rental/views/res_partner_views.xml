@@ -7,6 +7,11 @@
       <field name="model">res.partner</field>
       <field name="inherit_id" ref="base.view_partner_form"/>
       <field name="arch" type="xml">
+        <!-- <xpath expr="//field[@name='name']/.." position="after">
+          <div class="d-flex align-items-baseline w-md-50">
+            <field name="last_name" class="w-100" placeholder="Last Name"/>
+          </div>
+        </xpath> -->
         <xpath expr="//div[contains(@class, 'd-flex') and contains(@class, 'align-items-baseline')]//field[@name='phone']/parent::div" position="after">
           <div class="d-flex align-items-baseline w-md-50">
             <i class="fa fa-fw me-1 fa-phone text-primary" title="Secondary Phone"/>

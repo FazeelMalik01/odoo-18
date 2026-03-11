@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="invoice_pay_public" name="Public Invoice Payment">
+        <t t-call="web.layout">
+
+            <div style="background:#f8f9fa; min-height:100vh; padding:40px 16px;">
+                <div style="max-width:640px; margin:0 auto;">
+
+                    <!-- Header -->
+                    <div style="background:#875A7B; color:white; padding:24px 32px;
+                                border-radius:8px 8px 0 0; text-align:center;">
+                        <h2 style="margin:0; font-size:22px;">Invoice Payment</h2>
+                        <p style="margin:8px 0 0; opacity:0.85;">
+                            <t t-esc="invoice.name"/>
+                        </p>
+                    </div>
+
+                    <!-- Invoice Summary + Payment -->
+                    <div style="background:white; padding:32px;
+                                border:1px solid #e0e0e0; border-top:none;
+                                border-radius:0 0 8px 8px;">
+
+                        <!-- Invoice Details Table -->
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:28px;">
+                            <tr style="background:#f9f9f9;">
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;
+                                           font-weight:bold; width:45%;">Invoice</td>
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;">
+                                    <t t-esc="invoice.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;
+                                           font-weight:bold;">Customer</td>
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;">
+                                    <t t-esc="partner.name"/>
+                                </td>
+                            </tr>
+                            <tr style="background:#f9f9f9;">
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;
+                                           font-weight:bold;">Reference</td>
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;">
+                                    <t t-esc="invoice.invoice_origin"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;
+                                           font-weight:bold;">Due Date</td>
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;">
+                                    <t t-esc="invoice.invoice_date_due"/>
+                                </td>
+                            </tr>
+                            <tr style="background:#fff3f3;">
+                                <td style="padding:12px 14px; border:1px solid #e0e0e0;
+                                           font-weight:bold; font-size:16px;">Amount Due</td>
+                                <td style="padding:12px 14px; border:1px solid #e0e0e0;
+                                           color:#e74c3c; font-weight:bold; font-size:20px;">
+                                    <t t-esc="currency.symbol"/>
+                                    <t t-esc="'%.2f' % amount"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Payment Providers -->
+                        <t t-if="providers">
+                            <h5 style="margin-bottom:16px; color:#333; font-size:15px;">
+                                Select Payment Method
+                            </h5>
+
+                            <t t-foreach="providers" t-as="provider">
+                                <div style="border:2px solid #e0e0e0; border-radius:6px;
+                                            padding:14px 16px; margin-bottom:10px;
+                                            cursor:pointer; background:white;
+                                            transition: all 0.15s;"
+                                     t-att-id="'provider-%d' % provider.id"
+                                     t-att-data-provider-id="provider.id"
+                                     t-att-data-provider-code="provider.code"
+                                     t-att-data-provider-key="provider.stripe_publishable_key if provider.code == 'stripe' else ''"
+                                     onclick="selectProvider(this)">
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        <t t-if="provider.image_128">
+                                            <img t-att-src="'/web/image/payment.provider/%s/image_128' % provider.id"
+                                                 style="height:28px; width:auto;"/>
+                                        </t>
+                                        <strong style="font-size:15px; color:#333;">
+                                            <t t-esc="provider.name"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </t>
+
+                            <!-- Stripe Card Element — shown when Stripe selected -->
+                            <div id="stripe-card-container"
+                                 style="display:none; margin:16px 0;">
+                                <label style="font-size:13px; color:#555;
+                                              font-weight:bold; margin-bottom:8px;
+                                              display:block;">
+                                    Card Details
+                                </label>
+                                <div id="stripe-card-element"
+                                     style="border:1px solid #ccc; border-radius:6px;
+                                            padding:14px 12px; background:white;">
+                                    <!-- Stripe.js injects the card form here -->
+                                </div>
+                                <div id="stripe-card-errors"
+                                     style="color:#e74c3c; margin-top:8px;
+                                            font-size:13px; min-height:18px;">
+                                </div>
+                            </div>
+
+                            <!-- Pay Button -->
+                            <div style="margin-top:24px;">
+                                <button id="pay-btn"
+                                        onclick="submitPayment()"
+                                        style="background:#875A7B; color:white; border:none;
+                                               padding:14px 24px; border-radius:6px;
+                                               font-size:17px; font-weight:bold;
+                                               cursor:pointer; width:100%;
+                                               letter-spacing:0.3px;">
+                                    Pay
+                                    <t t-esc="currency.symbol"/>
+                                    <t t-esc="'%.2f' % amount"/>
+                                </button>
+                            </div>
+
+                            <p style="color:#999; font-size:11px; text-align:center;
+                                      margin-top:16px;">
+                                Your payment is secured and encrypted.
+                            </p>
+                        </t>
+
+                        <!-- No payment providers configured -->
+                        <t t-else="">
+                            <div style="background:#fff3cd; border:1px solid #ffc107;
+                                        border-radius:6px; padding:16px; text-align:center;">
+                                <p style="margin:0; color:#856404;">
+                                    <strong>No online payment methods available.</strong><br/>
+                                    Please contact us to arrange payment for invoice
+                                    <strong><t t-esc="invoice.name"/></strong>.
+                                </p>
+                            </div>
+                        </t>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden fields -->
+            <input type="hidden" id="hid-invoice-id"   t-att-value="invoice.id"/>
+            <input type="hidden" id="hid-amount"       t-att-value="amount"/>
+            <input type="hidden" id="hid-currency-id"  t-att-value="currency.id"/>
+            <input type="hidden" id="hid-partner-id"   t-att-value="partner.id"/>
+            <input type="hidden" id="hid-access-token" t-att-value="access_token"/>
+            <input type="hidden" id="hid-stripe-key"   t-att-value="stripe_publishable_key"/>
+
+            <!-- Stripe.js -->
+            <script src="https://js.stripe.com/v3/"></script>
+
+            <script type="text/javascript">
+            <![CDATA[
+                var selectedProviderId   = null;
+                var selectedProviderCode = null;
+                var stripe               = null;
+                var stripeCard           = null;
+
+                function selectProvider(el) {
+                    // Reset all cards
+                    document.querySelectorAll('[data-provider-id]').forEach(function(e) {
+                        e.style.borderColor = '#e0e0e0';
+                        e.style.background  = 'white';
+                    });
+
+                    // Highlight selected
+                    el.style.borderColor = '#875A7B';
+                    el.style.background  = '#fdf6ff';
+
+                    selectedProviderId   = parseInt(el.getAttribute('data-provider-id'));
+                    selectedProviderCode = el.getAttribute('data-provider-code');
+                    var providerKey      = el.getAttribute('data-provider-key') || '';
+
+                    var stripeContainer = document.getElementById('stripe-card-container');
+
+                    if (selectedProviderCode === 'stripe') {
+                        stripeContainer.style.display = 'block';
+
+                        // Init Stripe Elements only once
+                        if (!stripe) {
+                            var pubKey = providerKey || document.getElementById('hid-stripe-key').value;
+                            if (!pubKey) {
+                                document.getElementById('stripe-card-errors').textContent =
+                                    'Stripe publishable key not configured.';
+                                return;
+                            }
+                            stripe = Stripe(pubKey);
+                            var elements = stripe.elements();
+                            stripeCard = elements.create('card', {
+                                hidePostalCode: true,
+                                style: {
+                                    base: {
+                                        fontSize: '16px',
+                                        color: '#333333',
+                                        fontFamily: 'Arial, sans-serif',
+                                        '::placeholder': { color: '#aaaaaa' }
+                                    },
+                                    invalid: { color: '#e74c3c' }
+                                }
+                            });
+                            stripeCard.mount('#stripe-card-element');
+                            stripeCard.on('change', function(event) {
+                                document.getElementById('stripe-card-errors').textContent =
+                                    event.error ? event.error.message : '';
+                            });
+                        }
+                    } else {
+                        stripeContainer.style.display = 'none';
+                    }
+                }
+
+                async function submitPayment() {
+                    if (!selectedProviderId) {
+                        alert('Please select a payment method.');
+                        return;
+                    }
+
+                    var btn = document.getElementById('pay-btn');
+                    btn.disabled    = true;
+                    btn.textContent = 'Processing...';
+
+                    var invoiceId   = parseInt(document.getElementById('hid-invoice-id').value);
+                    var amount      = parseFloat(document.getElementById('hid-amount').value);
+                    var currencyId  = parseInt(document.getElementById('hid-currency-id').value);
+                    var partnerId   = parseInt(document.getElementById('hid-partner-id').value);
+                    var accessToken = document.getElementById('hid-access-token').value;
+
+                    try {
+                        // ── Step 1: Create transaction on server ──────────
+                        var response = await fetch('/rental/pay/create-transaction', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method:  'call',
+                                id:      1,
+                                params: {
+                                    invoice_id:  invoiceId,
+                                    access_token: accessToken,
+                                    provider_id: selectedProviderId,
+                                }
+                            })
+                        });
+
+                        var data   = await response.json();
+                        var result = data.result;
+
+                        if (!result || result.error) {
+                            throw new Error(result && result.error ? result.error : 'Transaction creation failed');
+                        }
+
+                        // ── Step 2: Handle by provider ────────────────────
+                        if (selectedProviderCode === 'stripe') {
+
+                            if (!result.client_secret) {
+                                throw new Error('Stripe client secret not received. Check Stripe API keys.');
+                            }
+
+                            // Confirm card payment via Stripe.js
+                            var confirmResult = await stripe.confirmCardPayment(
+                                result.client_secret,
+                                { payment_method: { card: stripeCard } }
+                            );
+
+                            if (confirmResult.error) {
+                                throw new Error(confirmResult.error.message);
+                            }
+
+                            // ── Step 3: Notify Odoo that payment succeeded ─
+                            await fetch('/rental/pay/stripe-confirm', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    jsonrpc: '2.0',
+                                    method:  'call',
+                                    id:      1,
+                                    params: {
+                                        tx_id:              result.tx_id,
+                                        access_token:       accessToken,
+                                        payment_intent_id:  confirmResult.paymentIntent.id,
+                                    }
+                                })
+                            });
+
+                            // ── Step 4: Redirect to status page ───────────
+                            window.location.href = '/rental/pay/status?tx_id='
+                                + result.tx_id + '&access_token=' + accessToken;
+
+                        } else if (result.redirect_url) {
+                            window.location.href = result.redirect_url;
+
+                        } else {
+                            window.location.href = '/rental/pay/status?tx_id='
+                                + result.tx_id + '&access_token=' + accessToken;
+                        }
+
+                    } catch(e) {
+                        document.getElementById('stripe-card-errors').textContent = e.message || 'Payment failed.';
+                        alert('Payment error: ' + (e.message || 'Unknown error'));
+                        btn.disabled    = false;
+                        btn.textContent = 'Pay';
+                    }
+                }
+            ]]>
+            </script>
+
+        </t>
+    </template>
+
+    <!-- ── Payment Status Page ── -->
+    <template id="invoice_pay_status" name="Invoice Payment Status">
+        <t t-call="web.layout">
+            <div style="background:#f8f9fa; min-height:100vh; padding:40px 16px;">
+                <div style="max-width:500px; margin:0 auto; background:white;
+                            border-radius:8px; padding:48px 40px; text-align:center;
+                            border:1px solid #e0e0e0; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+
+                    <t t-if="not tx">
+                        <div style="font-size:56px;">&#x26A0;</div>
+                        <h2 style="color:#dc3545;">Payment Not Found</h2>
+                        <p style="color:#666;">Unable to find your payment. Please contact us.</p>
+                    </t>
+
+                    <t t-elif="tx.state == 'done'">
+                        <div style="font-size:56px;">&#x2705;</div>
+                        <h2 style="color:#28a745; margin:16px 0 8px;">Payment Successful!</h2>
+                        <p style="color:#555; font-size:16px;">
+                            Your payment of
+                            <strong>
+                                <t t-esc="tx.currency_id.symbol"/>
+                                <t t-esc="'%.2f' % tx.amount"/>
+                            </strong>
+                            has been received.
+                        </p>
+                        <t t-if="invoice">
+                            <p style="color:#888; font-size:14px;">
+                                Invoice <strong><t t-esc="invoice.name"/></strong>
+                                <t t-if="invoice.payment_state == 'paid'"> is fully paid.</t>
+                                <t t-else=""> has been partially paid.</t>
+                            </p>
+                        </t>
+                        <div style="margin-top:24px; padding:16px; background:#f0fff4;
+                                    border-radius:6px; border:1px solid #b2dfdb;">
+                            <p style="margin:0; color:#2e7d32; font-size:13px;">
+                                A confirmation has been recorded. Thank you for your payment!
+                            </p>
+                        </div>
+                    </t>
+
+                    <t t-elif="tx.state == 'pending'">
+                        <div style="font-size:56px;">&#x23F3;</div>
+                        <h2 style="color:#f57c00; margin:16px 0 8px;">Payment Pending</h2>
+                        <p style="color:#555;">
+                            Your payment is being processed. You will receive a
+                            confirmation shortly.
+                        </p>
+                    </t>
+
+                    <t t-elif="tx.state == 'cancel'">
+                        <div style="font-size:56px;">&#x274C;</div>
+                        <h2 style="color:#dc3545; margin:16px 0 8px;">Payment Cancelled</h2>
+                        <p style="color:#555;">
+                            Your payment was cancelled. Please try again or
+                            contact us for assistance.
+                        </p>
+                    </t>
+
+                    <t t-elif="tx.state == 'error'">
+                        <div style="font-size:56px;">&#x26A0;</div>
+                        <h2 style="color:#dc3545; margin:16px 0 8px;">Payment Error</h2>
+                        <p style="color:#555;">
+                            Something went wrong with your payment.
+                            Please try again or contact us.
+                        </p>
+                    </t>
+
+                    <t t-else="">
+                        <div style="font-size:56px;">&#x23F3;</div>
+                        <h2 style="color:#666; margin:16px 0 8px;">Processing...</h2>
+                        <p style="color:#555;">Your payment is being processed.</p>
+                    </t>
+
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

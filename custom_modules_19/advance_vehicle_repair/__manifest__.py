@@ -91,6 +91,7 @@
         'wizard/jobcard_type_wizard.xml',
         'wizard/jobcard_inspector_wizard.xml',
         'wizard/wizard_action.xml',
+        'wizard/vehicle_task_assigner_wizard.xml',
 
         'views/vehicle_config_menus.xml',
         'views/vehicle_brand_views.xml',
@@ -117,6 +118,7 @@
         'views/vehicle_register_views.xml',
         'views/vehicle_jobcard_views.xml',
         'views/web_template_views.xml',
+        'views/vehicle_service_bundle.xml',
 
         'reports/vehicle_report.xml',
         'reports/vehicle_inspection_template.xml',

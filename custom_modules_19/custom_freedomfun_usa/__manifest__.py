@@ -23,7 +23,7 @@ and automatically creates CRM leads in Odoo.
     ],
 
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'views/crm_lead_form.xml',
         'data/cron.xml'
     ],

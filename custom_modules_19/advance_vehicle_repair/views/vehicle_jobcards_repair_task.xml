@@ -191,7 +191,7 @@
                         <page string="Timesheets" name="timesheets">
                             <field name="timesheet_ids" context="{'default_repair_line_id': id}">
                                 <list editable="bottom">
-                                    <field name="user_id"/>
+                                     <field name="employee_id" string="Technician"/>
                                     <field name="name"/>
                                     <field name="unit_amount" string="Duration"/>
                                 </list>
