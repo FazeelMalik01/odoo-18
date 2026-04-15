@@ -5,7 +5,7 @@ import { CharField }     from "@web/views/fields/char/char_field";
 import { onMounted, onWillUnmount } from "@odoo/owl";
 import { useService }    from "@web/core/utils/hooks";
 
-const MAPBOX_TOKEN = "pk.eyJ1IjoiZmZzc3VwcG9ydCIsImEiOiJjbW1uMWN1cDkxOWxxMnFzYjBldW5ybnU3In0.Df0CoWju8EcZ4PQVH6ag1w";
+const MAPBOX_TOKEN = your_token_here;
 
 const STREET_FIELD_NAMES = new Set(["street", "partner_street_display", "event_street"]);
 

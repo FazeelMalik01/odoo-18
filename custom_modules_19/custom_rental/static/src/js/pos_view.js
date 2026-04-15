@@ -8,8 +8,7 @@ import { standardActionServiceProps } from "@web/webclient/actions/action_servic
 import { user } from "@web/core/user";
 import { rpc } from "@web/core/network/rpc";
 
-const COLLECTION_ID = "68360a7c8d2bb90e61d3883f";
-const MAPBOX_TOKEN = "pk.eyJ1IjoiZmZzc3VwcG9ydCIsImEiOiJjbW1uMWN1cDkxOWxxMnFzYjBldW5ybnU3In0.Df0CoWju8EcZ4PQVH6ag1w";
+const MAPBOX_TOKEN = your_token_here;
 const TRAVEL_FREE_MILES = 5;       // first 5 miles are free
 const TRAVEL_FEE_STAFFED = 2.5;     // $2.50 / mile after free threshold (staffed)
 const TRAVEL_FEE_DROPOFF = 3.0;     // $3.00 / mile after free threshold (drop-off)
