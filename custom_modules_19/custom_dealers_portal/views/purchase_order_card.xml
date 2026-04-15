@@ -1,7 +1,7 @@
 <odoo>
     <template id="portal_my_home_inherit_purchase" name="Portal My Home - Purchase Orders Card" inherit_id="portal.portal_my_home" priority="50">
-        <xpath expr="//div[@id='portal_service_category']" position="inside">
-            <t t-if="request.env.user.show_customers_on_portal">
+        <xpath expr="//div[@id='portal_common_category']" position="inside">
+            <t t-if="request.env.user.sudo().dealer_status == 'approved' and request.env.user.sudo().show_customers_on_portal">
                 <div class="o_portal_index_card col-md-6 order-2">
                 <a t-attf-href="/my/purchase_orders"
                    class="d-flex gap-2 gap-md-3 py-3 pe-md-3 px-md-3 h-100 rounded text-decoration-none bg-100">

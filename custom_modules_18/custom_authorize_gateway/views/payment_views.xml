@@ -1,0 +1,14 @@
+<odoo>
+    <record id="action_authorize_customer_payments" model="ir.actions.act_window">
+        <field name="name">Authorize.Net Customer Payments</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_authorize_payment','=',True)]</field>
+    </record>
+    <record id="action_authorize_payment_transactions" model="ir.actions.act_window">
+        <field name="name">Authorize.Net Payment Transactions</field>
+        <field name="res_model">payment.transaction</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('provider_id.code','=','authorize')]</field>
+    </record>
+</odoo>

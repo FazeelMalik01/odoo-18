@@ -1,4 +1,4 @@
-from odoo import fields, models, api
+from odoo import fields, models
 
 class AutoServiceBundle(models.Model):
     _name = 'auto.service.bundle'
@@ -6,15 +6,22 @@ class AutoServiceBundle(models.Model):
 
     name = fields.Char(string="Bundle Name", required=True)
 
-    line_ids = fields.One2many(
-        'auto.service.bundle.line',
+    # Separate One2many for services and spares
+    service_line_ids = fields.One2many(
+        'auto.service.bundle.service.line',
         'bundle_id',
-        string="Bundle Lines"
+        string="Service Lines"
+    )
+    spare_line_ids = fields.One2many(
+        'auto.service.bundle.spare.line',
+        'bundle_id',
+        string="Spare Lines"
     )
 
-class AutoServiceBundleLine(models.Model):
-    _name = 'auto.service.bundle.line'
-    _description = "Auto Service Bundle Line"
+
+class AutoServiceBundleServiceLine(models.Model):
+    _name = 'auto.service.bundle.service.line'
+    _description = "Auto Service Bundle Service Line"
 
     bundle_id = fields.Many2one(
         'auto.service.bundle',
@@ -22,21 +29,28 @@ class AutoServiceBundleLine(models.Model):
         ondelete="cascade"
     )
 
-    type = fields.Selection([
-        ('service', 'Service'),
-        ('spare', 'Spare')
-    ], string="Type", required=True, default='service')
-
-
     service_id = fields.Many2one(
         'vehicle.services',
-        string="Service"
+        string="Service",
+        required=True
+    )
+
+
+class AutoServiceBundleSpareLine(models.Model):
+    _name = 'auto.service.bundle.spare.line'
+    _description = "Auto Service Bundle Spare Line"
+
+    bundle_id = fields.Many2one(
+        'auto.service.bundle',
+        string="Bundle",
+        ondelete="cascade"
     )
 
     spare_id = fields.Many2one(
         'product.product',
         string="Spare Part",
-        domain=[('spare_part','=',True)]
+        domain=[('spare_part','=',True)],
+        required=True
     )
 
     quantity = fields.Float(
@@ -44,12 +58,27 @@ class AutoServiceBundleLine(models.Model):
         default=1
     )
 
-    @api.onchange('type')
-    def _onchange_type(self):
-        for line in self:
-            if line.type == 'service':
-                # Clear spare_id
-                line.spare_id = False
-            elif line.type == 'spare':
-                # Clear service_id
-                line.service_id = False
+
+class VehicleJobcardBundleLine(models.Model):
+    _name = 'vehicle.jobcard.bundle.line'
+    _description = "Vehicle Jobcard Bundle Line"
+
+    jobcard_id = fields.Many2one(
+        'vehicle.jobcard',
+        string="Job Card",
+        ondelete="cascade"
+    )
+    bundle_id = fields.Many2one(
+        'auto.service.bundle',
+        string="Bundle",
+        required=True
+    )
+    # Optional: pull through for display
+    service_line_ids = fields.One2many(
+        related='bundle_id.service_line_ids',
+        string="Services"
+    )
+    spare_line_ids = fields.One2many(
+        related='bundle_id.spare_line_ids',
+        string="Spares"
+    )

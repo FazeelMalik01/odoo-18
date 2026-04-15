@@ -1,21 +1,33 @@
-# from odoo import http
+from odoo import http
+from odoo.http import request
 
 
-# class CustomDealersPortal(http.Controller):
-#     @http.route('/custom_dealers_portal/custom_dealers_portal', auth='public')
-#     def index(self, **kw):
-#         return "Hello, world"
+class PortalCatalogSecurity(http.Controller):
+    """Protect public access to product catalog pages on the website.
 
-#     @http.route('/custom_dealers_portal/custom_dealers_portal/objects', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('custom_dealers_portal.listing', {
-#             'root': '/custom_dealers_portal/custom_dealers_portal',
-#             'objects': http.request.env['custom_dealers_portal.custom_dealers_portal'].search([]),
-#         })
+    All attempts to access the standard /shop or product pages as a public user
+    are redirected to the login page. Logged-in users are redirected to the
+    dealer portal dashboard instead of the public catalog.
+    """
 
-#     @http.route('/custom_dealers_portal/custom_dealers_portal/objects/<model("custom_dealers_portal.custom_dealers_portal"):obj>', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('custom_dealers_portal.object', {
-#             'object': obj
-#         })
+    @http.route(
+        [
+            "/shop",
+            "/shop/<path:subpath>",
+            "/product/<model('product.template'):product>",
+            "/product/<model('product.template'):product>/<path:subpath>",
+        ],
+        type="http",
+        auth="public",
+        website=True,
+    )
+    def protect_public_catalog(self, **kwargs):
+        # If the visitor is not logged in, force them to the login page.
+        if request.env.user._is_public():
+            # After login, send them to the dealer portal dashboard.
+            return request.redirect("/web/login?redirect=/my")
+
+        # Logged-in users: send them to the dealer portal dashboard instead
+        # of showing the public catalog.
+        return request.redirect("/my")
 

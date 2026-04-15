@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="gym_exercise_form_view" model="ir.ui.view">
+        <field name="name">gym.exercise.form.view</field>
+        <field name="model">gym.exercise</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="avatar" widget="image" class="oe_avatar" nolabel="1"
+                           options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Pull-Ups/Chin-Ups.." required="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="exercise_for_id" widget="many2many_tags"
+                                   options="{'color_field': 'color','no_create':True}" required="1"/>
+                            <field name="equipment_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color','no_create':True}" required="1"/>
+                            <field name="available_equipment_ids" widget="many2many_tags"
+                                   invisible='1'/>
+                        </group>
+                        <group>
+                            <label for="approx_time" class="mt-1" string="Average Time"/>
+                            <div name="approx_time">
+                                <field name="approx_time" class="oe_inline"/>
+                                Minutes
+                            </div>
+                            <label for="calories_burn_per_hour" class="mt-1" string="Calories Burn"/>
+                            <div name="calories_burn_per_hour">
+                                <field name="calories_burn_per_hour" class="oe_inline"/>
+                                per Hour
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Instructions" name="instructions">
+                            <field name="instruction" nolabel="1"/>
+                        </page>
+                        <page string="Benefits" name="benefits">
+                            <field name="benefits" nolabel="1"/>
+                        </page>
+                        <page name="step" string="Steps">
+                            <field name="exercise_step_ids">
+                                <form>
+                                    <sheet>
+                                        <field name="step_image" widget="image" class="oe_avatar"
+                                               options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"
+                                               nolabel="1"/>
+                                        <div class="oe_title">
+                                            <label for="name"/>
+                                            <h1>
+                                                <field name="name" required="1"/>
+                                            </h1>
+                                        </div>
+                                    </sheet>
+                                </form>
+                                <kanban string="Kanban" class="">
+                                    <field name="id"/>
+                                    <field name="step_image"/>
+                                    <templates>
+                                        <t t-name="card">
+                                            <div class="h-100 w-100">
+                                                <field name="step_image" widget="image" class="card-img-top"
+                                                       style="height:223px;"
+                                                       options="{'img_class': 'object-fit-cover h-100 w-100'}"/>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                        <page name="help" string="Help">
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                </group>
+                                <group>
+                                    <field name="video_url"/>
+                                </group>
+                            </group>
+                            <br/>
+                            <group invisible="video_url in ['', False]" style="text-align: center;">
+                                <field name="exercise_video" widget="video_preview" nolabel="1"/>
+                                <h4 class="o_invalid_warning text-muted text-center"
+                                    invisible="exercise_video != False">Please enter a valid Video
+                                    URL.
+                                </h4>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="gym_exercise_kanan_view" model="ir.ui.view">
+        <field name="name">gym.exercise.kanban.view</field>
+        <field name="model">gym.exercise</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id"/>
+                <templates>
+                    <t t-name="card" class="flex-row p-1">
+                        <aside class="o_kanban_aside_full p-1">
+                            <field name="avatar" widget="image"
+                                   options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                        </aside>
+                        <main class="ms-2 mt-1">
+                            <field name="name" class="fw-bold"/>
+                            <field name="exercise_for_id" widget="many2many_tags"
+                                   options="{'color_field': 'color'}"/>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="gym_exercise_tree_view" model="ir.ui.view">
+        <field name="name">gym.exercise.tree.view</field>
+        <field name="model">gym.exercise</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="exercise_for_id" widget="many2many_tags"/>
+                <field name="equipment_ids" widget="many2many_tags"/>
+                <field name="calories_burn_per_hour"/>
+            </list>
+        </field>
+    </record>
+    <record id="gym_exercise_search_view" model="ir.ui.view">
+        <field name="name">gym.exercise.search.view</field>
+        <field name="model">gym.exercise</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="exercise_for_id"/>
+                <group string="Group By">
+                    <filter name="exercise_for_id" string="Exercise For"
+                            context="{'group_by': 'exercise_for_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="gym_exercise_action" model="ir.actions.act_window">
+        <field name="name">Gym Exercises</field>
+        <field name="res_model">gym.exercise</field>
+        <field name="view_mode">kanban,list,form,activity,search</field>
+    </record>
+</odoo>

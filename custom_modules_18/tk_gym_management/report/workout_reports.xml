@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="gym_workout_plan_reports">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h1 class="text-center mb-5 display-6">
+                                <span t-field="doc.name"/>
+                            </h1>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Support Trainer</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="doc.trainer_id"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Workout Days</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="doc.workout_day_ids"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-5 ms-3">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Calories Burn</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="doc.calories_burn"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h6 style="background-color:#e9ecef;" class="py-1">
+                                <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <rect opacity="0.5" x="18" y="13" width="13" height="2"
+                                              rx="1" transform="rotate(-180 18 13)"
+                                              fill="currentColor"/>
+                                        <path
+                                                d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z"
+                                                fill="currentColor"/>
+                                    </svg>
+                                </span>
+                                Workout Exercises
+                            </h6>
+                            <table class="table table-responsive">
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            Exercise
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <strong>
+                                            Exercise For
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <strong>
+                                            Equipments
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <strong>
+                                            Sets
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <strong>
+                                            Repeat
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        <strong>
+                                            Weight
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <t t-foreach="doc.workout_exercise_ids" t-as="rec">
+                                    <tr>
+                                        <td>
+                                            <span t-field="rec.exercise_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="rec.exercise_for_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="rec.equipment_ids"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="rec.exercise_sets"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="rec.sets_repeat"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="rec.weight"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        <record id="gym_workout_reports_id" model="ir.actions.report">
+            <field name="name">Workout Reports</field>
+            <field name="model">gym.workout</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">tk_gym_management.gym_workout_plan_reports</field>
+            <field name="report_file">tk_gym_management.gym_workout_plan_reports</field>
+            <field name="print_report_name">'Workout Report'</field>
+            <field name="binding_model_id" ref="model_gym_workout"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>

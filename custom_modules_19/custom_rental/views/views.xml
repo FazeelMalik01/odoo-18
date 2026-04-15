@@ -25,21 +25,27 @@
           <div colspan="2" class="text-muted small mt-2 mb-1" style="white-space: normal;">
               We do not set up on rock or gravel. You will need to provide a separate circuit for each item ordered. Units must have electricity located within 50' ft.
             </div>
+          
           <field name="additional_setup_terms_agreed" required="1"/>
           <label for="setup_surface" string="Setup surface"/>
           <field name="setup_surface" nolabel="1" placeholder="Select..."/>
-          <label for="general_discount" string="General Discount"/>
-          <field name="general_discount" nolabel="1"/>
+          <field name="is_freedom_fun_admin" invisible="1"/>
+          <label for="general_discount" string="General Discount" />
+          <field name="general_discount" nolabel="1" readonly="not is_freedom_fun_admin"/>
           <label for="internal_notes" string="Internal Notes"/>
           <field name="internal_notes" nolabel="1" placeholder="Internal notes..."/>
+          <label for="customer_notes" string="Customer Notes"/>
+          <field name="customer_notes" nolabel="1" placeholder="Customer notes..."/>
           <label for="override_travel_fee" string="Override Travel Fee"/>
-          <field name="override_travel_fee" nolabel="1"/>
+          <field name="override_travel_fee" nolabel="1" readonly="not is_freedom_fun_admin"/>
           <label for="override_deposit_amount" string="Override Deposit Amount"/>
-          <field name="override_deposit_amount" nolabel="1"/>
+          <field name="override_deposit_amount" nolabel="1" readonly="not is_freedom_fun_admin"/>
           <label for="override_tax_amount" string="Override Tax Amount"/>
-          <field name="override_tax_amount" nolabel="1"/>
+          <field name="override_tax_amount" nolabel="1" readonly="not is_freedom_fun_admin"/>
           <label for="miscellaneous_fees" string="Miscellaneous Fees"/>
-          <field name="miscellaneous_fees" nolabel="1"/>
+          <field name="miscellaneous_fees" nolabel="1" readonly="not is_freedom_fun_admin"/>
+          <label for="tip" string="Tip"/>
+          <field name="tip" nolabel="1" readonly="not is_freedom_fun_admin"/>
         </xpath>
         <!-- Customer + Company/Address/City/State/Zip in one group, Customer on first row -->
         <xpath expr="//group[@name='partner_details']/field[@name='partner_id']" position="replace">
@@ -70,8 +76,10 @@
             <label for="how_did_you_hear" string="How did you hear about us"/>
             <field name="how_did_you_hear" nolabel="1" placeholder="Select..."/>
             <field name="partner_country_id_display" invisible="1"/>
+            <field name="extra_fees_total" invisible="1"/>
           </group>
         </xpath>
+        
       </field>
     </record>
     <!-- Rental / Sale order form: event information next to Customer & Billing, above Expiration -->

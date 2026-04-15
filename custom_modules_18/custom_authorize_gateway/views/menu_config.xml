@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root menu -->
+    <menuitem id="menu_authorize_payment_root"
+              name="Authorize Payment"
+              web_icon="custom_authorize_gateway,static/src/img/auth.jpeg"
+              sequence="10"/>
+    <!-- Customer Payments submenu -->
+    <menuitem id="menu_authorize_customer_payments"
+              name="Customer Payments"
+              parent="menu_authorize_payment_root"
+              action="action_authorize_customer_payments"
+              sequence="10"/>
+    <!-- Payment Transactions submenu -->
+    <menuitem id="menu_authorize_payment_transactions"
+              name="Payment Transactions"
+              parent="menu_authorize_payment_root"
+              action="action_authorize_payment_transactions"
+              sequence="20"/>
+</odoo>

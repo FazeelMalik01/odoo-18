@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="tk_gym_management.gym_management_dashboard" owl="1">
+        <section class="section gym_dashboard">
+            <div class="container">
+                <div class="container gym_dashboard">
+                    <div class="row">
+                        <div class="col-md-12 mb-4 mt32 mb16">
+                            <div class="row">
+                                <div class="col-12 col-sm-12 col-md-5">
+                                    <h4 class="section-header">Statistics</h4>
+                                </div>
+                            </div>
+                            <hr/>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-2 mb-4 mt8 mb16"
+                             t-on-click="() => this.viewGymMembers()">
+                            <div class="card all-bg p-32">
+                                <div class="card-body all-bg tk-card-body">
+                                    <img alt="users" width="40"
+                                         src="/tk_gym_management/static/src/img/members.svg"/>
+                                    <h4 class="tk-st-1 all-bg">Members</h4>
+                                    <h6 class="tk-st-2 all-bg">
+                                        <t t-esc="state.gymData['gym_members']"/>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-4 mt8 mb16"
+                             t-on-click="() => this.viewGymMemberships()">
+                            <div class="card purple-bg p-32">
+                                <div class="card-body purple-bg tk-card-body">
+                                    <img alt="users" width="40"
+                                         src="/tk_gym_management/static/src/img/membership.svg"/>
+                                    <h4 class="tk-st-1 purple-bg">Memberships</h4>
+                                    <h6 class="tk-st-2 purple-bg">
+                                        <t t-esc="state.gymData['gym_memberships']"/>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-4 mt8 mb16"
+                             t-on-click="() => this.viewGymEquipments()">
+                            <div class="card pink-bg p-32">
+                                <div class="card-body pink-bg tk-card-body">
+                                    <img alt="users" width="40"
+                                         src="/tk_gym_management/static/src/img/equipment.svg"/>
+                                    <h4 class="tk-st-1 pink-bg">Equipments</h4>
+                                    <h6 class="tk-st-2 pink-bg">
+                                        <t t-esc="state.gymData['gym_equipments']"/>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-4 mt8 mb16"
+                             t-on-click="() => this.viewGymWorkout()">
+                            <div class="card terminate-bg p-32">
+                                <div class="card-body terminate-bg tk-card-body">
+                                    <img alt="users" width="40"
+                                         src="/tk_gym_management/static/src/img/workouts.svg"/>
+                                    <h4 class="tk-st-1 terminate-bg">Workouts</h4>
+                                    <h6 class="tk-st-2 terminate-bg">
+                                        <t t-esc="state.gymData['gym_workouts']"/>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-4 mt8 mb16"
+                             t-on-click="() => this.viewGymExercise()">
+                            <div class="card warn-bg p-32">
+                                <div class="card-body warn-bg tk-card-body">
+                                    <img alt="users" width="40"
+                                         src="/tk_gym_management/static/src/img/excercise.svg"/>
+                                    <h4 class="tk-st-1 warn-bg">Exercises</h4>
+                                    <h6 class="tk-st-2 warn-bg">
+                                        <t t-esc="state.gymData['gym_exercises']"/>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 mb-4 mt8 mb16"
+                             t-on-click="() => this.viewGymClasses()">
+                            <div class="card active-bg p-32">
+                                <div class="card-body active-bg tk-card-body">
+                                    <img alt="users" width="40"
+                                         src="/tk_gym_management/static/src/img/yoga.svg"/>
+                                    <h4 class="tk-st-1 active-bg">Classes</h4>
+                                    <h6 class="tk-st-2 active-bg">
+                                        <t t-esc="state.gymData['gym_classes']"/>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-4 mt32 mb16">
+                            <div class="row">
+                                <div class="col-md-6 align-items-stretch">
+                                    <h4 class="mb16">Active Membership Details</h4>
+                                    <div class="tk-os-chart" t-ref='membership_categories'>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 align-items-stretch">
+                                    <h4 class="mb16">Membership Details</h4>
+                                    <div class="tk-os-chart" t-ref='membership_person'>
+                                    </div>
+                                </div>
+                                <!--                                <div class="col-md-8 align-items-stretch">-->
+                                <!--                                    <h4 class="mb16">Day wise Attendance</h4>-->
+                                <!--                                    <div class="tk-os-chart" t-ref='attendance'>-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-4 mt32 mb16">
+                            <div class="row">
+                                <div class="col-md-12 align-items-stretch">
+                                    <h5 class="mb16">Invoice Details Month wise </h5>
+                                    <div t-ref="payment_month" class="tk-os-chart">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </t>
+        </templates>

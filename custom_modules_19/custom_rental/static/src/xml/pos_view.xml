@@ -2,34 +2,41 @@
 <templates xml:space="preserve">
     <t t-name="custom_rental.RentalPosView">
         <div class="o_action o_view_controller d-flex flex-column">
-            <!-- ── CONTROL PANEL ── -->
             <div class="o_control_panel d-flex flex-column gap-3 px-3 pt-2 pb-3">
                 <div class="o_control_panel_main d-flex flex-wrap justify-content-between align-items-center gap-2 flex-grow-1">
                     <div class="o_control_panel_breadcrumbs d-flex align-items-center gap-1">
-                        <t t-if="state.page === 'products'">
+                        <t t-if="state.page === 'categories'">
                             <span class="fw-bold">Rental POS</span>
                         </t>
+                        <t t-if="state.page === 'products'">
+                            <span class="text-muted" style="cursor:pointer;" t-on-click="goToCategories">Rental POS</span>
+                            <i class="fa fa-chevron-right mx-1 text-muted" style="font-size:11px;"/>
+                            <span class="fw-bold" t-esc="state.selectedCategoryName"/>
+                        </t>
                         <t t-if="state.page === 'pricing'">
-                            <span class="text-muted" style="cursor:pointer;" t-on-click="goBack">Rental POS</span>
+                            <span class="text-muted" style="cursor:pointer;" t-on-click="goToCategories">Rental POS</span>
+                            <i class="fa fa-chevron-right mx-1 text-muted" style="font-size:11px;"/>
+                            <span class="text-muted" style="cursor:pointer;" t-on-click="goBack" t-esc="state.selectedCategoryName"/>
                             <i class="fa fa-chevron-right mx-1 text-muted" style="font-size:11px;"/>
                             <span class="fw-bold">Pricing</span>
                         </t>
                         <t t-if="state.page === 'checkout'">
-                            <span class="text-muted" style="cursor:pointer;" t-on-click="goBack">Rental POS</span>
+                            <span class="text-muted" style="cursor:pointer;" t-on-click="goToCategories">Rental POS</span>
                             <i class="fa fa-chevron-right mx-1 text-muted" style="font-size:11px;"/>
                             <span class="text-muted" style="cursor:pointer;" t-on-click="goBack">Pricing</span>
                             <i class="fa fa-chevron-right mx-1 text-muted" style="font-size:11px;"/>
                             <span class="fw-bold">Checkout</span>
                         </t>
                         <t t-if="state.page === 'success'">
-                            <span class="text-muted" style="cursor:pointer;" t-on-click="continueShopping">Rental POS</span>
+                            <span class="text-muted" style="cursor:pointer;" t-on-click="goToCategories">Rental POS</span>
                             <i class="fa fa-chevron-right mx-1 text-muted" style="font-size:11px;"/>
                             <span class="fw-bold text-success">Order Confirmed</span>
                         </t>
                     </div>
                     <div class="d-flex align-items-center gap-2">
                         <button t-if="state.cart.length > 0 and state.page !== 'pricing'"
-                            class="btn btn-warning position-relative"
+                            class="btn position-relative text-white border-0"
+                            style="background:#1a6fbe;"
                             t-on-click="goToPricing">
                             <i class="fa fa-shopping-cart me-1"/> Cart
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -47,6 +54,704 @@
                     </div>
                 </div>
             </div>
+            <!-- ── STEP INDICATOR (Cart → Checkout → Payment) ── -->
+            <t t-if="state.page === 'pricing' or state.page === 'checkout' or state.page === 'payment'">
+                <div class="d-flex align-items-center justify-content-center gap-0 px-4 bg-white border-bottom"
+                    style="padding-top:14px;padding-bottom:0;">
+                    <!-- Step 1: Cart -->
+                    <div class="d-flex align-items-center gap-2 pb-3"
+                        t-att-style="state.page === 'checkout' or state.page === 'payment' ? 'cursor:pointer;' : ''"
+                        t-on-click="goBackToCart">
+                        <t t-if="state.page === 'checkout' or state.page === 'payment'">
+                            <div style="width:28px;height:28px;border-radius:50%;background:#4caf50;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+                        </t>
+                        <t t-else="">
+                            <div style="width:28px;height:28px;border-radius:50%;background:#1a6fbe;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+                        </t>
+                        <span t-att-style="state.page === 'checkout' or state.page === 'payment' ? 'font-size:14px;font-weight:500;' : 'font-size:14px;font-weight:600;'">Cart</span>
+                    </div>
+                    <div style="width:60px;height:1px;background:#e0ddd8;margin:0 8px 12px;flex-shrink:0;"/>
+                    <!-- Step 2: Customer Info -->
+                    <div class="d-flex align-items-center gap-2 pb-3"
+                        t-att-style="state.page === 'payment' ? 'cursor:pointer;' : ''"
+                        t-on-click="goBackToCheckout">
+                        <t t-if="state.page === 'payment'">
+                            <div style="width:28px;height:28px;border-radius:50%;background:#4caf50;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+                        </t>
+                        <t t-elif="state.page === 'checkout'">
+                            <div style="width:28px;height:28px;border-radius:50%;background:#1a6fbe;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+                        </t>
+                        <t t-else="">
+                            <div style="width:28px;height:28px;border-radius:50%;background:#e0ddd8;color:#999;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+                        </t>
+                        <span t-att-style="state.page === 'checkout' ? 'font-size:14px;font-weight:600;' : state.page === 'payment' ? 'font-size:14px;font-weight:500;' : 'font-size:14px;color:#999;font-weight:400;'">Customer Info</span>
+                    </div>
+                    <div style="width:60px;height:1px;background:#e0ddd8;margin:0 8px 12px;flex-shrink:0;"/>
+                    <!-- Step 3: Payment Options -->
+                    <div class="d-flex align-items-center gap-2 pb-3"
+                        t-att-style="isCheckoutValid() ? 'cursor:pointer;' : 'opacity:0.5;'"
+                        t-on-click="goToPaymentPage">
+                        <t t-if="state.page === 'payment'">
+                            <div style="width:28px;height:28px;border-radius:50%;background:#1a6fbe;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+                        </t>
+                        <t t-else="">
+                            <div style="width:28px;height:28px;border-radius:50%;background:#e0ddd8;color:#999;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+                        </t>
+                        <span t-att-style="state.page === 'payment' ? 'font-size:14px;font-weight:600;' : 'font-size:14px;color:#999;font-weight:400;'">Payment Options</span>
+                    </div>
+                </div>
+                <!-- Invoice / payment status (existing order from calendar, etc.) -->
+                <t t-if="state.existingOrderPaymentBanner">
+                    <div t-att-class="'alert alert-' + state.existingOrderPaymentBanner.variant + ' rounded-0 mb-0 py-2 px-4 text-center border-0 border-bottom small'"
+                        role="status" style="font-size:13px;">
+                        <t t-foreach="state.existingOrderPaymentBanner.lines" t-as="line" t-key="line_index">
+                            <div t-att-class="line_index > 0 ? 'mt-1' : ''" t-esc="line"/>
+                        </t>
+                    </div>
+                </t>
+            </t>
+            <!-- ── PAYMENT PAGE ── -->
+            <t t-if="state.page === 'payment'">
+                <div class="flex-grow-1 overflow-auto" style="background:#f4f3f0;">
+                    <!-- Row 1: products (left) | order summary (right) -->
+                    <div class="row g-4 p-4 pb-2 align-items-start" style="margin:0;">
+                        <div class="col-12 col-lg-8">
+                            <div class="bg-white rounded-3 border overflow-hidden h-100" style="border-color:#e8e8e8 !important;">
+                                <div class="px-4 py-3 border-bottom fw-semibold"
+                                     style="font-size:15px;border-color:#e8e8e8 !important;">
+                                    <i class="fa fa-shopping-cart me-2 text-primary"/>Items in this order
+                                    <span class="d-block text-muted fw-normal mt-1" style="font-size:12px;">Review only — edit on the Cart step</span>
+                                </div>
+                                <t t-if="!state.cart.length">
+                                    <div class="text-center text-muted py-4 px-3">No products in cart.</div>
+                                </t>
+                                <t t-foreach="state.cart" t-as="item" t-key="item.id">
+                                    <div class="d-flex gap-3 px-4 py-3 align-items-start border-bottom user-select-none"
+                                         style="border-color:#f0eeea !important;">
+                                        <img t-att-src="getImageSrc(item)"
+                                            alt=""
+                                            style="width:70px;height:70px;object-fit:cover;border-radius:8px;flex-shrink:0;"/>
+                                        <div class="flex-grow-1 min-w-0">
+                                            <div class="fw-semibold mb-1" style="font-size:15px;" t-esc="item.name"/>
+                                            <div class="mb-2 d-flex flex-wrap align-items-center gap-1">
+                                                <span class="badge bg-secondary" style="font-size:10px;">
+                                                    <t t-esc="(state.pricingSelections[item.id] || 'staffed').charAt(0).toUpperCase() + (state.pricingSelections[item.id] || 'staffed').slice(1)"/>
+                                                </span>
+                                                <t t-if="item.isAddon">
+                                                    <span class="badge bg-info" style="font-size:10px;">Add-on</span>
+                                                </t>
+                                            </div>
+                                            <t t-if="item.date">
+                                                <div class="mb-2" style="font-size:13px;color:#1a6fbe;">
+                                                    <i class="fa fa-calendar me-1"/>
+                                                    <t t-esc="item.date"/> ·
+                                                    <t t-esc="item.startTime"/> →
+                                                    <t t-esc="item.endTime"/>
+                                                </div>
+                                            </t>
+                                            <t t-if="!item.date">
+                                                <div class="text-muted mb-2" style="font-size:13px;">Add-on item</div>
+                                            </t>
+                                            <t t-if="!item.isAddon and item.date and item.startTime and item.endTime">
+                                                <small t-att-class="'d-block ' + (getItemDurationLabel(item).includes('+$') ? 'text-warning' : 'text-muted')">
+                                                    <i class="fa fa-clock-o me-1"/>
+                                                    <t t-esc="getItemDurationLabel(item)"/>
+                                                </small>
+                                            </t>
+                                            <div class="d-flex align-items-center gap-2 flex-wrap mt-2" style="font-size:13px;">
+                                                <span class="text-muted">Unit</span>
+                                                <span class="fw-semibold">$
+                                                    <t t-esc="fmt(getItemPrice(item))"/>
+                                                </span>
+                                                <span class="text-muted">×</span>
+                                                <span class="fw-semibold" t-esc="item.qty || 1"/>
+                                                <span class="text-muted">=</span>
+                                                <span class="fw-bold" style="font-size:14px;">$
+                                                    <t t-esc="fmt(getItemLineTotal(item))"/>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        <!-- RIGHT: Order Summary (Payment) — same detail as checkout + amount to collect -->
+                        <div class="col-12 col-lg-4">
+                            <div class="bg-white rounded-3 border overflow-hidden sticky-top shadow-sm" style="border-color:#e8e8e8 !important;top:16px; padding: 0px 10px 10px 10px;">
+                                <div class="px-4 py-3 border-bottom fw-bold d-flex justify-content-between align-items-center"
+                                     style="font-size:15px;border-color:#f0eeea !important;">
+                                    <span>
+                                        <i class="fa fa-receipt me-2"/>Order Summary
+                                    </span>
+                                    <span t-if="state.currentOrderNumber" class="text-muted" style="font-size:13px;">
+                                        #
+                                        <t t-esc="state.currentOrderNumber"/>
+                                    </span>
+                                </div>
+                                <div class="card-body d-flex flex-column gap-2 pb-1">
+                                    <t t-foreach="state.cart" t-as="item" t-key="item.id">
+                                        <div class="d-flex flex-column pb-2" t-att-class="!item_last ? 'border-bottom' : ''">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <span class="fw-semibold text-truncate me-2" style="max-width:170px;"
+                                                    t-att-title="item.name" t-esc="item.name"/>
+                                                <span class="fw-semibold text-success text-nowrap">
+                                                    $
+                                                    <t t-esc="fmt(getItemPrice(item))"/>
+                                                </span>
+                                            </div>
+                                            <div class="mt-1">
+                                                <span class="badge bg-secondary" style="font-size:10px;">
+                                                    <t t-esc="(state.pricingSelections[item.id] || 'staffed').charAt(0).toUpperCase() + (state.pricingSelections[item.id] || 'staffed').slice(1)"/>
+                                                </span>
+                                                <t t-if="item.isAddon">
+                                                    <span class="badge bg-info ms-1" style="font-size:10px;">Add-on</span>
+                                                </t>
+                                            </div>
+                                            <t t-if="!item.isAddon and item.date and item.startTime and item.endTime">
+                                                <small class="text-muted mt-1">
+                                                    <i class="fa fa-calendar me-1"/>
+                                                    <t t-esc="item.date"/>
+                                                </small>
+                                                <small class="text-muted">
+                                                    <i class="fa fa-clock-o me-1"/>
+                                                    <t t-esc="item.startTime"/> –
+                                                    <t t-esc="item.endTime"/>
+                                                </small>
+                                                <small t-att-class="getItemDurationLabel(item).includes('+$') ? 'text-warning fw-semibold' : 'text-success'">
+                                                    <i t-att-class="getItemDurationLabel(item).includes('+$') ? 'fa fa-clock-o me-1' : 'fa fa-check-circle me-1'"/>
+                                                    <t t-esc="getItemDurationLabel(item)"/>
+                                                </small>
+                                            </t>
+                                        </div>
+                                    </t>
+                                    <t t-if="state.event.locationName or state.event.address or state.event.eventType">
+                                        <div class="border-top pt-2 mt-1">
+                                            <div class="fw-semibold mb-1 text-warning" style="font-size:13px;">
+                                                <i class="fa fa-map-marker me-1"/>Event Details
+                                            </div>
+                                            <t t-if="state.event.locationName">
+                                                <small class="text-muted d-block">
+                                                    <i class="fa fa-building me-1"/>
+                                                    <t t-esc="state.event.locationName"/>
+                                                </small>
+                                            </t>
+                                            <t t-if="state.event.address">
+                                                <small class="text-muted d-block">
+                                                    <i class="fa fa-home me-1"/>
+                                                    <t t-esc="state.event.address"/>
+                                                    <t t-if="state.event.city">,
+                                                        <t t-esc="state.event.city"/></t>
+                                                    <t t-if="state.event.state">
+                                                        <t t-esc="state.event.state"/></t>
+                                                    <t t-if="state.event.zip">
+                                                        <t t-esc="state.event.zip"/></t>
+                                                </small>
+                                            </t>
+                                            <t t-if="state.event.eventType">
+                                                <small class="text-muted d-block">
+                                                    <i class="fa fa-tag me-1"/>
+                                                    <t t-esc="formatEventType(state.event.eventType)"/>
+                                                </small>
+                                            </t>
+                                            <t t-if="state.event.damageWaiver">
+                                                <small t-att-class="state.event.damageWaiver === 'yes' ? 'text-success d-block' : 'text-muted d-block'">
+                                                    <i class="fa fa-shield me-1"/>
+                                                    Damage Waiver:
+                                                    <t t-if="state.event.damageWaiver === 'yes'">Yes (10%)</t>
+                                                    <t t-else="">Declined</t>
+                                                </small>
+                                            </t>
+                                        </div>
+                                    </t>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex flex-column gap-2 mb-3">
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-muted">Subtotal</span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(getCartTotal())"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="state.additional.discountApplied and state.additional.generalDiscount > 0"
+                                            class="d-flex justify-content-between text-danger">
+                                            <span>
+                                                <i class="fa fa-tag me-1"/>
+                                                Discount<t t-if="state.additional.discountDescription"> <t t-esc="state.additional.discountDescription"/></t>
+                                            </span>
+                                            <span>-$
+                                                <t t-esc="fmt(getDiscountAmount())"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="state.additional.couponApplied and state.additional.couponDiscount > 0"
+                                            class="d-flex justify-content-between text-danger">
+                                            <span>
+                                                <i class="fa fa-ticket me-1"/>Coupon:
+                                                <t t-esc="state.additional.couponCode"/>
+                                            </span>
+                                            <span>-$
+                                                <t t-esc="fmt(state.additional.couponDiscount)"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="state.additional.miscellaneousFees > 0"
+                                            class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                Miscellaneous Fees<t t-if="state.additional.miscDescription"> <t t-esc="state.additional.miscDescription"/></t>
+                                            </span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(state.additional.miscellaneousFees)"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="getTipAmount() > 0"
+                                            class="d-flex justify-content-between text-success">
+                                            <span>
+                                                <i class="fa fa-smile-o me-1"/>Tip
+                                                <t t-if="state.payment.tipMode !== 'custom'">
+                                                    (
+                                                    <t t-esc="state.payment.tipMode"/>%)
+                                                </t>
+                                            </span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(getTipAmount())"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="state.event.damageWaiver === 'yes'"
+                                            class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                <i class="fa fa-shield me-1"/>Damage Waiver (10%)
+                                            </span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(getDamageWaiverAmount())"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="state.event.eventLocation === 'yes_20'"
+                                            class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                <i class="fa fa-map-marker me-1"/>Non-Residential Fee
+                                            </span>
+                                            <span class="fw-semibold">$20.00</span>
+                                        </div>
+                                        <div t-if="getSetupSurfaceFee() > 0"
+                                            class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                <i class="fa fa-wrench me-1"/>Setup Surface Fee
+                                                <t t-if="getSetupSurfaceLabel()">
+                                                    (<t t-esc="getSetupSurfaceLabel()"/>)
+                                                </t>
+                                            </span>
+                                            <span class="fw-semibold">$<t t-esc="fmt(getSetupSurfaceFee())"/></span>
+                                        </div>
+                                        <div t-if="state.additional.overrideTravelFee > 0"
+                                            class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                <i class="fa fa-car me-1"/>Travel Fee
+                                                <t t-if="state.travelFeeInfo">
+                                                    <small class="d-block" style="font-size:11px;">
+                                                        <t t-esc="state.travelFeeInfo.distanceMiles"/> mi ·
+                                                        <t t-esc="state.travelFeeInfo.billableMiles"/> billable
+                                                        @ $
+                                                        <t t-esc="state.travelFeeInfo.ratePerMile"/>/mi
+                                                    </small>
+                                                </t>
+                                            </span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(state.additional.overrideTravelFee)"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="state.additional.depositPercent > 0"
+                                            class="d-flex justify-content-between text-info">
+                                            <span>
+                                                <i class="fa fa-info-circle me-1"/>
+                                                Deposit Due Now (
+                                                <t t-esc="state.additional.depositPercent"/>%)
+                                            </span>
+                                            <span>$
+                                                <t t-esc="fmt(getDepositAmount())"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="state.additional.depositPercent > 0"
+                                            class="d-flex justify-content-between text-muted">
+                                            <span style="font-size:12px;">Remaining after deposit</span>
+                                            <span style="font-size:12px;">$
+                                                <t t-esc="fmt(getCheckoutGrandTotal() - getDepositAmount())"/>
+                                            </span>
+                                        </div>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                Tax (
+                                                <t t-esc="getAppliedTaxPercent()"/>%)
+                                            </span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(getEffectiveTax())"/>
+                                            </span>
+                                        </div>
+                                        <hr class="my-1"/>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="fw-bold fs-5">Grand Total</span>
+                                            <span class="fw-bold fs-4 text-success">$
+                                                <t t-esc="fmt(getCheckoutGrandTotal() + getTipAmount())"/>
+                                            </span>
+                                        </div>
+                                        <hr class="my-1"/>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold">Amount to collect now</span>
+                                            <span class="fw-bold text-primary fs-5">$
+                                                <t t-esc="fmt(getPaymentAmount() + getTipAmount())"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div t-if="state.event.zipStatus === 'not_available' and !state.event.stillDeliver"
+                                        class="alert alert-danger p-2 mb-0 text-center" style="font-size:12px;">
+                                        <i class="fa fa-ban me-1"/>Cannot place order — event zip is not in service area
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Row 2: Payment options (full width below products + order summary) -->
+                    <div class="row g-4 px-4 pb-4 pt-2" style="margin:0;">
+                        <div class="col-12">
+                            <div class="bg-white rounded-3 border overflow-hidden" style="border-color:#e8e8e8 !important;">
+                                <div class="px-4 py-3 border-bottom" style="border-color:#e8e8e8 !important;">
+                                    <h2 class="fw-semibold mb-0" style="font-size:16px;">Payment Options</h2>
+                                </div>
+                                <div class="px-4 py-4 d-flex flex-column gap-4">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-muted" style="font-size:12px;">
+                                            <i class="fa fa-money me-1"/>Payment Method
+                                        </label>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.method === 'cash' ? 'btn-primary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setPaymentMethod('cash')">
+                                                <i class="fa fa-money me-1"/>Cash
+                                            </button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.method === 'check' ? 'btn-primary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setPaymentMethod('check')">
+                                                <i class="fa fa-file-text-o me-1"/>Check
+                                            </button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.method === 'credit_card' ? 'btn-primary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setPaymentMethod('credit_card')">
+                                                <i class="fa fa-credit-card me-1"/>Credit Card
+                                            </button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.method === 'gift_card' ? 'btn-primary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setPaymentMethod('gift_card')">
+                                                <i class="fa fa-gift me-1"/>Gift Card
+                                                <span class="badge bg-secondary ms-1" style="font-size:9px;">Soon</span>
+                                            </button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.method === 'alternate' ? 'btn-primary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setPaymentMethod('alternate')">
+                                                <i class="fa fa-exchange me-1"/>Alternate
+                                                <span class="badge bg-secondary ms-1" style="font-size:9px;">Soon</span>
+                                            </button>
+                                        </div>
+                                        <div t-if="state.payment.method === 'check'" class="mt-2">
+                                            <label class="form-label text-muted" style="font-size:11px;">Check Number (optional)</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                placeholder="e.g. 1042"
+                                                t-att-value="state.payment.checkNumber"
+                                                t-on-input="e => this.state.payment = { ...this.state.payment, checkNumber: e.target.value }"/>
+                                        </div>
+                                        <div t-if="state.payment.method === 'credit_card'" class="mt-2">
+                                            <div class="row g-2">
+                                                <div class="col-12 col-md-5">
+                                                    <label class="form-label text-muted mb-1" style="font-size:11px;">Card Number</label>
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        id="ccnumber"
+                                                        placeholder="1234 5678 9012 3456"
+                                                        t-att-value="state.payment.cardNumber"
+                                                        t-on-input="onCardNumberInput"/>
+                                                </div>
+                                                <div class="col-6 col-md-3">
+                                                    <label class="form-label text-muted mb-1" style="font-size:11px;">Expiry (MM/YY)</label>
+                                                    <input type="text" class="form-control form-control-sm"
+                                                        id="ccexpiry"
+                                                        placeholder="12/29"
+                                                        t-att-value="state.payment.cardExpiry"
+                                                        t-on-input="onCardExpiryInput"/>
+                                                </div>
+                                                <div class="col-6 col-md-2">
+                                                    <label class="form-label text-muted mb-1" style="font-size:11px;">CVV</label>
+                                                    <input type="password" class="form-control form-control-sm"
+                                                        id="cccvv"
+                                                        placeholder="123"
+                                                        t-att-value="state.payment.cardCvv"
+                                                        t-on-input="onCardCvvInput"/>
+                                                </div>
+                                            </div>
+                                            <div class="text-muted mt-1" style="font-size:11px;">
+                                                Card details are used only to capture payment and are not saved in full.
+                                            </div>
+                                        </div>
+                                        <div t-if="['gift_card','alternate'].includes(state.payment.method)"
+                                            class="alert alert-warning p-2 mt-2" style="font-size:11px;">
+                                            <i class="fa fa-info-circle me-1"/>
+                                            This payment method is not yet integrated. Select Cash or Check to process payment.
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-muted" style="font-size:12px;">
+                                            <i class="fa fa-calculator me-1"/>Amount to Collect
+                                        </label>
+                                        <div class="d-flex flex-wrap gap-2 mb-2">
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.splitMode === 'full' ? 'btn-primary' : 'btn-outline-primary')"
+                                                t-on-click="() => this.setPaymentSplit('full')">
+                                                <i class="fa fa-check-circle me-1"/>Pay Full
+                                                <span class="ms-1 fw-bold">$
+                                                    <t t-esc="fmt(getCheckoutGrandTotal())"/>
+                                                </span>
+                                            </button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.splitMode === '30' ? 'btn-primary' : 'btn-outline-primary')"
+                                                t-on-click="() => this.setPaymentSplit('30')">
+                                                30% Deposit
+                                                <span class="ms-1 fw-bold">$
+                                                    <t t-esc="fmt(getCheckoutGrandTotal() * 0.30)"/>
+                                                </span>
+                                            </button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.splitMode === 'custom' ? 'btn-primary' : 'btn-outline-primary')"
+                                                t-on-click="() => this.setPaymentSplit('custom')">
+                                                <i class="fa fa-pencil me-1"/>Custom %
+                                            </button>
+                                        </div>
+                                        <div t-if="state.payment.splitMode === 'custom'" class="d-flex align-items-center gap-2 mt-2">
+                                            <input type="number" class="form-control form-control-sm" style="width:90px;"
+                                                min="1" max="100" placeholder="e.g. 50"
+                                                t-att-value="state.payment.customPercent"
+                                                t-on-input="onPaymentCustomPercentChange"/>
+                                            <span class="text-muted">%</span>
+                                            <span class="fw-bold text-primary">
+                                                = $
+                                                <t t-esc="fmt(getCheckoutGrandTotal() * (state.payment.customPercent / 100))"/>
+                                            </span>
+                                        </div>
+                                        <div class="alert alert-info p-2 mt-2" style="font-size:12px;">
+                                            <i class="fa fa-info-circle me-1"/>
+                                            Amount to collect:
+                                            <strong>$
+                                                <t t-esc="fmt(getPaymentAmount())"/>
+                                            </strong>
+                                            <t t-if="state.payment.splitMode !== 'full'">
+                                                · Remaining:
+                                                <strong>$
+                                                    <t t-esc="fmt(getCheckoutGrandTotal() - getPaymentAmount())"/>
+                                                </strong>
+                                            </t>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold text-muted" style="font-size:12px;">
+                                            <i class="fa fa-smile-o me-1"/>Tip (optional)
+                                        </label>
+                                        <div class="d-flex flex-wrap gap-2 mb-2">
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.tipMode === 'none' ? 'btn-secondary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setTipMode('none')">No Tip</button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.tipMode === '10' ? 'btn-secondary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setTipMode('10')">10% · $
+                                                <t t-esc="fmt(getCartTotal() * 0.10)"/>
+                                            </button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.tipMode === '15' ? 'btn-secondary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setTipMode('15')">15% · $
+                                                <t t-esc="fmt(getCartTotal() * 0.15)"/>
+                                            </button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.tipMode === '20' ? 'btn-secondary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setTipMode('20')">20% · $
+                                                <t t-esc="fmt(getCartTotal() * 0.20)"/>
+                                            </button>
+                                            <button t-att-class="'btn btn-sm ' + (state.payment.tipMode === 'custom' ? 'btn-secondary' : 'btn-outline-secondary')"
+                                                t-on-click="() => this.setTipMode('custom')">Custom</button>
+                                        </div>
+                                        <div t-if="state.payment.tipMode === 'custom'" class="d-flex align-items-center gap-2">
+                                            <span class="text-muted">$</span>
+                                            <input type="number" class="form-control form-control-sm" style="width:110px;"
+                                                min="0" placeholder="0.00"
+                                                t-att-value="state.payment.customTip"
+                                                t-on-input="onCustomTipChange"/>
+                                        </div>
+                                        <div t-if="getTipAmount() > 0" class="text-success mt-1" style="font-size:12px;">
+                                            <i class="fa fa-heart me-1"/>Tip added:
+                                            <strong>$
+                                                <t t-esc="fmt(getTipAmount())"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="rounded p-2 mb-2" style="background:#f8f9fa; border:1px solid #dee2e6; font-size:13px;">
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span class="text-muted">Grand Total</span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(getCheckoutGrandTotal())"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="getTipAmount() > 0" class="d-flex justify-content-between mb-1 text-success">
+                                            <span>
+                                                <i class="fa fa-smile-o me-1"/>Tip
+                                            </span>
+                                            <span>$
+                                                <t t-esc="fmt(getTipAmount())"/>
+                                            </span>
+                                        </div>
+                                        <hr class="my-1"/>
+                                        <div class="d-flex justify-content-between fw-bold">
+                                            <span>Collecting Now</span>
+                                            <span class="text-primary fs-6">$
+                                                <t t-esc="fmt(getPaymentAmount() + getTipAmount())"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                                        <button class="btn btn-primary px-5"
+                                            style="background:#2d3ab1;border:none;font-size:15px;padding:12px 32px;border-radius:8px;"
+                                            t-on-click="placeOrderAndPay"
+                                            t-att-disabled="state.payment.processing or !['cash','check','credit_card'].includes(state.payment.method)
+                                                            or !state.additional.weatherPolicyAgreed
+                                                            or !state.additional.setupTermsAgreed
+                                                            or state.placingOrder
+                                                            or state.payment.enabled
+                                                            or (state.event.zipStatus === 'not_available' and !state.event.stillDeliver)">
+                                            <span t-if="state.payment.processing">
+                                                <span class="spinner-border spinner-border-sm me-1"/> Processing...
+                                            </span>
+                                            <span t-else="">Submit</span>
+                                        </button>
+                                        <button class="btn btn-primary"
+                                            t-on-click="placeOrder"
+                                            t-att-disabled="!state.additional.weatherPolicyAgreed
+                                                            or !state.additional.setupTermsAgreed
+                                                            or state.placingOrder
+                                                            or state.payment.enabled
+                                                            or (state.event.zipStatus === 'not_available' and !state.event.stillDeliver)
+                                                            or !!state.existingPosOrderId">
+                                            <span t-if="state.placingOrder">
+                                                <span class="spinner-border spinner-border-sm me-1"/> Sending Quote...
+                                            </span>
+                                            <span t-else="">
+                                                <i class="fa fa-check me-1"/> Send a Quote
+                                            </span>
+                                        </button>
+                                        <button class="btn btn-outline-secondary"
+                                            t-on-click="goBackToCheckout">
+                                            <i class="fa fa-arrow-left me-1"/> Back
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            <!-- ── CATEGORIES PAGE ── -->
+            <t t-if="state.page === 'categories'">
+                <div t-if="state.categoriesLoading" class="d-flex justify-content-center align-items-center flex-grow-1 p-5">
+                    <div class="spinner-border text-primary" role="status"/>
+                </div>
+                <div t-else="" class="d-flex flex-grow-1 overflow-hidden" style="background:#f4f3f0;">
+
+                    <!-- ── SECTION SIDE PANEL ── -->
+                    <div t-if="state.sectionPanelOpen"
+                        class="d-flex flex-column border-end bg-white overflow-auto"
+                        style="width:220px;min-width:220px;transition:width 0.2s;">
+                        <div class="px-3 py-2 border-bottom d-flex align-items-center justify-content-between"
+                            style="background:#056690;">
+                            <span class="fw-semibold text-white" style="font-size:13px;">
+                                <i class="fa fa-list me-1"/>Sections
+                            </span>
+                            <button class="btn btn-sm p-0 text-white" t-on-click="toggleSectionPanel"
+                                title="Hide panel" style="line-height:1;">
+                                <i class="fa fa-chevron-left"/>
+                            </button>
+                        </div>
+                        <!-- All -->
+                        <div class="px-3 py-2 border-bottom"
+                            style="cursor:pointer;"
+                            t-att-class="!state.selectedSectionId ? 'bg-light fw-semibold' : ''"
+                            t-on-click="() => this.selectSectionFilter(null)">
+                            <i class="fa fa-th me-2 text-muted"/>
+                            <span style="font-size:13px;">All Categories</span>
+                        </div>
+                        <!-- Sections list -->
+                        <t t-foreach="sectionsWithCategories" t-as="sec" t-key="sec.id">
+                            <div class="px-3 py-2 border-bottom"
+                                style="cursor:pointer;"
+                                t-att-style="state.selectedSectionId === sec.id ? 'background:#e8f4fb;border-left:3px solid #056690;' : 'border-left:3px solid transparent;'"
+                                t-on-click="() => this.selectSectionFilter(sec.id)">
+                                <div class="fw-semibold mb-1" style="font-size:13px;color:#056690;">
+                                    <i class="fa fa-folder me-1"/>
+                                    <t t-esc="sec.name"/>
+                                </div>
+                                <div class="d-flex flex-column gap-1 ps-3">
+                                    <t t-foreach="sec.categories" t-as="sc" t-key="sc.id">
+                                        <small class="text-muted text-truncate" t-att-title="sc.name">
+                                            <i class="fa fa-circle" style="font-size:5px;vertical-align:middle;margin-right:4px;"/>
+                                            <t t-esc="sc.name"/>
+                                        </small>
+                                    </t>
+                                </div>
+                                <span class="badge mt-1" style="background:#056690; font-size:10px; color: white;">
+                                    <t t-esc="sec.categories.length"/> categories
+                                </span>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- Toggle button when panel is hidden -->
+                    <div t-if="!state.sectionPanelOpen"
+                        class="d-flex flex-column align-items-center py-3 border-end bg-white"
+                        style="width:36px;min-width:36px;">
+                        <button class="btn btn-sm p-1 text-muted" t-on-click="toggleSectionPanel"
+                            title="Show sections" style="writing-mode:vertical-rl;font-size:11px;">
+                            <i class="fa fa-chevron-right mb-2"/>
+                        </button>
+                    </div>
+
+                    <!-- ── CATEGORIES GRID ── -->
+                    <div class="p-4 flex-grow-1 overflow-auto">
+                        <div t-if="filteredCategories.length === 0"
+                            class="d-flex flex-column justify-content-center align-items-center flex-grow-1 p-5 text-muted">
+                            <i class="fa fa-folder-open fa-3x mb-3"/>
+                            <p>No categories found.</p>
+                        </div>
+                        <div t-else="" class="row row-cols-2 row-cols-sm-3 row-cols-md-3 row-cols-xl-4 g-3">
+                            <t t-foreach="filteredCategories" t-as="cat" t-key="cat.id">
+                                <div class="col">
+                                    <div class="card h-100 overflow-hidden rounded-4 border-0 shadow"
+                                        style="cursor:pointer;border:2px solid #c0392b !important;transition:transform 0.15s,box-shadow 0.15s;"
+                                        t-on-click="() => this.selectCategory(cat)"
+                                        t-on-mouseenter="(e) => { e.currentTarget.style.transform='scale(1.02)'; e.currentTarget.style.boxShadow='0 8px 24px rgba(0,0,0,0.18)'; }"
+                                        t-on-mouseleave="(e) => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow=''; }">
+                                        <!-- Image -->
+                                        <div class="position-relative" style="height:180px;overflow:hidden;">
+                                            <img t-if="getCategoryImageUrl(cat)"
+                                                t-att-src="getCategoryImageUrl(cat)"
+                                                class="w-100 h-100"
+                                                style="object-fit:cover;display:block;"
+                                                t-att-alt="cat.name"/>
+                                            <div t-else=""
+                                                class="w-100 h-100 d-flex align-items-center justify-content-center"
+                                                style="background:linear-gradient(135deg,#056690,#034f6e);">
+                                                <i class="fa fa-cubes text-white" style="font-size:40px;opacity:0.5;"/>
+                                            </div>
+                                        </div>
+                                        <!-- Bottom info bar -->
+                                        <div class="d-flex justify-content-between align-items-center px-3 py-2 bg-white">
+                                            <div>
+                                                <h6 class="fw-bold mb-0" style="font-size:15px;" t-att-title="cat.complete_name">
+                                                    <t t-esc="cat.name"/>
+                                                </h6>
+                                                <small class="text-muted">
+                                                    <t t-esc="cat.product_count"/> items
+                                                </small>
+                                            </div>
+                                            <div t-if="cat.min_price !== null" class="text-end ms-2 flex-shrink-0">
+                                                <div class="text-muted" style="font-size:11px;">From</div>
+                                                <div class="fw-bold" style="color:#056690;font-size:16px;">
+                                                    $<t t-esc="Math.floor(cat.min_price)"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
             <!-- ── PRODUCTS PAGE ── -->
             <t t-if="state.page === 'products'">
                 <div t-if="state.loading" class="d-flex justify-content-center p-5">
@@ -57,233 +762,309 @@
                     <i class="fa fa-inbox fa-3x mb-3"/>
                     <p>No Webflow products found.</p>
                 </div>
-                <div t-else="" class="p-4 flex-grow-1 overflow-auto">
-                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-xl-5 g-3">
+                <div t-else="" class="p-4 flex-grow-1 overflow-auto" style="background:#f4f3f0;">
+                    <div class="row g-3">
                         <t t-foreach="state.products" t-as="product" t-key="product.id">
-                            <div class="col">
-                                <div class="card h-100 shadow-sm"
-                                    t-att-class="state.expandedCard === product.id ? 'border-success' : ''">
-                                    <!-- Collapsed -->
-                                    <t t-if="state.expandedCard !== product.id">
-                                        <img t-att-src="getImageSrc(product)" class="card-img-top"
-                                            style="height:160px;object-fit:cover;" t-att-alt="product.name"/>
-                                        <div class="card-body d-flex flex-column gap-1 p-2">
-                                            <h6 class="card-title mb-0 fw-bold text-truncate" t-att-title="product.name">
+                            <!-- Expanded card takes full row, collapsed = 25% -->
+                            <div t-att-class="state.expandedCard === product.id ? 'col-4' : 'col-3'">
+                                <!-- ── COLLAPSED ── -->
+                                <t t-if="state.expandedCard !== product.id">
+                                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden"
+                                        style="cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;"
+                                        t-on-mouseenter="(e) => { e.currentTarget.style.transform='scale(1.02)'; e.currentTarget.style.boxShadow='0 6px 20px rgba(0,0,0,0.13)'; }"
+                                        t-on-mouseleave="(e) => { e.currentTarget.style.transform=''; e.currentTarget.style.boxShadow=''; }">
+                                        <img t-att-src="getImageSrc(product)"
+                                            style="height:160px;object-fit:cover;width:100%;display:block;" t-att-alt="product.name"/>
+                                        <div class="p-2 d-flex flex-column gap-1">
+                                            <h6 class="fw-bold mb-0 text-truncate" style="font-size:13px;" t-att-title="product.name">
                                                 <t t-esc="product.name"/>
                                             </h6>
-                                            <small t-if="product.default_code" class="text-muted">
-                                                SKU:
-                                                <t t-esc="product.default_code"/>
-                                            </small>
-                                            <div class="mt-auto pt-2 d-flex flex-column gap-1">
-                                                <div t-if="product.list_price" class="d-flex justify-content-between">
-                                                    <small class="text-muted">Staffed</small>
-                                                    <span class="fw-semibold text-success">$
-                                                        <t t-esc="product.list_price.toFixed(2)"/>
-                                                    </span>
-                                                </div>
-                                                <div t-if="product.pick_up_price" class="d-flex justify-content-between">
-                                                    <small class="text-muted">Pick Up</small>
-                                                    <span class="fw-semibold">$
-                                                        <t t-esc="product.pick_up_price.toFixed(2)"/>
-                                                    </span>
-                                                </div>
-                                                <div t-if="product.drop_off_price" class="d-flex justify-content-between">
-                                                    <small class="text-muted">Drop Off</small>
-                                                    <span class="fw-semibold">$
-                                                        <t t-esc="product.drop_off_price.toFixed(2)"/>
-                                                    </span>
-                                                </div>
+                                            <div t-if="product.list_price" class="mt-auto" style="color:#056690;font-size:13px;font-weight:700;">
+                                                From $<t t-esc="Math.floor(product.list_price)"/>
                                             </div>
                                         </div>
-                                        <div class="card-footer p-2 bg-transparent border-top">
-                                            <button class="btn btn-sm btn-success w-100"
+                                        <div class="px-2 pb-2">
+                                            <button class="btn btn-sm w-100 fw-semibold"
+                                                style="background:#056690;color:#fff;border-radius:8px;"
                                                 t-on-click="() => this.toggleExpand(product)">
                                                 <i class="fa fa-cart-plus me-1"/> Add to Cart
                                             </button>
                                         </div>
-                                    </t>
-                                    <!-- Expanded -->
-                                    <!-- <t t-if="state.expandedCard === product.id">
-                                        <div class="card-body d-flex flex-column gap-2 p-3">
-                                            <h6 class="fw-bold mb-2 text-success">
-                                                <i class="fa fa-cart-plus me-1"/>
-                                                <t t-esc="product.name"/>
-                                            </h6>
-                                            <div>
-                                                <label class="form-label small fw-semibold mb-1">Rental Date</label>
-                                                <input type="date" class="form-control form-control-sm"
-                                                    t-att-value="state.expandedDate"
-                                                    t-on-change="(e) => { this.state.expandedDate = e.target.value; }"/>
+                                    </div>
+                                </t>
+
+                                <!-- ── EXPANDED ── -->
+                                <t t-if="state.expandedCard === product.id">
+                                    <div class="card border-0 shadow rounded-4 overflow-hidden" style="width:52%;min-width:340px;">
+                                        <!-- Image on top -->
+                                        <img t-att-src="getImageSrc(product)"
+                                            class="w-100"
+                                            style="height:220px;object-fit:cover;display:block;"
+                                            t-att-alt="product.name"/>
+                                        <!-- Content below -->
+                                        <div class="p-3 d-flex flex-column gap-3">
+                                            <!-- Header -->
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h5 class="fw-bold mb-1" style="font-size:17px;">
+                                                        <t t-esc="product.name"/>
+                                                    </h5>
+                                                    <t t-if="product.minimum_booking_hrs > 0">
+                                                        <small class="text-muted d-block mb-1">
+                                                            <i class="fa fa-clock-o me-1"/>Min booking: <t t-esc="product.minimum_booking_hrs"/> hr(s)
+                                                        </small>
+                                                    </t>
+                                                </div>
+                                                <button class="btn btn-sm btn-outline-secondary ms-2 flex-shrink-0"
+                                                    style="width:34px;height:34px;padding:0;"
+                                                    t-on-click="() => this.toggleExpand(product)">
+                                                    <i class="fa fa-times"/>
+                                                </button>
                                             </div>
-                                            <div>
-                                                <label class="form-label small fw-semibold mb-1">Start Time</label>
-                                                <input type="time" class="form-control form-control-sm"
-                                                    t-att-value="state.expandedStartTime"
-                                                    t-on-change="(e) => { this.state.expandedStartTime = e.target.value; }"/>
+
+                                            <!-- Pricing boxes -->
+                                            <div class="row g-2">
+                                                <div t-if="product.list_price" class="col-4">
+                                                    <div class="text-center rounded-3 py-2 px-1"
+                                                        style="background:#f5f5f5;border:1px solid #e8e8e8;">
+                                                        <div class="text-muted fw-semibold" style="font-size:9px;letter-spacing:0.5px;">CONCIERGE</div>
+                                                        <div class="fw-bold lh-1 mt-1" style="color:#056690;font-size:20px;">
+                                                            <span style="font-size:12px;vertical-align:super;">$</span><t t-esc="Math.floor(product.list_price)"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div t-if="product.pick_up_price" class="col-4">
+                                                    <div class="text-center rounded-3 py-2 px-1"
+                                                        style="background:#f5f5f5;border:1px solid #e8e8e8;">
+                                                        <div class="text-muted fw-semibold" style="font-size:9px;letter-spacing:0.5px;">DIY</div>
+                                                        <div class="fw-bold lh-1 mt-1" style="color:#056690;font-size:20px;">
+                                                            <span style="font-size:12px;vertical-align:super;">$</span><t t-esc="Math.floor(product.pick_up_price)"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div t-if="product.drop_off_price" class="col-4">
+                                                    <div class="text-center rounded-3 py-2 px-1"
+                                                        style="background:#f5f5f5;border:1px solid #e8e8e8;">
+                                                        <div class="text-muted fw-semibold" style="font-size:9px;letter-spacing:0.5px;">DROP-OFF</div>
+                                                        <div class="fw-bold lh-1 mt-1" style="color:#056690;font-size:20px;">
+                                                            <span style="font-size:12px;vertical-align:super;">$</span><t t-esc="Math.floor(product.drop_off_price)"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <label class="form-label small fw-semibold mb-1">End Time</label>
-                                                <input type="time" class="form-control form-control-sm"
-                                                    t-att-value="state.expandedEndTime"
-                                                    t-on-change="(e) => { this.state.expandedEndTime = e.target.value; }"/>
+
+                                            <!-- Date + Time -->
+                                            <div class="row g-2">
+                                                <div class="col-4">
+                                                    <label class="form-label small fw-semibold mb-1">Rental Date</label>
+                                                    <input type="date" class="form-control form-control-sm"
+                                                        t-att-value="state.expandedDate"
+                                                        t-att-min="getTodayDate()"
+                                                        t-on-change="(e) => { this.state.expandedDate = e.target.value; }"/>
+                                                </div>
+                                                <div class="col-4">
+                                                    <label class="form-label small fw-semibold mb-1">Start Time</label>
+                                                    <select class="form-select form-select-sm"
+                                                        t-on-change="(e) => { this.state.expandedStartTime = e.target.value; }">
+                                                        <option value="">-- Start --</option>
+                                                        <t t-foreach="getTimeSlots()" t-as="slot" t-key="slot.value">
+                                                            <option t-att-value="slot.value"
+                                                                t-att-selected="state.expandedStartTime === slot.value">
+                                                                <t t-esc="slot.label"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+                                                <div class="col-4">
+                                                    <label class="form-label small fw-semibold mb-1">End Time</label>
+                                                    <select class="form-select form-select-sm"
+                                                        t-on-change="(e) => { this.state.expandedEndTime = e.target.value; }">
+                                                        <option value="">-- End --</option>
+                                                        <t t-foreach="getTimeSlots()" t-as="slot" t-key="slot.value">
+                                                            <option t-att-value="slot.value"
+                                                                t-att-selected="state.expandedEndTime === slot.value">
+                                                                <t t-esc="slot.label"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </div>
                                             </div>
-                                            <div class="d-flex gap-2 mt-1">
-                                                <button class="btn btn-sm btn-outline-secondary flex-grow-1"
+
+                                            <!-- Buttons -->
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-outline-secondary fw-semibold flex-grow-1"
                                                     t-on-click="() => this.toggleExpand(product)">
                                                     Cancel
                                                 </button>
-                                                <button class="btn btn-sm btn-success flex-grow-1"
-                                                    t-on-click="() => this.addToCart(product, true)">
-                                                    <i class="fa fa-cart-plus me-1"/> Add
+                                                <button class="btn fw-semibold flex-grow-1"
+                                                    style="background:#056690;color:#fff;"
+                                                    t-on-click="() => this.addToCart(product)">
+                                                    <i class="fa fa-cart-plus me-1"/> Add to Cart
                                                 </button>
                                             </div>
                                         </div>
-                                    </t> -->
-                                    <t t-if="state.expandedCard === product.id">
-                                        <div class="card-body d-flex flex-column gap-2 p-3">
-                                            <h6 class="fw-bold mb-2 text-success">
-                                                <i class="fa fa-cart-plus me-1"/>
-                                                <t t-esc="product.name"/>
-                                            </h6>
-                                            <div>
-                                                <label class="form-label small fw-semibold mb-1">Rental Date</label>
-                                                <input type="date" class="form-control form-control-sm"
-                                                    t-att-value="state.expandedDate"
-                                                    t-att-min="getTodayDate()"
-                                                    t-on-change="(e) => { this.state.expandedDate = e.target.value; }"/>
-                                            </div>
-                                            <div>
-                                                <label class="form-label small fw-semibold mb-1">Start Time</label>
-                                                <select class="form-select form-select-sm"
-                                                    t-on-change="(e) => { this.state.expandedStartTime = e.target.value; }">
-                                                    <option value="">-- Select Start Time --</option>
-                                                    <t t-foreach="getTimeSlots()" t-as="slot" t-key="slot.value">
-                                                        <option t-att-value="slot.value"
-                                                            t-att-selected="state.expandedStartTime === slot.value">
-                                                            <t t-esc="slot.label"/>
-                                                        </option>
-                                                    </t>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label class="form-label small fw-semibold mb-1">End Time</label>
-                                                <select class="form-select form-select-sm"
-                                                    t-on-change="(e) => { this.state.expandedEndTime = e.target.value; }">
-                                                    <option value="">-- Select End Time --</option>
-                                                    <t t-foreach="getTimeSlots()" t-as="slot" t-key="slot.value">
-                                                        <option t-att-value="slot.value"
-                                                            t-att-selected="state.expandedEndTime === slot.value">
-                                                            <t t-esc="slot.label"/>
-                                                        </option>
-                                                    </t>
-                                                </select>
-                                            </div>
-                                            <div class="d-flex gap-2 mt-1">
-                                                <button class="btn btn-sm btn-outline-secondary flex-grow-1"
-                                                    t-on-click="() => this.toggleExpand(product)">
-                                                    Cancel
-                                                </button>
-                                                <button class="btn btn-sm btn-success flex-grow-1"
-                                                    t-on-click="() => this.addToCart(product, true)">
-                                                    <i class="fa fa-cart-plus me-1"/> Add
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </t>
-                                </div>
+                                    </div>
+                                </t>
                             </div>
                         </t>
                     </div>
                 </div>
             </t>
-            <!-- ── PRICING PAGE ── -->
+            <!-- ── PRICING PAGE (FreedomFun-style layout, all fields preserved) ── -->
             <t t-if="state.page === 'pricing'">
-                <div class="p-4 flex-grow-1 overflow-auto">
-                    <div class="row g-4">
-                        <!-- LEFT: Cart Items + Addons -->
-                        <div class="col-12 col-lg-8 d-flex flex-column gap-4">
-                            <!-- Cart Items -->
-                            <div>
-                                <h5 class="fw-bold mb-3">
-                                    <i class="fa fa-shopping-cart me-2 text-warning"/>Cart Items
-                                </h5>
-                                <div class="d-flex flex-column gap-3">
-                                    <t t-foreach="state.cart" t-as="item" t-key="item.id">
-                                        <div class="card shadow-sm">
-                                            <div class="card-body d-flex gap-3 align-items-start">
-                                                <img t-att-src="getImageSrc(item)"
-                                                    style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;"/>
-                                                <div class="flex-grow-1">
-                                                    <div class="fw-bold mb-1" t-esc="item.name"/>
-                                                    <small t-if="item.date" class="text-muted d-block mb-2">
-                                                        <i class="fa fa-calendar me-1"/>
-                                                        <t t-esc="item.date"/>
-                                                        <span class="mx-2">|</span>
-                                                        <i class="fa fa-clock-o me-1"/>
-                                                        <t t-esc="item.startTime"/> -
-                                                        <t t-esc="item.endTime"/>
-                                                    </small>
-                                                    <small t-if="!item.date" class="text-muted d-block mb-2">Add-on item</small>
-                                                    <div class="d-flex gap-3 flex-wrap">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio"
-                                                                t-att-id="'staffed_' + item.id"
-                                                                t-att-name="'price_' + item.id"
-                                                                t-att-checked="(state.pricingSelections[item.id] || 'staffed') === 'staffed'"
-                                                                t-on-change="() => this.setPriceType(item.id, 'staffed')"/>
-                                                            <label class="form-check-label" t-att-for="'staffed_' + item.id">
-                                                                Staffed
-                                                                <span class="text-success fw-semibold ms-1">$
-                                                                    <t t-esc="fmt(item.list_price)"/>
-                                                                </span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio"
-                                                                t-att-id="'pickup_' + item.id"
-                                                                t-att-name="'price_' + item.id"
-                                                                t-att-checked="state.pricingSelections[item.id] === 'pickup'"
-                                                                t-on-change="() => this.setPriceType(item.id, 'pickup')"/>
-                                                            <label class="form-check-label" t-att-for="'pickup_' + item.id">
-                                                                Pick Up
-                                                                <span class="fw-semibold ms-1">$
-                                                                    <t t-esc="fmt(item.pick_up_price)"/>
-                                                                </span>
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio"
-                                                                t-att-id="'dropoff_' + item.id"
-                                                                t-att-name="'price_' + item.id"
-                                                                t-att-checked="state.pricingSelections[item.id] === 'dropoff'"
-                                                                t-on-change="() => this.setPriceType(item.id, 'dropoff')"/>
-                                                            <label class="form-check-label" t-att-for="'dropoff_' + item.id">
-                                                                Drop Off
-                                                                <span class="fw-semibold ms-1">$
-                                                                    <t t-esc="fmt(item.drop_off_price)"/>
-                                                                </span>
-                                                            </label>
-                                                        </div>
+                <div class="flex-grow-1 overflow-auto" style="background:#f4f3f0;">
+                    <div class="row g-4 p-4" style="margin:0;">
+                        <div class="col-12 col-lg-8">
+                            <div class="bg-white rounded-3 border overflow-hidden mb-4" style="border-color:#e8e8e8 !important;">
+                                <div class="px-4 py-3 border-bottom fw-semibold" style="font-size:15px;border-color:#e8e8e8 !important;">
+                                    <i class="fa fa-shopping-cart me-2 text-primary"/>Shopping Cart
+                                </div>
+                                <t t-foreach="state.cart" t-as="item" t-key="item.id">
+                                    <div class="d-flex gap-3 px-4 py-3 align-items-start border-bottom" style="border-color:#f0eeea !important;">
+                                        <img t-att-src="getImageSrc(item)"
+                                            style="width:70px;height:70px;object-fit:cover;border-radius:8px;flex-shrink:0;"/>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-semibold mb-1" style="font-size:15px;" t-esc="item.name"/>
+                                            <div t-if="state.showEditDate" class="px-4 py-3 border-bottom" style="background:#f8f7f5;border-color:#f0eeea !important;">
+                                                <div class="fw-semibold mb-2" style="font-size:13px;">Edit Date &amp; Time for All Items</div>
+                                                <div class="d-flex flex-wrap gap-2 align-items-end">
+                                                    <div>
+                                                        <label class="form-label mb-1" style="font-size:12px;color:#666;">Date</label>
+                                                        <input type="date" class="form-control form-control-sm"
+                                                            t-att-value="state.editDateValue"
+                                                            t-att-min="getTodayDate()"
+                                                            t-on-change="(e) => state.editDateValue = e.target.value"/>
+                                                    </div>
+                                                    <div>
+                                                        <label class="form-label mb-1" style="font-size:12px;color:#666;">Start Time</label>
+                                                        <select class="form-select form-select-sm" t-on-change="(e) => state.editStartTime = e.target.value">
+                                                            <t t-foreach="getTimeSlots()" t-as="slot" t-key="slot.value">
+                                                                <option t-att-value="slot.value"
+                                                                        t-att-selected="slot.value === state.editStartTime">
+                                                                    <t t-esc="slot.label"/>
+                                                                </option>
+                                                            </t>
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label class="form-label mb-1" style="font-size:12px;color:#666;">End Time</label>
+                                                        <select class="form-select form-select-sm" t-on-change="(e) => state.editEndTime = e.target.value">
+                                                            <t t-foreach="getTimeSlots()" t-as="slot" t-key="slot.value">
+                                                                <option t-att-value="slot.value"
+                                                                        t-att-selected="slot.value === state.editEndTime">
+                                                                    <t t-esc="slot.label"/>
+                                                                </option>
+                                                            </t>
+                                                        </select>
+                                                    </div>
+                                                    <div class="d-flex gap-2">
+                                                        <button class="btn btn-sm btn-primary" t-on-click="applyEditDate"
+                                                                style="font-size:12px;">
+                                                            Apply
+                                                        </button>
+                                                        <button class="btn btn-sm btn-light" t-on-click="toggleEditDate"
+                                                                style="font-size:12px;">
+                                                            Cancel
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <div class="d-flex flex-column align-items-end gap-2" style="flex-shrink:0;">
-                                                    <span class="fw-bold text-success fs-5">$
-                                                        <t t-esc="fmt(getItemPrice(item))"/>
-                                                    </span>
-                                                    <button class="btn btn-sm btn-outline-danger"
-                                                        t-on-click="() => this.removeFromCart(item.id)">
-                                                        <i class="fa fa-trash"/>
-                                                    </button>
+                                            </div>
+                                            <div t-if="item.date" class="mb-2" style="font-size:13px;color:#1a6fbe;">
+                                                <i class="fa fa-calendar me-1"/>
+                                                <t t-esc="item.date"/> ·
+                                                <t t-esc="item.startTime"/> →
+                                                <t t-esc="item.endTime"/>
+                                            </div>
+                                            <div t-if="!item.date" class="text-muted mb-2" style="font-size:13px;">Add-on item</div>
+                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                <!-- Editable Price -->
+                                                <div class="input-group input-group-sm" style="width:150px;">
+                                                    <span class="input-group-text" style="font-size:13px;">$</span>
+                                                    <input type="number"
+                                                            class="form-control"
+                                                            style="font-size:13px;width:100px;"
+                                                            t-att-value="fmt(getItemPrice(item))"
+                                                            min="0"
+                                                            step="0.01"
+                                                            t-att-data-item-id="item.id"
+                                                            t-on-change="onItemPriceChange"/>
                                                 </div>
+                                                <span class="text-muted" style="font-size:13px;">×</span>
+                                                <!-- Editable Quantity -->
+                                                <input type="number"
+                                                    class="form-control form-control-sm text-center"
+                                                    style="font-size:13px;width:60px;"
+                                                    t-att-value="item.qty || 1"
+                                                    min="1"
+                                                    step="1"
+                                                    t-att-data-item-id="item.id"
+                                                    t-on-change="onItemQtyChange"/>
+                                                <span class="text-muted" style="font-size:13px;">=</span>
+                                                <!-- Line total -->
+                                                <span class="fw-bold" style="font-size:14px;">
+                                                    $
+                                                    <t t-esc="fmt(getItemLineTotal(item))"/>
+                                                </span>
                                             </div>
                                         </div>
-                                    </t>
-                                </div>
+                                        <button class="btn btn-sm border-0 p-1 text-muted"
+                                            t-on-click="() => this.removeFromCart(item.id)"
+                                            style="flex-shrink:0;">
+                                            <i class="fa fa-trash"/>
+                                        </button>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-3 px-4 py-2 border-bottom flex-wrap"
+                                        style="background:#f8f7f4;border-color:#f0eeea !important;">
+                                        <small class="text-muted fw-semibold">Pricing:</small>
+                                        <div class="d-flex gap-3 flex-wrap">
+                                            <t t-if="item.list_price > 0">
+                                                <div class="form-check mb-0">
+                                                    <input class="form-check-input" type="radio"
+                                                        t-att-id="'staffed_' + item.id" t-att-name="'price_' + item.id"
+                                                        t-att-checked="(state.pricingSelections[item.id] || 'staffed') === 'staffed'"
+                                                        t-on-change="() => this.setPriceType(item.id, 'staffed')"/>
+                                                    <label class="form-check-label" t-att-for="'staffed_' + item.id" style="font-size:13px;">
+                                                        Staffed
+                                                        <span class="fw-semibold" style="color:#1a6fbe;">$
+                                                            <t t-esc="fmt(item.list_price)"/>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </t>
+                                            <t t-if="item.pick_up_price > 0">
+                                                <div class="form-check mb-0">
+                                                    <input class="form-check-input" type="radio"
+                                                        t-att-id="'pickup_' + item.id" t-att-name="'price_' + item.id"
+                                                        t-att-checked="state.pricingSelections[item.id] === 'pickup'"
+                                                        t-on-change="() => this.setPriceType(item.id, 'pickup')"/>
+                                                    <label class="form-check-label" t-att-for="'pickup_' + item.id" style="font-size:13px;">
+                                                        Pick Up
+                                                        <span class="fw-semibold">$
+                                                            <t t-esc="fmt(item.pick_up_price)"/>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </t>
+                                            <t t-if="item.drop_off_price > 0">
+                                                <div class="form-check mb-0">
+                                                    <input class="form-check-input" type="radio"
+                                                        t-att-id="'dropoff_' + item.id" t-att-name="'price_' + item.id"
+                                                        t-att-checked="state.pricingSelections[item.id] === 'dropoff'"
+                                                        t-on-change="() => this.setPriceType(item.id, 'dropoff')"/>
+                                                    <label class="form-check-label" t-att-for="'dropoff_' + item.id" style="font-size:13px;">
+                                                        Drop Off
+                                                        <span class="fw-semibold">$
+                                                            <t t-esc="fmt(item.drop_off_price)"/>
+                                                        </span>
+                                                    </label>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </t>
                             </div>
-                            <!-- Addons -->
                             <div>
-                                <h5 class="fw-bold mb-3">
+                                <h5 class="fw-semibold mb-3" style="font-size:15px;">
                                     <i class="fa fa-plus-circle me-2 text-primary"/>Add-ons
                                 </h5>
                                 <div t-if="state.addonsLoading" class="d-flex justify-content-center p-4">
@@ -295,7 +1076,7 @@
                                 <div t-else="" class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3">
                                     <t t-foreach="state.addonProducts" t-as="addon" t-key="addon.id">
                                         <div class="col">
-                                            <div class="card h-100 shadow-sm">
+                                            <div class="card h-100 border rounded-3 shadow-sm" style="border-color:#e8e8e8 !important;">
                                                 <img t-att-src="getImageSrc(addon)" class="card-img-top"
                                                     style="height:120px;object-fit:cover;" t-att-alt="addon.name"/>
                                                 <div class="card-body p-2 d-flex flex-column gap-1">
@@ -328,7 +1109,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="card-footer p-2 bg-transparent border-top">
-                                                    <button class="btn btn-sm btn-primary w-100"
+                                                    <button class="btn btn-sm w-100 text-white"
+                                                        style="background:#1a6fbe;border:none;font-size:13px;"
                                                         t-on-click="() => this.addAddonToCart(addon)">
                                                         <i class="fa fa-plus me-1"/> Add
                                                     </button>
@@ -339,95 +1121,137 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- RIGHT: Order Summary -->
                         <div class="col-12 col-lg-4">
-                            <div class="card shadow-sm sticky-top" style="top:16px;">
-                                <div class="card-header fw-bold fs-5">
-                                    <i class="fa fa-receipt me-2"/>Order Summary
+                            <div class="bg-white rounded-3 border overflow-hidden sticky-top" style="border-color:#e8e8e8 !important;top:16px;">
+                                <div class="px-4 py-3 border-bottom fw-semibold d-flex justify-content-between align-items-center"
+                                    style="font-size:15px;border-color:#f0eeea !important;">
+                                    <span>
+                                        <i class="fa fa-receipt me-2"/>Order Summary
+                                        <t t-if="state.currentOrderNumber" class="text-muted ms-1" style="font-size:13px;">
+                                            #
+                                            <t t-esc="state.currentOrderNumber"/>
+                                        </t>
+                                    </span>
+                                    <button t-if="state.cart.length" 
+                                            class="btn btn-sm btn-outline-secondary"
+                                            style="font-size:12px; padding: 2px 10px;"
+                                            t-on-click="toggleEditDate">
+                                        <i class="fa fa-pencil me-1"/>Edit Date
+                                    </button>
                                 </div>
-                                <div class="card-body d-flex flex-column gap-2">
+                                <div class="px-4 py-3 d-flex flex-column gap-2">
                                     <t t-foreach="state.cart" t-as="item" t-key="item.id">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-truncate me-2" style="max-width:180px;"
-                                                t-att-title="item.name" t-esc="item.name"/>
-                                            <span class="fw-semibold text-success text-nowrap">
-                                                $
-                                                <t t-esc="fmt(getItemPrice(item))"/>
-                                            </span>
+                                        <div class="d-flex flex-column border-bottom pb-2 mb-1" style="border-color:#f0eeea !important;">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <span class="fw-semibold text-truncate me-2" style="max-width:180px;font-size:14px;"
+                                                    t-att-title="item.name" t-esc="item.name"/>
+                                                <span class="fw-semibold text-success text-nowrap">
+                                                    $
+                                                    <t t-esc="fmt(getItemPrice(item))"/>
+                                                </span>
+                                            </div>
+                                            <small class="text-muted mt-1">
+                                                <span class="badge bg-secondary me-1">
+                                                    <t t-esc="(state.pricingSelections[item.id] || 'staffed').charAt(0).toUpperCase() + (state.pricingSelections[item.id] || 'staffed').slice(1)"/>
+                                                </span>
+                                            </small>
+                                            <t t-if="!item.isAddon and item.date and item.startTime and item.endTime">
+                                                <small class="text-muted">
+                                                    <i class="fa fa-calendar me-1"/>
+                                                    <t t-esc="item.date"/> ·
+                                                    <t t-esc="item.startTime"/> –
+                                                    <t t-esc="item.endTime"/>
+                                                </small>
+                                                <small t-att-class="getItemDurationLabel(item).includes('+$') ? 'text-warning fw-semibold' : 'text-success'">
+                                                    <i t-att-class="getItemDurationLabel(item).includes('+$') ? 'fa fa-clock-o me-1' : 'fa fa-check-circle me-1'"/>
+                                                    <t t-esc="getItemDurationLabel(item)"/>
+                                                </small>
+                                            </t>
+                                            <t t-if="item.isAddon">
+                                                <small class="text-muted fst-italic">Add-on</small>
+                                            </t>
                                         </div>
                                     </t>
                                 </div>
-                                <div class="card-footer">
+                                <div class="px-4 pb-3">
                                     <div class="d-flex flex-column gap-2 mb-3">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-muted">Subtotal</span>
-                                            <span class="fw-semibold">$
+                                            <span class="text-muted" style="font-size:13px;">Subtotal</span>
+                                            <span class="fw-semibold" style="font-size:13px;">$
                                                 <t t-esc="fmt(getCartTotal())"/>
                                             </span>
                                         </div>
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-muted">VAT (7%)</span>
-                                            <span class="fw-semibold">$
-                                                <t t-esc="fmt(getCartTotal() * 0.07)"/>
+                                            <span class="text-muted" style="font-size:13px;">Tax (
+                                                <t t-esc="getAppliedTaxPercent()"/>%)
+                                            </span>
+                                            <span class="fw-semibold" style="font-size:13px;">$
+                                                <t t-esc="fmt(getEffectiveTax())"/>
                                             </span>
                                         </div>
                                         <hr class="my-1"/>
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <span class="fw-bold fs-5">Grand Total</span>
-                                            <span class="fw-bold fs-4 text-success">$
+                                            <span class="fw-bold" style="font-size:16px;">Grand Total</span>
+                                            <span class="fw-bold text-success" style="font-size:18px;">$
                                                 <t t-esc="fmt(getCartTotal() * 1.07)"/>
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="d-flex flex-column gap-2">
-                                        <button class="btn btn-success w-100" t-on-click="goToCheckout">
-                                            <i class="fa fa-credit-card me-1"/> Checkout
-                                        </button>
-                                        <button class="btn btn-outline-secondary w-100" t-on-click="continueShopping">
-                                            <i class="fa fa-arrow-left me-1"/> Continue Shopping
-                                        </button>
-                                    </div>
+                                    <button class="btn btn-outline-secondary w-100 mb-2"
+                                        style="font-size:13px;"
+                                        t-on-click="resetOrder">
+                                        Reset Order
+                                    </button>
+                                    <button class="btn btn-primary w-100 mb-2 text-white"
+                                        style="background:#1a6fbe;border:none;font-size:15px;padding:11px;border-radius:8px;"
+                                        t-on-click="goToCheckout">
+                                        <i class="fa fa-credit-card me-1"/> Checkout &gt;&gt;
+                                    </button>
+                                    <button class="btn btn-outline-secondary w-100" style="font-size:13px;"
+                                        t-on-click="continueShopping">
+                                        <i class="fa fa-arrow-left me-1"/> Continue Shopping
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </t>
-            <!-- ── CHECKOUT PAGE ── -->
+            <!-- ── CHECKOUT PAGE (same fields; FreedomFun-style shell) ── -->
             <t t-if="state.page === 'checkout'">
-                <div class="p-4 flex-grow-1 overflow-auto">
+                <div class="p-4 flex-grow-1 overflow-auto" style="background:#f4f3f0;">
                     <div class="row g-4">
                         <!-- LEFT: Accordions -->
                         <div class="col-12 col-lg-8 d-flex flex-column gap-3">
                             <!-- Customer Dialog -->
                             <div t-if="state.showCustomerDialog"
-                    class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
-                    style="background:rgba(0,0,0,0.5);z-index:9999;">
+                                class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                                style="background:rgba(0,0,0,0.5);z-index:9999;">
                                 <div class="card shadow-lg" style="width:100%;max-width:500px;">
                                     <div class="card-header d-flex justify-content-between align-items-center">
                                         <span class="fw-bold">Find Customer</span>
                                         <button class="btn btn-sm btn-outline-secondary"
-                                t-on-click="() => { this.state.showCustomerDialog = false; this.state.customerResults = []; this.state.customerSearch = ''; }">
+                                            t-on-click="() => { this.state.showCustomerDialog = false; this.state.customerResults = []; this.state.customerSearch = ''; }">
                                             <i class="fa fa-times"/>
                                         </button>
                                     </div>
                                     <div class="card-body">
                                         <input type="text" class="form-control mb-3"
-                                placeholder="Search by name..."
-                                t-att-value="state.customerSearch"
-                                t-on-input="(e) => { this.state.customerSearch = e.target.value; this.searchCustomers(e.target.value); }"/>
+                                            placeholder="Search by name..."
+                                            t-att-value="state.customerSearch"
+                                            t-on-input="(e) => { this.state.customerSearch = e.target.value; this.searchCustomers(e.target.value); }"/>
                                         <div t-if="state.customerSearchLoading" class="text-center p-3">
                                             <div class="spinner-border spinner-border-sm text-primary"/>
-                            </div>
+                                        </div>
                                         <div t-elif="state.customerResults.length === 0 and state.customerSearch.length >= 2"
-                                class="text-muted text-center p-3">
-                                No customers found.
-                            </div>
+                                            class="text-muted text-center p-3">
+                                            No customers found.
+                                        </div>
                                         <div t-else="" class="d-flex flex-column gap-2" style="max-height:300px;overflow-y:auto;">
                                             <t t-foreach="state.customerResults" t-as="partner" t-key="partner.id">
                                                 <div class="d-flex justify-content-between align-items-center p-2 border rounded"
-                                        style="cursor:pointer;"
-                                        t-on-click="() => this.selectCustomer(partner)">
+                                                    style="cursor:pointer;"
+                                                    t-on-click="() => this.selectCustomer(partner)">
                                                     <div>
                                                         <div class="fw-semibold" t-esc="partner.name"/>
                                                         <small class="text-muted" t-esc="partner.email || ''"/>
@@ -439,64 +1263,87 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Accordion 1: Customer & Billing -->
-                            <div class="card shadow-sm">
-                                <div class="card-header d-flex justify-content-between align-items-center"
-                                    style="cursor:pointer;"
+                            <!-- ── Accordion 1: Customer &amp; Billing ── -->
+                            <div class="card shadow-sm border rounded-3 overflow-hidden" style="border-color:#e8e8e8 !important;">
+                                <div class="card-header d-flex justify-content-between align-items-center bg-white"
+                                    style="cursor:pointer;border-color:#e8e8e8 !important;"
                                     t-on-click="() => this.setAccordion('customer')">
                                     <span class="fw-bold">
                                         <i class="fa fa-user me-2 text-primary"/>
-                                    Customer &amp; Billing Information
+                                        Customer &amp; Billing Information
                                     </span>
                                     <i t-att-class="state.activeAccordion === 'customer' ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"/>
                                 </div>
                                 <div t-if="state.activeAccordion === 'customer'" class="card-body d-flex flex-column gap-3">
-                                    <!-- Find Customer button -->
                                     <div>
                                         <button class="btn btn-outline-primary btn-sm"
-                                t-on-click="() => { this.state.showCustomerDialog = true; }">
+                                            t-on-click="() => { this.state.showCustomerDialog = true; }">
                                             <i class="fa fa-search me-1"/> Find Customer
                                         </button>
                                     </div>
-                                    <!-- Name row -->
                                     <div class="row g-2">
                                         <div class="col-6">
                                             <input type="text" class="form-control" placeholder="First Name"
-                                    t-att-value="state.billing.firstName"
-                                    t-on-change="(e) => this.setBillingField('firstName', e.target.value)"/>
+                                                t-att-value="state.billing.firstName"
+                                                t-on-change="(e) => this.setBillingField('firstName', e.target.value)"/>
                                         </div>
                                         <div class="col-6">
                                             <input type="text" class="form-control" placeholder="Last Name"
-                                    t-att-value="state.billing.lastName"
-                                    t-on-change="(e) => this.setBillingField('lastName', e.target.value)"/>
+                                                t-att-value="state.billing.lastName"
+                                                t-on-change="(e) => this.setBillingField('lastName', e.target.value)"/>
                                         </div>
                                     </div>
-                                    <!-- Company -->
                                     <input type="text" class="form-control" placeholder="Company Name"
                                         t-att-value="state.billing.company"
                                         t-on-change="(e) => this.setBillingField('company', e.target.value)"/>
-                                    <!-- Email -->
                                     <input type="email" class="form-control" placeholder="Email"
                                         t-att-value="state.billing.email"
                                         t-on-change="(e) => this.setBillingField('email', e.target.value)"/>
-                                    <!-- Phones -->
                                     <div class="row g-2">
                                         <div class="col-6">
                                             <input type="tel" class="form-control" placeholder="Primary Phone"
-                                            t-att-value="state.billing.phone"
-                                            t-on-change="(e) => this.setBillingField('phone', e.target.value)"/>
+                                                t-att-value="state.billing.phone"
+                                                t-on-change="(e) => this.setBillingField('phone', e.target.value)"/>
                                         </div>
                                         <div class="col-6">
                                             <input type="tel" class="form-control" placeholder="Secondary Phone"
-                                            t-att-value="state.billing.secondaryPhone"
-                                            t-on-change="(e) => this.setBillingField('secondaryPhone', e.target.value)"/>
+                                                t-att-value="state.billing.secondaryPhone"
+                                                t-on-change="(e) => this.setBillingField('secondaryPhone', e.target.value)"/>
                                         </div>
                                     </div>
-                                    <!-- Address -->
-                                    <input type="text" class="form-control" placeholder="Address"
-                                        t-att-value="state.billing.address"
-                                        t-on-change="(e) => this.setBillingField('address', e.target.value)"/>
-                                    <!-- Zip / City -->
+                                    <!-- ── BILLING ADDRESS with Mapbox autocomplete ── -->
+                                    <div class="position-relative">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-map-marker"/>
+                                            </span>
+                                            <input type="text"
+                                                class="form-control"
+                                                placeholder="Address (start typing for suggestions…)"
+                                                autocomplete="off"
+                                                t-att-value="state.billingAddressRaw"
+                                                t-on-input="onBillingAddressInput"
+                                                t-on-blur="onBillingAddressBlur"/>
+                                            <span t-if="state.billingAddressLoading" class="input-group-text">
+                                                <span class="spinner-border spinner-border-sm text-primary"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="state.showBillingSuggestions and state.billingSuggestions.length > 0"
+                                            class="position-absolute w-100 bg-white border rounded shadow-sm"
+                                            style="z-index:1050; top:100%; left:0; max-height:220px; overflow-y:auto;">
+                                            <t t-foreach="state.billingSuggestions" t-as="suggestion" t-key="suggestion.mapbox_id">
+                                                <div class="d-flex align-items-start gap-2 px-3 py-2"
+                                                    style="cursor:pointer; border-bottom:1px solid #f0f0f0;"
+                                                    t-on-mousedown="() => this.selectBillingSuggestion(suggestion)">
+                                                    <i class="fa fa-map-marker text-muted mt-1" style="flex-shrink:0;"/>
+                                                    <div>
+                                                        <div class="fw-semibold" style="font-size:13px;" t-esc="suggestion.name"/>
+                                                        <small class="text-muted" t-esc="suggestion.place_formatted || suggestion.full_address || ''"/>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
                                     <div class="row g-2">
                                         <div class="col-4">
                                             <input type="text" class="form-control" placeholder="Zip"
@@ -505,15 +1352,13 @@
                                         </div>
                                         <div class="col-8">
                                             <input type="text" class="form-control" placeholder="City"
-                                    t-att-value="state.billing.city"
-                                    t-on-change="(e) => this.setBillingField('city', e.target.value)"/>
+                                                t-att-value="state.billing.city"
+                                                t-on-change="(e) => this.setBillingField('city', e.target.value)"/>
                                         </div>
                                     </div>
-                                    <!-- Province/State -->
                                     <input type="text" class="form-control" placeholder="Province / State"
                                         t-att-value="state.billing.state"
                                         t-on-change="(e) => this.setBillingField('state', e.target.value)"/>
-                                    <!-- Referral -->
                                     <select class="form-select"
                                         t-on-change="(e) => this.setBillingField('referral', e.target.value)">
                                         <option value="">How did you hear about us?</option>
@@ -539,7 +1384,6 @@
                                         <option value="groupon">Groupon</option>
                                         <option value="yellow_pages">Yellow Pages</option>
                                     </select>
-                                    <!-- At end of customer accordion card-body -->
                                     <div class="d-flex justify-content-end mt-2">
                                         <button class="btn btn-primary"
                                             t-on-click="() => this.setAccordion('event')">
@@ -549,23 +1393,21 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Accordion 2: Event Information -->
-                            <div class="card shadow-sm">
-                                <div class="card-header d-flex justify-content-between align-items-center"
-                                        style="cursor:pointer;"
-                                        t-on-click="() => this.setAccordion('event')">
+                            <!-- ── Accordion 2: Event Information ── -->
+                            <div class="card shadow-sm border rounded-3 overflow-hidden" style="border-color:#e8e8e8 !important;">
+                                <div class="card-header d-flex justify-content-between align-items-center bg-white"
+                                    style="cursor:pointer;border-color:#e8e8e8 !important;"
+                                    t-on-click="() => this.setAccordion('event')">
                                     <span class="fw-bold">
                                         <i class="fa fa-calendar me-2 text-warning"/>
-                                            Event Information
+                                        Event Information
                                     </span>
                                     <i t-att-class="state.activeAccordion === 'event' ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"/>
                                 </div>
                                 <div t-if="state.activeAccordion === 'event'" class="card-body d-flex flex-column gap-3">
-                                    <!-- Location Name -->
                                     <input type="text" class="form-control" placeholder="Location Name"
                                         t-att-value="state.event.locationName"
                                         t-on-change="(e) => this.setEventField('locationName', e.target.value)"/>
-                                    <!-- Same as Billing -->
                                     <div class="form-check d-flex align-items-center gap-2">
                                         <input class="form-check-input mt-0" type="checkbox" id="same_as_billing"
                                             t-att-checked="state.event.sameAsBilling"
@@ -574,11 +1416,40 @@
                                             Same as Billing?
                                         </label>
                                     </div>
-                                    <!-- Address -->
-                                    <input type="text" class="form-control" placeholder="Address"
-                                            t-att-value="state.event.address"
-                                            t-att-disabled="state.event.sameAsBilling"
-                                            t-on-change="(e) => this.setEventField('address', e.target.value)"/>
+                                    <!-- ── EVENT ADDRESS with Mapbox autocomplete ── -->
+                                    <div class="position-relative">
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-map-marker"/>
+                                            </span>
+                                            <input type="text"
+                                                class="form-control"
+                                                placeholder="Address (start typing for suggestions…)"
+                                                autocomplete="off"
+                                                t-att-value="state.eventAddressRaw"
+                                                t-att-disabled="state.event.sameAsBilling"
+                                                t-on-input="onEventAddressInput"
+                                                t-on-blur="onEventAddressBlur"/>
+                                            <span t-if="state.eventAddressLoading" class="input-group-text">
+                                                <span class="spinner-border spinner-border-sm text-primary"/>
+                                            </span>
+                                        </div>
+                                        <div t-if="state.showEventSuggestions and state.eventSuggestions.length > 0 and !state.event.sameAsBilling"
+                                            class="position-absolute w-100 bg-white border rounded shadow-sm"
+                                            style="z-index:1050; top:100%; left:0; max-height:220px; overflow-y:auto;">
+                                            <t t-foreach="state.eventSuggestions" t-as="suggestion" t-key="suggestion.mapbox_id">
+                                                <div class="d-flex align-items-start gap-2 px-3 py-2"
+                                                    style="cursor:pointer; border-bottom:1px solid #f0f0f0;"
+                                                    t-on-mousedown="() => this.selectEventSuggestion(suggestion)">
+                                                    <i class="fa fa-map-marker text-muted mt-1" style="flex-shrink:0;"/>
+                                                    <div>
+                                                        <div class="fw-semibold" style="font-size:13px;" t-esc="suggestion.name"/>
+                                                        <small class="text-muted" t-esc="suggestion.place_formatted || suggestion.full_address || ''"/>
+                                                    </div>
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
                                     <div class="row g-2">
                                         <div class="col-8">
                                             <input type="text" class="form-control" placeholder="City"
@@ -593,7 +1464,6 @@
                                                 t-on-change="(e) => this.setEventField('state', e.target.value)"/>
                                         </div>
                                     </div>
-                                    <!-- Zip + Verify -->
                                     <div class="d-flex gap-2 align-items-start">
                                         <div class="flex-grow-1">
                                             <input type="text" class="form-control" placeholder="Zip / Postal Code"
@@ -601,31 +1471,37 @@
                                                 t-att-disabled="state.event.sameAsBilling"
                                                 t-on-change="(e) => { this.setEventField('zip', e.target.value); this.verifyEventZip(e.target.value); }"/>
                                         </div>
-                                        <!-- Zip status badge -->
                                         <div t-if="state.event.zipStatus === 'available'"
                                             class="badge bg-success d-flex align-items-center px-3"
                                             style="height:38px;font-size:13px;">
                                             <i class="fa fa-check me-1"/> Available
                                         </div>
+                                        <!-- ── STILL DELIVER override ── -->
                                         <div t-if="state.event.zipStatus === 'not_available'"
-                                                class="badge bg-danger d-flex align-items-center px-3"
-                                                style="height:38px;font-size:13px;">
+                                            class="form-check d-flex align-items-center gap-2 mt-1">
+                                            <input class="form-check-input mt-0" type="checkbox" id="still_deliver"
+                                                t-att-checked="state.event.stillDeliver"
+                                                t-on-change="(e) => this.onStillDeliverChange(e)"/>
+                                            <label class="form-check-label fw-semibold text-warning" for="still_deliver">
+                                                <i class="fa fa-truck me-1"/>Still deliver?
+                                            </label>
+                                        </div>
+                                        <div t-if="state.event.zipStatus === 'not_available'"
+                                            class="badge bg-danger d-flex align-items-center px-3"
+                                            style="height:38px;font-size:13px;">
                                             <i class="fa fa-times me-1"/> Not Available
                                         </div>
                                     </div>
-                                    <!-- Zip warning -->
                                     <div class="alert alert-warning p-2 mb-0" style="font-size:12px;">
                                         <i class="fa fa-exclamation-triangle me-1"/>
                                         <strong>IMPORTANT:</strong> The zip code MUST MATCH the EVENT ZIP CODE (not billing).
                                         If not listed, verify franchise territory ownership via intranet or contact corporate.
                                     </div>
-                                    <!-- Not available warning -->
                                     <div t-if="state.event.zipStatus === 'not_available'"
-                                            class="alert alert-danger p-2 mb-0" style="font-size:12px;">
+                                        class="alert alert-danger p-2 mb-0" style="font-size:12px;">
                                         <i class="fa fa-exclamation-circle me-1"/>
                                         This zip code is not in our service area. Please verify with corporate before proceeding.
                                     </div>
-                                    <!-- Type of Event -->
                                     <select class="form-select"
                                         t-on-change="(e) => this.setEventField('eventType', e.target.value)">
                                         <option value="">Type of Event?</option>
@@ -635,7 +1511,6 @@
                                         <option value="company_team">Company &amp; Team</option>
                                         <option value="other">Other</option>
                                     </select>
-                                    <!-- Damage Waiver -->
                                     <div class="card border-warning">
                                         <div class="card-body p-2">
                                             <p class="small text-muted mb-2">
@@ -652,7 +1527,6 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <!-- Event Location -->
                                     <div class="card border-info">
                                         <div class="card-body p-2">
                                             <p class="small text-muted mb-2">
@@ -668,7 +1542,6 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <!-- Continue button -->
                                     <div class="d-flex justify-content-end mt-2">
                                         <button class="btn btn-primary"
                                             t-on-click="() => this.setAccordion('additional')">
@@ -678,10 +1551,10 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Accordion 3: Additional Information -->
-                            <div class="card shadow-sm">
-                                <div class="card-header d-flex justify-content-between align-items-center"
-                                    style="cursor:pointer;"
+                            <!-- ── Accordion 3: Additional Information ── -->
+                            <div class="card shadow-sm border rounded-3 overflow-hidden" style="border-color:#e8e8e8 !important;">
+                                <div class="card-header d-flex justify-content-between align-items-center bg-white"
+                                    style="cursor:pointer;border-color:#e8e8e8 !important;"
                                     t-on-click="() => this.setAccordion('additional')">
                                     <span class="fw-bold">
                                         <i class="fa fa-info-circle me-2 text-info"/>
@@ -690,7 +1563,6 @@
                                     <i t-att-class="state.activeAccordion === 'additional' ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"/>
                                 </div>
                                 <div t-if="state.activeAccordion === 'additional'" class="card-body d-flex flex-column gap-3">
-                                    <!-- Weather Policy -->
                                     <div class="card border-secondary">
                                         <div class="card-body p-3 d-flex flex-column gap-2">
                                             <p class="small text-muted mb-0">
@@ -711,7 +1583,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Setup Terms -->
                                     <div class="card border-secondary">
                                         <div class="card-body p-3 d-flex flex-column gap-2">
                                             <p class="small text-muted mb-0">
@@ -728,7 +1599,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Setup Surface -->
                                     <select class="form-select"
                                         t-on-change="(e) => this.setAdditionalField('setupSurface', e.target.value)">
                                         <option value="">Setup Surface</option>
@@ -741,16 +1611,13 @@
                                         <option value="turf_35">Turf ($35.00)</option>
                                         <option value="drive_in_movie_asphalt_100">Drive In Movie Asphalt ($100.00)</option>
                                     </select>
-                                    <!-- Coupon / Discount row -->
                                     <div class="row g-2">
                                         <div class="col-7">
                                             <div class="input-group">
                                                 <input type="text" class="form-control" placeholder="Coupon Code"
-                                                    t-att-value="state.additional.couponCode"
+                                                    t-att-value="state.additional.couponCode || ''" 
                                                     t-on-change="(e) => this.setAdditionalField('couponCode', e.target.value)"/>
-                                                <button class="btn btn-outline-primary" t-on-click="applyCoupon">
-                                                    Apply
-                                                </button>
+                                                <button class="btn btn-outline-primary"  t-on-click="applyCoupon">Apply</button>
                                             </div>
                                             <small t-if="state.additional.couponApplied" class="text-success d-block mt-1">
                                                 <i class="fa fa-check me-1"/>
@@ -764,36 +1631,70 @@
                                         </div>
                                         <div class="col-5">
                                             <div class="input-group">
-                                                <span class="input-group-text">%</span>
+                                                <select class="form-select form-select-sm" style="max-width:60px;"
+                                                    t-on-change="(e) => { this.setAdditionalField('discountType', e.target.value); this.setAdditionalField('discountApplied', false); }">
+                                                    <option value="percent" t-att-selected="state.additional.discountType === 'percent'">%</option>
+                                                    <option value="amount" t-att-selected="state.additional.discountType === 'amount'">$</option>
+                                                </select>
                                                 <input type="number" class="form-control" placeholder="Discount"
-                                                    min="0" max="100" step="0.01"
-                                                    t-att-value="state.additional.generalDiscount"
+                                                    min="0"
+                                                    t-att-max="state.additional.discountType === 'percent' ? 100 : undefined"
+                                                    step="0.01"
+                                                    t-att-value="state.additional.generalDiscount || ''"
                                                     t-on-change="(e) => this.onDiscountChange(e)"/>
-                                                <button class="btn btn-outline-success" t-on-click="applyDiscount">
-                                                    Apply
-                                                </button>
+                                                <button class="btn btn-outline-success" t-on-click="applyDiscount">Apply</button>
                                             </div>
                                             <small t-if="state.additional.discountApplied" class="text-success">
-                                                <i class="fa fa-check me-1"/>Discount applied
+                                                <i class="fa fa-check me-1"/>
+                                                <t t-if="state.additional.discountType === 'amount'">
+                                                    $<t t-esc="(state.additional.generalDiscount || 0).toFixed(2)"/> discount applied
+                                                </t>
+                                                <t t-else="">
+                                                    <t t-esc="state.additional.generalDiscount"/>% discount applied
+                                                </t>
                                             </small>
                                         </div>
                                     </div>
                                     <!-- Override Fields row 1 -->
                                     <div class="row g-2">
+                                        <!-- ── TRAVEL FEE — auto-filled from nearest warehouse ── -->
                                         <div class="col-6">
                                             <div class="input-group">
-                                                <span class="input-group-text">$</span>
-                                                <input type="number" class="form-control" placeholder="Override Travel Fee"
-                                                    min="0" step="0.01"
-                                                    t-att-value="state.additional.overrideTravelFee"
+                                                <span class="input-group-text">
+                                                    <i class="fa fa-car"/>
+                                                </span>
+                                                <input type="number" class="form-control" placeholder="Travel Fee"
+                                                    min="0" step="0.01" 
+                                                    t-att-value="state.additional.overrideTravelFee || ''"
                                                     t-on-change="onOverrideTravelFeeChange"/>
                                             </div>
+                                            <!-- Auto-calc info badge — shown when fee was set automatically -->
+                                            <div t-if="state.travelFeeInfo" class="mt-1" >
+                                                <small class="text-info d-block">
+                                                    <i class="fa fa-car me-1"/>
+                                                    <t t-esc="state.travelFeeInfo.distanceMiles"/> mi
+                                                    <t t-if="state.travelFeeInfo.isDriving">(driving)</t>
+                                                    <t t-else="">(straight-line)</t>
+                                                    from
+                                                    <strong>
+                                                        <t t-esc="state.travelFeeInfo.warehouseName"/>
+                                                    </strong>
+                                                </small>
+                                                <small class="text-muted d-block">
+                                                    First 5 mi free ·
+                                                    <t t-esc="state.travelFeeInfo.billableMiles"/> billable mi
+                                                    @ $
+                                                    <t t-esc="state.travelFeeInfo.ratePerMile"/>/mi
+                                                </small>
+                                            </div>
+                                            <small t-if="!state.travelFeeInfo and state.additional.overrideTravelFee > 0"
+                                                class="text-muted d-block mt-1">Manually set</small>
                                         </div>
                                         <div class="col-6">
                                             <div class="input-group">
                                                 <input type="number" class="form-control" placeholder="Deposit %"
-                                                    min="0" max="100" step="0.01"
-                                                    t-att-value="state.additional.depositPercent"
+                                                    min="0" max="100" step="0.01" 
+                                                    t-att-value="state.additional.depositPercent || ''"
                                                     t-on-change="onDepositPercentChange"/>
                                                 <span class="input-group-text">%</span>
                                             </div>
@@ -807,61 +1708,137 @@
                                     <div class="row g-2">
                                         <div class="col-6">
                                             <div class="input-group">
-                                                <span class="input-group-text">$</span>
-                                                <input type="number" class="form-control" placeholder="Override Tax Amount"
-                                                    min="0" step="0.01"
-                                                    t-att-value="state.additional.overrideTaxAmount"
-                                                    t-on-change="onOverrideTaxChange"/>
+                                                <input type="number" class="form-control" placeholder="Tax %"
+                                                        min="0" max="100" step="0.01" 
+                                                        t-att-value="state.additional.overrideTaxAmount || ''"
+                                                        t-on-change="onOverrideTaxChange"/>
+                                                <span class="input-group-text">%</span>
                                             </div>
-                                            <small class="text-muted">Overrides 7% VAT if set</small>
+                                            <small class="text-muted">Default:
+                                                <t t-esc="state.companySalesTax.name"/> (
+                                                <t t-esc="state.companySalesTax.amount"/>%)
+                                            </small>
                                         </div>
                                         <div class="col-6">
                                             <div class="input-group">
                                                 <span class="input-group-text">$</span>
                                                 <input type="number" class="form-control" placeholder="Miscellaneous Fees"
-                                                    min="0" step="0.01"
-                                                    t-att-value="state.additional.miscellaneousFees"
-                                                     t-on-change="onMiscFeesChange"/>
+                                                    min="0" step="0.01" 
+                                                    t-att-value="state.additional.miscellaneousFees || ''"
+                                                    t-on-change="onMiscFeesChange"/>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- Internal Notes -->
                                     <textarea class="form-control" placeholder="Internal Notes" rows="3"
                                         t-att-value="state.additional.internalNotes"
                                         t-on-change="(e) => this.setAdditionalField('internalNotes', e.target.value)"/>
-                                </div>
-                            </div>
-                            <!-- Accordion 3: Placeholder (Payment) -->
-                            <div class="card shadow-sm">
-                                <div class="card-header d-flex justify-content-between align-items-center"
-                                        style="cursor:pointer;"
-                                        t-on-click="() => this.setAccordion('payment')">
-                                    <span class="fw-bold">
-                                        <i class="fa fa-credit-card me-2 text-success"/>
-                                            Payment
-                                    </span>
-                                    <i t-att-class="state.activeAccordion === 'payment' ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"/>
-                                </div>
-                                <div t-if="state.activeAccordion === 'payment'" class="card-body text-muted">
-                                        Coming soon...
+                                    <textarea class="form-control" placeholder="Customer Notes (visible on quote/invoice)" rows="3"
+                                        t-att-value="state.additional.customerNotes"
+                                        t-on-change="(e) => this.setAdditionalField('customerNotes', e.target.value)"/>
+                                    <t t-if="state.additional.discountApplied and state.additional.generalDiscount > 0">
+                                        <input type="text" class="form-control" placeholder="Discount description (optional)"
+                                            t-att-value="state.additional.discountDescription"
+                                            t-on-change="(e) => this.setAdditionalField('discountDescription', e.target.value)"/>
+                                    </t>
+                                    <t t-if="state.additional.miscellaneousFees > 0">
+                                        <input type="text" class="form-control" placeholder="Miscellaneous fees description (optional)"
+                                            t-att-value="state.additional.miscDescription"
+                                            t-on-change="(e) => this.setAdditionalField('miscDescription', e.target.value)"/>
+                                    </t>
                                 </div>
                             </div>
                         </div>
-                        <!-- RIGHT: Order Summary -->
+                        <!-- RIGHT: Order Summary (Checkout) -->
                         <div class="col-12 col-lg-4">
-                            <div class="card shadow-sm sticky-top" style="top:16px;">
-                                <div class="card-header fw-bold fs-5">
-                                    <i class="fa fa-receipt me-2"/>Order Summary
+                            <div class="bg-white rounded-3 border overflow-hidden sticky-top shadow-sm" style="border-color:#e8e8e8 !important;top:16px; padding: 0px 10px 10px 10px;">
+                                <div class="px-4 py-3 border-bottom fw-bold d-flex justify-content-between align-items-center"
+                                     style="font-size:15px;border-color:#f0eeea !important;">
+                                    <span>
+                                        <i class="fa fa-receipt me-2"/>Order Summary
+                                    </span>
+                                    <span t-if="state.currentOrderNumber" class="text-muted" style="font-size:13px;">
+                                        #
+                                        <t t-esc="state.currentOrderNumber"/>
+                                    </span>
                                 </div>
-                                <div class="card-body d-flex flex-column gap-2">
+                                <!-- CART ITEMS DETAIL -->
+                                <div class="card-body d-flex flex-column gap-2 pb-1">
                                     <t t-foreach="state.cart" t-as="item" t-key="item.id">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-truncate me-2" style="max-width:180px;"
-                                    t-att-title="item.name" t-esc="item.name"/>
-                                            <span class="fw-semibold text-success text-nowrap">
+                                        <div class="d-flex flex-column pb-2" t-att-class="!item_last ? 'border-bottom' : ''">
+                                            <!-- Name + Total Price -->
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <span class="fw-semibold text-truncate me-2" style="max-width:170px;"
+                                                    t-att-title="item.name" t-esc="item.name"/>
+                                                <span class="fw-semibold text-success text-nowrap">
                                                     $
-                                                <t t-esc="fmt(getItemPrice(item))"/>
-                                            </span>
+                                                    <t t-esc="fmt(getItemPrice(item))"/>
+                                                </span>
+                                            </div>
+                                            <!-- Pricing type badge -->
+                                            <div class="mt-1">
+                                                <span class="badge bg-secondary" style="font-size:10px;">
+                                                    <t t-esc="(state.pricingSelections[item.id] || 'staffed').charAt(0).toUpperCase() + (state.pricingSelections[item.id] || 'staffed').slice(1)"/>
+                                                </span>
+                                                <t t-if="item.isAddon">
+                                                    <span class="badge bg-info ms-1" style="font-size:10px;">Add-on</span>
+                                                </t>
+                                            </div>
+                                            <!-- Date / Time / Duration — non-addon items only -->
+                                            <t t-if="!item.isAddon and item.date and item.startTime and item.endTime">
+                                                <small class="text-muted mt-1">
+                                                    <i class="fa fa-calendar me-1"/>
+                                                    <t t-esc="item.date"/>
+                                                </small>
+                                                <small class="text-muted">
+                                                    <i class="fa fa-clock-o me-1"/>
+                                                    <t t-esc="item.startTime"/> –
+                                                    <t t-esc="item.endTime"/>
+                                                </small>
+                                                <small t-att-class="getItemDurationLabel(item).includes('+$') ? 'text-warning fw-semibold' : 'text-success'">
+                                                    <i t-att-class="getItemDurationLabel(item).includes('+$') ? 'fa fa-clock-o me-1' : 'fa fa-check-circle me-1'"/>
+                                                    <t t-esc="getItemDurationLabel(item)"/>
+                                                </small>
+                                            </t>
+                                        </div>
+                                    </t>
+                                    <!-- EVENT DETAILS -->
+                                    <t t-if="state.event.locationName or state.event.address or state.event.eventType">
+                                        <div class="border-top pt-2 mt-1">
+                                            <div class="fw-semibold mb-1 text-warning" style="font-size:13px;">
+                                                <i class="fa fa-map-marker me-1"/>Event Details
+                                            </div>
+                                            <t t-if="state.event.locationName">
+                                                <small class="text-muted d-block">
+                                                    <i class="fa fa-building me-1"/>
+                                                    <t t-esc="state.event.locationName"/>
+                                                </small>
+                                            </t>
+                                            <t t-if="state.event.address">
+                                                <small class="text-muted d-block">
+                                                    <i class="fa fa-home me-1"/>
+                                                    <t t-esc="state.event.address"/>
+                                                    <t t-if="state.event.city">,
+                                                        <t t-esc="state.event.city"/></t>
+                                                    <t t-if="state.event.state">
+                                                        <t t-esc="state.event.state"/></t>
+                                                    <t t-if="state.event.zip">
+                                                        <t t-esc="state.event.zip"/></t>
+                                                </small>
+                                            </t>
+                                            <t t-if="state.event.eventType">
+                                                <small class="text-muted d-block">
+                                                    <i class="fa fa-tag me-1"/>
+                                                    <t t-esc="formatEventType(state.event.eventType)"/>
+                                                </small>
+                                            </t>
+                                            <t t-if="state.event.damageWaiver">
+                                                <small t-att-class="state.event.damageWaiver === 'yes' ? 'text-success d-block' : 'text-muted d-block'">
+                                                    <i class="fa fa-shield me-1"/>
+                                                    Damage Waiver:
+                                                    <t t-if="state.event.damageWaiver === 'yes'">Yes (10%)</t>
+                                                    <t t-else="">Declined</t>
+                                                </small>
+                                            </t>
                                         </div>
                                     </t>
                                 </div>
@@ -879,33 +1856,97 @@
                                             class="d-flex justify-content-between text-danger">
                                             <span>
                                                 <i class="fa fa-tag me-1"/>
-                                                Discount (
-                                                <t t-esc="state.additional.generalDiscount"/>%)
+                                                Discount<t t-if="state.additional.discountDescription"> <t t-esc="state.additional.discountDescription"/></t>
                                             </span>
                                             <span>-$
                                                 <t t-esc="fmt(getDiscountAmount())"/>
                                             </span>
                                         </div>
                                         <!-- Coupon -->
-                                        <div t-if="state.additional.couponApplied and state.additional.couponCode"
+                                        <div t-if="state.additional.couponApplied and state.additional.couponDiscount > 0"
                                             class="d-flex justify-content-between text-danger">
                                             <span>
-                                                <i class="fa fa-ticket me-1"/>
-                                                Coupon:
+                                                <i class="fa fa-ticket me-1"/>Coupon:
                                                 <t t-esc="state.additional.couponCode"/>
                                             </span>
-                                            <span class="text-muted small">Applied</span>
+                                            <span>-$
+                                                <t t-esc="fmt(state.additional.couponDiscount)"/>
+                                            </span>
                                         </div>
-                                        <!-- Miscellaneous -->
+                                        <!-- Misc Fees -->
                                         <div t-if="state.additional.miscellaneousFees > 0"
                                             class="d-flex justify-content-between">
-                                            <span class="text-muted">Miscellaneous Fees</span>
+                                            <span class="text-muted">
+                                                Miscellaneous Fees<t t-if="state.additional.miscDescription"> <t t-esc="state.additional.miscDescription"/></t>
+                                            </span>
                                             <span class="fw-semibold">$
                                                 <t t-esc="fmt(state.additional.miscellaneousFees)"/>
                                             </span>
                                         </div>
+                                        <!-- Tip -->
+                                        <div t-if="getTipAmount() > 0"
+                                            class="d-flex justify-content-between text-success">
+                                            <span>
+                                                <i class="fa fa-smile-o me-1"/>Tip
+                                                <t t-if="state.payment.tipMode !== 'custom'">
+                                                    (
+                                                    <t t-esc="state.payment.tipMode"/>%)
+                                                </t>
+                                            </span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(getTipAmount())"/>
+                                            </span>
+                                        </div>
+                                        <!-- Damage Waiver -->
+                                        <div t-if="state.event.damageWaiver === 'yes'"
+                                            class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                <i class="fa fa-shield me-1"/>Damage Waiver (10%)
+                                            </span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(getDamageWaiverAmount())"/>
+                                            </span>
+                                        </div>
+                                        <!-- Non-Residential Fee -->
+                                        <div t-if="state.event.eventLocation === 'yes_20'"
+                                            class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                <i class="fa fa-map-marker me-1"/>Non-Residential Fee
+                                            </span>
+                                            <span class="fw-semibold">$20.00</span>
+                                        </div>
+                                        <!-- Setup Surface Fee -->
+                                        <div t-if="getSetupSurfaceFee() > 0"
+                                            class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                <i class="fa fa-wrench me-1"/>Setup Surface Fee
+                                                <t t-if="getSetupSurfaceLabel()">
+                                                    (<t t-esc="getSetupSurfaceLabel()"/>)
+                                                </t>
+                                            </span>
+                                            <span class="fw-semibold">$<t t-esc="fmt(getSetupSurfaceFee())"/></span>
+                                        </div>
+                                        <!-- Travel Fee -->
+                                        <div t-if="state.additional.overrideTravelFee > 0"
+                                            class="d-flex justify-content-between">
+                                            <span class="text-muted">
+                                                <i class="fa fa-car me-1"/>Travel Fee
+                                                <t t-if="state.travelFeeInfo">
+                                                    <small class="d-block" style="font-size:11px;">
+                                                        <t t-esc="state.travelFeeInfo.distanceMiles"/> mi ·
+                                                        <t t-esc="state.travelFeeInfo.billableMiles"/> billable
+                                                        @ $
+                                                        <t t-esc="state.travelFeeInfo.ratePerMile"/>/mi
+                                                    </small>
+                                                </t>
+                                            </span>
+                                            <span class="fw-semibold">$
+                                                <t t-esc="fmt(state.additional.overrideTravelFee)"/>
+                                            </span>
+                                        </div>
                                         <!-- Deposit -->
-                                        <div t-if="state.additional.depositPercent > 0" class="d-flex justify-content-between text-info">
+                                        <div t-if="state.additional.depositPercent > 0"
+                                            class="d-flex justify-content-between text-info">
                                             <span>
                                                 <i class="fa fa-info-circle me-1"/>
                                                 Deposit Due Now (
@@ -915,20 +1956,18 @@
                                                 <t t-esc="fmt(getDepositAmount())"/>
                                             </span>
                                         </div>
-                                        <div t-if="state.additional.depositPercent > 0" class="d-flex justify-content-between text-muted">
-                                            <span style="font-size:12px;">
-                                                Remaining after deposit
-                                            </span>
-                                            <span style="font-size:12px;">
-                                                $
+                                        <div t-if="state.additional.depositPercent > 0"
+                                            class="d-flex justify-content-between text-muted">
+                                            <span style="font-size:12px;">Remaining after deposit</span>
+                                            <span style="font-size:12px;">$
                                                 <t t-esc="fmt(getCheckoutGrandTotal() - getDepositAmount())"/>
                                             </span>
                                         </div>
                                         <!-- Tax -->
                                         <div class="d-flex justify-content-between">
                                             <span class="text-muted">
-                                                <t t-if="state.additional.overrideTaxAmount > 0">Tax (Override)</t>
-                                                <t t-else="">VAT (7%)</t>
+                                                Tax (
+                                                <t t-esc="getAppliedTaxPercent()"/>%)
                                             </span>
                                             <span class="fw-semibold">$
                                                 <t t-esc="fmt(getEffectiveTax())"/>
@@ -939,19 +1978,29 @@
                                         <div class="d-flex justify-content-between">
                                             <span class="fw-bold fs-5">Grand Total</span>
                                             <span class="fw-bold fs-4 text-success">$
-                                                <t t-esc="fmt(getCheckoutGrandTotal())"/>
+                                                <t t-esc="fmt(getCheckoutGrandTotal() + getTipAmount())"/>
                                             </span>
                                         </div>
                                     </div>
-                                    <button class="btn btn-success w-100"
-                                        t-on-click="placeOrder"
-                                        t-att-disabled="!state.additional.weatherPolicyAgreed or !state.additional.setupTermsAgreed or state.placingOrder">
-                                        <span t-if="state.placingOrder">
-                                            <span class="spinner-border spinner-border-sm me-1"/> Placing Order...
-                                        </span>
-                                        <span t-else="">
-                                            <i class="fa fa-check me-1"/> Place Order
-                                        </span>
+                                    <!-- Service area warning -->
+                                    <div t-if="state.event.zipStatus === 'not_available' and !state.event.stillDeliver"
+                                        class="alert alert-danger p-2 mb-2 text-center" style="font-size:12px;">
+                                        <i class="fa fa-ban me-1"/>Cannot place order — event zip is not in service area
+                                    </div>
+                                    <button class="btn btn-primary w-100 mb-2 text-white"
+                                        style="background:#1a6fbe;border:none;font-size:15px;padding:11px;border-radius:8px;"
+                                        t-on-click="goToPaymentPage"
+                                        t-att-disabled="!isCheckoutValid()
+                                                        or !state.additional.weatherPolicyAgreed
+                                                        or !state.additional.setupTermsAgreed
+                                                        or state.placingOrder
+                                                        or state.payment.enabled
+                                                        or (state.event.zipStatus === 'not_available' and !state.event.stillDeliver)">
+                                        Continue
+                                        <i class="fa fa-arrow-right ms-1"/>
+                                    </button>
+                                    <button class="btn btn-outline-secondary w-100" t-on-click="continueShopping">
+                                        <i class="fa fa-arrow-left me-1"/> Continue Shopping
                                     </button>
                                 </div>
                             </div>
@@ -961,50 +2010,59 @@
             </t>
             <!-- ── SUCCESS PAGE ── -->
             <t t-if="state.page === 'success'">
-                <div class="d-flex flex-column justify-content-center align-items-center flex-grow-1 p-5 text-center">
+                <div class="d-flex flex-column justify-content-center align-items-center flex-grow-1 p-5 text-center" style="background:#f4f3f0;">
                     <i class="fa fa-check-circle text-success mb-3" style="font-size:64px;"/>
-                    <h3 class="fw-bold mb-2">Rental Order Created!</h3>
-                    <p class="text-muted mb-4">Your rental order has been successfully created.</p>
-                    <!-- Invoice status -->
-                    <div t-if="state.invoiceSent" class="alert alert-success mb-4" style="max-width:400px;">
+                    <h3 class="fw-bold mb-2">
+                        <t t-if="state.paidOnSpot">Rental Order Created!</t>
+                        <t t-else="">Quote Created!</t>
+                    </h3>
+                    <p class="text-muted mb-4">
+                        <t t-if="state.paidOnSpot">Your rental order has been successfully created.</t>
+                        <t t-else="">Your quote has been successfully created and sent to the customer.</t>
+                    </p>
+                    <!-- Pay-on-spot full: confirmation email auto-sent -->
+                    <div t-if="state.paidOnSpot and state.lastDepositPercent >= 100"
+                        class="alert alert-success mb-4" style="max-width:440px;">
+                        <i class="fa fa-check-circle me-2"/>
+                        Payment received in full. A confirmation email has been sent to the customer.
+                    </div>
+                    <!-- Quote email sent confirmation -->
+                    <div t-if="state.invoiceSent and !state.paidOnSpot" class="alert alert-success mb-4" style="max-width:480px;">
                         <i class="fa fa-envelope me-2"/>
-                        <t t-if="state.lastDepositPercent > 0">
-                            Deposit invoice (
-                            <t t-esc="state.lastDepositPercent"/>%) created and sent to customer.
-                        </t>
-                        <t t-else="">
-                            Full invoice created and sent to customer.
-                        </t>
+                        Quote email sent to customer. They can pay in full or with a 30% deposit.
+                    </div>
+                    <!-- Remaining invoice sent confirmation (pay-on-spot partial flow) -->
+                    <div t-if="state.invoiceSent and state.paidOnSpot" class="alert alert-success mb-4" style="max-width:440px;">
+                        <i class="fa fa-envelope me-2"/>
+                        Remaining invoice created and sent to customer.
+                    </div>
+                    <!-- Sending indicator -->
+                    <div t-if="state.invoiceLoading and !state.invoiceSent" class="alert alert-info mb-4" style="max-width:440px;">
+                        <span class="spinner-border spinner-border-sm me-2"/>
+                        Sending quote email...
                     </div>
                     <div t-if="state.invoiceError" class="alert alert-danger mb-4" style="max-width:400px;">
                         <i class="fa fa-exclamation-triangle me-2"/>
                         <t t-esc="state.invoiceError"/>
                     </div>
                     <div class="d-flex gap-3 flex-wrap justify-content-center">
-                        <!-- Create Invoice button (shown until invoice is sent) -->
-                        <t t-if="!state.invoiceSent">
-                            <button class="btn btn-success"
-                                t-on-click="createAndSendInvoice"
+                        <!-- (No manual "Create &amp; Send Invoice" button — quote email is auto-sent on order creation) -->
+                        <!-- Pay-on-spot partial: show remaining invoice button -->
+                        <t t-if="state.paidOnSpot and state.lastDepositPercent lt 100 and !state.invoiceSent">
+                            <button class="btn btn-warning"
+                                t-on-click="createRemainingInvoice"
                                 t-att-disabled="state.invoiceLoading">
                                 <span t-if="state.invoiceLoading">
-                                    <span class="spinner-border spinner-border-sm me-1"/>
-                                    <t t-if="state.lastDepositPercent > 0">Creating deposit invoice...</t>
-                                    <t t-else="">Creating invoice...</t>
+                                    <span class="spinner-border spinner-border-sm me-1"/>Creating remaining invoice...
                                 </span>
                                 <span t-else="">
                                     <i class="fa fa-file-text me-1"/>
-                                    <t t-if="state.lastDepositPercent > 0">
-                                        Create &amp; Send Deposit Invoice (
-                                        <t t-esc="state.lastDepositPercent"/>%)
-                                    </t>
-                                    <t t-else="">
-                                        Create &amp; Send Full Invoice
-                                    </t>
+                                    Create Invoice for Remaining (<t t-esc="100 - state.lastDepositPercent"/>%)
                                 </span>
                             </button>
                         </t>
-                        <!-- View Invoice button (shown after invoice sent) -->
-                        <t t-if="state.invoiceSent">
+                        <!-- Pay-on-spot full (100%): no invoice button needed -->
+                        <t t-if="state.invoiceSent and state.paidOnSpot">
                             <button class="btn btn-outline-success" t-on-click="openInvoice">
                                 <i class="fa fa-file-text me-1"/> View Invoice
                             </button>
@@ -1023,7 +2081,7 @@
     <t t-name="web.ControlPanel" t-inherit="web.ControlPanel" t-inherit-mode="extension">
         <xpath expr="//nav[hasclass('o_cp_switch_buttons')]" position="inside">
             <button t-if="rentalPosVisible"
-                class="btn btn-secondary o_rental_pos_button" 
+                class="btn btn-secondary o_rental_pos_button"
                 t-on-click="openRentalPos">
                 <i class="fa fa-television me-1"/>
             </button>

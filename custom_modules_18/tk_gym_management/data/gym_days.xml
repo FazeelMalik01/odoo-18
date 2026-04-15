@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="day1" model="workout.days">
+            <field name="color">1</field>
+            <field name="day">Sunday</field>
+        </record>
+        <record id="day2" model="workout.days">
+            <field name="color">2</field>
+            <field name="day">Monday</field>
+        </record>
+        <record id="day3" model="workout.days">
+            <field name="color">3</field>
+            <field name="day">Tuesday</field>
+        </record>
+        <record id="day4" model="workout.days">
+            <field name="color">4</field>
+            <field name="day">Wednesday</field>
+        </record>
+        <record id="day5" model="workout.days">
+            <field name="color">5</field>
+            <field name="day">Thursday</field>
+        </record>
+        <record id="day6" model="workout.days">
+            <field name="color">6</field>
+            <field name="day">Friday</field>
+        </record>
+        <record id="day7" model="workout.days">
+            <field name="color">7</field>
+            <field name="day">Saturday</field>
+        </record>
+    </data>
+</odoo>

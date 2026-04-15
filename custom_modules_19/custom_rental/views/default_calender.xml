@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Rename the main rental action heading -->
+    <record id="sale_renting.rental_order_action" model="ir.actions.act_window">
+        <field name="name">Book Event - Freedom Fun USA</field>
+    </record>
+
+    <!-- Make calendar the default (sequence 1) for main rental action -->
+    <record id="sale_renting.rental_order_kanban" model="ir.actions.act_window.view">
+        <field name="sequence" eval="10"/>
+    </record>
+    <record id="sale_renting.rental_order_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="11"/>
+    </record>
+    <record id="sale_renting.rental_order_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="12"/>
+    </record>
+    <record id="sale_renting.rental_order_action_view_calendar" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+    </record>
+
+    <!-- Same for today pickup action -->
+    <record id="sale_renting.rental_order_today_pickup_kanban" model="ir.actions.act_window.view">
+        <field name="sequence" eval="10"/>
+    </record>
+    <record id="sale_renting.rental_order_today_pickup_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="11"/>
+    </record>
+    <record id="sale_renting.rental_order_today_pickup_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="12"/>
+    </record>
+    <record id="sale_renting.rental_order_today_pickup_action_view_calendar" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+    </record>
+
+    <!-- Same for today return action -->
+    <record id="sale_renting.rental_order_today_return_kanban" model="ir.actions.act_window.view">
+        <field name="sequence" eval="10"/>
+    </record>
+    <record id="sale_renting.rental_order_today_return_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="11"/>
+    </record>
+    <record id="sale_renting.rental_order_today_return_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="12"/>
+    </record>
+    <record id="sale_renting.rental_order_today_return_action_view_calendar" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+    </record>
+</odoo>

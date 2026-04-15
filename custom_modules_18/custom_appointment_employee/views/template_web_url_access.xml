@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="appointment_select_operator_employee" name="Appointment: Appointment Operators (Employee Based)" inherit_id="website_appointment.appointment_select_operator">
+
+            <!-- Replace the staff user function field -->
+            <xpath expr="//div[@class='o_wappointment_card_user_fct mb-2']/div[@t-field='staff_user.partner_id.function']" position="replace">
+                <div t-if="staff_user.job_id" t-field="staff_user.job_id.name" placeholder="Add a job title here..."/>
+                <div t-elif="staff_user.user_id and staff_user.user_id.partner_id.function"
+                     t-field="staff_user.user_id.partner_id.function"
+                     placeholder="Add a function here..."/>
+            </xpath>
+
+            <!-- Replace the staff user description field -->
+            <xpath expr="//div[@class='o_wappointment_card_user_dsc text-muted small']/div[@t-field='staff_user.partner_id.website_description']" position="replace">
+                <div t-if="staff_user.work_phone" class="mb-1">
+                    <i class="fa fa-phone me-1"/>
+                    <span t-out="staff_user.work_phone"/>
+                </div>
+                <div t-if="staff_user.department_id" class="mb-1">
+                    <i class="fa fa-building me-1"/>
+                    <span t-out="staff_user.department_id.name"/>
+                </div>
+                <div t-if="staff_user.work_email" class="mb-1">
+                    <i class="fa fa-envelope me-1"/>
+                    <span t-out="staff_user.work_email"/>
+                </div>
+                <div t-if="staff_user.user_id and staff_user.user_id.partner_id.website_description"
+                     t-field="staff_user.user_id.partner_id.website_description"
+                     placeholder="Add a user description here..."/>
+            </xpath>
+
+        </template>
+    </data>
+</odoo>

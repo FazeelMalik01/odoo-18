@@ -1,0 +1,194 @@
+/* Rental app: calendar matches reference (light grid, today ring, sidebar) */
+.o_rental_theme .o_calendar_container.bg-view {
+    background: #ffffff !important;
+    color-scheme: light;
+    --bs-body-bg: #ffffff;
+    --bs-body-color: #2f3b45;
+}
+
+.o_rental_theme .o_calendar_header {
+    background: #f7f8fa !important;
+    border-bottom-color: #e2e6ea !important;
+}
+
+.o_rental_theme .o_calendar_header .btn-secondary {
+    background: #ffffff !important;
+    border-color: #dee2e6 !important;
+    color: #2f3b45 !important;
+}
+
+.o_rental_theme .o_calendar_renderer {
+    background: #ffffff !important;
+}
+
+.o_rental_theme .o_calendar_renderer .fc-theme-standard td,
+.o_rental_theme .o_calendar_renderer .fc-theme-standard th {
+    border-color: #e8ecef !important;
+}
+
+.o_rental_theme .o_calendar_renderer .fc-col-header-cell {
+    background: #fbfcfd !important;
+    color: #5c636a !important;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+}
+
+.o_rental_theme .o_calendar_renderer .fc-daygrid-day-number {
+    color: #2f3b45;
+    padding: 2px 4px;
+}
+
+.o_rental_theme .o_calendar_renderer .fc-day-today .fc-daygrid-day-frame {
+    background: rgba(217, 83, 79, 0.07) !important;
+}
+
+.o_rental_theme .o_calendar_renderer .fc-day-today .fc-daygrid-day-number {
+    background: #d9534f !important;
+    color: #ffffff !important;
+    border-radius: 50%;
+    width: 1.65rem;
+    height: 1.65rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.o_rental_theme .o_calendar_sidebar_container,
+.o_rental_theme .o_calendar_sidebar {
+    background: #ffffff !important;
+    border-color: #e6ebf1 !important;
+    color: #2f3b45 !important;
+    color-scheme: light;
+}
+
+.o_rental_theme .o_rental_cal_book_now {
+    background: #f5c542 !important;
+    border: 1px solid #e6bc00 !important;
+    color: #111111 !important;
+    font-weight: 600;
+}
+
+.o_rental_theme .o_rental_cal_book_now:hover {
+    background: #f0bd35 !important;
+    color: #111111 !important;
+}
+
+/* Event chips: reference-style rounded blocks + exact booked / quote colors */
+.o_rental_theme .fc .fc-event.o_rental_cal_booked,
+.o_rental_theme .fc .fc-event.o_rental_cal_quote {
+    border-radius: 5px;
+    margin: 3px 4px 1px;
+    font-weight: 500;
+    font-size: 0.78rem;
+    line-height: 1.25;
+    box-shadow: none;
+}
+
+.o_rental_theme .fc .fc-event.o_rental_cal_booked .fc-event-main,
+.o_rental_theme .fc .fc-timegrid-event.o_rental_cal_booked .fc-event-main {
+    color: #ffffff !important;
+}
+
+.o_rental_theme .fc .fc-event.o_rental_cal_quote .fc-event-main,
+.o_rental_theme .fc .fc-timegrid-event.o_rental_cal_quote .fc-event-main {
+    color: #1a1a1a !important;
+}
+
+.o_rental_theme .fc .fc-event.o_rental_cal_booked {
+    background-color: #0c668d !important;
+    border-color: #0a5575 !important;
+    color: #ffffff !important;
+}
+
+.o_rental_theme .fc .fc-event.o_rental_cal_quote {
+    background-color: #fffbea !important;
+    border: 1px solid #e6c800 !important;
+    color: #1a1a1a !important;
+}
+
+.o_rental_theme .fc-direction-ltr .fc-daygrid-event.fc-event-end {
+    margin-right: 5px;
+}
+
+/* Sidebar: quote follow-ups + legend */
+.o_rental_theme .o_rental_cal_followups {
+    margin: 0.65rem 0.6rem 0;
+    padding: 0.55rem 0.65rem;
+    background: #fffdf3;
+    border: 1px solid #e6c800;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    color: #2f3b45;
+}
+
+.o_rental_theme .o_rental_cal_followups_title {
+    font-weight: 700;
+    font-size: 0.74rem;
+    margin-bottom: 0.35rem;
+    color: #5c4a00;
+}
+
+.o_rental_theme .o_rental_cal_followups li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.35rem;
+    padding: 0.12rem 0;
+    border-top: 1px solid rgba(230, 200, 0, 0.35);
+}
+
+.o_rental_theme .o_rental_cal_followups li:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
+
+.o_rental_theme .o_rental_cal_followups_days {
+    color: #c23035;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.o_rental_theme .o_rental_cal_legend {
+    margin: 0.75rem 0.6rem 0.5rem;
+    padding: 0.55rem 0.5rem 0.65rem;
+    border-top: 1px solid #e8ecef;
+    font-size: 0.68rem;
+    line-height: 1.35;
+    color: #5c636a;
+}
+
+.o_rental_theme .o_rental_cal_legend_title {
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: #2f3b45;
+    margin-bottom: 0.4rem;
+}
+
+.o_rental_theme .o_rental_cal_legend_row {
+    display: flex;
+    gap: 0.4rem;
+    align-items: flex-start;
+    margin-bottom: 0.35rem;
+}
+
+.o_rental_theme .o_rental_dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+}
+
+.o_rental_theme .o_rental_dot_green {
+    background: #2e7d32;
+}
+
+.o_rental_theme .o_rental_dot_yellow {
+    background: #ed6c02;
+}
+
+.o_rental_theme .o_rental_dot_red {
+    background: #c23035;
+}

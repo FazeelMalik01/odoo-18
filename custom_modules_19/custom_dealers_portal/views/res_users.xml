@@ -6,6 +6,7 @@
         <field name="inherit_id" ref="base.view_users_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='name']" position="after">
+                <field name="dealer_signup_date"/>
                 <field name="dealer_status" decoration-danger="dealer_status == 'pending'" decoration-success="dealer_status == 'approved'"/>
             </xpath>
         </field>
@@ -17,22 +18,37 @@
         <field name="model">res.users</field>
         <field name="inherit_id" ref="base.view_users_simple_form"/>
         <field name="arch" type="xml">
+            <!-- Add our own header inside the form (base view has no explicit header node) -->
             <xpath expr="//form" position="inside">
                 <header>
                     <button name="approve_dealer" string="Approve this dealer" type="object" 
                             class="oe_highlight" 
-                            invisible="dealer_status == 'approved'"
+                            invisible="dealer_status == 'approved' or not dealer_status"
                             groups="base.group_system"/>
                 </header>
             </xpath>
             <xpath expr="//sheet" position="inside">
-                <group string="Dealer Information" groups="base.group_system">
-                    <field name="dealer_status" readonly="1"/>
-                    <field name="has_dealer_group" readonly="1"/>
-                    <field name="show_customers_on_portal"/>
-                    <field name="show_catalog"/>
-                    <field name="allowed_categories" widget="many2many_tags" options="{'no_create': True}"/>
-                </group>
+                <notebook>
+                    <page string="Dealer Info" groups="base.group_system">
+                        <group>
+                            <group>
+                                <field name="dealer_status" readonly="1"/>
+                                <field name="has_dealer_group" readonly="1"/>
+                                <field name="dealer_connection_to_company" readonly="1"/>
+                                <field name="dealer_business_description" readonly="1"/>
+                                <field name="dealer_company_name" readonly="1"/>
+                                <field name="dealer_company_address" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="show_customers_on_portal"/>
+                                <field name="show_catalog"/>
+                                <field name="allowed_categories" widget="many2many_tags" options="{'no_create': True}"/>
+                                <field name="dealer_pricelist_id"/>
+                                <field name="dealer_internal_notes"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
             </xpath>
         </field>
     </record>
@@ -42,7 +58,7 @@
         <field name="name">Dealer Signups</field>
         <field name="res_model">res.users</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('dealer_status', '!=', False)]</field>
+        <field name="domain">[('dealer_status', 'in', ['pending','approved']), ('login', '!=', 'public')]</field>
         <field name="context">{'search_default_pending': 1, 'default_dealer_status': 'pending', 'active_test': False}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="diet_nutrient_form_view" model="ir.ui.view">
+        <field name="name">diet.nutrient.form.view</field>
+        <field name="model">diet.nutrient</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="nutrient_id"/>
+                        </group>
+                        <group>
+                            <field name="value"/>
+                            <field name="unit"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="diet_nutrient_tree_view" model="ir.ui.view">
+        <field name="name">diet.nutrient.tree.view</field>
+        <field name="model">diet.nutrient</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="nutrient_id"/>
+                <field name="value"/>
+                <field name="unit"/>
+            </list>
+        </field>
+    </record>
+    <record id="diet_nutrient_action" model="ir.actions.act_window">
+        <field name="name">Diet Nutrients</field>
+        <field name="res_model">diet.nutrient</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

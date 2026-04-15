@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_portal_timesheet_approval_user,portal.timesheet.approval user,model_portal_timesheet_approval,base.group_user,1,1,1,0
+access_portal_timesheet_approval_portal,portal.timesheet.approval portal,model_portal_timesheet_approval,base.group_portal,1,1,1,0
+access_custom_time_off_approval_user,custom.time.off.approval user,model_custom_time_off_approval,base.group_user,1,0,0,0
+access_custom_time_off_approval_manager,custom.time.off.approval manager,model_custom_time_off_approval,hr_holidays.group_hr_holidays_responsible,1,1,1,1

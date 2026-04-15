@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Configure robots.txt to prevent indexing of dealer portal and login-related routes -->
+        <record id="website.default_website" model="website">
+            <field name="robots_txt"><![CDATA[User-agent: *
+Disallow: /my
+Disallow: /dealers
+Disallow: /web/login
+Allow: /
+]]></field>
+        </record>
+
+        <!-- Add noindex meta tag on all portal pages -->
+        <template id="portal_noindex_meta" inherit_id="portal.frontend_layout">
+            <xpath expr="//head" position="inside">
+                <meta name="robots" content="noindex, nofollow"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>
+

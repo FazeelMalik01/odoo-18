@@ -76,5 +76,20 @@
             </field>
         </record>
 
+        <!--Warehouse Field -->
+        <record id="view_product_template_default_warehouse" model="ir.ui.view">
+            <field name="name">product.template.form.default.warehouse</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+
+                <!-- Add inside the same group as Cost -->
+                <xpath expr="//page[@name='general_information']//field[@name='standard_price']/ancestor::group[1]" position="inside">
+                    <field name="default_warehouse_id"/>
+                </xpath>
+
+            </field>
+        </record>
+
     </data>
 </odoo>

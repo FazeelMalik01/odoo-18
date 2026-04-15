@@ -1,0 +1,10 @@
+<odoo>
+    <record id="product_category_company_rule" model="ir.rule">
+        <field name="name">Product Category: Branch Access</field>
+        <field name="model_id" ref="product.model_product_category"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">
+        ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+    </field>
+    </record>
+</odoo>

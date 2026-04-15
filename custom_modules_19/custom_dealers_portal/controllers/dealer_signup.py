@@ -16,12 +16,25 @@ class DealerSignup(http.Controller):
     @http.route('/dealers/signup/submit', type='http', auth='public', methods=['POST'], website=True, csrf=True)
     def dealer_signup_submit(self, **post):
         """Handle dealer signup form submission"""
+        # Contact person details
         name = post.get('name', '').strip()
         email = post.get('email', '').strip()
+        phone = post.get('phone', '').strip()
+
+        # Company details
+        company_name = post.get('company_name', '').strip()
+        company_address = post.get('company_address', '').strip()
+
+        # Extra questionnaire-style fields
+        connection_to_company = post.get('connection_to_company', '').strip()
+        business_description = post.get('business_description', '').strip()
+
+        # Account password (for portal user created in pending state)
         password = post.get('password', '').strip()
         confirm_password = post.get('confirm_password', '').strip()
 
         # Validation
+        allowed_connections = {'owner', 'route_driver', 'employee', 'technician', 'buyer'}
         errors = {}
         if not name:
             errors['name'] = 'Name is required'
@@ -29,6 +42,18 @@ class DealerSignup(http.Controller):
             errors['email'] = 'Email is required'
         elif '@' not in email:
             errors['email'] = 'Invalid email format'
+        if not phone:
+            errors['phone'] = 'Phone number is required'
+        if not company_name:
+            errors['company_name'] = 'Company name is required'
+        if not company_address:
+            errors['company_address'] = 'Company address is required'
+        if not connection_to_company:
+            errors['connection_to_company'] = 'Please select your connection to the company'
+        elif connection_to_company not in allowed_connections:
+            errors['connection_to_company'] = 'Invalid connection type selected'
+        if not business_description:
+            errors['business_description'] = 'Please describe how you can help your clients'
         if not password:
             errors['password'] = 'Password is required'
         elif len(password) < 8:
@@ -41,6 +66,11 @@ class DealerSignup(http.Controller):
                 'errors': errors,
                 'name': name,
                 'email': email,
+                'phone': phone,
+                'company_name': company_name,
+                'company_address': company_address,
+                'connection_to_company': connection_to_company,
+                'business_description': business_description,
             })
 
         try:
@@ -56,13 +86,49 @@ class DealerSignup(http.Controller):
                     'email': email,
                 })
 
-            # Create partner (dealer)
-            partner = request.env['res.partner'].sudo().create({
+            # Create company partner
+            company_partner = request.env['res.partner'].sudo().create({
+                'name': company_name,
+                'street': company_address,
+                'is_company': True,
+                'company_type': 'company',
+            })
+
+            # Create contact person under the company
+            contact_partner = request.env['res.partner'].sudo().create({
                 'name': name,
                 'email': email,
+                'phone': phone,
+                'mobile_number': phone,
+                'parent_id': company_partner.id,
                 'is_company': False,
                 'company_type': 'person',
             })
+
+            # Mark the company partner itself as a dealer (used by portal flows)
+            company_partner.write({'dealer': company_partner.id})
+
+            # Create a CRM lead capturing the application details
+            try:
+                description_lines = [
+                    f"Connection to company: {connection_to_company}",
+                    "",
+                    "How they can help clients:",
+                    business_description,
+                ]
+                request.env['crm.lead'].sudo().create({
+                    'name': f"Dealer Application - {company_name}",
+                    'partner_id': company_partner.id,
+                    'partner_name': company_name,
+                    'contact_name': name,
+                    'email_from': email,
+                    'phone': phone,
+                    'description': "\n".join(description_lines),
+                    'type': 'lead',
+                })
+            except Exception as e:
+                # Lead creation should not block signup; log and continue
+                _logger.warning("Could not create CRM lead for dealer signup: %s", e, exc_info=True)
 
             # Get portal group first
             portal_group = request.env.ref('base.group_portal', raise_if_not_found=False)
@@ -75,10 +141,14 @@ class DealerSignup(http.Controller):
                 'login': email,
                 'email': email,
                 'password': password,
-                'partner_id': partner.id,
+                'partner_id': contact_partner.id,
                 'active': False,  # Inactive until approved - prevents login
                 'dealer_status': 'pending',  # Mark as pending dealer signup
                 'show_customers_on_portal': False,  # Cards hidden until admin approves
+                'dealer_connection_to_company': connection_to_company,
+                'dealer_business_description': business_description,
+                'dealer_company_name': company_name,
+                'dealer_company_address': company_address,
             })
             
             # Assign portal group after creation using direct SQL (more reliable)
@@ -100,10 +170,7 @@ class DealerSignup(http.Controller):
             except Exception as e:
                 _logger.warning(f"Could not invalidate cache for user {user.id}: {e}")
 
-            # Set dealer field on partner (dealer is themselves)
-            partner.write({'dealer': partner.id})
-
-            _logger.info(f"Created dealer user: {user.id}, Partner: {partner.id}")
+            _logger.info(f"Created dealer user: {user.id}, Company Partner: {company_partner.id}, Contact Partner: {contact_partner.id}")
 
             # Commit the transaction
             request.env.cr.commit()
@@ -117,6 +184,11 @@ class DealerSignup(http.Controller):
                 'errors': {'general': str(e)},
                 'name': name,
                 'email': email,
+                'phone': phone,
+                'company_name': company_name,
+                'company_address': company_address,
+                'connection_to_company': connection_to_company,
+                'business_description': business_description,
             })
         except Exception as e:
             _logger.error(f"Error during dealer signup: {e}", exc_info=True)
@@ -124,4 +196,9 @@ class DealerSignup(http.Controller):
                 'errors': {'general': 'An error occurred. Please try again or contact support.'},
                 'name': name,
                 'email': email,
+                'phone': phone,
+                'company_name': company_name,
+                'company_address': company_address,
+                'connection_to_company': connection_to_company,
+                'business_description': business_description,
             })

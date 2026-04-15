@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================================
+         Remove Approve/Refuse buttons from the native hr.leave form
+    ============================================================ -->
+    <record id="view_hr_leave_form_inherit_hide_buttons" model="ir.ui.view">
+        <field name="name">hr.leave.view.form</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Hide the Approve button -->
+            <xpath expr="//header/button[@name='action_approve' and @class='oe_highlight' and contains(@invisible,'can_approve')]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <!-- Hide the Validate button -->
+            <xpath expr="//header/button[@name='action_approve' and @class='oe_highlight' and contains(@invisible,'can_validate')]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <!-- Hide the Refuse button -->
+            <xpath expr="//header/button[@name='action_refuse']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+        </field>
+    </record>
+
+        <record id="hr_holidays.hr_leave_action_action_approve_department"
+                model="ir.actions.act_window">
+            <field name="domain">[('has_custom_approval', '=', False)]</field>
+        </record>
+
+
+    <!-- ============================================================
+         Hide Approve / Validate / Refuse from native hr.leave list
+    ============================================================ -->
+    <record id="view_hr_leave_list_inherit_hide_buttons" model="ir.ui.view">
+        <field name="name">hr.leave.view.list.hide.buttons</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- Header multi-select Approve button -->
+            <xpath expr="//header/button[@name='action_approve']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+            <!-- Header multi-select Refuse button -->
+            <xpath expr="//header/button[@name='action_refuse']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+            <!-- Row-level Approve button (fa-thumbs-up) -->
+            <xpath expr="//list/button[@name='action_approve'][@icon='fa-thumbs-up']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+            <!-- Row-level Validate button (fa-check) -->
+            <xpath expr="//list/button[@name='action_approve'][@icon='fa-check']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+            <!-- Row-level Refuse button -->
+            <xpath expr="//list/button[@name='action_refuse']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- ============================================================
+         List View
+    ============================================================ -->
+    <record id="view_custom_time_off_approval_list" model="ir.ui.view">
+        <field name="name">custom.time.off.approval.list</field>
+        <field name="model">custom.time.off.approval</field>
+        <field name="arch" type="xml">
+            <list string="Time Off Approvals"
+                  decoration-warning="state in ('pending_manager','pending_hr')"
+                  decoration-success="state == 'approved'"
+                  decoration-danger="state == 'refused'">
+                <field name="employee_id" widget="many2one_avatar_employee"/>
+                <field name="department_id" optional="hidden"/>
+                <field name="holiday_status_id" class="fw-bold"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="duration_display" string="Duration"/>
+                <field name="manager_id"    string="Manager"    optional="show"/>
+                <field name="hr_manager_id" string="HR Manager" optional="hidden"/>
+                <field name="state" widget="badge"
+                       decoration-warning="state in ('pending_manager','pending_hr')"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'refused'"/>
+                <field name="can_approve" column_invisible="True"/>
+                <field name="can_refuse"  column_invisible="True"/>
+                <button string="Approve" name="action_approve" type="object"
+                        icon="fa-thumbs-up"
+                        invisible="not can_approve"/>
+                <button string="Refuse"  name="action_refuse"  type="object"
+                        icon="fa-times"
+                        invisible="not can_refuse"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================
+         Form View
+    ============================================================ -->
+    <record id="view_custom_time_off_approval_form" model="ir.ui.view">
+        <field name="name">custom.time.off.approval.form</field>
+        <field name="model">custom.time.off.approval</field>
+        <field name="arch" type="xml">
+            <form string="Time Off Approval">
+                <header>
+                    <button name="action_approve"
+                            string="Approve"
+                            type="object"
+                            class="btn-success"
+                            invisible="not can_approve"/>
+                    <button name="action_refuse"
+                            string="Refuse"
+                            type="object"
+                            class="btn-danger"
+                            invisible="not can_refuse"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="pending_manager,pending_hr,approved,refused"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Employee Info">
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                            <field name="manager_id"/>
+                            <field name="hr_manager_id"/>
+                        </group>
+                        <group string="Time Off Details">
+                            <field name="holiday_id"/>
+                            <field name="holiday_status_id"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="duration_display"/>
+                        </group>
+                    </group>
+                    <group string="Refusal Reason"
+                           invisible="state != 'refused'">
+                        <field name="refusal_reason" nolabel="1"
+                               placeholder="Enter reason for refusal…"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================
+         Search View
+    ============================================================ -->
+    <record id="view_custom_time_off_approval_search" model="ir.ui.view">
+        <field name="name">custom.time.off.approval.search</field>
+        <field name="model">custom.time.off.approval</field>
+        <field name="arch" type="xml">
+            <search string="Time Off Approvals">
+                <field name="employee_id"/>
+                <field name="holiday_status_id"/>
+                <field name="department_id"/>
+                <separator/>
+                <filter string="Pending Manager" name="pending_manager"
+                        domain="[('state','=','pending_manager')]"/>
+                <filter string="Pending HR"      name="pending_hr"
+                        domain="[('state','=','pending_hr')]"/>
+                <filter string="Approved"        name="approved"
+                        domain="[('state','=','approved')]"/>
+                <filter string="Refused"         name="refused"
+                        domain="[('state','=','refused')]"/>
+                <group>
+                    <filter string="Employee"   name="group_employee"
+                            context="{'group_by':'employee_id'}"/>
+                    <filter string="Department" name="group_dept"
+                            context="{'group_by':'department_id'}"/>
+                    <filter string="Status"     name="group_state"
+                            context="{'group_by':'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================
+         Action
+    ============================================================ -->
+    <record id="action_custom_time_off_approval" model="ir.actions.act_window">
+        <field name="name">Approval Time Off</field>
+        <field name="res_model">custom.time.off.approval</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">['|','|',
+            ('employee_id.user_id','=',uid),
+            ('manager_id','=',uid),
+            ('hr_manager_id','=',uid)
+        ]</field>
+        <field name="context">{'search_default_pending_manager': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No time off approval requests found.
+            </p>
+        </field>
+    </record>
+
+    <!-- ============================================================
+         Menu
+    ============================================================ -->
+    <menuitem id="menu_custom_time_off_approval"
+              name="Approval Time Off"
+              parent="hr_holidays.menu_hr_holidays_root"
+              action="action_custom_time_off_approval"
+              sequence="5"
+              groups="base.group_user"/>
+
+</odoo>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="gym_membership_form_view" model="ir.ui.view">
+        <field name="name">gym.membership.form.view</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar" nolabel="1"
+                           options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Gold.."/>
+                        </h1>
+                    </div>
+                    <group string="Membership Details">
+                        <group>
+                            <field name="categ_id" string="Category" options="{'no_create':True}"/>
+                            <field name="tag_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color','no_create':True}"/>
+                        </group>
+                        <group>
+                            <field name="membership_duration_id" options="{'no_create':True}" required="1"/>
+                            <field name="list_price" widget="monetary" string="Membership Fees"
+                                   options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                            <field name="currency_id" invisible="1" can_create="true" can_write="true"
+                                   modifiers="{&quot;invisible&quot;: true, &quot;readonly&quot;: true}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="membership_details" string="Membership Details">
+                            <field name="description" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="gym_membership_tree_view" model="ir.ui.view">
+        <field name="name">gym.membership.tree.view</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" string="Title"/>
+                <field name="categ_id" string="Category"/>
+                <field name="membership_duration_id"/>
+                <field name="list_price" class="oe_inline" string="Membership Fees" widget="monetary"
+                       options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+    <record id="gym_membership_kanban_view" model="ir.ui.view">
+        <field name="name">gym.membership.kanban.view</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id"/>
+                <field name="product_variant_count"/>
+                <field name="currency_id"/>
+                <field name="activity_state"/>
+                <templates>
+                    <t t-name="card" class="flex-row p-1">
+                        <aside class="o_kanban_aside_full p-2">
+                            <field name="image_128" widget="image"
+                                   options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                        </aside>
+                        <main class="ms-2 mt-1">
+                            <field name="name" class="fw-bold"/>
+                            <field name="list_price" widget="monetary" class="fw-bold"
+                                   options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                            <field name="membership_duration_id"/>
+                            <field name="tag_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color'}"/>
+                        </main>
+                        <!--                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">-->
+                        <!--                            <div class="o_kanban_image_fill_left d-none d-md-block"-->
+                        <!--                                 t-attf-style="background-image: url(#{kanban_image('product.template', 'image_128',record.id.raw_value)}})">-->
+                        <!--                                <img alt="Membership"-->
+                        <!--                                     t-att-src="kanban_image('product.template', 'image_128', record.id.raw_value)"/>-->
+                        <!--                            </div>-->
+                        <!--                            <div class="oe_kanban_details">-->
+                        <!--                                <div class="o_kanban_record_top mb-0">-->
+                        <!--                                    <div class="o_kanban_record_headings">-->
+                        <!--                                        <strong>-->
+                        <!--                                            <field name="name"/>-->
+                        <!--                                        </strong>-->
+                        <!--                                    </div>-->
+                        <!--                                    <strong>-->
+                        <!--                                        <field name="list_price" widget="monetary"-->
+                        <!--                                               options="{'currency_field': 'currency_id', 'field_digits': True}"/>-->
+                        <!--                                    </strong>-->
+                        <!--                                </div>-->
+                        <!--                                <field name="membership_duration_id"/>-->
+                        <!--                                <br/>-->
+                        <!--                                <field name="tag_ids" widget="many2many_tags"-->
+                        <!--                                       options="{'color_field': 'color'}"/>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="gym_membership_action" model="ir.actions.act_window">
+        <field name="name">Membership Types</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="context">{'default_is_membership': True}</field>
+        <field name="domain">[('is_membership', '=', True)]</field>
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                  (0, 0, {'view_mode': 'kanban', 'view_id': ref('gym_membership_kanban_view')}),
+                  (0, 0, {'view_mode': 'list', 'view_id': ref('gym_membership_tree_view')}),
+                  (0, 0, {'view_mode': 'form', 'view_id': ref('gym_membership_form_view')})]"/>
+    </record>
+</odoo>

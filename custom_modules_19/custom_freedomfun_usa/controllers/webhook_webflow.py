@@ -2,67 +2,16 @@ from odoo import http, fields
 from odoo.http import request
 import json
 import logging
-import re
 
 _logger = logging.getLogger(__name__)
 
 
 class WebflowWebhookController(http.Controller):
 
-    def _normalize_branch_name(self, name):
-        if not name:
-            return ""
-
-        name = re.sub(r"\(.*?\)", "", name)
-        name = re.sub(r"[^a-zA-Z0-9\s]", " ", name)
-        name = name.lower()
-        name = " ".join(name.split())
-
-        return name.strip()
-
-    def _give_admin_branch_access(self, branch_company):
-        """Add the new branch (company) to company_ids for all Administrator users (role = Administrator / base.group_system)."""
-        if not branch_company or not branch_company.exists():
-            return
-
-        # Users with Role = Administrator (base.group_system)
-        admin_group = request.env.ref('base.group_system').sudo()
-        admins = admin_group.user_ids.filtered(lambda u: u.active)
-
-        # Run in a context that allows all companies so the write is not restricted
-        all_company_ids = request.env['res.company'].sudo().search([]).ids
-        env = request.env(context=dict(request.env.context, allowed_company_ids=all_company_ids))
-
-        updated = 0
-        for admin in admins:
-            if branch_company.id in admin.company_ids.ids:
-                continue
-            try:
-                admin.with_env(env).sudo().write({
-                    'company_ids': [(4, branch_company.id)]
-                })
-                updated += 1
-                _logger.info(
-                    "Added branch '%s' (id=%s) to Administrator user '%s' (id=%s).",
-                    branch_company.name, branch_company.id, admin.name, admin.id
-                )
-            except Exception as e:
-                _logger.exception(
-                    "Failed to add branch %s to admin user %s: %s",
-                    branch_company.id, admin.id, e
-                )
-
-        if updated:
-            _logger.warning(
-                "Branch access: added '%s' to company_ids for %s Administrator user(s).",
-                branch_company.name, updated
-            )
-
     @http.route('/webflow/webhook/lead', type='http', auth='public', methods=['POST'], csrf=False)
     def webflow_lead(self, **kwargs):
 
         try:
-
             raw_data = request.httprequest.data
 
             _logger.warning("====== WEBFLOW WEBHOOK HIT ======")
@@ -71,18 +20,59 @@ class WebflowWebhookController(http.Controller):
             data = json.loads(raw_data.decode('utf-8'))
             form_data = data.get("data") or data.get("payload", {}).get("data", {})
 
-            name = form_data.get("Name")
-            email = form_data.get("E-Mail")
-            phone = form_data.get("Phone")
-            zip_code = form_data.get("Zip")
-            event_type = form_data.get("Event Type")
-            notes = form_data.get("Party Notes")
-            contact_type = form_data.get("Contact Type")
-            page_url = form_data.get("Page URL")
+            name          = form_data.get("Name")
+            email         = form_data.get("E-Mail")
+            phone         = form_data.get("Phone")
+            zip_code      = form_data.get("Zip")
+            event_type    = form_data.get("Event Type")
+            notes         = form_data.get("Party Notes")
+            contact_type  = form_data.get("Contact Type")
+            page_url      = form_data.get("Page URL")
+            collection_id = form_data.get("Collection-ID")
+            locale_id     = form_data.get("Locale-ID")
+            catalog_id    = form_data.get("Catalog-ID")
+            location_id   = form_data.get("Location-ID")
 
-            # --------------------------------------------------
-            # PARTNER LOGIC
-            # --------------------------------------------------
+            # ── Resolve company from location_id ──────────────────────────────
+            company = None
+            if location_id:
+                company = request.env['res.company'].sudo().search(
+                    [('webflow_location_id', '=', location_id)],
+                    limit=1
+                )
+                if company:
+                    _logger.warning("Location-ID '%s' matched company: ID=%s | Name=%s", location_id, company.id, company.name)
+                else:
+                    _logger.warning("Location-ID '%s' did not match any company. Using main company.", location_id)
+
+            if not company:
+                company = request.env['res.company'].sudo().search([('parent_id', '=', False)], limit=1)
+                _logger.warning("Using main company: ID=%s | Name=%s", company.id, company.name)
+            # ─────────────────────────────────────────────────────────────────
+
+            salesperson = request.env['res.users']
+            crm_sales_group = request.env.ref(
+                'custom_freedomfun_usa.group_crm_sales_person',
+                raise_if_not_found=False
+            )
+            if crm_sales_group and company:
+                salesperson = request.env['res.users'].sudo().search([
+                    ('active', '=', True),
+                    ('share', '=', False),
+                    ('company_id', '=', company.id),
+                    ('group_ids', 'in', [crm_sales_group.id]),
+                ], limit=1)
+
+            if salesperson:
+                _logger.warning(
+                    "Assigned salesperson %s (id=%s) for company %s",
+                    salesperson.name, salesperson.id, company.name
+                )
+            else:
+                _logger.warning(
+                    "No CRM Sale Person found for company %s. Lead will be created without salesperson.",
+                    company.name if company else "N/A"
+                )
 
             partner = None
 
@@ -100,98 +90,6 @@ class WebflowWebhookController(http.Controller):
                     'zip': zip_code,
                 })
 
-            # --------------------------------------------------
-            # COMPANY / BRANCH LOGIC
-            # --------------------------------------------------
-
-            main_company = request.env['res.company'].sudo().browse(1)
-            branch_company = None
-
-            if page_url and "/location/" in page_url:
-
-                slug = page_url.split("/location/")[-1].strip("/")
-                location_path = f"/location/{slug}"
-
-                _logger.warning("Location Slug Detected: %s", slug)
-
-                companies = request.env['res.company'].sudo().search([
-                    ('parent_id', '=', 1)
-                ])
-
-                matched_company = None
-
-                # ----------------------------------------------
-                # 1️⃣ Match by website slug
-                # ----------------------------------------------
-                for company in companies:
-                    if company.website and location_path in company.website:
-                        matched_company = company
-                        _logger.warning(
-                            "Matched Branch By Website Slug: %s",
-                            company.name
-                        )
-                        break
-
-                # ----------------------------------------------
-                # 2️⃣ Match by branch name if website failed
-                # ----------------------------------------------
-                if not matched_company:
-
-                    branch_name = slug.replace("-", " ").title()
-                    normalized_slug = self._normalize_branch_name(branch_name)
-
-                    for company in companies:
-                        normalized_existing = self._normalize_branch_name(company.name)
-
-                        if normalized_existing == normalized_slug:
-                            matched_company = company
-                            _logger.warning(
-                                "Matched Branch By Name: %s",
-                                company.name
-                            )
-                            break
-
-                # ----------------------------------------------
-                # 3️⃣ If branch found
-                # ----------------------------------------------
-                if matched_company:
-                    branch_company = matched_company
-
-                # ----------------------------------------------
-                # 4️⃣ If branch not found → create
-                # ----------------------------------------------
-                else:
-
-                    branch_name = slug.replace("-", " ").title()
-
-                    branch_company = request.env['res.company'].sudo().create({
-                        'name': branch_name,
-                        'parent_id': 1,
-                        'website': page_url,
-                    })
-
-                    _logger.warning(
-                        "Created New Branch: %s | URL: %s",
-                        branch_company.name, page_url
-                    )
-
-                    self._give_admin_branch_access(branch_company)
-
-            # --------------------------------------------------
-            # NO LOCATION → MAIN COMPANY
-            # --------------------------------------------------
-
-            else:
-                branch_company = main_company
-
-            # Safety fallback
-            if not branch_company:
-                branch_company = main_company
-
-            # --------------------------------------------------
-            # CRM STAGE
-            # --------------------------------------------------
-
             stage = request.env['crm.stage'].sudo().search([], limit=1)
 
             description = f"""
@@ -203,21 +101,26 @@ Submitted At: {data.get('submittedAt') or data.get('d')}
 """
 
             lead_vals = {
-                "name": f"{event_type or 'New Inquiry'} - {name or ''}",
-                "partner_id": partner.id if partner else False,
-                "contact_name": name,
-                "email_from": email,
-                "phone": phone,
-                "zip": zip_code,
-                "event_type": event_type,
-                "party_notes": notes,
-                "page_url": page_url,
-                "contact_type": contact_type,
-                "company_id": branch_company.id,
-                "description": description,
-                "type": "opportunity",
-                "stage_id": stage.id if stage else False,
-                "submitted_at": data.get("submittedAt") or fields.Datetime.to_string(fields.Datetime.now()),
+                "name":          f"{event_type or 'New Inquiry'} - {name or ''}",
+                "partner_id":    partner.id if partner else False,
+                "contact_name":  name,
+                "email_from":    email,
+                "phone":         phone,
+                "zip":           zip_code,
+                "event_type":    event_type,
+                "party_notes":   notes,
+                "page_url":      page_url,
+                "contact_type":  contact_type,
+                "description":   description,
+                "type":          "opportunity",
+                "stage_id":      stage.id if stage else False,
+                "collection_id": collection_id,
+                "locale_id":     locale_id,
+                "catalog_id":    catalog_id,
+                "location_id":   location_id,
+                "submitted_at":  data.get("submittedAt") or fields.Datetime.to_string(fields.Datetime.now()),
+                "company_id":    company.id,  # ← only addition
+                "user_id":       salesperson.id if salesperson else False,
             }
 
             _logger.warning("Lead Values:\n%s", json.dumps(lead_vals, indent=4))
@@ -227,21 +130,14 @@ Submitted At: {data.get('submittedAt') or data.get('d')}
             _logger.warning("Lead Created Successfully ID: %s", lead.id)
 
             return request.make_response(
-                json.dumps({
-                    "status": "success",
-                    "lead_id": lead.id
-                }),
+                json.dumps({"status": "success", "lead_id": lead.id}),
                 headers=[('Content-Type', 'application/json')]
             )
 
         except Exception as e:
-
-            _logger.error("Webhook Error: %s", str(e))
+            _logger.error("Webhook Error: %s", str(e), exc_info=True)
 
             return request.make_response(
-                json.dumps({
-                    "status": "error",
-                    "message": str(e)
-                }),
+                json.dumps({"status": "error", "message": str(e)}),
                 headers=[('Content-Type', 'application/json')]
             )

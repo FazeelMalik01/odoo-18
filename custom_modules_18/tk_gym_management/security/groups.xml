@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="module_category_tk_gym_management" model="ir.module.category">
+            <field name="name">Gym Management</field>
+            <field name="description">Access rights for Gym Management</field>
+        </record>
+        <record id="gym_user" model="res.groups">
+            <field name="name">Trainer</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="category_id" ref="module_category_tk_gym_management"/>
+        </record>
+        <record id="gym_officer" model="res.groups">
+            <field name="name">Officer</field>
+            <field name="implied_ids" eval="[(4, ref('gym_user'))]"/>
+            <field name="category_id" ref="module_category_tk_gym_management"/>
+        </record>
+        <record id="gym_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="implied_ids" eval="[(4, ref('gym_officer'))]"/>
+            <field name="category_id" ref="module_category_tk_gym_management"/>
+            <field name="users" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
+        </record>
+        <record id="base.default_user" model="res.users">
+            <field name="groups_id" eval="[(4,ref('gym_manager'))]"/>
+        </record>
+    </data>
+</odoo>

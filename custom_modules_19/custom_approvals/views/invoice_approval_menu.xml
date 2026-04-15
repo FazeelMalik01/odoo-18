@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List view: invoices in the approval workflow -->
+    <record id="view_invoice_approval_list" model="ir.ui.view">
+        <field name="name">account.move.approval.list</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <list string="Invoice Approvals" default_order="invoice_date desc">
+                <field name="name" string="Invoice"/>
+                <field name="invoice_date" string="Date"/>
+                <field name="partner_id" string="Customer / Vendor"/>
+                <field name="move_type" string="Type"/>
+                <field name="amount_total" string="Total" widget="monetary"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="approval_state" string="Approval Stage"
+                       decoration-warning="approval_state in ('pending_fm', 'pending_ceo')"
+                       decoration-success="approval_state == 'approved'"
+                       decoration-danger="approval_state == 'refused'"/>
+                <field name="state" string="Status"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action: all invoices that have entered the approval flow -->
+    <record id="action_invoice_approval_list" model="ir.actions.act_window">
+        <field name="name">Invoice Approvals</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_invoice_approval_list"/>
+        <field name="domain">[('approval_state', '!=', False), ('move_type', 'in', ['out_invoice', 'out_refund', 'in_invoice', 'in_refund'])]</field>
+        <field name="context">{'default_move_type': 'out_invoice'}</field>
+    </record>
+
+    <!-- Root-level menu item inside Accounting -->
+    <menuitem
+        id="menu_invoice_approvals_root"
+        name="Invoice Approvals"
+        parent="account.menu_finance_receivables"
+        action="action_invoice_approval_list"
+        sequence="5"/>
+
+</odoo>

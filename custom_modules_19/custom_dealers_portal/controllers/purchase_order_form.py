@@ -33,14 +33,20 @@ class purchaseorderformPortal(http.Controller):
     def _render_form_with_error(self, error_message, dealer):
         """Helper method to render the form with an error message"""
         partner = dealer
-        customers = request.env['res.partner'].sudo().search([('dealer', '=', partner.id)])
+        customers = request.env['res.partner'].sudo().search([
+            ('dealer', '=', partner.id),
+            ('is_company', '=', False),
+        ])
         
         # Get products - filter by dealer's allowed categories if set
         dealer_user = request.env.user
-        product_domain = [('sale_ok', '=', True)]
+        products = request.env['product.product'].sudo().browse([])
         if dealer_user.allowed_categories:
-            product_domain.append(('categ_id', 'in', dealer_user.allowed_categories.ids))
-        products = request.env['product.product'].sudo().search(product_domain, limit=1000)
+            product_domain = [
+                ('sale_ok', '=', True),
+                ('categ_id', 'in', dealer_user.allowed_categories.ids),
+            ]
+            products = request.env['product.product'].sudo().search(product_domain, limit=1000)
         
         # Format products with default_code display
         products_formatted = []
@@ -59,7 +65,7 @@ class purchaseorderformPortal(http.Controller):
         if dealer_user.allowed_categories:
             categories = dealer_user.allowed_categories
         else:
-            categories = request.env['product.category'].sudo().search([])
+            categories = request.env['product.category'].sudo().browse([])
         
         # Check if dealer has show_catalog enabled
         show_catalog = dealer_user.show_catalog if hasattr(dealer_user, 'show_catalog') else False
@@ -87,16 +93,21 @@ class purchaseorderformPortal(http.Controller):
     @http.route(['/my/purchase_orders_form'], type='http', auth='user', website=True)
     def portal_purchase_order_form(self, order_id=None, view_mode=None, **kw):
         partner = request.env.user.partner_id
-        customers = request.env['res.partner'].sudo().search([('dealer', '=', partner.id)])
+        customers = request.env['res.partner'].sudo().search([
+            ('dealer', '=', partner.id),
+            ('is_company', '=', False),
+        ])
         
         # Get products with proper display name (including default_code)
-        # Filter by dealer's allowed categories if set
+        # Filter by dealer's allowed categories. If none are assigned, show no products.
         dealer_user = request.env.user
-        product_domain = [('sale_ok', '=', True)]
+        products = request.env['product.product'].sudo().browse([])
         if dealer_user.allowed_categories:
-            # Only show products from allowed categories
-            product_domain.append(('categ_id', 'in', dealer_user.allowed_categories.ids))
-        products = request.env['product.product'].sudo().search(product_domain, limit=1000)
+            product_domain = [
+                ('sale_ok', '=', True),
+                ('categ_id', 'in', dealer_user.allowed_categories.ids),
+            ]
+            products = request.env['product.product'].sudo().search(product_domain, limit=1000)
         # Format products with default_code display
         # Use display_name which includes default_code in format [0001] Name
         products_formatted = []
@@ -118,8 +129,7 @@ class purchaseorderformPortal(http.Controller):
             # Only show categories that are in dealer's allowed_categories
             categories = dealer_user.allowed_categories
         else:
-            # If no allowed_categories set, show all categories (backward compatible)
-            categories = request.env['product.category'].sudo().search([])
+            categories = request.env['product.category'].sudo().browse([])
         
         uoms = request.env['uom.uom'].sudo().search([])
         taxes = request.env['account.tax'].sudo().search([('type_tax_use', '=', 'sale')])
@@ -128,73 +138,83 @@ class purchaseorderformPortal(http.Controller):
         order = None
         order_name = ''
         order_data = None
-        is_readonly = view_mode == 'readonly' and order_id
+        # Existing orders open in readonly by default.
+        is_readonly = bool(order_id)
+        edit_mode = kw.get('edit_mode') or request.params.get('edit_mode')
         
         if order_id:
             order = request.env['sale.order'].sudo().browse(int(order_id))
             # Verify the order belongs to this dealer
             if order.exists() and order.dealer.id == partner.id:
                 order_name = order.name
-                if is_readonly:
-                    # Prepare order data for read-only display
-                    # Get shipping option display text
-                    shipping_option_display = ''
-                    if order.shipping_option_dropship:
-                        shipping_map = {
-                            'rate_quote': 'Provide a rate quote before shipping',
-                            'cheapest_rate': 'Please ship at cheapest rate',
-                            'own_carrier': 'Client will use their own carrier',
-                            'client_pickup': 'Client will pickup',
-                            'yannick_pickup': 'Yannick will pickup this order',
-                            'dhc_courier': 'Ship with DHC\'s courier and add cost to invoice',
-                        }
-                        shipping_option_display = shipping_map.get(order.shipping_option_dropship, '')
-                    
-                    order_data = {
-                        'id': order.id,
-                        'name': order.name,
-                        'customer': order.partner_id.id,
-                        'customer_name': order.partner_id.name,
-                        'invoice_address': order.partner_invoice_id.id if order.partner_invoice_id else None,
-                        'invoice_address_name': (order.partner_invoice_id.name_get()[0][1] if order.partner_invoice_id and order.partner_invoice_id.name_get() else '') or '',
-                        'delivery_address': order.partner_shipping_id.id if order.partner_shipping_id else None,
-                        'delivery_address_name': (order.partner_shipping_id.name_get()[0][1] if order.partner_shipping_id and order.partner_shipping_id.name_get() else '') or '',
-                        'date_order': order.date_order.strftime('%Y-%m-%d %H:%M') if order.date_order else '',
-                        'amount_total': order.amount_total,
-                        'state': order.state,
-                        'shipping_option_dropship': order.shipping_option_dropship or '',
-                        'shipping_option_dropship_display': shipping_option_display,
-                        'order_lines': []
+                # Dealers can edit only while waiting approval.
+                can_edit_submitted = order.portal_state == 'to_be_approved'
+                if edit_mode and can_edit_submitted:
+                    is_readonly = False
+
+                # Confirmed/cancelled portal statuses remain locked regardless of URL params.
+                if order.portal_state in ('done', 'cancelled'):
+                    is_readonly = True
+
+                # Prepare order data for both readonly and edit rendering
+                shipping_option_display = ''
+                if order.shipping_option_dropship:
+                    shipping_map = {
+                        'rate_quote': 'Provide a rate quote before shipping',
+                        'cheapest_rate': 'Please ship at cheapest rate',
+                        'own_carrier': 'Client will use their own carrier',
+                        'client_pickup': 'Client will pickup',
+                        'yannick_pickup': 'Yannick will pickup this order',
+                        'dhc_courier': 'Ship with DHC\'s courier and add cost to invoice',
                     }
-                    # Get order lines
-                    for line in order.order_line:
-                        line_taxes = []
-                        tax_names = []
-                        
-                        # Get taxes - check both tax_id and tax_ids fields
-                        if hasattr(line, 'tax_id') and line.tax_id:
-                            line_taxes = line.tax_id.ids
-                            tax_names = [t.name for t in line.tax_id]
-                        elif hasattr(line, 'tax_ids') and line.tax_ids:
-                            line_taxes = line.tax_ids.ids
-                            tax_names = [t.name for t in line.tax_ids]
-                        
-                        # Get product display name with default_code
-                        product_display_name = line.product_id.display_name or line.product_id.name
-                        
-                        order_data['order_lines'].append({
-                            'product_id': line.product_id.id,
-                            'product_name': product_display_name,
-                            'category_id': line.product_id.categ_id.id if line.product_id.categ_id else None,
-                            'category_name': line.product_id.categ_id.name if line.product_id.categ_id else '',
-                            'quantity': line.product_uom_qty,
-                            'uom_id': line.product_uom_id.id if line.product_uom_id else None,
-                            'uom_name': line.product_uom_id.name if line.product_uom_id else '',
-                            'price_unit': line.price_unit,
-                            'tax_ids': line_taxes,
-                            'tax_names': tax_names,
-                            'price_subtotal': line.price_subtotal,
-                        })
+                    shipping_option_display = shipping_map.get(order.shipping_option_dropship, '')
+
+                order_data = {
+                    'id': order.id,
+                    'name': order.name,
+                    'customer': order.partner_id.id,
+                    'customer_name': order.partner_id.name,
+                    'invoice_address': order.partner_invoice_id.id if order.partner_invoice_id else None,
+                    'invoice_address_name': (order.partner_invoice_id.name_get()[0][1] if order.partner_invoice_id and order.partner_invoice_id.name_get() else '') or '',
+                    'delivery_address': order.partner_shipping_id.id if order.partner_shipping_id else None,
+                    'delivery_address_name': (order.partner_shipping_id.name_get()[0][1] if order.partner_shipping_id and order.partner_shipping_id.name_get() else '') or '',
+                    'date_order': order.date_order.strftime('%Y-%m-%d %H:%M') if order.date_order else '',
+                    'amount_total': order.amount_total,
+                    'state': order.state,
+                    'portal_state': order.portal_state,
+                    'shipping_option_dropship': order.shipping_option_dropship or '',
+                    'shipping_option_dropship_display': shipping_option_display,
+                    'order_lines': []
+                }
+                # Get order lines
+                for line in order.order_line:
+                    line_taxes = []
+                    tax_names = []
+
+                    # Get taxes - check both tax_id and tax_ids fields
+                    if hasattr(line, 'tax_id') and line.tax_id:
+                        line_taxes = line.tax_id.ids
+                        tax_names = [t.name for t in line.tax_id]
+                    elif hasattr(line, 'tax_ids') and line.tax_ids:
+                        line_taxes = line.tax_ids.ids
+                        tax_names = [t.name for t in line.tax_ids]
+
+                    # Get product display name with default_code
+                    product_display_name = line.product_id.display_name or line.product_id.name
+
+                    order_data['order_lines'].append({
+                        'product_id': line.product_id.id,
+                        'product_name': product_display_name,
+                        'category_id': line.product_id.categ_id.id if line.product_id.categ_id else None,
+                        'category_name': line.product_id.categ_id.name if line.product_id.categ_id else '',
+                        'quantity': line.product_uom_qty,
+                        'uom_id': line.product_uom_id.id if line.product_uom_id else None,
+                        'uom_name': line.product_uom_id.name if line.product_uom_id else '',
+                        'price_unit': line.price_unit,
+                        'tax_ids': line_taxes,
+                        'tax_names': tax_names,
+                        'price_subtotal': line.price_subtotal,
+                    })
 
         # Check if dealer has show_catalog enabled
         show_catalog = dealer_user.show_catalog if hasattr(dealer_user, 'show_catalog') else False
@@ -211,6 +231,7 @@ class purchaseorderformPortal(http.Controller):
                 'order_name': order_name,
                 'order_data': order_data,  # Changed from 'order' to avoid conflict with portal breadcrumb
                 'is_readonly': is_readonly,
+                'can_edit_submitted': bool(order and order.portal_state == 'to_be_approved'),
                 'show_catalog': show_catalog,
             }
         )
@@ -270,8 +291,8 @@ class purchaseorderformPortal(http.Controller):
                 if addr.id not in [a['id'] for a in invoice_addresses]:
                     invoice_addresses.append(self._to_dict(addr))
 
-        # For delivery address: use customer's delivery addresses
-        base_partner = customer.commercial_partner_id or customer
+        # For delivery address: use selected customer address (person) first.
+        base_partner = customer
 
         # Get customer notes and strip HTML tags
         customer_notes = customer.comment or ''
@@ -286,12 +307,12 @@ class purchaseorderformPortal(http.Controller):
         # Get shipping option from customer
         shipping_option = customer.shipping_option_dropship or ''
 
-        # Collect delivery addresses: children with type=delivery
+        # Collect delivery addresses from selected customer hierarchy.
         delivery_addresses = [self._to_dict(base_partner)]
         delivery_addrs = request.env['res.partner'].sudo().search([
             '|',
-            ('commercial_partner_id', '=', base_partner.id),
-            ('parent_id', '=', base_partner.id),
+            ('commercial_partner_id', '=', customer.commercial_partner_id.id),
+            ('parent_id', '=', customer.id),
             ('type', '=', 'delivery'),
         ])
         _logger.info(f"Found {len(delivery_addrs)} delivery addresses for base_partner {base_partner.id}")
@@ -372,7 +393,9 @@ class purchaseorderformPortal(http.Controller):
             # If dealer has allowed categories and no specific category selected,
             # only show products from allowed categories
             domain.append(('categ_id', 'in', allowed_category_ids))
-        # If no allowed categories set, show all products (backward compatible)
+        else:
+            # No allowed categories: return no products.
+            return {'products': []}
         
         products = request.env['product.product'].sudo().search(domain, limit=1000)
         
@@ -424,7 +447,9 @@ class purchaseorderformPortal(http.Controller):
             'list_price': product.list_price,
             'uom_id': product.uom_id and [product.uom_id.id, product.uom_id.name] or False,
             'taxes': taxes_data,
-            'total_tax_rate': total_tax_rate
+            'total_tax_rate': total_tax_rate,
+            # stock availability for portal display
+            'qty_available': product.qty_available,
         }
 
     @http.route(['/my/purchase_orders_form/submit'], type='http', auth='user', website=True, methods=['POST'],
@@ -519,6 +544,7 @@ class purchaseorderformPortal(http.Controller):
             # Filter out empty rows - only process rows with valid product IDs
             order_lines = []
             line_taxes_map = []  # Store tax IDs for each order line (matching order_lines index)
+            unavailable_products = []  # Collect products that are out of stock
 
             max_index = max(len(product_ids), len(quantities), len(uom_ids),
                             len(price_units)) if product_ids or quantities or uom_ids or price_units else 0
@@ -534,6 +560,25 @@ class purchaseorderformPortal(http.Controller):
                 quantity = quantities[i] if i < len(quantities) else '1'
                 uom_id = uom_ids[i] if i < len(uom_ids) else ''
                 price_unit = price_units[i] if i < len(price_units) else '0'
+
+                # Stock availability check (server-side safety net)
+                try:
+                    product_rec = request.env['product.product'].sudo().browse(int(product_id))
+                    requested_qty = float(quantity or 0.0)
+                    if not product_rec.exists():
+                        _logger.warning(f"Product ID {product_id} on line {i} does not exist; skipping.")
+                        continue
+                    if product_rec.qty_available < requested_qty or product_rec.qty_available <= 0:
+                        unavailable_products.append(product_rec.display_name or product_rec.name or str(product_id))
+                        _logger.info(
+                            f"Line {i} blocked: product '{product_rec.display_name}' "
+                            f"requested {requested_qty}, available {product_rec.qty_available}"
+                        )
+                        continue
+                except Exception as availability_err:
+                    _logger.error(f"Error checking stock for product {product_id} on line {i}: {availability_err}")
+                    unavailable_products.append(str(product_id))
+                    continue
 
                 # Handle taxes from hidden inputs (comma-separated string or list)
                 line_tax_ids = []
@@ -597,6 +642,15 @@ class purchaseorderformPortal(http.Controller):
                         f"Skipping line {i} due to error: {e}. Values: product={product_id}, qty={quantity}, uom={uom_id}, price={price_unit}")
                     continue
 
+            # If any products are out of stock, block order creation and show error
+            if unavailable_products:
+                product_list = ', '.join(unavailable_products)
+                return self._render_form_with_error(
+                    f"The following products are out of stock or do not have enough quantity: {product_list}. "
+                    f"Please adjust your order.",
+                    dealer,
+                )
+
             if not order_lines:
                 _logger.error("No valid order lines created. Check form data submission.")
                 _logger.error(f"Raw form data: {dict(form_data)}")
@@ -604,27 +658,53 @@ class purchaseorderformPortal(http.Controller):
                 return self._render_form_with_error(
                     'At least one valid order line is required. Please check that you have selected products.', dealer)
 
+            customer_rec = request.env['res.partner'].sudo().browse(int(customer_id))
+            dealer_base = (customer_rec.dealer.commercial_partner_id.id if customer_rec.dealer else False)
+
             # Get other addresses
-            invoice_address_id = kw.get('invoice_address') or customer_id
+            invoice_address_id = kw.get('invoice_address') or dealer_base or customer_id
             delivery_address_id = kw.get('delivery_address') or customer_id
             
             # Get shipping option from form or customer
             shipping_option = kw.get('shipping_option_dropship') or ''
             if not shipping_option:
                 # Fallback to customer's shipping option
-                customer = request.env['res.partner'].sudo().browse(int(customer_id))
-                if customer.exists():
-                    shipping_option = customer.shipping_option_dropship or ''
+                if customer_rec.exists():
+                    shipping_option = customer_rec.shipping_option_dropship or ''
 
-            # Create SALE order (this is what becomes the purchase order in Odoo backend)
-            sale_order = request.env['sale.order'].sudo().create({
-                'partner_id': int(customer_id),
-                'partner_invoice_id': int(invoice_address_id) if invoice_address_id else int(customer_id),
-                'partner_shipping_id': int(delivery_address_id) if delivery_address_id else int(customer_id),
-                'order_line': order_lines,
-                'dealer': dealer.id,  # Your custom field to track which dealer created this
-                'shipping_option_dropship': shipping_option or False,
-            })
+            existing_order_id = kw.get('order_id')
+            sale_order = None
+            if existing_order_id:
+                existing_order = request.env['sale.order'].sudo().browse(int(existing_order_id))
+                if not existing_order.exists() or existing_order.dealer.id != dealer.id:
+                    return self._render_form_with_error('Order not found or access denied.', dealer)
+                if existing_order.portal_state != 'to_be_approved':
+                    return self._render_form_with_error('This order can no longer be edited.', dealer)
+
+                # Update existing submitted order
+                existing_order.write({
+                    'partner_id': int(customer_id),
+                    'partner_invoice_id': int(invoice_address_id) if invoice_address_id else int(customer_id),
+                    'partner_shipping_id': int(delivery_address_id) if delivery_address_id else int(customer_id),
+                    'shipping_option_dropship': shipping_option or False,
+                    'order_line': [(5, 0, 0)] + order_lines,
+                })
+                sale_order = existing_order
+            else:
+                # Create SALE order (this is what becomes the purchase order in Odoo backend)
+                # New orders from the portal start in "To Be Approved" status
+                sale_order = request.env['sale.order'].sudo().create({
+                    'partner_id': int(customer_id),
+                    'partner_invoice_id': int(invoice_address_id) if invoice_address_id else int(customer_id),
+                    'partner_shipping_id': int(delivery_address_id) if delivery_address_id else int(customer_id),
+                    'order_line': order_lines,
+                    'dealer': dealer.id,  # Your custom field to track which dealer created this
+                    'shipping_option_dropship': shipping_option or False,
+                    'portal_state': 'to_be_approved',
+                })
+
+                # Notify backoffice/admin that a dealer submitted a portal quotation
+                sale_order.action_notify_admin_portal_submission()
 
             # Update order lines with taxes separately (to avoid field name issues)
             # Use the stored tax IDs that match the order_lines
@@ -651,9 +731,7 @@ class purchaseorderformPortal(http.Controller):
 
             _logger.info(f"Created sale order {sale_order.id} for customer {customer_id} with {len(order_lines)} lines")
 
-            # Confirm the order automatically
-            sale_order.action_confirm()
-
+            # Do NOT confirm or email here; leave in quotation state until backoffice approval.
             return request.redirect('/my/purchase_orders_form?success=1&order_id=%s' % sale_order.id)
 
         except Exception as e:
@@ -665,34 +743,58 @@ class purchaseorderformPortal(http.Controller):
     def portal_catalog(self, **kw):
         """Display product catalog filtered by dealer's allowed categories"""
         dealer_user = request.env.user
-        
+        dealer_partner = dealer_user.partner_id
+        dealer_pricelist = dealer_partner.property_product_pricelist
+
         # Check if catalog is enabled for this dealer
         if not hasattr(dealer_user, 'show_catalog') or not dealer_user.show_catalog:
             return request.redirect('/my/purchase_orders_form')
         
         # Get products filtered by allowed categories
-        product_domain = [('sale_ok', '=', True)]
+        products = request.env['product.product'].sudo().browse([])
         if dealer_user.allowed_categories:
-            product_domain.append(('categ_id', 'in', dealer_user.allowed_categories.ids))
-        
-        products = request.env['product.product'].sudo().search(product_domain, limit=500)
+            product_domain = [('sale_ok', '=', True), ('categ_id', 'in', dealer_user.allowed_categories.ids)]
+            products = request.env['product.product'].sudo().search(product_domain, limit=500)
         
         # Get categories for filtering
         if dealer_user.allowed_categories:
             categories = dealer_user.allowed_categories
         else:
-            categories = request.env['product.category'].sudo().search([])
+            categories = request.env['product.category'].sudo().browse([])
         
-        # Format products for display
+        # Format products for display, including dealer-specific price and discount
         products_data = []
         for product in products:
+            list_price = product.list_price or 0.0
+            dealer_price = list_price
+            discount_amount = 0.0
+            discount_percent = 0.0
+
+            if dealer_pricelist:
+                try:
+                    dealer_price = dealer_pricelist._get_product_price(product, quantity=1.0)
+                    discount_amount = max(0.0, list_price - dealer_price)
+                    discount_percent = (discount_amount / list_price * 100.0) if list_price else 0.0
+                except Exception as price_err:
+                    # Fallback gracefully to list price
+                    _logger.warning(
+                        "Error computing dealer price for product %s (%s): %s",
+                        product.id, product.display_name, price_err,
+                    )
+                    dealer_price = list_price
+                    discount_amount = 0.0
+                    discount_percent = 0.0
+
             products_data.append({
                 'id': product.id,
                 'name': product.name,
                 'display_name': product.display_name or product.name,
                 'categ_id': product.categ_id.id if product.categ_id else False,
                 'categ_name': product.categ_id.name if product.categ_id else '',
-                'list_price': product.list_price or 0.0,
+                'list_price': list_price,
+                'dealer_price': dealer_price,
+                'discount_amount': discount_amount,
+                'discount_percent': discount_percent,
                 'image_128': product.image_128 if hasattr(product, 'image_128') else False,
             })
         

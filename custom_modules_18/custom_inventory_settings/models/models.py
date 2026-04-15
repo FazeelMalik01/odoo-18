@@ -35,7 +35,43 @@ class StockPicking(models.Model):
                 'active_id': self.id,
             },
         }
+    
+    def action_cancel(self):
+        self.ensure_one()
 
+        # ❌ Prevent cancelling POS deliveries
+        if self.picking_type_id and self.picking_type_id.name == 'PoS Orders':
+            raise UserError("POS deliveries cannot be cancelled.")
+
+        # Require employee
+        if not self.employee_id:
+            raise UserError("Please select an employee before cancelling.")
+
+        # If PIN already verified → proceed with cancel
+        if self.env.context.get('pin_verified_cancel'):
+            res = super().action_cancel()
+
+            # Log employee name
+            self.message_post(
+                body=f"Transfer cancelled by <b>{self.employee_id.name}</b>"
+            )
+
+            return res
+
+        # Otherwise open wizard
+        return {
+            'name': 'Employee PIN Verification',
+            'type': 'ir.actions.act_window',
+            'res_model': 'employee.pin.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_employee_id': self.employee_id.id,
+                'active_model': self._name,
+                'active_id': self.id,
+                'cancel_flow': True,
+            },
+        }
 
 class EmployeePinWizard(models.TransientModel):
     _name = 'employee.pin.wizard'
@@ -44,29 +80,21 @@ class EmployeePinWizard(models.TransientModel):
     employee_id = fields.Many2one('hr.employee', string='Employee', required=True, readonly=True)
     entered_pin = fields.Char(string='Enter PIN', required=True, password=True, groups="base.group_user")
 
-    # def action_confirm_pin(self):
-    #     """Validate the entered PIN and proceed with validation."""
-    #     self.ensure_one()
-    #     if self.entered_pin != self.employee_id.pin:
-    #         raise UserError("Incorrect PIN! Please try again.")
-
-    #     # ✅ PIN matched → validate stock picking
-    #     picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
-    #     return picking.with_context(pin_verified=True).button_validate()
     def action_confirm_pin(self):
-        """Validate the entered PIN and proceed with validation."""
-        self.ensure_one()
+        picking = self.env[self.env.context.get('active_model')].browse(
+            self.env.context.get('active_id')
+        )
 
-        # Use sudo() to safely read the private pin field
-        employee = self.employee_id.sudo()
+        # Check PIN
+        if self.entered_pin != self.employee_id.pin:
+            raise UserError("Invalid PIN.")
 
-        if self.entered_pin != employee.pin:
-            raise UserError("Incorrect PIN! Please try again.")
+        # Cancel flow
+        if self.env.context.get('cancel_flow'):
+            return picking.with_context(pin_verified_cancel=True).action_cancel()
 
-        # ✅ PIN matched → validate stock picking
-        picking = self.env['stock.picking'].browse(self.env.context.get('active_id'))
+        # Validation flow
         return picking.with_context(pin_verified=True).button_validate()
-
 
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
@@ -90,8 +118,3 @@ class StockMoveLine(models.Model):
                 cost_value = 0.0
             line.product_cost = float(cost_value or 0.0)
 
-# class HREmployee(models.Model):
-#     _inherit = 'hr.employee'
-
-#     # Override group restriction to allow all internal users
-#     pin = fields.Char(groups="base.group_user,base.group_portal,base.group_public")

@@ -107,11 +107,15 @@
                     <field name="sequence_id"/>
                     <field name="brand_id"/>
                     <field name="model_id"/>
+                    <field name="registration_no"/>
                     <field name="booking_date"/>
                     <field name="customer_id"/>
+                    <field name="phone"/>
                     <field name="state"/>
                     <field name="responsible_id"/>
                     <field name="activity_ids"/>
+                    <field name="whatsapp_url"/>
+                    <field name="technician_ids"/>
                     <templates>
                         <t t-name="card">
                             <div t-attf-class="oe_kanban_card oe_kanban_global_click">
@@ -124,6 +128,9 @@
                                     <strong>
                                         <span t-esc="record.booking_date.value"/>
                                     </strong>
+                                    <strong>
+                                        <field name="technician_ids" widget="many2many_tags"/>
+                                    </strong>
                                 </div>
                                 <div class="o_kanban_tags_section oe_kanban_partner_categories">
                                     <div>
@@ -132,9 +139,19 @@
                                             <b>-</b>
                                         </t>
                                         <span t-if="record.model_id" t-esc="record.model_id.value"/>
+                                        <span> - </span>
+                                        <span t-if="record.registration_no" t-esc="record.registration_no.value"/>
                                     </div>
                                     <div>
                                         <span t-esc="record.customer_id.value"/>
+                                        <span> - </span>
+                                        <span t-esc="record.phone.value"/>
+                                        <span> - </span>
+                                       <a t-att-href="record.whatsapp_url.value"
+                                        target="_blank"
+                                        onclick="event.stopPropagation()">
+                                            <i class="fa fa-whatsapp" style="color: #25D366; font-size: 16px;"/>
+                                        </a>
                                     </div>
                                 </div>
                                 <div class="o_kanban_record_bottom text-muted">
@@ -170,13 +187,13 @@
                                 name="button_in_progress"
                                 string="In Progress"
                                 type="object"
-                                invisible="state != 'confirmed'"
+                                invisible="state not in ['confirmed', 'wait']"
                                 class="btn-primary"/>
                         <button
                                 name="button_hold"
                                 string="Hold"
                                 type="object"
-                                invisible="state != 'in_progress'"
+                                invisible="state not in ['in_progress', 'wait']"
                                 class="btn-warning"/>
                         <button
                                 name="button_un_hold"
@@ -188,7 +205,7 @@
                                 name="button_quality_check"
                                 string="Quality Check"
                                 type="object"
-                                invisible="state != 'in_progress'"
+                                invisible="state not in ['in_progress', 'wait']"
                                 class="btn-primary"/>
                         <button
                                 name="button_on_delivery"
@@ -206,7 +223,7 @@
                                 name="button_sale_order"
                                 string="Create Sale Order"
                                 type="object"
-                                invisible="state != 'delivered'"
+                                invisible="state != 'delivered' or sale_order_id != False"
                                 class="btn-primary"/>
                         <button
                                 name="button_cancel"
@@ -225,7 +242,21 @@
                                 string="Create Quotation"
                                 type="object"
                                 class="btn-primary"
-                                invisible="sale_order_id != False"/>
+                                invisible="state != 'new' or sale_order_id != False"/>
+                        <button
+                                name="button_update_quotation"
+                                string="Update Quotation"
+                                type="object"
+                                class="btn-warning"
+                                invisible="not has_quotation_update or not sale_order_id"/>
+                        <field name="has_quotation_update" invisible="1"/>
+                        <button
+                                name="button_wating_spare"
+                                string="Waiting for spare parts"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state not in ['confirmed', 'in_progress']"/>
+
                         <field name="state" widget="statusbar"
                                statusbar_visible="new,confirmed,in_progress,quality_check,delivered"/>
                     </header>
@@ -277,34 +308,25 @@
                                     <field name="vehicle_register_id"
                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']" context="{'default_customer_id': customer_id, 'default_registration_no': vehicle_register_id}"/>
                                     <field name="phone" widget="phone"
-                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
+                                            readonly="state in ['new', 'on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
                                     <field name="brand_id"
-                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
+                                            readonly="state in ['new', 'on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
                                     <field name="registration_no"
-                                           readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
+                                           readonly="state in ['new', 'on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
                                 </group>
                                 <group>
                                     <field name="model_id"
-                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
+                                            readonly="state in ['new', 'on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
                                     <field name="fuel_type_id"
-                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
+                                            readonly="state in ['new', 'on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
                                     <field name="vin_no"
-                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
+                                            readonly="state in ['new', 'on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
                                     <field name="transmission_type" widget="radio" class="horizontal-radio"
-                                           readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
+                                           readonly="state in ['new', 'on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
                                     <field name="kilometer"
-                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
+                                            readonly="state in ['new', 'on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
                                     <field name="model_year"
-                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
-                                </group>
-                            </group>
-                        </section>
-                        <section>
-                            <separator string="Service Bundles"/>
-                            <group>
-                                <group>
-                                    <field name="bundle_id" string="Select Bundle"
-                                        readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
+                                            readonly="state in ['new', 'on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']"/>
                                 </group>
                             </group>
                         </section>
@@ -414,7 +436,7 @@
                                                                          class="o_kanban_image_wrapper oe_kanban_previewer"
                                                                          title="">
                                                                         <div class="o_tours_travels_image">
-                                                                            <img t-att-src="kanban_image('vehicle.jobcard.inner.condition', 'image', record.id.raw_value)"
+                                                                            <img t-att-src="record.image.value"
                                                                                  alt="img" class="custom-image-size"/>
                                                                         </div>
                                                                     </div>
@@ -804,8 +826,11 @@
                                             <field name="start_date"/>
                                             <field name="end_date"/>
                                             <field name="state" readonly="1"/>
+                                            <field name="from_bundle" invisible='1' nolabel="1"/>
+                                            <field name="from_spare"/>
+                                            <field name="quantity" />
                                             <field name="service_cost" widget="monetary"
-                                                   options="{'currency_field': 'company_currency'}"/>
+                                                   options="{'currency_field': 'company_currency'}" readonly="False"/>
                                             <button name="action_service_task" class="oe_stat_button"
                                                     icon="fa-book"
                                                     type="object" string="Task"/>
@@ -824,6 +849,9 @@
                                 </section>
                                 <section>
                                     <separator string="Vehicle Spare Parts"/>
+                                    <group>
+                                        <field name="filter_spare_parts"  widget="boolean_toggle" options="{'autosave': True}"/>
+                                    </group>
                                     <field name="parts_ids"
                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']">
                                         <list editable="bottom">
@@ -831,10 +859,21 @@
                                             <field name="company_currency" column_invisible="True"/>
                                             <field name="spare_id"/>
                                             <field name="quantity"/>
+                                            <field name="from_bundle" invisible="1" nolabel="1"/>
                                             <field name="unit_price" readonly="0" widget="monetary"
                                                    options="{'currency_field': 'company_currency'}"/>
                                             <field name="sub_total" widget="monetary"
                                                    options="{'currency_field': 'company_currency'}"/>
+                                            <control>
+                                                <create string="Add a product"/>
+                                                <button
+                                                    string="Catalog"
+                                                    name="action_add_from_catalog"
+                                                    type="object"
+                                                    class="oe_link"
+                                                    context="{'order_id': parent.id, 'child_field': 'repair_parts_line'}"
+                                                />
+                                            </control>
                                         </list>
                                     </field>
                                     <group name="note_group" col="6" class="mt-2 mt-md-0">
@@ -844,6 +883,15 @@
                                                    options="{'currency_field': 'company_currency'}"/>
                                         </group>
                                     </group>
+                                </section>
+                                <section>
+                                    <separator string="Service Bundles"/>
+                                    <field name="bundle_id" nolabel='1' 
+                                            readonly="state in ['on_hold', 'on_delivery', 'delivered', 'sale_order', 'cancel']">
+                                        <list editable="bottom">
+                                            <field name="bundle_id"/>
+                                        </list>
+                                    </field>
                                 </section>
                                 <group name="note_group" col="6" class="mt-2 mt-md-0">
                                     <group class="oe_subtotal_footer oe_right" colspan="2"

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="low_stock_template">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <center>
+                            <table>
+                                <th>
+                                    <h4>
+                                        <b>Product Low Stock Report</b>
+                                    </h4>
+                                    <!-- Show which category is active, if any -->
+                                    <t t-if="filtered_category">
+                                        <h6 style="color: #555;">
+                                            Category:
+                                            <t t-esc="filtered_category"/>
+                                        </h6>
+                                    </t>
+                                    <t t-else="">
+                                        <h6 style="color: #555;">All Categories</h6>
+                                    </t>
+                                </th>
+                            </table>
+                        </center>
+                        <br/>
+                        <br/>
+                        <!-- No data message -->
+                        <t t-if="not grouped_data">
+                            <p style="text-align:center; color:#888;">
+                                No low-stock products found
+                                <t t-if="filtered_category">
+                                    in category "
+                                    <t t-esc="filtered_category"/>".
+                                </t>
+                                <t t-else="">.</t>
+                            </p>
+                        </t>
+                        <t t-if="grouped_data">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr style="border: 1px solid black;">
+                                        <th style="border: 1px solid black;">Product Name</th>
+                                        <th style="border: 1px solid black;">Product Quantity</th>
+                                        <th style="border: 1px solid black;">Forecast Quantity</th>
+                                        <th style="border: 1px solid black;">Minimum Quantity</th>
+                                        <th style="border: 1px solid black;">Maximum Quantity</th>
+                                        <th style="border: 1px solid black;">Required Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="grouped_data" t-as="category_group">
+                                        <!-- Category Header Row -->
+                                        <tr style="background-color: #d6d6d6; text-align: center;">
+                                            <td colspan="6"
+                                                style="border: 1px solid black;
+                                                       font-weight: bold;
+                                                       padding-left: 8px;
+                                                       text-align: center;">
+                                                <span t-esc="category_group['category']"/>
+                                            </td>
+                                        </tr>
+                                        <!-- Products under this category -->
+                                        <t t-foreach="category_group['lines']" t-as="o">
+                                            <tr style="border: 1px solid black;">
+                                                <td style="border: 1px solid black; padding-left: 20px;">
+                                                    <span t-field="o.name"/>
+                                                </td>
+                                                <td style="border: 1px solid black;">
+                                                    <span t-field="o.stock_quantity"/>
+                                                </td>
+                                                <td style="border: 1px solid black;">
+                                                    <span t-field="o.orderpoint_qty_forecast"/>
+                                                </td>
+                                                <td style="border: 1px solid black;">
+                                                    <span t-field="o.orderpoint_min_qty"/>
+                                                </td>
+                                                <td style="border: 1px solid black;">
+                                                    <span t-field="o.orderpoint_max_qty"/>
+                                                </td>
+                                                <td style="border: 1px solid black;">
+                                                    <span t-esc="o.orderpoint_qty_to_order"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </template>
+        <record id="action_low_stock_report" model="ir.actions.report">
+            <field name="name">Product Low Stock Report</field>
+            <field name="model">low.stock.notification</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">bi_product_low_stock_notification.low_stock_template</field>
+            <field name="report_file">bi_product_low_stock_notification.low_stock_template</field>
+        </record>
+    </data>
+</odoo>

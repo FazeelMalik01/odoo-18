@@ -13,6 +13,12 @@ class ProductTemplate(models.Model):
     width_uom_name = fields.Char(string=" ", compute="_compute_dimension_uom_name", readonly=True)
     height_uom_name = fields.Char(string=" ", compute="_compute_dimension_uom_name", readonly=True)
 
+    default_warehouse_id = fields.Many2one(
+        'stock.warehouse',
+        string="Default Warehouse",
+        help="Warehouse that will be automatically selected in Sale and Purchase order lines."
+    )
+
     @api.depends('length', 'width', 'height')
     def _compute_volume(self):
         for record in self:

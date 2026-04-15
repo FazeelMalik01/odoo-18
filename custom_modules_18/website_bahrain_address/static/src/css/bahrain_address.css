@@ -1,0 +1,20 @@
+/* Bahrain Address — Website Checkout Styles
+   No layout overrides needed: the Bahrain field divs use col-lg-12 mb-2
+   which is identical to Odoo's own field divs. */
+
+/* Container is hidden by default; JS / QWeb SSR controls visibility. */
+#div_bahrain_fields {
+    display: none;
+}
+
+/* Inline validation feedback */
+#div_bahrain_fields .invalid-feedback {
+    display: none;
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-top: 0.25rem;
+}
+
+#div_bahrain_fields input.is-invalid ~ .invalid-feedback {
+    display: block;
+}

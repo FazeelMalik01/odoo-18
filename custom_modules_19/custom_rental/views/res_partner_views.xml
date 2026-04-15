@@ -1,22 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
   <data>
+    <!-- Event Booking smart button on contact form -->
+    <record id="view_partner_form_inherit_custom_rental_event_booking_btn" model="ir.ui.view">
+      <field name="name">res.partner.form.inherit.custom.rental.event.booking.btn</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//div[@name='button_box']" position="inside">
+          <button name="action_open_rental_bookings"
+                  type="object"
+                  class="oe_stat_button"
+                  icon="fa-calendar">
+            <field name="rental_order_count" widget="statinfo" string="Event Bookings"/>
+          </button>
+        </xpath>
+      </field>
+    </record>
+
     <!-- Add Secondary Phone under the main phone on contact form -->
     <record id="view_partner_form_inherit_custom_rental_secondary_phone" model="ir.ui.view">
       <field name="name">res.partner.form.inherit.custom.rental.secondary.phone</field>
       <field name="model">res.partner</field>
       <field name="inherit_id" ref="base.view_partner_form"/>
       <field name="arch" type="xml">
-        <!-- <xpath expr="//field[@name='name']/.." position="after">
-          <div class="d-flex align-items-baseline w-md-50">
-            <field name="last_name" class="w-100" placeholder="Last Name"/>
-          </div>
-        </xpath> -->
+
         <xpath expr="//div[contains(@class, 'd-flex') and contains(@class, 'align-items-baseline')]//field[@name='phone']/parent::div" position="after">
           <div class="d-flex align-items-baseline w-md-50">
             <i class="fa fa-fw me-1 fa-phone text-primary" title="Secondary Phone"/>
             <field name="phone_secondary" class="w-100" widget="phone" placeholder="Secondary Phone"/>
           </div>
+        </xpath>
+        <xpath expr="//field[@name='category_id']" position='after'>
+          <field name="partner_longitude"/>
+          <field name="partner_latitude"/>
         </xpath>
       </field>
     </record>

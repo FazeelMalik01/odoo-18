@@ -5,6 +5,11 @@ import re
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    international_phone_number = fields.Boolean(
+        string='International Phone Number',
+        help='When enabled, phone fields are not validated/formatted (free-form).',
+    )
+
     email_other = fields.Char(string='Email Other')
     email_home = fields.Char(string='Email Home')
     phone_home = fields.Char(string='Phone Home')
@@ -213,15 +218,18 @@ class ResPartner(models.Model):
     def create(self, vals):
         """Override create to format phone numbers and sync type field"""
         phone_fields = ['phone', 'phone_home', 'mobile_number', 'other_phone']
-        
-        for field in phone_fields:
-            if field in vals and vals[field]:
-                # Validate phone number
-                if not self.validate_phone_number(vals[field]):
-                    raise exceptions.ValidationError(f'Invalid phone number format for {field}. Please enter a valid phone number ex-(XXX) XXX-XXXX.')
-                
-                # Format phone number
-                vals[field] = self.format_phone_number(vals[field])
+
+        if not vals.get('international_phone_number'):
+            for field in phone_fields:
+                if field in vals and vals[field]:
+                    # Validate phone number
+                    if not self.validate_phone_number(vals[field]):
+                        raise exceptions.ValidationError(
+                            f'Invalid phone number format for {field}. Please enter a valid phone number ex-(XXX) XXX-XXXX.'
+                        )
+
+                    # Format phone number
+                    vals[field] = self.format_phone_number(vals[field])
         
         # Sync type field based on contact_type_ids if not explicitly set
         if 'contact_type_ids' in vals and 'type' not in vals:
@@ -449,7 +457,7 @@ class ResPartner(models.Model):
     @api.onchange('phone')
     def _onchange_phone(self):
         """Format phone number in real-time as user types"""
-        if self.phone:
+        if self.phone and not self.international_phone_number:
             digits = re.sub(r'\D', '', self.phone)
             if len(digits) >= 10:
                 self.phone = self.format_phone_number(self.phone)
@@ -457,7 +465,7 @@ class ResPartner(models.Model):
     @api.onchange('phone_home')
     def _onchange_phone_home(self):
         """Format phone_home number in real-time as user types"""
-        if self.phone_home:
+        if self.phone_home and not self.international_phone_number:
             digits = re.sub(r'\D', '', self.phone_home)
             if len(digits) >= 10:
                 self.phone_home = self.format_phone_number(self.phone_home)
@@ -465,7 +473,7 @@ class ResPartner(models.Model):
     @api.onchange('mobile_number')
     def _onchange_mobile_number(self):
         """Format mobile_number in real-time as user types"""
-        if self.mobile_number:
+        if self.mobile_number and not self.international_phone_number:
             digits = re.sub(r'\D', '', self.mobile_number)
             if len(digits) >= 10:
                 self.mobile_number = self.format_phone_number(self.mobile_number)
@@ -473,7 +481,7 @@ class ResPartner(models.Model):
     @api.onchange('other_phone')
     def _onchange_other_phone(self):
         """Format other_phone number in real-time as user types"""
-        if self.other_phone:
+        if self.other_phone and not self.international_phone_number:
             digits = re.sub(r'\D', '', self.other_phone)
             if len(digits) >= 10:
                 self.other_phone = self.format_phone_number(self.other_phone)
@@ -481,15 +489,23 @@ class ResPartner(models.Model):
     def write(self, vals):
         """Override write to format phone numbers and sync type field"""
         phone_fields = ['phone', 'phone_home', 'mobile_number', 'other_phone']
-        
-        for field in phone_fields:
-            if field in vals and vals[field]:
-                # Validate phone number
-                if not self.validate_phone_number(vals[field]):
-                    raise exceptions.ValidationError(f'Invalid phone number format for {field}. Please enter a valid phone number ex-(XXX) XXX-XXXX.')
-                
-                # Format phone number
-                vals[field] = self.format_phone_number(vals[field])
+
+        # If international flag is enabled (incoming or already on record), skip validation/formatting.
+        # NOTE: write() is usually called on a singleton from the form view; for multi-record writes
+        # where partners may have different flags, Odoo's standard behavior is still applied.
+        skip_validation = bool(vals.get('international_phone_number')) or (len(self) == 1 and self.international_phone_number)
+
+        if not skip_validation:
+            for field in phone_fields:
+                if field in vals and vals[field]:
+                    # Validate phone number
+                    if not self.validate_phone_number(vals[field]):
+                        raise exceptions.ValidationError(
+                            f'Invalid phone number format for {field}. Please enter a valid phone number ex-(XXX) XXX-XXXX.'
+                        )
+
+                    # Format phone number
+                    vals[field] = self.format_phone_number(vals[field])
         
         # Sync type field based on contact_type_ids if contact_type_ids is being updated
         if 'contact_type_ids' in vals and 'type' not in vals:

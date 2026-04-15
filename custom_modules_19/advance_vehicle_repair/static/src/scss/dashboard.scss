@@ -3,25 +3,30 @@
         z-index: 1050;
         min-width: 100%;
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+
         .dropdown-item {
             padding: 0.5rem 0.75rem;
             white-space: nowrap;
         }
+
         .o_dashboard_customer_row {
             cursor: default;
         }
     }
+
     .o_dashboard_customer_actions_fixed {
         min-width: 140px;
         background: #fff;
         list-style: none;
         padding: 0;
+
         a {
             display: block;
             padding: 0.35rem 0.75rem;
             color: #333;
             text-decoration: none;
             white-space: nowrap;
+
             &:hover {
                 background-color: #f5f5f5;
             }
@@ -34,6 +39,7 @@
 
     .o_lm_dashboard {
         background-color: #ececec;
+
         div.o_box {
             @include clearfix;
             color: $o-main-color-muted;
@@ -43,15 +49,19 @@
             position: static;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
 
-            h2, h4 {
+            h2,
+            h4 {
                 text-transform: uppercase;
                 margin-top: 0;
                 color: $o-brand-odoo;
             }
 
-            h4 { margin: 0 0 0 8px; }
+            h4 {
+                margin: 0 0 0 8px;
+            }
 
-            .col-lg-7, .col-12 {
+            .col-lg-7,
+            .col-12 {
                 padding: 15px;
 
                 .js_field_selection {
@@ -80,7 +90,9 @@
                         color: $o-main-text-color;
                         border-top-width: 0px;
                     }
-                    td, th {
+
+                    td,
+                    th {
                         text-align: right;
                         border-left: none;
 
@@ -88,6 +100,7 @@
                             text-align: left;
                         }
                     }
+
                     .o_tooltip_key {
                         text-align: left;
                     }
@@ -99,19 +112,22 @@
             .o_box {
                 display: flex;
                 flex-flow: row wrap;
-                justify-content: flex-start;
-                > .o_inner_box {
+                justify-content: center;
+
+                >.o_inner_box {
                     @include media-breakpoint-down(sm) {
                         flex: 1 1 200px;
                         display: block !important;
                     }
+
                     @include media-breakpoint-up(md) {
                         flex: 1 1 calc(100% / 7 - 10px);
                         max-width: calc(100% / 7 - 10px);
                         margin: 5px;
-}
+                    }
                 }
             }
+
             .o_inner_box {
                 padding-top: 10px;
                 text-align: center;
@@ -123,16 +139,20 @@
                 cursor: pointer;
                 color: white;
                 background-color: $o-brand-primary;
-                    &:hover {
-                        background-color: darken($o-brand-primary, 10%);
-                    }
+
+                &:hover {
+                    background-color: darken($o-brand-primary, 10%);
+                }
+
                 &.o_primary {
                     background-color: $o-brand-odoo;
                     color: white;
+
                     &:hover {
                         background-color: darken($o-brand-odoo, 10%);
                     }
                 }
+
                 .o_highlight {
                     font-size: 27px;
                 }
@@ -141,9 +161,11 @@
 
         .o_graph_sales {
             direction: ltr#{"/*rtl:ignore*/"};
+
             .o_legend0 {
                 background-color: $o-brand-primary;
             }
+
             .o_legend1 {
                 background-color: $o-main-color-muted;
             }
@@ -182,32 +204,32 @@
             }
 
             .ActiveUsers-value {
-              font-weight: 300;
-              margin-right: -.25em;
+                font-weight: 300;
+                margin-right: -.25em;
             }
 
             .ActiveUsers.is-increasing {
-              animation: increase 3s;
+                animation: increase 3s;
             }
 
             .ActiveUsers.is-decreasing {
-              animation: decrease 3s;
+                animation: decrease 3s;
             }
 
             @keyframes increase {
-              10% {
-                background-color: lighten($o-brand-primary, 30%);
-                border-color: $o-brand-primary;
-                color: $o-brand-primary;
-              }
+                10% {
+                    background-color: lighten($o-brand-primary, 30%);
+                    border-color: $o-brand-primary;
+                    color: $o-brand-primary;
+                }
             }
 
             @keyframes decrease {
-              10% {
-                background-color: lighten($o-brand-primary, 30%);
-                border-color: $o-brand-primary;
-                color: $o-brand-primary;
-              }
+                10% {
+                    background-color: lighten($o-brand-primary, 30%);
+                    border-color: $o-brand-primary;
+                    color: $o-brand-primary;
+                }
             }
         }
 
@@ -229,33 +251,42 @@
     h2 {
         padding: 15px;
     }
-    h4 { margin: 3px 0 4px 0 !important; }
+
+    h4 {
+        margin: 3px 0 4px 0 !important;
+    }
 
     .o_link_enable {
         @include media-breakpoint-up(lg) {
             border-right: 1px solid #ccc;
         }
+
         height: initial;
         padding: 5px;
         text-align: center;
         overflow: hidden;
         text-overflow: ellipsis;
+
         a {
             color: darken($o-brand-lightsecondary, 40%);
         }
+
         &:hover {
             background-color: $o-brand-lightsecondary;
         }
+
         .o_highlight {
             color: $o-brand-primary;
             font-size: 20px;
             font-weight: bold;
         }
     }
+
     .o_link_disable {
         @include media-breakpoint-up(lg) {
             border-right: 1px solid #ccc;
         }
+
         height: initial;
         padding: 5px;
         text-align: center;
@@ -263,17 +294,21 @@
         text-overflow: ellipsis;
         margin: 10px 0px;
         color: darken($o-brand-lightsecondary, 40%);
+
         .o_highlight {
             font-size: 20px;
             font-weight: bold;
         }
     }
+
     .o_invisible_border {
         border-right: 0px;
     }
+
     .o_top_margin {
         margin-top: 20px;
     }
+
     .o_graph_canvas_container {
         position: relative;
         top: 0px;
@@ -281,13 +316,282 @@
         width: 100%;
         height: 30em;
     }
+
     .o_dashboard_utms {
         .utm_chart_image {
             display: block;
             margin: auto;
         }
+
         .utm_dropdown {
             margin-top: -5px;
         }
     }
+}
+
+// ── Payment List Container ────────────────────────────────────────────────────
+.o_payment_list {
+    border: 1px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background: var(--color-background-primary, #fff);
+}
+
+// ── Payment Method Group Header ───────────────────────────────────────────────
+.o_payment_method_group_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 14px;
+    background: var(--color-background-secondary, #f5f5f5);
+    border-bottom: 1px solid var(--color-border-tertiary);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        background: var(--color-background-tertiary, #ebebeb);
+    }
+
+    &:not(:first-child) {
+        border-top: 1px solid var(--color-border-tertiary);
+    }
+
+    .o_payment_method_group_label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        i.fa {
+            opacity: 0.65;
+        }
+    }
+
+    .o_payment_method_group_summary {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 500;
+        font-size: 11px;
+        color: var(--color-text-secondary);
+    }
+
+    .o_group_chevron {
+        transition: transform 0.2s ease;
+        opacity: 0.6;
+
+        &.collapsed {
+            transform: rotate(-90deg);
+        }
+    }
+}
+
+// ── Payment Row ───────────────────────────────────────────────────────────────
+.o_payment_row {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--color-border-tertiary);
+    cursor: pointer;
+    transition: background 0.15s ease;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover {
+        background: var(--color-background-secondary);
+    }
+
+    // ── Row: Top line (name + date/badge) ─────────────────────────────────────
+    .o_payment_row_header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .o_payment_row_name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--color-text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .o_payment_row_partner {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        margin-top: 2px;
+    }
+
+    .o_payment_row_date {
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        white-space: nowrap;
+    }
+
+    // ── Row: Meta line (journal / method / batch) ─────────────────────────────
+    .o_payment_row_meta {
+        display: flex;
+        gap: 12px;
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--color-text-secondary);
+        flex-wrap: wrap;
+
+        span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+
+            i.fa {
+                font-size: 11px;
+                opacity: 0.65;
+            }
+        }
+    }
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+.o_payment_filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .o_filter_group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .o_filter_label {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--color-text-secondary);
+        margin: 0;
+
+        .o_filter_icon {
+            margin-right: 4px;
+            opacity: 0.65;
+        }
+    }
+
+    .o_filter_input,
+    .o_filter_select {
+        height: 32px;
+        font-size: 12.5px;
+        border: 1px solid #d0d5dd;
+        border-radius: 6px;
+        padding: 0 10px;
+        background: #fff;
+        color: var(--color-text-primary);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        transition: border-color 0.15s, box-shadow 0.15s;
+
+        &:focus {
+            outline: none;
+            border-color: var(--color-primary, #875a7b);
+            box-shadow: 0 0 0 3px rgba(135, 90, 123, 0.12);
+        }
+    }
+
+    .o_filter_input {
+        max-width: 155px;
+    }
+
+    .o_filter_select {
+        min-width: 160px;
+    }
+
+    .o_filter_clear {
+        height: 32px;
+        padding: 0 12px;
+        font-size: 12px;
+        font-weight: 500;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        background: #f8f8f8;
+        color: #777;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: background 0.15s, color 0.15s, border-color 0.15s;
+        align-self: flex-end;
+
+        &:hover {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-color: #fca5a5;
+        }
+
+        i.fa {
+            font-size: 11px;
+        }
+    }
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────────
+.o_payment_pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+
+    .o_pagination_buttons {
+        display: flex;
+        gap: 4px;
+    }
+}
+// ── Status Badges ─────────────────────────────────────────────────────────────
+.o_payment_badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 3px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.o_payment_badge_posted {
+    background: #eaf3de;
+    color: #3b6d11;
+}
+
+.o_payment_badge_draft {
+    background: #f1efe8;
+    color: #5f5e5a;
+}
+
+.o_payment_badge_sent {
+    background: #e6f1fb;
+    color: #185fa5;
+}
+
+.o_payment_badge_reconciled {
+    background: #e1f5ee;
+    color: #0f6e56;
+}
+
+.o_payment_badge_cancelled {
+    background: #fcebeb;
+    color: #a32d2d;
+}
+
+.o_payment_badge_in_process {
+    background: #fef3cd;
+    color: #92600a;
 }

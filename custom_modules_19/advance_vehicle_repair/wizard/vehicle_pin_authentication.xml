@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="service_task_pin_wizard_form" model="ir.ui.view">
+        <field name="name">service.task.pin.wizard.form</field>
+        <field name="model">service.task.pin.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Employee Authentication">
+                <sheet>
+                    <div class="text-center mb-4">
+                        <h2>Service Tasks Access</h2>
+                        <p class="text-muted">
+                            Please select your employee profile and enter your PIN to continue.
+                        </p>
+                    </div>
+                    <group>
+                        <field name="employee_id" 
+                               options="{'no_create': True, 'no_edit': True}"
+                               placeholder="Select Employee..."/>
+                        <field name="pin" 
+                               password="True"
+                               placeholder="Enter PIN..."/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button 
+                        name="action_validate_pin"
+                        string="Confirm" 
+                        type="object" 
+                        class="btn-primary"/>
+                    <button 
+                        string="Cancel" 
+                        class="btn-secondary" 
+                        special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open the wizard -->
+    <record id="action_service_task_pin_wizard" model="ir.actions.act_window">
+        <field name="name">Service Tasks</field>
+        <field name="res_model">service.task.pin.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>  <!-- opens as dialog/popup -->
+    </record>
+
+</odoo>

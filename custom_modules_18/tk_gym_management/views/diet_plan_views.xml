@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="diet_plan_form_view" model="ir.ui.view">
+        <field name="name">diet.plan.form.view</field>
+        <field name="model">diet.plan</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_invoice" type="object" string="Create Invoice" class="btn-primary"
+                            invisible="invoice_id"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Diet Plan.." required="1" readonly="invoice_id"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="member_id" domain="[('is_member', '=', True)]" readonly="invoice_id"
+                                   options="{'no_create': True, 'no_create_edit':True}" required="1"/>
+                            <field name="diet_category_id" required="1" options="{'no_create':True}" readonly="invoice_id"/>
+                            <field name="diet_type_id" required="1" options="{'no_create':True}" readonly="invoice_id"/>
+                            <field name="diet_plan_template_id" options="{'no_create':True}" readonly="invoice_id"
+                                   domain="[('diet_category_id', '=', diet_category_id), ('diet_type_id', '=', diet_type_id)]"/>
+                        </group>
+                        <group>
+                            <field name="dietitian_id" required="1" options="{'no_create':True}" readonly="invoice_id"/>
+                            <field name="date" required="1" readonly="invoice_id"/>
+                            <field name="charges" readonly="invoice_id"/>
+                            <label for="invoice_id" class="o_form_label o_td_label text-muted" name="invoice_id"
+                                  invisible="not invoice_id">
+                                Invoice
+                            </label>
+                            <div class="o_address_format" name="invoice_id" style="margin:0;"
+                                 invisible="not invoice_id">
+                                <field name="invoice_id" force_save="1" style="width:auto; margin-right:10px;"
+                                       readonly="1"/>
+                                <field name="invoice_status" widget="badge" style="width:auto;"
+                                       decoration-success="invoice_status == 'paid'"
+                                       decoration-warning="invoice_status == 'partial'"
+                                       decoration-info="invoice_status in ['in_payment','draft']"
+                                       decoration-danger="invoice_status in ['cancel','not_paid']"/>
+                            </div>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <div>
+                        <button name="compute_diet_meal" type="object" string="Get Diet Meals"
+                                invisible="not diet_plan_template_id or invoice_id"/>
+                        <span class="m-2"/>
+                        <button name="clear_template_data" type="object" string="Clear Diet Meals"
+                                invisible="not diet_plan_template_id or not diet_meal_ids or invoice_id"/>
+                    </div>
+                    <notebook>
+                        <page name="diet_meals" string="Diet Meals">
+                            <field name="diet_meal_ids" readonly="invoice_id">
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="name"/>
+                                                <field name="day"/>
+                                            </group>
+                                            <group>
+                                                <field name="total_calories"/>
+                                            </group>
+                                        </group>
+                                        <notebook>
+                                            <page string="Breakfast">
+                                                <field name="breakfast_ids"
+                                                       context="{'default_meal_type': 'breakfast'}">
+                                                    <list editable="bottom">
+                                                        <field name="meal_type" column_invisible="1"/>
+                                                        <field name="food_item_id" options="{'no_create':True}"/>
+                                                        <field name="calories" string="Calories per Unit"/>
+                                                        <field name="food_unit_id" options="{'no_open':True}"/>
+                                                        <field name="meal_time" widget="float_time"/>
+                                                        <field name="qty"/>
+                                                        <field name="intake_unit_id" options="{'no_open':True}"/>
+                                                        <field name="total_calories" readonly="1"/>
+                                                        <field name="unit" column_invisible="1"/>
+                                                    </list>
+                                                </field>
+                                                <group class="oe_subtotal_footer">
+                                                    <field name="breakfast_calories" readonly="1"/>
+                                                </group>
+                                            </page>
+                                            <page string="Morning Snack">
+                                                <field name="morning_snack_ids"
+                                                       context="{'default_meal_type': 'midmorningsnacks'}">
+                                                    <list editable="bottom">
+                                                        <field name="meal_type" column_invisible="1"/>
+                                                        <field name="food_item_id" options="{'no_create':True}"/>
+                                                        <field name="calories" string="Calories per Unit"/>
+                                                        <field name="food_unit_id" options="{'no_open':True}"/>
+                                                        <field name="meal_time" widget="float_time"/>
+                                                        <field name="qty"/>
+                                                        <field name="intake_unit_id" options="{'no_open':True}"/>
+                                                        <field name="total_calories" readonly="1"/>
+                                                        <field name="unit" column_invisible="1"/>
+                                                    </list>
+                                                </field>
+
+                                                <group class="oe_subtotal_footer">
+                                                    <field name="morning_snack_calories" readonly="1"/>
+                                                </group>
+                                            </page>
+                                            <page string="Lunch">
+                                                <field name="lunch_ids" context="{'default_meal_type': 'lunch'}">
+                                                    <list editable="bottom">
+                                                        <field name="meal_type" column_invisible="1"/>
+                                                        <field name="food_item_id" options="{'no_create':True}"/>
+                                                        <field name="calories" string="Calories per Unit"/>
+                                                        <field name="food_unit_id" options="{'no_open':True}"/>
+                                                        <field name="meal_time" widget="float_time"/>
+                                                        <field name="qty"/>
+                                                        <field name="intake_unit_id" options="{'no_open':True}"/>
+                                                        <field name="total_calories" readonly="1"/>
+                                                        <field name="unit" column_invisible="1"/>
+                                                    </list>
+                                                </field>
+
+                                                <group class="oe_subtotal_footer">
+                                                    <field name="lunch_calories" readonly="1"/>
+                                                </group>
+                                            </page>
+                                            <page string="Evening Snack">
+                                                <field name="evening_snack_ids"
+                                                       context="{'default_meal_type': 'evening-snacks'}">
+                                                    <list editable="bottom">
+                                                        <field name="meal_type" column_invisible="1"/>
+                                                        <field name="food_item_id" options="{'no_create':True}"/>
+                                                        <field name="calories" string="Calories per Unit"/>
+                                                        <field name="food_unit_id" options="{'no_open':True}"/>
+                                                        <field name="meal_time" widget="float_time"/>
+                                                        <field name="qty"/>
+                                                        <field name="intake_unit_id" options="{'no_open':True}"/>
+                                                        <field name="total_calories" readonly="1"/>
+                                                        <field name="unit" column_invisible="1"/>
+                                                    </list>
+                                                </field>
+
+                                                <group class="oe_subtotal_footer">
+                                                    <field name="evening_snack_calories" readonly="1"/>
+                                                </group>
+                                            </page>
+                                            <page string="Dinner">
+                                                <field name="dinner_ids" context="{'default_meal_type': 'dinner'}">
+                                                    <list editable="bottom">
+                                                        <field name="meal_type" column_invisible="1"/>
+                                                        <field name="food_item_id" options="{'no_create':True}"/>
+                                                        <field name="calories" string="Calories per Unit"/>
+                                                        <field name="food_unit_id" options="{'no_open':True}"/>
+                                                        <field name="meal_time" widget="float_time"/>
+                                                        <field name="qty"/>
+                                                        <field name="intake_unit_id" options="{'no_open':True}"/>
+                                                        <field name="total_calories" readonly="1"/>
+                                                        <field name="unit" column_invisible="1"/>
+                                                    </list>
+                                                </field>
+
+                                                <group class="oe_subtotal_footer">
+                                                    <field name="dinner_calories" readonly="1"/>
+                                                </group>
+                                            </page>
+                                            <page string="Nutrients">
+                                                <field name="diet_nutrient_ids">
+                                                    <list editable="bottom">
+                                                        <field name="nutrient_id" options="{'no_create':True}"/>
+                                                        <field name="value"/>
+                                                        <field name="unit"/>
+                                                    </list>
+                                                </field>
+                                            </page>
+                                        </notebook>
+                                    </sheet>
+                                </form>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="total_calories" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="diet_plan_tree_view" model="ir.ui.view">
+        <field name="name">diet.plan.tree.view</field>
+        <field name="model">diet.plan</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="member_id"/>
+                <field name="date"/>
+                <field name="diet_plan_template_id"/>
+                <field name="charges"/>
+                <field name="currency_id" column_invisible="true"/>
+                <field name="invoice_id" widget="Many2one_clickable"/>
+            </list>
+        </field>
+    </record>
+    <record id="diet_plan_search_view" model="ir.ui.view">
+        <field name="name">diet.plan.search.view</field>
+        <field name="model">diet.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <group string="Group By">
+                    <filter name="member_id" string="Members"
+                            context="{'group_by': 'member_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="diet_plan_action" model="ir.actions.act_window">
+        <field name="name">Diet Plans</field>
+        <field name="res_model">diet.plan</field>
+        <field name="view_mode">list,form,search</field>
+    </record>
+</odoo>

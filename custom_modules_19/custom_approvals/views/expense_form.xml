@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_expense_view_form_approval_inherit" model="ir.ui.view">
+        <field name="name">hr.expense.form.approval.inherit</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.hr_expense_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Submit (no attachment — highlighted) -->
+            <xpath expr="//button[hasclass('o_expense_submit_highlight')]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Submit (with attachment) -->
+            <xpath expr="//button[hasclass('o_expense_submit')]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Approve (no attachment — highlighted) -->
+            <xpath expr="//button[hasclass('o_expense_approve_highlight')]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Approve (with attachment) -->
+            <xpath expr="//button[hasclass('o_expense_approve')]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Split Expense (non-approver user) -->
+            <xpath expr="//button[hasclass('o_expense_split_user')]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Split Expense (manager) -->
+            <xpath expr="//button[hasclass('o_expense_split_manager')]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Post Journal Entries (no attachment) — override invisible to use
+                 expense_approval_state instead of native state -->
+            <xpath expr="//button[hasclass('o_expense_post_highlight')]" position="attributes">
+                <attribute name="invisible">nb_attachment == 0 or expense_approval_state != 'approved'</attribute>
+            </xpath>
+            <!-- Post Journal Entries (with attachment) — same override -->
+            <xpath expr="//button[hasclass('o_expense_post')]" position="attributes">
+                <attribute name="invisible">nb_attachment &gt;= 1 or expense_approval_state != 'approved'</attribute>
+            </xpath>
+            <!-- Native state statusbar — all variants share name+widget so
+                 one xpath hides them all -->
+            <xpath expr="//field[@name='state'][@widget='statusbar']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//widget[@name='attach_document'][1]" position="before">
+                <!-- Helper fields (invisible) for button condition evaluation -->
+                <field name="expense_approval_state" invisible="1"/>
+                <field name="expense_fm_id"          invisible="1"/>
+                <field name="expense_ceo_id"         invisible="1"/>
+                <field name="current_user_id"        invisible="1"/>
+                <field name="manager_approved"       invisible="1"/>
+                <field name="fm_approved"            invisible="1"/>
+                <field name="ceo_approved"           invisible="1"/>
+                <!-- Submit — visible to creator while in Draft -->
+                <button name="action_submit_expense"
+                        string="Submit"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="expense_approval_state != 'draft'"
+                        data-hotkey="v"/>
+                <!-- Manager Approve — visible when stage = manager -->
+                <button name="action_manager_approve"
+                        string="Approve"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="expense_approval_state != 'manager'"
+                        data-hotkey="q"/>
+                <!-- Finance Manager Approve — only for FM user -->
+                <button name="action_fm_approve"
+                        string="Approve"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="expense_approval_state != 'fm' or current_user_id != expense_fm_id"
+                        data-hotkey="q"/>
+                <!-- CEO Approve — only for CEO user -->
+                <button name="action_ceo_approve"
+                        string="Approve"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="expense_approval_state != 'ceo' or current_user_id != expense_ceo_id"
+                        data-hotkey="q"/>
+                <!-- Custom status bar -->
+                <field name="expense_approval_state"
+                       widget="statusbar"
+                       statusbar_visible="draft,manager,fm,ceo,approved"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="hr_expense_view_list_approval_inherit" model="ir.ui.view">
+        <field name="name">hr.expense.list.approval.inherit</field>
+        <field name="model">hr.expense</field>
+        <field name="inherit_id" ref="hr_expense.view_my_expenses_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="expense_approval_state"
+                   string="Status"
+                   optional="show"
+                   readonly="1"
+                   widget="badge"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

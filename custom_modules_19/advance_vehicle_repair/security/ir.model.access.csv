@@ -58,7 +58,9 @@ access_vehicle_kilometer_log_user,access.vehicle.kilometer.log.user,model_vehicl
 access_repair_technician_wizard,access_repair_technician_wizard,model_repair_technician_wizard,,1,1,1,1
 
 access_service_bundle_manager,access_service_bundle_manager,model_auto_service_bundle,base.group_user,1,1,1,1
-access_service_bundle_line_manager,access_service_bundle_line_manager,model_auto_service_bundle_line,base.group_user,1,1,1,1
+access_service_bundle_service_line_manager,access_service_bundle_service_line_manager,model_auto_service_bundle_service_line,base.group_user,1,1,1,1
+access_vehicle_jobcard_bundle_line_user,vehicle.jobcard.bundle.line.user,model_vehicle_jobcard_bundle_line,base.group_user,1,1,1,1
+access_service_bundle_spare_line_manager,access_service_bundle_spare_line_manager,model_auto_service_bundle_spare_line,base.group_user,1,1,1,1
 
 access_product_vehicle_compatibility,access_product_vehicle_compatibility,model_product_vehicle_compatibility,base.group_user,1,1,1,1
 
@@ -66,7 +68,11 @@ access_vehicle_model_year,access_product_vehicle_compatibility,model_product_veh
 
 access_vehicle_model_year_user,vehicle.model.year user,model_vehicle_model_year,base.group_user,1,1,1,1
 
+access_vehicle_service_reminder_user,vehicle.service.reminder user,model_vehicle_service_reminder,base.group_user,1,1,1,1
 
+access_service_task_pin_wizard_technician,service.task.pin.wizard technician,model_service_task_pin_wizard,advance_vehicle_repair.group_vehicle_repair_technician,1,1,1,1
+access_service_task_pin_wizard_user,service.task.pin.wizard user,model_service_task_pin_wizard,advance_vehicle_repair.group_vehicle_repair_user,1,1,1,1
+access_service_task_pin_wizard_manager,service.task.pin.wizard manager,model_service_task_pin_wizard,advance_vehicle_repair.group_vehicle_repair_manager,1,1,1,1
 
 
 

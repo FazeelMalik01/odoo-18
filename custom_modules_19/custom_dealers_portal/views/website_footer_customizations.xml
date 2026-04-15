@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Footer Links and Text Customization -->
+        <template id="custom_footer" inherit_id="website.footer_custom" name="Custom Footer">
+            <xpath expr="//div[hasclass('row')]" position="replace">
+                <div class="row">
+                    <div class="col-lg-2 pt24 pb24">
+                        <h5>Useful Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="/my">Dealer Portal Home</a></li>
+                            <li><a href="/web/login">Dealer Portal Login</a></li>
+                            <li><a href="/dealers/signup">Dealer Signup</a></li>
+                            <li><a href="https://diamondhoofcare.com/products/" target="_blank">Products</a></li>
+                            <li><a href="https://diamondhoofcare.com/newsletter/" target="_blank">Hoof Clips Newsletter</a></li>
+                            <li><a href="https://diamondhoofcare.com/privacy-policy/" target="_blank">Privacy Policy</a></li>
+                            <li><a href="https://diamondhoofcare.com/terms-and-conditions/">Terms and conditions</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-5 pt24 pb24">
+                        <h5>Who we are</h5>
+                        <p>At Diamond Hoof Care, we are passionate about livestock hoof and skin care. Our focus extends to hoof and skin care for cows, as well as applications for equines, pigs, sheep, and goats. We are dedicated to providing exceptional customer service and proven products that make a difference for livestock farms in Canada and the USA.</p>
+                    </div>
+                    <div class="col-lg-4 offset-lg-1 pt24 pb24">
+                        <h5>Connect with us</h5>
+                        <ul class="list-unstyled">
+                            <li><i class="fa fa-envelope fa-fw me-2"/><a href="mailto:team@diamondhoofcare.com">team@diamondhoofcare.com</a></li>
+                            <li><i class="fa fa-phone fa-fw me-2"/><a href="tel:1-403-388-4309"><span class="o_force_ltr">1-403-388-4309</span></a></li>
+                        </ul>
+                        <div class="s_social_media text-start o_not_editable" data-snippet="s_social_media" data-name="Social Media" contenteditable="false">
+                            <h5 class="s_social_media_title d-none" contenteditable="true">Follow us</h5>
+                            <a href="https://www.facebook.com/diamondhoof" class="s_social_media_facebook" target="_blank" aria-label="Facebook">
+                                <i class="fa fa-facebook rounded-circle shadow-sm o_editable_media"/>
+                            </a>
+                            <a href="https://www.linkedin.com/company/diamondhoofcare/" class="s_social_media_linkedin" target="_blank" aria-label="LinkedIn">
+                                <i class="fa fa-linkedin rounded-circle shadow-sm o_editable_media"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+
+        <!-- Copyright Customization -->
+        <template id="custom_footer_copyright" inherit_id="web.frontend_layout" name="Custom Copyright">
+            <xpath expr="//span[hasclass('o_footer_copyright_name')]" position="replace">
+                <span class="o_footer_copyright_name me-2">Copyright &amp;copy; Diamond Hoof Care Ltd.</span>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

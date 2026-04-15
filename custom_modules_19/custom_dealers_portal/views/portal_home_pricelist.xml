@@ -1,0 +1,14 @@
+<odoo>
+    <!-- Show dealer pricelist in the side_content panel on portal home -->
+    <template id="portal_side_content_inherit_pricelist" inherit_id="portal.side_content">
+        <xpath expr="//div[@class='o_portal_my_details']" position="after">
+            <div t-if="request.env.user.sudo().partner_id.commercial_partner_id.property_product_pricelist" class="mt-2">
+                <small class="text-muted d-block">Price List</small>
+                <span>
+                    <t t-esc="request.env.user.sudo().partner_id.commercial_partner_id.property_product_pricelist.display_name"/>
+                </span>
+            </div>
+        </xpath>
+    </template>
+</odoo>
+

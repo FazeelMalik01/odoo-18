@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form_gym" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.gym</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="40"/>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app data-string="Gym" id="gym" string="Gym" name="gym"
+                         groups="tk_gym_management.gym_manager"
+                         logo="/tk_gym_management/static/description/icon.png">
+                        <block title="Gym Management" id="membership_reminder_settings">
+                            <setting string="Membership Renewal Reminder Days">
+                                <span>Send Reminder</span>
+                                <field name="reminder_days" class="text-center"
+                                       style="width: 10%; min-width: 4rem;"/>
+                                <span>Days Before End date of Membership</span>
+                            </setting>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

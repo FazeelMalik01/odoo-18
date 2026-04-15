@@ -1,0 +1,25 @@
+<odoo>
+    <!-- Keep legacy xmlid to avoid upgrade crashes on existing DBs still referencing it. -->
+    <template id="redirect_form">
+        <form action="/payment/status" method="post"/>
+    </template>
+
+    <record id="ipos_pay_inline_form" model="ir.ui.view">
+        <field name="name">ipos.pay.inline.form</field>
+        <field name="type">qweb</field>
+        <field name="arch" type="xml">
+            <t t-name="custom_ipos_pay.inline_form">
+                <div id="ipos-pay-inline-form" class="o_ipos_inline_form d-flex flex-column gap-2 mt-2">
+                    <div class="small text-muted">
+                        Enter your card details to pay securely.
+                    </div>
+                    <input id="ccnumber" class="form-control" type="text" placeholder="Card Number"/>
+                    <div class="d-flex gap-2">
+                        <input id="ccexpiry" class="form-control" type="text" placeholder="MM/YY"/>
+                        <input id="cccvv" class="form-control" type="text" placeholder="CVV"/>
+                    </div>
+                </div>
+            </t>
+        </field>
+    </record>
+</odoo>

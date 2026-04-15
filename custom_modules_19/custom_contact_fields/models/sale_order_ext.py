@@ -17,6 +17,13 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    dropship_vendor_id = fields.Many2one(
+        'res.partner',
+        string='Vendor',
+        readonly=True,
+        copy=False,
+    )
+
     # Independent per-line warehouse selector.
     # It defaults from the order's warehouse but can then be changed per line
     # without impacting other lines.
@@ -33,6 +40,14 @@ class SaleOrderLine(models.Model):
         for line in self:
             if line.order_id and not line.warehouse_id:
                 line.warehouse_id = line.order_id.warehouse_id
+
+    @api.onchange('product_id')
+    def _onchange_product_set_default_warehouse(self):
+        for line in self:
+            if line.product_id:
+                default_wh = line.product_id.product_tmpl_id.default_warehouse_id
+                if default_wh:
+                    line.warehouse_id = default_wh
 
     def _prepare_procurement_values(self):
         """Inject per-line warehouse into procurement values so deliveries split by warehouse.
@@ -51,4 +66,7 @@ class SaleOrderLine(models.Model):
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    po_number = fields.Char(string="PO Number", copy=False)
+    order_id = fields.Char(
+        string="Order ID",
+        copy=False,
+    )

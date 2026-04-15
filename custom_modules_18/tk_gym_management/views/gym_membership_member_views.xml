@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="gym_memberships_form_view" model="ir.ui.view">
+        <field name="name">gym.memberships.form.view</field>
+        <field name="model">memberships.member</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="stages" widget="statusbar" statusbar_visible="draft,active"/>
+                    <field name="invoice_membership_id" invisible="1"/>
+                    <button string="Create Invoice" name="action_invoice" type="object"
+                            class="btn btn-primary"
+                            invisible="1"/>
+                    <button string="Active Membership &amp; Create Invoice" name="draft_to_active"
+                            type="object"
+                            invisible="stages not in ['draft']"
+                            confirm="Are you sure you want to make an invoice and activate membership?"
+                            class="btn btn-success"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-outline-danger"
+                            invisible="stages in ['cancel', 'close', 'expired']"/>
+                    <button string="Expired" name="active_to_expiry" type="object"
+                            class="btn btn-danger"
+                            invisible="1"/>
+                    <button name="%(membership_renew_wizard_action)d" type="action" string="Renew"
+                            class="btn-outline-success"
+                            invisible="stages != 'expired' or renewed"/>
+                        <button string="Freeze"
+                                name="action_open_freeze_wizard"
+                                type="object"
+                                class="btn-outline-warning"
+                                invisible="freeze"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Renewed"
+                            invisible="not renewed"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoice"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-file-text-o"
+                                    invisible="not invoice_membership_id">
+                            <field name="invoice_count" widget="statinfo" string="Invoice"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="gym_membership_number"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="gym_member_id" options="{'no_create':True}"
+                                   readonly="stages != 'draft'"
+                                   required="1"/>
+                        </group>
+                        <group>
+                            <field name="renewed_membership" invisible="not renewed_membership"
+                                   readonly="1"/>
+                            <field name="renewed_from" invisible="not renewed_from" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Membership Details">
+                        <group>
+                            <field name="gym_membership_type_id" options="{'no_create':True}"
+                                   domain="[('is_membership', '=', True)]"
+                                   readonly="stages != 'draft'" required="1"/>
+                            <field name="duration_id" force_save="1" options="{'no_create':True}"
+                                   invisible="gym_membership_type_id == False"/>
+                            <field name='freeze' invisible="not freeze"/>
+                            <field name="freeze_duration_days" readonly="1" invisible='1'/>
+                            <field name="freeze_extra_charges" readonly="1" invisible='1'/>
+                        </group>
+                        <group invisible="gym_membership_type_id == False">
+                            <field name="start_date" readonly="stages != 'draft'" required="1"/>
+                            <field name="end_date" string='End Date'/>
+                            <field name="extended_end_date" string='Extended End Date' invisible='1'/>
+                            <field name="base_end_date" string="Base End Date" readonly="1"/>
+                            <field name="renewed" invisible="1"/>
+                            <field name="price" invisible="gym_membership_type_id == False"
+                                   readonly="stages != 'draft'"/>
+                            <field name="currency_id" invisible="1"/>
+                            <label for="invoice_membership_id" class="o_form_label o_td_label text-muted" name="invoice_membership_id"
+                                  invisible="not invoice_membership_id">
+                                Invoice
+                            </label>
+                            <div class="o_address_format" name="invoice_details" style="margin:0;"
+                                 invisible="not invoice_membership_id">
+                                <field name="invoice_membership_id" force_save="1" style="width:auto; margin-right:10px;"
+                                       readonly="1"/>
+                                <field name="status_in_payment" widget="badge" style="width:auto;"
+                                       decoration-success="status_in_payment == 'paid'"
+                                       decoration-warning="status_in_payment == 'partial'"
+                                       decoration-info="status_in_payment in ['in_payment','draft']"
+                                       decoration-danger="status_in_payment in ['cancel','not_paid']"/>
+                            </div>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Freeze History" invisible="not freeze_log_ids">
+                            <field name="freeze_log_ids" readonly="1">
+                                <list>
+                                    <field name="freeze_date" string="Freeze Date"/>
+                                    <field name="extended_end_date" string="Extended End Date"/>
+                                    <field name="duration_days" string="Duration (Days)"/>
+                                    <field name="extra_charges" string="Extra Charges"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="gym_memberships_tree_view" model="ir.ui.view">
+        <field name="name">gym.memberships.tree.view</field>
+        <field name="model">memberships.member</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="gym_membership_number"/>
+                <field name="gym_member_id"/>
+                <field name="gym_membership_type_id"/>
+                <field name="duration_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="price" sum="price"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="stages" widget="badge" optional="show"
+                       decoration-info="stages == 'draft'"
+                       decoration-danger="stages in ['expired', 'cancel']"
+                       decoration-warning="stages == 'active'"
+                       decoration-success="stages in ['renewal', 'close']"/>
+            </list>
+        </field>
+    </record>
+    <record id="gym_memberships_history_pivot" model="ir.ui.view">
+        <field name="name">gym.memberships.history.pivot</field>
+        <field name="model">memberships.member</field>
+        <field name="arch" type="xml">
+            <pivot string="history">
+                <field name="create_date" interval="month" type="col"/>
+                <field name="duration_id" type="col"/>
+                <field name="gym_membership_type_id" type="measure" string="Memberships"/>
+                <field name="price" type="measure"/>
+                <field name="gym_membership_type_id" type="row"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="gym_memberships_search_view" model="ir.ui.view">
+        <field name="name">gym.memberships.search.view</field>
+        <field name="model">memberships.member</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="gym_member_id"/>
+                <field name="gym_membership_type_id"/>
+                <field name="duration_id"/>
+                <group string="Group By">
+                    <filter name="gym_member_id" string="Gym Members"
+                            context="{'group_by': 'gym_member_id'}"/>
+                    <filter name="gym_membership_type_id" string="Gym Membership Types"
+                            context="{'group_by': 'gym_membership_type_id'}"/>
+                    <filter name="duration_id" string="Gym Membership Duration"
+                            context="{'group_by': 'duration_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="gym_memberships_action" model="ir.actions.act_window">
+        <field name="name">Memberships Details</field>
+        <field name="res_model">memberships.member</field>
+        <field name="view_mode">list,form,pivot,activity,search</field>
+    </record>
+</odoo>

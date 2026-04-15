@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="diet_plan_xls_view_form" model="ir.ui.view">
+        <field name="name">diet_plan_xls_view_form</field>
+        <field name="model">diet.plan.excel</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="start_date" />
+                        </group>
+                        <group>
+                            <field name="end_date" />
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert">
+                        <strong>Note:</strong>
+                        <div>1. If only the <strong>Start Date</strong> is provided, it retrieves
+                            records from the specified start date to today.</div>
+                        <div> 2. If only the <strong>End Date</strong> is provided, it retrieves
+                            records up to the specified end date.</div>
+                        <div>3. If both <strong>Start Date</strong> and <strong>End Date</strong>
+                            are provided, it retrieves records within the specified date range. </div>
+                        <div>4. If neither <strong>Start Date</strong> nor <strong>End Date</strong>
+                            is provided, all records will be displayed. </div>
+                    </div>
+                    <footer>
+                        <button string="Print Excel" type="object" name="print_excel"
+                            class="btn-primary" />
+                        <button string="Cancel" special="cancel" />
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="diet_plan_xls_report_wizard_action" model="ir.actions.act_window">
+        <field name="name">Diet Plan Excel Report</field>
+        <field name="res_model">diet.plan.excel</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="diet_plan_xls_view_form" />
+        <field name="target">new</field>
+    </record>
+</odoo>

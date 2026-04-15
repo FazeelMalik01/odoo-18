@@ -39,7 +39,7 @@ class SaleOrderLine(models.Model):
         store=True,
         help='Total rental duration in hours for this line.',
     )
-
+    is_tip = fields.Boolean(string="Is Tip", default=False)
     @api.depends('start_date', 'return_date')
     def _compute_line_duration(self):
         for line in self:

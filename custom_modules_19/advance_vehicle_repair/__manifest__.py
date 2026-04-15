@@ -22,7 +22,7 @@
         repairs, bookings, and related services.
     """,
     'sequence': '10',
-    "version": "19.1",
+    "version": "19.2",
     "description": """
         This module introduces comprehensive vehicle repair management features to Odoo, tailored to meet the needs of automotive service centers, 
         fleet managers, and vehicle owners. It integrates seamlessly into Odoo, providing a robust solution for managing vehicle inspections, 
@@ -92,6 +92,7 @@
         'wizard/jobcard_inspector_wizard.xml',
         'wizard/wizard_action.xml',
         'wizard/vehicle_task_assigner_wizard.xml',
+        'wizard/vehicle_pin_authentication.xml',
 
         'views/vehicle_config_menus.xml',
         'views/vehicle_brand_views.xml',
@@ -119,11 +120,15 @@
         'views/vehicle_jobcard_views.xml',
         'views/web_template_views.xml',
         'views/vehicle_service_bundle.xml',
+        'views/vehicle_spare_part_list.xml',
+        'views/vehicle_service_reminder.xml',
 
         'reports/vehicle_report.xml',
         'reports/vehicle_inspection_template.xml',
         'reports/vehicle_repair_template.xml',
         'reports/vehicle_scratch_template.xml',
+        'reports/vehicle_sale_order.xml',
+        'reports/vehicle_invoice_template.xml'
 
     ],
     "assets": {
@@ -132,6 +137,11 @@
             '/advance_vehicle_repair/static/src/css/*.css',
             '/advance_vehicle_repair/static/src/js/dashboard.js',
             '/advance_vehicle_repair/static/src/xml/*.xml',
+            'advance_vehicle_repair/static/src/xml/panel_patch.xml',   # XML first
+            'advance_vehicle_repair/static/src/js/search_model_patch.js',
+            'advance_vehicle_repair/static/src/js/panel_patch.js',
+            'advance_vehicle_repair/static/src/js/vehicle_auth_wizard.js',
+            'advance_vehicle_repair/static/src/xml/vehicle_auth_wizard.xml',
         ],
         "web.assets_frontend": [
             '/advance_vehicle_repair/static/src/js/vehicle_booking_request.js',

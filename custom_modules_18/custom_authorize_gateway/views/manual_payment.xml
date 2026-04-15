@@ -1,0 +1,77 @@
+<odoo>
+    <record id="view_authorize_manual_payment_form" model="ir.ui.view">
+        <field name="name">authorize.manual.payment.form</field>
+        <field name="model">authorize.manual.payment</field>
+        <field name="arch" type="xml">
+            <form string="Process Payment">
+                <header>
+                    <button name="action_process_payment"
+                            string="Process Payment"
+                            type="object"
+                            class="btn-primary"
+                            id="btn_process_payment"
+                            invisible="not provider_id"/>
+                    <button string="Cancel" special="cancel"/>
+                </header>
+                <sheet>
+                    <group string="Payment Details">
+                        <field name="partner_id"/>
+                        <field name="amount"/>
+                        <field name="payment_date"/>
+                        <field name="journal_id"/>
+                        <field name="memo"/>
+                    </group>
+                    <group string="Payment Provider">
+                        <field name="provider_id" options="{'no_create': True}"/>
+                        <field name="capture_action"/>
+                    </group>
+                    <group string="Card">
+                        <field name="opaque_data_descriptor" invisible="1"/>
+                        <field name="opaque_data_value" invisible="1"/>
+                        <div colspan="2" class="o_field_widget">
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="o_form_label mb-1">Card Number</div>
+                                    <input type="text" id="cc_number" class="form-control"
+                                       placeholder="" maxlength="19"
+                                       autocomplete="cc-number"/>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <div class="o_form_label mb-1">Expiration</div>
+                                    <div class="d-flex gap-2">
+                                        <input type="text" id="cc_exp_month" class="form-control text-center"
+                                           placeholder="MM" maxlength="2"/>
+                                        <input type="text" id="cc_exp_year" class="form-control text-center"
+                                           placeholder="YY" maxlength="2"/>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="o_form_label mb-1">Card Code</div>
+                                    <input type="text" id="cc_cvv" class="form-control"
+                                       placeholder="" maxlength="4"
+                                       autocomplete="cc-csc"/>
+                                </div>
+                            </div>
+                            <div id="card_errors" class="text-danger mb-2" style="display:none;"/>
+                            <div class="text-end text-muted" style="font-size:12px;">
+                                <i class="fa fa-lock"/> Secured by Authorize.Net
+                            </div>
+                        </div>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_manual_authorize" model="ir.actions.act_window">
+        <field name="name">Manual Payments</field>
+        <field name="res_model">authorize.manual.payment</field>
+        <field name="view_mode">form</field>
+    </record>
+    <menuitem id="menu_manual_authorize"
+              name="Manual Payments"
+              parent="menu_authorize_payment_root"
+              action="action_manual_authorize"
+              sequence="30"/>
+</odoo>

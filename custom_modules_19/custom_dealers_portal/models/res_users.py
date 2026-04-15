@@ -25,16 +25,12 @@ class ResUsers(models.Model):
             # This is handled by the view inheritance, but we can force a refresh
             self.env['ir.ui.view'].sudo().invalidate_cache(['arch_db'])
             
-            # Auto-approve all existing admins
-            admin_group = self.env.ref('base.group_system', raise_if_not_found=False)
-            if admin_group:
-                admin_users = self.env['res.users'].sudo().search([
-                    ('groups_id', 'in', [admin_group.id]),
-                    ('dealer_status', '!=', 'approved')
-                ])
-                if admin_users:
-                    _logger.info(f"Auto-approving {len(admin_users)} admin users")
-                    admin_users.write({'dealer_status': 'approved', 'active': True})
+            # Normalize old data: internal/public/admin users are not dealer signups.
+            non_dealer_users = self.env['res.users'].sudo().search([
+                '|', ('share', '=', False), ('login', '=', 'public')
+            ])
+            if non_dealer_users:
+                non_dealer_users.write({'dealer_status': False})
         except Exception as e:
             _logger.warning(f"Error in _register_hook: {e}")
 
@@ -51,9 +47,15 @@ class ResUsers(models.Model):
             ('approved', 'Approved'),
         ],
         string='Dealer Status',
-        default='pending',
+        default=False,
         store=True,
-        help="Status of dealer signup. Pending dealers need approval."
+        help="Status of dealer signup. Empty means this user is not a dealer signup."
+    )
+
+    dealer_signup_date = fields.Date(
+        string="Signup Date",
+        default=fields.Date.context_today,
+        help="Date when this dealer signup was created.",
     )
 
     has_dealer_group = fields.Boolean(
@@ -81,6 +83,47 @@ class ResUsers(models.Model):
         help="When enabled, dealer will see a Catalog button on the purchase order form to browse products."
     )
 
+    dealer_connection_to_company = fields.Selection(
+        [
+            ('owner', 'Owner'),
+            ('route_driver', 'Route Driver'),
+            ('employee', 'Employee'),
+            ('technician', 'Technician'),
+            ('buyer', 'Buyer'),
+        ],
+        string="Connection To Company",
+        help="Dealer's role selected on the signup form.",
+    )
+    dealer_business_description = fields.Text(
+        string="Business Description",
+        help="Dealer's signup description about how they support clients.",
+    )
+    dealer_company_name = fields.Char(
+        string="Company Name",
+        help="Company name entered during dealer signup.",
+    )
+    dealer_company_address = fields.Char(
+        string="Company Address",
+        help="Company address entered during dealer signup.",
+    )
+
+    # Dealer pricing & notes, editable directly from the Dealer Signups approval form
+    dealer_pricelist_id = fields.Many2one(
+        'product.pricelist',
+        string="Pricing Tier",
+        related="partner_id.property_product_pricelist",
+        readonly=False,
+        help="Pricing tier / pricelist assigned to this dealer (stored on the dealer contact).",
+    )
+
+    # Use Html to match the underlying res.partner.comment field type
+    dealer_internal_notes = fields.Html(
+        string="Dealer Notes",
+        related="partner_id.comment",
+        readonly=False,
+        help="Internal notes about this dealer, stored on the dealer contact.",
+    )
+
     def _compute_has_dealer_group(self):
         """Check if user has dealer group assigned"""
         dealer_group = self.env.ref('custom_dealers_portal.group_dealer', raise_if_not_found=False)
@@ -102,65 +145,46 @@ class ResUsers(models.Model):
     
     @api.model_create_multi
     def create(self, vals_list):
-        """Override create to handle dealer_status"""
+        """Override create to enforce non-dealer admins."""
         users = super().create(vals_list)
+        # Ensure pricelist is synchronized for new users as well.
+        for vals, user in zip(vals_list, users):
+            if vals.get('dealer_pricelist_id'):
+                user._sync_dealer_pricelist(vals.get('dealer_pricelist_id'))
         for user in users:
-            # Admins are always approved and should have dealer group if they need it
+            # Admin can never be treated as dealer signup.
             if user.has_group('base.group_system'):
-                if user.dealer_status != 'approved':
-                    user.dealer_status = 'approved'
-                # Ensure admin has dealer group
-                dealer_group = self.env.ref('custom_dealers_portal.group_dealer', raise_if_not_found=False)
-                if dealer_group and not user.has_group('custom_dealers_portal.group_dealer'):
-                    try:
-                        if 'groups_id' in user._fields:
-                            user.write({'groups_id': [(4, dealer_group.id)]})
-                        else:
-                            self.env.cr.execute("""
-                                INSERT INTO res_groups_users_rel (gid, uid)
-                                VALUES (%s, %s)
-                                ON CONFLICT DO NOTHING
-                            """, (dealer_group.id, user.id))
-                    except Exception as e:
-                        _logger.warning(f"Could not assign dealer group to admin {user.id}: {e}")
+                if user.dealer_status:
+                    user.dealer_status = False
             elif user.dealer_status == 'approved':
                 user._ensure_dealer_group()
         return users
     
     def write(self, vals):
         """Override write to automatically manage dealer group based on status"""
+        pricelist_id = vals.get('dealer_pricelist_id')
+        pricelist_changed = 'dealer_pricelist_id' in vals
+
         # Store info before write to avoid recursion
         dealer_status_changed = 'dealer_status' in vals
         new_status = vals.get('dealer_status')
         user_ids = list(self.ids) if dealer_status_changed else []
         
         result = super().write(vals)
+
+        # Keep dealer pricelist consistent for portal rendering.
+        if pricelist_changed:
+            for user in self:
+                user._sync_dealer_pricelist(pricelist_id)
         
-        # After write, check if any user is an admin and auto-approve them
+        # After write, admins are never dealers.
         for user in self:
             if user.has_group('base.group_system'):
-                # Admins are always approved
-                if user.dealer_status != 'approved':
-                    user.sudo().write({'dealer_status': 'approved'})
-                    new_status = 'approved'
-                    dealer_status_changed = True
-                    if user.id not in user_ids:
-                        user_ids.append(user.id)
-                
-                # Ensure admin has dealer group
+                if user.dealer_status:
+                    user.sudo().write({'dealer_status': False})
                 dealer_group = self.env.ref('custom_dealers_portal.group_dealer', raise_if_not_found=False)
-                if dealer_group and not user.has_group('custom_dealers_portal.group_dealer'):
-                    try:
-                        if 'groups_id' in user._fields:
-                            user.write({'groups_id': [(4, dealer_group.id)]})
-                        else:
-                            self.env.cr.execute("""
-                                INSERT INTO res_groups_users_rel (gid, uid)
-                                VALUES (%s, %s)
-                                ON CONFLICT DO NOTHING
-                            """, (dealer_group.id, user.id))
-                    except Exception as e:
-                        _logger.warning(f"Could not assign dealer group to admin {user.id}: {e}")
+                if dealer_group and user.has_group('custom_dealers_portal.group_dealer'):
+                    user.sudo().write({'groups_id': [(3, dealer_group.id)]})
         
         # Handle group assignment and activation after write to avoid recursion
         if dealer_status_changed and user_ids:
@@ -176,6 +200,18 @@ class ResUsers(models.Model):
                         user.sudo().write({'active': False})
         
         return result
+
+    def _sync_dealer_pricelist(self, pricelist_id):
+        """Synchronize pricelist to both contact and company partner."""
+        for user in self:
+            partner = user.partner_id
+            if not partner:
+                continue
+            values = {'property_product_pricelist': pricelist_id}
+            partner.sudo().write(values)
+            commercial_partner = partner.commercial_partner_id
+            if commercial_partner and commercial_partner.id != partner.id:
+                commercial_partner.sudo().write(values)
     
     def _post_write_manage_dealer_group(self, user_ids, new_status):
         """Manage dealer group assignment after write to avoid recursion"""
@@ -224,6 +260,8 @@ class ResUsers(models.Model):
             raise ValidationError("Dealer group not found. Please check module installation.")
         
         for user in self:
+            if user.has_group('base.group_system'):
+                raise ValidationError("Admin users cannot be approved as dealers.")
             # Set status to approved - this will trigger write() which assigns the group and activates user
             user.write({'dealer_status': 'approved'})
         

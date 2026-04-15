@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ════════════════════════════════════════════════════════════════════
+         Inherit the standard payment.provider form view and inject the
+         IPOS Pay credential / URL fields inside the Credentials tab.
+         ════════════════════════════════════════════════════════════════════ -->
+    <record id="payment_provider_ipos_pay_form" model="ir.ui.view">
+        <field name="name">payment.provider.ipos.pay.form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <!-- Core hides stat buttons when module_state != 'installed'. If module_id is empty,
+                 module_state is falsy and the buttons never show (unlike Stripe which has module_id
+                 in payment data). Match kanban logic: show when no module or when installed. -->
+            <xpath expr="//div[@name='button_box']" position="attributes">
+                <attribute name="invisible">module_id and module_state != 'installed'</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='credentials']" position="inside">
+
+                <!-- ── Merchant Credentials ─────────────────────────────── -->
+                <group string="Merchant Credentials"
+                       invisible="code != 'ipos_pay'">
+                    <group>
+                        <field name="ipos_merchant_id"
+                               string="Merchant ID (TPN)"
+                               placeholder="e.g. 000123"
+                               required="code == 'ipos_pay' and state != 'disabled'"/>
+                        <field name="ipos_auth_token"
+                               string="Auth Token"
+                               password="True"
+                               placeholder="Paste token (JWT)…"
+                               required="code == 'ipos_pay' and state != 'disabled'"/>
+                    </group>
+                </group>
+
+                <group string="iposTransact Authentication (Server-side)"
+                       invisible="code != 'ipos_pay'">
+                    <group>
+                        <field name="ipos_transact_api_key"
+                               string="API Key"
+                               password="True"
+                               placeholder="dakey_xxx"
+                               required="code == 'ipos_pay' and state != 'disabled'"/>
+                        <field name="ipos_transact_secret_key"
+                               string="Secret Key"
+                               password="True"
+                               placeholder="dskey_xxx"
+                               required="code == 'ipos_pay' and state != 'disabled'"/>
+                    </group>
+                    <group>
+                        <field name="ipos_transact_scope"
+                               string="Scope"
+                               placeholder="PaymentTokenization"
+                               required="code == 'ipos_pay' and state != 'disabled'"/>
+                        <field name="ipos_transact_auth_url"
+                               string="Auth URL"
+                               placeholder="https://auth.ipospays.tech/v1/authenticate-token"
+                               required="code == 'ipos_pay' and state != 'disabled'"/>
+                    </group>
+                </group>
+
+                <!-- ── API Endpoints ────────────────────────────────────── -->
+                <group string="API Endpoints"
+                       invisible="code != 'ipos_pay'">
+                    <group string="Test Environment">
+                        <field name="ipos_test_base_url"
+                               string="Test Base URL"
+                               placeholder="https://payment.ipospays.tech/api/v1"/>
+                    </group>
+                    <group string="Live Environment">
+                        <field name="ipos_live_base_url"
+                               string="Live Base URL"
+                               placeholder="https://payment.ipospays.com/api/v1"/>
+                    </group>
+                </group>
+
+                <!-- ── Active Configuration Banner ──────────────────────── -->
+                <group col="1" nolabel="1"
+                       invisible="code != 'ipos_pay'">
+                    <div class="alert alert-info" role="alert">
+                        <strong>Effective Base URL: </strong>
+                        <field name="ipos_base_url"
+                               readonly="1"
+                               nolabel="1"
+                               class="oe_inline"/>
+                        <span invisible="state != 'test'">
+                            &#160;
+                            <span class="badge text-bg-warning">TEST MODE</span>
+                        </span>
+                        <span invisible="state != 'enabled'">
+                            &#160;
+                            <span class="badge text-bg-success">LIVE MODE</span>
+                        </span>
+                    </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="web.NavBar" t-inherit="web.NavBar" t-inherit-mode="extension">
+        <xpath expr="//DropdownItem[hasclass('o_menu_brand')]" position="replace">
+            <t t-if="!env.isSmall and currentApp">
+                <DropdownItem
+                    t-if="isRentalApp"
+                    class="'o_menu_brand o_rental_menu_brand d-flex align-items-center'"
+                    onSelected="() => this.onNavBarDropdownItemSelection(currentApp)"
+                    attrs="{ href: getMenuItemHref(currentApp), 'data-menu-xmlid': currentApp.xmlid, 'data-section': currentApp.id }"
+                >
+                    <div class="d-flex align-items-center gap-2 text-start">
+                        <img t-if="rentalBrandLogoUrl"
+                            t-att-src="rentalBrandLogoUrl"
+                            alt=""
+                            class="o_rental_brand_logo flex-shrink-0 rounded-1"/>
+                        <div class="d-flex flex-column lh-sm">
+                            <span class="o_rental_brand_line1 fw-bold text-white">Freedom Fun USA</span>
+                            <span class="o_rental_brand_line2">Event Bookings</span>
+                        </div>
+                    </div>
+                </DropdownItem>
+                <DropdownItem
+                    t-else=""
+                    t-esc="currentApp.name"
+                    class="'o_menu_brand d-flex'"
+                    onSelected="() => this.onNavBarDropdownItemSelection(currentApp)"
+                    attrs="{ href: getMenuItemHref(currentApp), 'data-menu-xmlid': currentApp.xmlid, 'data-section': currentApp.id }"
+                />
+            </t>
+        </xpath>
+    </t>
+</templates>

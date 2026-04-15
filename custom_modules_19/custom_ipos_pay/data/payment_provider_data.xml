@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="payment_provider_ipos_pay" model="payment.provider">
+        <field name="name">IPOS Pay</field>
+        <field name="code">ipos_pay</field>
+        <field name="is_published">True</field>
+        <!-- module_id: see payment_provider_module_link.xml (non-noupdate, reapplied on upgrade) -->
+        <!-- Real IPOS Pay endpoints (from WooCommerce plugin) -->
+        <field name="ipos_test_base_url">https://payment.ipospays.tech/api/v1</field>
+        <field name="ipos_live_base_url">https://payment.ipospays.com/api/v1</field>
+
+        <!-- Feature flags -->
+        <field name="support_tokenization">False</field>
+        <field name="support_manual_capture">False</field>
+        <field name="support_refund">none</field>
+        <field name="allow_tokenization">False</field>
+        <!-- Same pattern as core payment providers (e.g. Stripe): link primary methods -->
+        <field name="payment_method_ids"
+               eval="[Command.set([ref('payment.payment_method_card')])]"
+        />
+        <field name="inline_form_view_id" ref="ipos_pay_inline_form"/>
+    </record>
+
+</odoo>

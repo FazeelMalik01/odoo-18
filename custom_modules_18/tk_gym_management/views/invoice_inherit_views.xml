@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="gym_member_invoice_form_view" model="ir.ui.view">
+            <field name="name">gym.member.invoice.form.view</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_reference']" position="after">
+                    <field name="memberships_member_id" invisible="memberships_member_id == False" readonly="1"
+                           force_save="1"/>
+                    <field name="diet_plan_id" invisible="diet_plan_id == False" readonly="1"/>
+                    <field name="yoga_class_invoice" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

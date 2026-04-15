@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_webflow" model="ir.ui.view">
+        <field name="name">res.config.settings.view.webflow</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <block name="performance" position="after">
+                <block title="Webflow Settings" name="webflow_settings">
+                    <setting string="Product Collection ID" help="Webflow Product Collection ID.">
+                        <field
+                            name="webflow_product_collection_id"
+                            password="True"
+                            placeholder="Enter Product Collection ID"
+                        />
+                        <button
+                                string="Sync Products Now"
+                                type="object"
+                                name="action_sync_webflow_products"
+                                class="btn-primary"
+                        />
+                    </setting>
+                    <setting string="Location Collection ID" help="Webflow Location Collection ID.">
+                        <field
+                            name="webflow_location_collection_id"
+                            password="True"
+                            placeholder="Enter Location Collection ID"
+                        />
+                        <button
+                                string="Sync Now"
+                                type="object"
+                                name="action_sync_webflow_locations"
+                                class="btn-primary"
+                            />
+                    </setting>
+                    <setting string="Categories Collection ID" help="Webflow Categories Collection ID.">
+                        <field
+                            name="webflow_categories_collection_id"
+                            password="True"
+                            placeholder="Enter Categories Collection ID"
+                        />
+                        <button
+                                string="Sync Now"
+                                type="object"
+                                name="action_sync_webflow_categories"
+                                class="btn-primary"
+                            />
+                    </setting>
+                    <setting string="Addons Collection ID" help="Webflow Addons Collection ID.">
+                        <field
+                            name="webflow_addons_collection_id"
+                            password="True"
+                            placeholder="Enter Addons Collection ID"
+                        />
+                        <button
+                            string="Sync Addons Now"
+                            type="object"
+                            name="action_sync_webflow_addons"
+                            class="btn-primary"
+                        />
+                    </setting>
+                    <setting string="Next Collection ID" help="Webflow Next Collection ID.">
+                        <field
+                            name="webflow_next_collection_id"
+                            password="True"
+                            placeholder="Enter Next Collection ID"
+                        />
+                    </setting>
+                    <setting string="Unique Collection ID" help="Webflow Unique Collection ID.">
+                        <field
+                            name="webflow_unique_collection_id"
+                            password="True"
+                            placeholder="Enter Unique Collection ID"
+                        />
+                    </setting>
+                    <setting string="Auth Token" help="Webflow API Auth Token.">
+                        <field
+                            name="webflow_auth_token"
+                            password="True"
+                            placeholder="Enter Auth Token"
+                        />
+                    </setting>
+                </block>
+            </block>
+        </field>
+    </record>
+</odoo>

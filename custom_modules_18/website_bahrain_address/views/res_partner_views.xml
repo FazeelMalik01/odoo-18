@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Extend Partner Form View to show Bahrain fields -->
+    <record id="res_partner_view_form_bahrain" model="ir.ui.view">
+        <field name="name">res.partner.form.bahrain.address</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Hide standard street/street2 when Bahrain is selected -->
+            <field name="street" position="attributes">
+                <attribute name="invisible">country_code == 'BH'</attribute>
+            </field>
+            <field name="street2" position="attributes">
+                <attribute name="invisible">country_code == 'BH'</attribute>
+            </field>
+
+            <!-- Insert Bahrain-specific fields after street2 -->
+            <field name="street2" position="after">
+                <field name="bahrain_flat"
+                       string="Flat"
+                       placeholder="Flat number (optional)"
+                       invisible="country_code != 'BH'"/>
+                <field name="bahrain_building"
+                       string="Building"
+                       placeholder="Building name / number"
+                       invisible="country_code != 'BH'"
+                       required="country_code == 'BH'"/>
+                <field name="bahrain_road"
+                       string="Road"
+                       placeholder="Road name / number"
+                       invisible="country_code != 'BH'"
+                       required="country_code == 'BH'"/>
+                <field name="bahrain_block"
+                       string="Block"
+                       placeholder="Block number"
+                       invisible="country_code != 'BH'"
+                       required="country_code == 'BH'"/>
+            </field>
+
+        </field>
+    </record>
+
+</odoo>

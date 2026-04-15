@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="gym_yoga_classes" model="product.product">
+            <field name="name">Yoga Classes</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+        </record>
+        <record id="gym_diet_nutrients" model="product.product">
+            <field name="name">Diet Plan</field>
+            <field name="type">service</field>
+            <field name="categ_id" ref="product.product_category_all"/>
+        </record>
+        <record id="diet_request_menu" model="website.menu">
+            <field name="name">Diet Request</field>
+            <field name="url">/diet-request</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">11</field>
+        </record>
+    </data>
+</odoo>

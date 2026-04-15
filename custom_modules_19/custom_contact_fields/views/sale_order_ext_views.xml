@@ -7,29 +7,57 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <!-- Hide validity date -->
+            <xpath expr="//field[@name='validity_date']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- PO Number -->
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="po_number" placeholder="Customer PO Number"/>
             </xpath>
+
+
 
              <!-- SO line list: show editable per-line warehouse selector (uses per-line warehouse_id field) -->
              <!-- In sale.view_order_form, the inline grid is a <list> and the taxes field is 'tax_ids' -->
              <xpath expr="//field[@name='order_line']/list//field[@name='tax_ids']"
                     position="after">
+                 <field name="dropship_vendor_id"
+                        readonly="1"
+                        optional="show"
+                        invisible="not dropship_vendor_id"/>
                  <field name="warehouse_id"
                         widget="many2one"
                         options="{'no_create': True, 'no_open': True}"
-                        optional="show"/>
+                        optional="show"
+                        invisible="dropship_vendor_id"/>
             </xpath>
 
              <!-- SO line form: show per-line warehouse selector -->
              <xpath expr="//field[@name='order_line']/form//field[@name='tax_ids']"
                     position="after">
+                 <field name="dropship_vendor_id"
+                        readonly="1"
+                        invisible="not dropship_vendor_id"/>
                  <field name="warehouse_id"
                         widget="many2one"
-                        options="{'no_create': True}"/>
+                        options="{'no_create': True}"
+                        invisible="dropship_vendor_id"/>
             </xpath>
         </field>
     </record>
 
+    <!--Untaxed Amount renamed to Subtotal-->
+    <record id="view_order_form_rename_untaxed" model="ir.ui.view">
+        <field name="name">sale.order.form.rename.untaxed</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Rename Untaxed Amount to Subtotal -->
+            <xpath expr="//field[@name='tax_totals']" position="attributes">
+                <attribute name="options">{&quot;untaxed_label&quot;: &quot;Subtotal&quot;}</attribute>
+            </xpath>
+        </field>
+    </record>
 </odoo>
 

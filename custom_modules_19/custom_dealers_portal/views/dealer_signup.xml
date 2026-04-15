@@ -3,13 +3,16 @@
         <t t-call="website.layout">
             <t t-set="title">Sign up as a Dealer</t>
             
-            <div class="container mt-5">
+            <div class="container mt-5 mb-5">
                 <div class="row justify-content-center">
-                    <div class="col-md-5 col-lg-4">
+                    <div class="col-lg-8 col-md-10">
+                        <h2 class="text-center mb-3" style="color: #6B46C1; font-weight: 600;">Dealer Application Form</h2>
+                        <p class="text-center mb-4" style="color: #4B5563;">
+                            After completing the form below, one of our representatives will be in touch with you within 3 business days.
+                        </p>
+
                         <div class="card shadow-sm">
-                            <div class="card-body p-4">
-                                <h2 class="text-center mb-4" style="color: #6B46C1; font-weight: 600;">Sign up</h2>
-                                
+                            <div class="card-body p-4 p-md-5">
                                 <t t-if="errors and errors.get('general')">
                                     <div class="alert alert-danger" role="alert">
                                         <t t-esc="errors.get('general')"/>
@@ -18,97 +21,206 @@
 
                                 <form method="post" action="/dealers/signup/submit" id="dealer_signup_form">
                                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    
-                                    <!-- Name Field -->
-                                    <div class="mb-3">
-                                        <label for="name" class="form-label" style="color: #374151; font-weight: 500;">Name</label>
-                                        <input type="text" 
-                                               class="form-control" 
-                                               id="name" 
-                                               name="name" 
-                                               placeholder="John Doe"
-                                               t-att-value="name or ''"
-                                               required="required"
-                                               t-att-class="'form-control is-invalid' if errors and errors.get('name') else 'form-control'"/>
-                                        <t t-if="errors and errors.get('name')">
-                                            <div class="invalid-feedback d-block">
-                                                <t t-esc="errors.get('name')"/>
-                                            </div>
-                                        </t>
-                                    </div>
 
-                                    <!-- Email Field -->
-                                    <div class="mb-3">
-                                        <label for="email" class="form-label" style="color: #374151; font-weight: 500;">Email</label>
-                                        <input type="email" 
-                                               class="form-control" 
-                                               id="email" 
-                                               name="email" 
-                                               placeholder="name@example.com"
-                                               t-att-value="email or ''"
-                                               required="required"
-                                               t-att-class="'form-control is-invalid' if errors and errors.get('email') else 'form-control'"/>
-                                        <t t-if="errors and errors.get('email')">
-                                            <div class="invalid-feedback d-block">
-                                                <t t-esc="errors.get('email')"/>
-                                            </div>
-                                        </t>
-                                    </div>
-
-                                    <!-- Password Field -->
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label" style="color: #374151; font-weight: 500;">Password</label>
-                                        <div class="input-group">
-                                            <input type="password" 
-                                                   class="form-control" 
-                                                   id="password" 
-                                                   name="password" 
-                                                   placeholder="Enter password"
+                                    <div class="row g-3">
+                                        <!-- Contact Name -->
+                                        <div class="col-12">
+                                            <label for="name" class="form-label fw-semibold">
+                                                What is your name? (First &amp; Last Name) <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text"
+                                                   id="name"
+                                                   name="name"
+                                                   placeholder="John Doe"
+                                                   t-att-value="name or ''"
                                                    required="required"
-                                                   t-att-class="'form-control is-invalid' if errors and errors.get('password') else 'form-control'"/>
-                                            <button class="btn btn-outline-secondary" type="button" id="togglePassword" style="border-color: #D1D5DB;">
-                                                <i class="fa fa-eye" id="passwordIcon"></i>
-                                            </button>
+                                                   t-att-class="'form-control is-invalid' if errors and errors.get('name') else 'form-control'"/>
+                                            <t t-if="errors and errors.get('name')">
+                                                <div class="invalid-feedback d-block">
+                                                    <t t-esc="errors.get('name')"/>
+                                                </div>
+                                            </t>
                                         </div>
-                                        <t t-if="errors and errors.get('password')">
-                                            <div class="invalid-feedback d-block">
-                                                <t t-esc="errors.get('password')"/>
-                                            </div>
-                                        </t>
-                                    </div>
 
-                                    <!-- Confirm Password Field -->
-                                    <div class="mb-4">
-                                        <label for="confirm_password" class="form-label" style="color: #374151; font-weight: 500;">Confirm Password</label>
-                                        <div class="input-group">
-                                            <input type="password" 
-                                                   class="form-control" 
-                                                   id="confirm_password" 
-                                                   name="confirm_password" 
-                                                   placeholder="Confirm password"
+                                        <!-- Email -->
+                                        <div class="col-12 col-md-6">
+                                            <label for="email" class="form-label fw-semibold">
+                                                What is your e-mail address? <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="email"
+                                                   id="email"
+                                                   name="email"
+                                                   placeholder="name@example.com"
+                                                   t-att-value="email or ''"
                                                    required="required"
-                                                   t-att-class="'form-control is-invalid' if errors and errors.get('confirm_password') else 'form-control'"/>
-                                            <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword" style="border-color: #D1D5DB;">
-                                                <i class="fa fa-eye" id="confirmPasswordIcon"></i>
-                                            </button>
+                                                   t-att-class="'form-control is-invalid' if errors and errors.get('email') else 'form-control'"/>
+                                            <t t-if="errors and errors.get('email')">
+                                                <div class="invalid-feedback d-block">
+                                                    <t t-esc="errors.get('email')"/>
+                                                </div>
+                                            </t>
                                         </div>
-                                        <t t-if="errors and errors.get('confirm_password')">
-                                            <div class="invalid-feedback d-block">
-                                                <t t-esc="errors.get('confirm_password')"/>
-                                            </div>
-                                        </t>
-                                    </div>
 
-                                    <!-- Submit Button -->
-                                    <button type="submit" class="btn w-100" style="background-color: #6B46C1; color: white; border-radius: 8px; padding: 12px; font-weight: 500;">
-                                        Sign up
-                                    </button>
+                                        <!-- Phone -->
+                                        <div class="col-12 col-md-6">
+                                            <label for="phone" class="form-label fw-semibold">
+                                                What is your phone number? <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text"
+                                                   id="phone"
+                                                   name="phone"
+                                                   placeholder="(123) 456-7890"
+                                                   t-att-value="phone or ''"
+                                                   required="required"
+                                                   t-att-class="'form-control is-invalid' if errors and errors.get('phone') else 'form-control'"/>
+                                            <t t-if="errors and errors.get('phone')">
+                                                <div class="invalid-feedback d-block">
+                                                    <t t-esc="errors.get('phone')"/>
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <!-- Connection to Company -->
+                                        <div class="col-12">
+                                            <label for="connection_to_company" class="form-label fw-semibold">
+                                                What is your connection to the company? <span class="text-danger">*</span>
+                                            </label>
+                                            <select id="connection_to_company"
+                                                    name="connection_to_company"
+                                                    required="required"
+                                                    t-att-class="'form-select is-invalid' if errors and errors.get('connection_to_company') else 'form-select'">
+                                                <option value="">Select from dropdown</option>
+                                                <option value="owner" t-att-selected="connection_to_company == 'owner'">Owner</option>
+                                                <option value="route_driver" t-att-selected="connection_to_company == 'route_driver'">Route Driver</option>
+                                                <option value="employee" t-att-selected="connection_to_company == 'employee'">Employee</option>
+                                                <option value="technician" t-att-selected="connection_to_company == 'technician'">Technician</option>
+                                                <option value="buyer" t-att-selected="connection_to_company == 'buyer'">Buyer</option>
+                                            </select>
+                                            <t t-if="errors and errors.get('connection_to_company')">
+                                                <div class="invalid-feedback d-block">
+                                                    <t t-esc="errors.get('connection_to_company')"/>
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <!-- Description -->
+                                        <div class="col-12">
+                                            <label for="business_description" class="form-label fw-semibold">
+                                                Please briefly describe how you can be a great link to help your clients by supplying our hoof care information and products. <span class="text-danger">*</span>
+                                            </label>
+                                            <textarea id="business_description"
+                                                      name="business_description"
+                                                      rows="4"
+                                                      placeholder="Tell us about your business and how you serve your clients..."
+                                                      required="required"
+                                                      t-att-class="'form-control is-invalid' if errors and errors.get('business_description') else 'form-control'"><t t-esc="business_description or ''"/></textarea>
+                                            <t t-if="errors and errors.get('business_description')">
+                                                <div class="invalid-feedback d-block">
+                                                    <t t-esc="errors.get('business_description')"/>
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <!-- Company Name -->
+                                        <div class="col-12">
+                                            <label for="company_name" class="form-label fw-semibold">
+                                                What is your company's name? <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text"
+                                                   id="company_name"
+                                                   name="company_name"
+                                                   placeholder="Company name"
+                                                   t-att-value="company_name or ''"
+                                                   required="required"
+                                                   t-att-class="'form-control is-invalid' if errors and errors.get('company_name') else 'form-control'"/>
+                                            <t t-if="errors and errors.get('company_name')">
+                                                <div class="invalid-feedback d-block">
+                                                    <t t-esc="errors.get('company_name')"/>
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <!-- Company Address -->
+                                        <div class="col-12 mb-2">
+                                            <label for="company_address" class="form-label fw-semibold">
+                                                What is your company's physical address? (Street, City, Postal Code, Province, Country) <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text"
+                                                   id="company_address"
+                                                   name="company_address"
+                                                   placeholder="123 Main St, City, Postal Code, Province, Country"
+                                                   t-att-value="company_address or ''"
+                                                   required="required"
+                                                   t-att-class="'form-control is-invalid' if errors and errors.get('company_address') else 'form-control'"/>
+                                            <t t-if="errors and errors.get('company_address')">
+                                                <div class="invalid-feedback d-block">
+                                                    <t t-esc="errors.get('company_address')"/>
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <!-- Password Fields -->
+                                        <div class="col-12 col-md-6">
+                                            <label for="password" class="form-label fw-semibold">
+                                                Create a password <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="password"
+                                                       id="password"
+                                                       name="password"
+                                                       placeholder="Enter password"
+                                                       required="required"
+                                                       t-att-class="'form-control is-invalid' if errors and errors.get('password') else 'form-control'"/>
+                                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                                    <i class="fa fa-eye" id="passwordIcon"></i>
+                                                </button>
+                                            </div>
+                                            <t t-if="errors and errors.get('password')">
+                                                <div class="invalid-feedback d-block">
+                                                    <t t-esc="errors.get('password')"/>
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <div class="col-12 col-md-6">
+                                            <label for="confirm_password" class="form-label fw-semibold">
+                                                Confirm password <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <input type="password"
+                                                       id="confirm_password"
+                                                       name="confirm_password"
+                                                       placeholder="Confirm password"
+                                                       required="required"
+                                                       t-att-class="'form-control is-invalid' if errors and errors.get('confirm_password') else 'form-control'"/>
+                                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                                    <i class="fa fa-eye" id="confirmPasswordIcon"></i>
+                                                </button>
+                                            </div>
+                                            <t t-if="errors and errors.get('confirm_password')">
+                                                <div class="invalid-feedback d-block">
+                                                    <t t-esc="errors.get('confirm_password')"/>
+                                                </div>
+                                            </t>
+                                        </div>
+
+                                        <!-- Submit -->
+                                        <div class="col-12 mt-3">
+                                            <button type="submit" class="btn w-100"
+                                                    style="background-color: #7BBF32; color: white; border-radius: 999px; padding: 12px; font-weight: 600;">
+                                                Submit
+                                            </button>
+                                            <p class="mt-2 mb-0 text-muted" style="font-size: 0.85rem;">
+                                                Required fields are marked with <span class="text-danger">*</span>
+                                            </p>
+                                        </div>
+                                    </div>
                                 </form>
 
                                 <!-- Login Link -->
                                 <div class="text-center mt-4">
                                     <p style="color: #6B46C1; font-size: 14px;">
-                                        Already have an account? <a href="/web/login" style="color: #6B46C1; text-decoration: none; font-weight: 500;">Sign in</a>
+                                        Already a dealer? <a href="/web/login" style="color: #6B46C1; text-decoration: none; font-weight: 500;">Access the dealer portal</a>
                                     </p>
                                 </div>
                             </div>

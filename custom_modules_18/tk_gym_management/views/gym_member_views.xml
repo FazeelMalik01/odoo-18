@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="gym_member_form_view" model="ir.ui.view">
+        <field name="name">gym.member.form.view</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" type="object" name="action_view_memberships" icon="fa-address-card-o">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="membership_count"/>
+                        </span>
+                        <span class="o_stat_text">Memberships</span>
+                    </div>
+                </button>
+                <button class="oe_stat_button" type="object" name="gym_member_reports" icon="fa-file-text-o">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="reports_count"/>
+                        </span>
+                        <span class="o_stat_text">Gym Reports</span>
+                    </div>
+                </button>
+                <button class="oe_stat_button" type="object" name="gym_member_diet_schedule" icon="fa-calendar">
+                    <div class="o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="diet_schedule"/>
+                        </span>
+                        <span class="o_stat_text">Diet Plans</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='function']" position="before">
+                <field name="is_member"/>
+                <field name="trainer_id" options="{'no_create':True}"/>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="birthdate" required="1"/>
+                <field name="age"/>
+                <field name="gender" widget="radio" required="1" options="{'horizontal': true}"/>
+                <field name="gym_hours_per_day" required="1"/>
+            </xpath>
+            <xpath expr="//notebook/page[@name='internal_notes']" position="after">
+                <page string="Workout Plans">
+                    <field name="workout_ids" options="{'no_create':True}">
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="name"/>
+                                    <field name="trainer_id" options="{'no_create':True}"/>
+                                    product_definition
+                                </group>
+                                <group>
+                                    <field name="number_of_days"/>
+                                    <field name="calories_burn"/>
+                                </group>
+                            </group>
+                        </form>
+                        <list create="0">
+                            <field name="name"/>
+                            <field name="trainer_id" options="{'no_create':True}"/>
+                            <field name="number_of_days"/>
+                            <field name="calories_burn"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="gym_member_action" model="ir.actions.act_window">
+        <field name="name">Members</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,form,activity</field>
+        <field name="domain">[('is_member','=',True)]</field>
+        <field name="context">{'default_is_member':True}</field>
+    </record>
+</odoo>

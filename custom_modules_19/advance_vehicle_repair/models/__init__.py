@@ -29,3 +29,5 @@ from . import vehicle_analytic_account
 from . import vehicle_task_assigner_wizard
 from . import vehicle_service_bundle
 from . import vehicle_compatibility
+from . import vehicle_service_reminder
+from . import vehicle_pin_authentication

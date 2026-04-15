@@ -1,0 +1,87 @@
+<odoo>
+    <record id="view_sale_order_tree_approval" model="ir.ui.view">
+        <field name="name">sale.order.tree.approval</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <list string="Sale Order Approvals">
+                <field name="name" string="Sale Order Number"/>
+                <field name="partner_id" string="Customer Name"/>
+                <field name="approval_state"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_sale_order_approval" model="ir.actions.act_window">
+        <field name="name">Approval</field>
+        <field name="res_model">sale.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_sale_order_tree_approval"/>
+        <field name="domain">[('approval_state', '!=', 'no')]</field>
+    </record>
+    <menuitem id="menu_sale_order_approval"
+              name="Approval"
+              parent="sale.menu_sale_order"
+              action="action_sale_order_approval"
+              sequence="25"/>
+    <record id="view_order_form_inherit_approval" model="ir.ui.view">
+        <field name="name">sale.order.form.approval</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="approval_state" widget="statusbar"
+                   invisible="approval_state == 'no' or not approval_required"
+                   statusbar_visible="pm,fm,ceo,approved"/>
+            </xpath>
+            <!-- Send (primary/highlighted) — shown on draft, now also requires fully approved -->
+            <xpath expr="//button[@id='quotation_send_primary']" position="attributes">
+                <attribute name="invisible">state != 'draft' or approval_required</attribute>
+            </xpath>
+            <!-- Send PRO-FORMA (primary) — same gate -->
+            <xpath expr="//button[@id='send_proforma_primary']" position="attributes">
+                <attribute name="invisible">state != 'draft' or invoice_count &gt;= 1 or approval_required</attribute>
+            </xpath>
+            <!-- Print button — originally hidden on state='sale', now also requires fully approved -->
+            <xpath expr="//button[@name='sale.action_report_saleorder']" position="attributes">
+                <attribute name="invisible">state == 'sale' or (approval_required and approval_state != 'approved')</attribute>
+            </xpath>
+            <!-- Secondary Send (shown on sent/sale states) — requires fully approved -->
+            <xpath expr="//button[@id='quotation_send']" position="attributes">
+                <attribute name="invisible">state not in ('sent', 'sale') or approval_required</attribute>
+            </xpath>
+            <!-- Confirm (primary, on sent state) — requires fully approved -->
+            <xpath expr="//button[@id='action_confirm']" position="attributes">
+                <attribute name="invisible">state != 'sent' or (approval_required and (approval_state != 'approved' or not is_creator))</attribute>
+            </xpath>
+            <!-- Confirm (secondary, on draft state) — requires fully approved -->
+            <xpath expr="//button[@name='action_confirm' and not(@id)]" position="attributes">
+                <attribute name="invisible">state != 'draft' or (approval_required and (approval_state != 'approved' or not is_creator))</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm']" position="before">
+                <button name="action_pm_approve" type="object"
+                    string="Approve (PM)"
+                    class="oe_highlight"
+                    invisible="approval_state != 'pm' or not approval_required or current_user_id != pm_id"/>
+                <button name="action_fm_approve" type="object"
+                    string="Approve (Finance)"
+                    class="oe_highlight"
+                    invisible="approval_state != 'fm' or not approval_required or current_user_id != fm_id"/>
+                <button name="action_ceo_approve" type="object"
+                    string="Approve (CEO)"
+                    class="oe_highlight"
+                    invisible="approval_state != 'ceo' or not approval_required or current_user_id != ceo_id"/>
+            </xpath>
+            <xpath expr="//page[@name='other_information']" position="after">
+                <page string="Approval" invisible="not approval_required">
+                    <group>
+                        <field name="approval_state" readonly="1"/>
+                    </group>
+                    <group string="Approvals">
+                        <field name="pm_approved" readonly="1"/>
+                        <field name="fm_approved" readonly="1"/>
+                        <field name="ceo_approved" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

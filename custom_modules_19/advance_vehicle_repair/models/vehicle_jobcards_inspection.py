@@ -7,7 +7,7 @@ class VehicleJobcardInnerCondition(models.Model):
     _description = 'Vehicle Inner Body Inspection Notebook'
     _rec_name = 'vehicle_item_id'
 
-    vehicle_item_id = fields.Many2one('vehicle.items', string='Vehicle Item', tracking=True, domain=[('item_category', '=', 'interior')])
+    vehicle_item_id = fields.Many2one('vehicle.items', string='Vehicle Item', tracking=True, domain=[('vehicle_category_id.name', '=', 'Interior')])
     state = fields.Selection(
         selection=[
             ('worn', 'Worn'),

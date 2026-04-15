@@ -18,13 +18,18 @@
                         <field name="name"/>
                     </group>
                     <notebook>
-                        <page string="Bundle Lines">
-                            <field name="line_ids">
+                        <page string="Spare Parts">
+                            <field name="spare_line_ids">
                                 <list editable="bottom">
-                                    <field name="type"/>
                                     <field name="spare_id"/>
-                                    <field name="service_id"/>
                                     <field name="quantity"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Services">
+                            <field name="service_line_ids">
+                                <list editable="bottom">
+                                    <field name="service_id"/>
                                 </list>
                             </field>
                         </page>

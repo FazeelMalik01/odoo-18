@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="gym_member_fitness_reports">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="i">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <style>
+                                table {
+                                font-family: sans-serif;
+                                border-collapse: collapse;
+                                width: 100%; height:100%;
+                                }
+
+                                td, th ,tr{
+                                border: 1px solid #dddddd;
+                                text-align: left;
+                                padding: 8px;
+                                }
+                            </style>
+                            <h2 class="text-center mb-5 display-6">
+                                Fitness Report
+                            </h2>
+                            <br/>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Name</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.member_id"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Age</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.age"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-5 ms-3">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Date</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.date"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Gender</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.gender"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h6 style="background-color:#e9ecef;" class="py-1">
+                                <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <rect opacity="0.5" x="18" y="13" width="13" height="2"
+                                              rx="1" transform="rotate(-180 18 13)"
+                                              fill="currentColor"/>
+                                        <path
+                                                d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z"
+                                                fill="currentColor"/>
+                                    </svg>
+                                </span>
+                                Measurements
+                            </h6>
+                            <div class="row mb-4 mt-2">
+                                <div class="col-6">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Height</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.height"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Weight</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.weight"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-5 ms-3">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Neck</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.neck"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Waist</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.waist"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <t t-if="i.gender == 'f'">
+                                        <div class="row my-1">
+                                            <div class="col-4">
+                                                <span>Hips</span>
+                                            </div>
+                                            <div class="col-1">
+                                                <span>:</span>
+                                            </div>
+                                            <div class="col-7">
+                                                <strong>
+                                                    <span t-field="i.hips"/>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                            <br/>
+                            <h6 style="background-color:#e9ecef;" class="py-1">
+                                <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <rect opacity="0.5" x="18" y="13" width="13" height="2"
+                                              rx="1" transform="rotate(-180 18 13)"
+                                              fill="currentColor"/>
+                                        <path
+                                                d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z"
+                                                fill="currentColor"/>
+                                    </svg>
+                                </span>
+                                Fitness Details
+                            </h6>
+                            <div class="row mb-4 mt-2">
+                                <div class="col-6">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>BMI</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.bmi"/>
+                                                <span t-field="i.bmi_categories"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>BMR</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.bmr"/>
+                                                Calories/day
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-5 ms-3">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Body Fat</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="i.bfp"/>
+                                                %
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+    <record id="gym_member_fitness_reports_id" model="ir.actions.report">
+        <field name="name">Fitness Reports</field>
+        <field name="model">fitness.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tk_gym_management.gym_member_fitness_reports</field>
+        <field name="report_file">tk_gym_management.gym_member_fitness_reports</field>
+        <field name="print_report_name">'Print Fitness Reports'</field>
+        <field name="binding_model_id" ref="model_fitness_report"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

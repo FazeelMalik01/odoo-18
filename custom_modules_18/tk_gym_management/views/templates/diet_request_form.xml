@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <template id="diet_request_form" name="Diet Request">
+        <t t-call="website.layout">
+            <t t-set="logged_user"
+               t-value="request.env.user.id != request.env.ref('base.public_user').id"/>
+            <div class="container my-5">
+                <t t-if="error">
+                    <div class="alert alert-danger">
+                        <strong>
+                            <span t-esc="error"/>
+                        </strong>
+                    </div>
+                </t>
+                <h3 class="mb-4 text-center">
+                    <span>
+                        Diet Request
+                    </span>
+                </h3>
+                <form action="/done-request" method="get">
+                    <h6>Customer Details</h6>
+                    <div class="col-auto mb-3">
+                        <div class="input-group">
+                            <div class="input-group-text">Title</div>
+                            <input type="text" class="form-control" id="title" name="name"
+                                   placeholder="Inquiry for xyz diet plan" required="1"/>
+                        </div>
+                    </div>
+                    <div class="col-auto mb-3">
+                        <div class="input-group">
+                            <div class="input-group-text">Name</div>
+                            <input type="text" class="form-control" id="name" name="contact_name"
+                                   placeholder="Alex Martin"
+                                   t-att-value="request.env.user.name if logged_user else ''"
+                                   required="1"/>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="col-auto">
+                                <div class="input-group">
+                                    <div class="input-group-text">Birthdate</div>
+                                    <input type="date" class="form-control" id="birthdate"
+                                           name="birthdate"
+                                           required="1"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="input-group">
+                                <div class="input-group-text">Gender</div>
+                                <div class="row align-items-center ms-4" style="width:45%;">
+                                    <div class="col-4 form-check">
+                                        <input class="form-check-input" type="radio" name="gender"
+                                               id="male" value="m" required="1"/>
+                                        <label class="form-check-label" for="male">
+                                            Male
+                                        </label>
+                                    </div>
+                                    <div class="col-4 form-check">
+                                        <input class="form-check-input" type="radio" name="gender"
+                                               id="female" value="f" required="1"/>
+                                        <label class="form-check-label" for="female">
+                                            Female
+                                        </label>
+                                    </div>
+                                    <div class="col-4 form-check">
+                                        <input class="form-check-input" type="radio" name="gender"
+                                               id="other" value="o" required="1"/>
+                                        <label class="form-check-label" for="other">
+                                            Other
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="col-auto">
+                                <div class="input-group">
+                                    <div class="input-group-text">Phone</div>
+                                    <input type="phone" class="form-control" id="phone" name="phone"
+                                           t-att-value="request.env.user.phone if logged_user else ''"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="col-auto">
+                                <div class="input-group">
+                                    <div class="input-group-text">Email</div>
+                                    <input type="email" class="form-control" id="email"
+                                           name="email_from" required="1"
+                                           t-att-value="request.env.user.email if logged_user else ''"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="mt-5">
+                        Diet Information
+                    </h6>
+                    <div class="row mb-3">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="col-auto">
+                                <div class="input-group">
+                                    <div class="input-group-text">Diet Category</div>
+                                    <select class="form-select" name="diet_category_id"
+                                            aria-label="Default select example" required="1">
+                                        <option value="" selected="selected">Select Diet Category</option>
+                                        <t t-foreach="diet_category" t-as="cat">
+                                            <option t-att-value="cat.id" t-esc="cat.name"/>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="col-auto">
+                                <div class="input-group">
+                                    <div class="input-group-text">Diet Type</div>
+                                    <select class="form-select" name="diet_type_id"
+                                            aria-label="Default select example" required="1">
+                                        <option value="" selected="selected">Select Diet Type</option>
+                                        <t t-foreach="diet_type" t-as="type">
+                                            <option t-att-value="type.id" t-esc="type.name"/>
+                                        </t>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <div class="input-group">
+                            <div class="input-group-text">Decription</div>
+                            <textarea class="form-control"
+                                      placeholder="Write Your Golas &amp; Problems in Detail"
+                                      id="description"
+                                      name="goals_details" required="1"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="thank_you_page" name="Done Request">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="s_text_block pt40 pb40 o_colored_level" data-snippet="s_text_block">
+                    <div class="container s_allow_columns">
+                        <div class="row mt-5">
+                            <div class="col-lg-12 col-xl-12 mr-lg-auto">
+                                <span
+                                        class="d-block fa fa-4x fa-thumbs-up mx-auto rounded-circle bg-primary">
+                                </span>
+                                <br/>
+                                <h1 class="text-center">Thank You!</h1>
+                                <div class="pb16 pt16 s_hr" data-snippet="s_hr"
+                                     data-name="Separator">
+                                    <hr class="mx-auto border-top w-50 border-dark text-center"/>
+                                </div>
+                                <h5 class="repair-order-success text-center">
+                                    <span class="fa fa-check-circle">
+                                    </span>
+                                    <span>
+                                        Your diet request has been successfully submitted.
+                                    </span>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </template>
+</odoo>

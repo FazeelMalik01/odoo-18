@@ -30,7 +30,7 @@
             }
 
             /* Confirmed Purchase Order – green pill */
-            .status_sale {
+            .status_sale, .status_done {
                 background-color: #198754;
                 color: #ffffff;
                 border-color: #198754;
@@ -41,6 +41,20 @@
                 background-color: #dc3545;
                 color: #ffffff;
                 border-color: #dc3545;
+            }
+
+            /* To Be Approved – neutral grey pill */
+            .status_to_be_approved {
+                background-color: #e2e8f0;
+                color: #1e293b;
+                border-color: #cbd5f5;
+            }
+
+            /* In Progress – amber pill */
+            .status_in_progress {
+                background-color: #fbbf24;
+                color: #1f2937;
+                border-color: #f59e0b;
             }
 
                 /* Table polish */
@@ -120,7 +134,9 @@
                                     <t t-foreach="sale_orders" t-as="order">
                                         <tr>
                                             <td>
-                                                <a t-attf-href="/my/purchase_orders_form?order_id=#{order.id}&amp;view_mode=readonly" class="order-ref">
+                                                <a
+                                                    t-att-href="'/my/purchase_orders_form?order_id=%s&amp;view_mode=readonly' % order.id"
+                                                    class="order-ref">
                                                     <t t-esc="order.name"/>
                                                 </a>
 
@@ -154,10 +170,21 @@
                                             </td>
 
                                             <td>
-                                                <span t-att-class="'oe_status status_' + order.state">
-                                                    <t t-if="order.state == 'sale'">Purchase Order</t>
-                                                    <t t-if="order.state == 'cancel'">Cancelled</t>
-                                                </span>
+                                                <t t-if="order.portal_state == 'to_be_approved'">
+                                                    <span class="oe_status status_to_be_approved">To Be Approved</span>
+                                                </t>
+                                                <t t-elif="order.portal_state == 'in_progress'">
+                                                    <span class="oe_status status_in_progress">In Progress</span>
+                                                </t>
+                                                <t t-elif="order.portal_state == 'done'">
+                                                    <span class="oe_status status_done">Purchase Order</span>
+                                                </t>
+                                                <t t-elif="order.state == 'sale'">
+                                                    <span class="oe_status status_sale">Purchase Order</span>
+                                                </t>
+                                                <t t-elif="order.state == 'cancel' or order.portal_state == 'cancelled'">
+                                                    <span class="oe_status status_cancel">Cancelled</span>
+                                                </t>
                                             </td>
                                         </tr>
                                     </t>

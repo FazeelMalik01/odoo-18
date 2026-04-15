@@ -1,0 +1,34 @@
+<odoo>
+    <record id="view_product_category_form_inherit_webflow" model="ir.ui.view">
+        <field name="name">product.category.form.webflow.inherit</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add new section after parent_id -->
+            <xpath expr="//group[@name='first']" position="after">
+                <group string="Webflow Data" col="2" invisible='1'>
+                    <field name="webflow_category_id" readonly="1"/>
+                    <field name="webflow_addons" widget="text"/>
+                    <field name="webflow_next_level_items" widget="text"/>
+                    <field name="webflow_prods_2023" widget="text"/>
+                    <field name="webflow_add_ons" widget="text"/>
+                    <field name="webflow_uniques" widget="text"/>
+                    <field name="webflow_above_the_fold" widget="text"/>
+                </group>
+            </xpath>
+            <xpath expr="//div[@class='oe_title']" position="replace">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="oe_title" style="flex:1;">
+                        <label for="name" string="Category"/>
+                        <h1><field name="name" placeholder="e.g. Lamps"/></h1>
+                    </div>
+                    <div invisible="not webflow_above_the_fold_image_url">
+                        <field name="webflow_above_the_fold_image_url" invisible="1"/>
+                        <field name="webflow_above_the_fold_image" widget="image" nolabel="1"
+                            options="{'size': [80, 80], 'preview_image': 'webflow_above_the_fold_image'}"/>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

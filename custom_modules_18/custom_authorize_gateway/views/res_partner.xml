@@ -1,0 +1,20 @@
+<odoo>
+    <record id="view_partner_form_inherit_cc_fields" model="ir.ui.view">
+        <field name="name">res.partner.form.cc.fields</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <!-- Insert inside Internal Notes page -->
+            <xpath expr="//page[@name='internal_notes']" position="after">
+                <page name="card_details" string="Card Details">
+                    <group>
+                        <field name="cc_number" placeholder="Card Number"/>
+                        <field name="cc_exp_month" placeholder="MM"/>
+                        <field name="cc_exp_year" placeholder="YY"/>
+                        <field name="cc_cvv" password="True" placeholder="CVV"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

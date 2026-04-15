@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_mailing_list_list_company" model="ir.ui.view">
+        <field name="name">mailing.list.list.company.inherit</field>
+        <field name="model">mailing.list</field>
+        <field name="inherit_id" ref="mass_mailing.mailing_list_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="company_id" optional="show" groups="base.group_multi_company" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_mailing_list_form_company" model="ir.ui.view">
+        <field name="name">mailing.list.form.company.inherit</field>
+        <field name="model">mailing.list</field>
+        <field name="inherit_id" ref="mass_mailing.mailing_list_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="action_view_mass_mailing_lists_company" model="ir.actions.act_window">
+        <field name="name">Mailing Lists</field>
+        <field name="res_model">mailing.list</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{
+            'default_company_id': allowed_company_ids[0]
+        }</field>
+    </record>
+    <record id="mass_mailing.menu_email_mass_mailing_lists" model="ir.ui.menu">
+        <field name="active" eval="False"/>
+    </record>
+
+    <menuitem id="menu_email_mass_mailing_lists_company"
+              name="Mailing Lists"
+              parent="mass_mailing.mass_mailing_mailing_list_menu"
+              sequence="1"
+              action="action_view_mass_mailing_lists_company"/>
+</odoo>

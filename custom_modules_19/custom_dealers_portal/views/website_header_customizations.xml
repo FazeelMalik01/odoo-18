@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Update Home Menu to point to Portal Dashboard -->
+        <record id="website.menu_home" model="website.menu">
+            <field name="url">/my</field>
+        </record>
+
+        <!-- Delete Contact Us Menu from Header -->
+        <delete model="website.menu" search="[('url', '=', '/contactus')]"/>
+
+        <!-- Disable Contact Us Call-to-Action button in header if present -->
+        <record id="website.header_call_to_action" model="ir.ui.view">
+            <field name="active" eval="False"/>
+        </record>
+
+        <!-- Logo Customization: point to custom_dealers_portal logo and link to new tab -->
+        <template id="custom_header_brand_logo" inherit_id="website.option_header_brand_logo">
+            <xpath expr="//a[@data-name='Navbar Logo']" position="replace">
+                <a data-name="Navbar Logo" href="https://diamondhoofcare.com" target="_blank" t-attf-class="navbar-brand logo #{_link_class}">
+                    <img src="/custom_dealers_portal/static/src/img/diamond_logo.png" style="max-height: 50px;" alt="Diamond Hoof Care"/>
+                </a>
+            </xpath>
+        </template>
+
+        <!-- Phone Number Customization in Header Text Elements -->
+        <template id="custom_header_phone_number" inherit_id="website.header_text_element">
+            <xpath expr="//t[@t-elif=&quot;_txt_elt_content == 'phone_mail'&quot;]//a[contains(@href, 'tel:')]" position="attributes">
+                <attribute name="href">tel:1-403-388-4309</attribute>
+            </xpath>
+            <xpath expr="//t[@t-elif=&quot;_txt_elt_content == 'phone_mail'&quot;]//span[contains(@class, 'o_force_ltr')]" position="replace">
+                <span class="o_force_ltr">1-403-388-4309</span>
+            </xpath>
+
+            <xpath expr="//t[@t-elif=&quot;_txt_elt_content == 'mail_stretched'&quot;]//a[contains(@href, 'tel:')]" position="attributes">
+                <attribute name="href">tel:1-403-388-4309</attribute>
+            </xpath>
+            <xpath expr="//t[@t-elif=&quot;_txt_elt_content == 'mail_stretched'&quot;]//span[contains(@class, 'o_force_ltr')]" position="replace">
+                <span class="o_force_ltr"><small>1-403-388-4309</small></span>
+            </xpath>
+
+            <xpath expr="//t[@t-else='']//a[contains(@href, 'tel:')]" position="attributes">
+                <attribute name="href">tel:1-403-388-4309</attribute>
+            </xpath>
+            <xpath expr="//t[@t-else='']//span[contains(@class, 'o_force_ltr')]" position="replace">
+                <span class="o_force_ltr"><small>1-403-388-4309</small></span>
+            </xpath>
+        </template>
+    </data>
+</odoo>

@@ -7,3 +7,4 @@ class AccountAnalyticLine(models.Model):
         'vehicle.repair.services.line',
         string="Repair Task"
     )
+    

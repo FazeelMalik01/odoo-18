@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---*- coding: utf-8 -*- -->
+<!--Copyright 2020-Today TechKhedut.-->
+<!--Part of TechKhedut. See LICENSE file for full copyright and licensing details.-->
+<odoo>
+    <record id="renew_membership_wizard_form_view" model="ir.ui.view">
+        <field name="name">renew.membership.wizard.form.view</field>
+        <field name="model">membership.renew.wizard</field>
+        <field name='arch' type='xml'>
+            <form>
+                <group>
+                    <group>
+                        <field name="member_id"/>
+                        <field name="membership_type_id"/>
+                    </group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date" readonly="1"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Renew Membership" type="object" name="renew_membership"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="membership_renew_wizard_action" model="ir.actions.act_window">
+        <field name="name">Renew Membership</field>
+        <field name="res_model">membership.renew.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="renew_membership_wizard_form_view"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

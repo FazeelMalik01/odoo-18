@@ -1,0 +1,75 @@
+<odoo>
+    <record id="view_purchase_order_list_approval" model="ir.ui.view">
+        <field name="name">purchase.order.list.approval</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <list string="Purchase Order Approvals">
+                <field name="name" string="Purchase Order Number"/>
+                <field name="partner_id" string="Vendor Name"/>
+                <field name="approval_state"/>
+            </list>
+        </field>
+    </record>
+    <record id="action_purchase_order_approval" model="ir.actions.act_window">
+        <field name="name">Approval</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_purchase_order_list_approval"/>
+        <field name="domain">[('approval_state', '!=', 'no')]</field>
+    </record>
+    <menuitem id="menu_purchase_order_approval"
+              name="Approval"
+              parent="purchase.menu_purchase_form_action"
+              action="action_purchase_order_approval"
+              sequence="30"/>
+    <record id="view_purchase_order_form_inherit_approval" model="ir.ui.view">
+        <field name="name">purchase.order.form.approval</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="approval_state" widget="statusbar"
+                   invisible="approval_state == 'no' or not approval_required"
+                   statusbar_visible="pm,fm,ceo,approved"/>
+            </xpath>
+            <xpath expr="//button[@name='button_confirm']" position="before">
+                <button name="action_pm_approve" type="object"
+                    string="Approve (PM)"
+                    class="oe_highlight"
+                    invisible="approval_state != 'pm' or not approval_required or current_user_id != pm_id"/>
+                <button name="action_fm_approve" type="object"
+                    string="Approve (Finance)"
+                    class="oe_highlight"
+                    invisible="approval_state != 'fm' or not approval_required or current_user_id != fm_id"/>
+                <button name="action_ceo_approve" type="object"
+                    string="Approve (CEO)"
+                    class="oe_highlight"
+                    invisible="approval_state != 'ceo' or not approval_required or current_user_id != ceo_id"/>
+            </xpath>
+            <!-- Send RFQ highlighted (draft state) — target by name + hotkey to avoid context quote issues -->
+            <xpath expr="//button[@name='action_rfq_send' and @data-hotkey='g' and @class='oe_highlight']" position="attributes">
+                <attribute name="invisible">state != 'draft' or (approval_required and approval_state != 'approved')</attribute>
+            </xpath>
+            <!-- Print button for non-purchase states (print_quotation) -->
+            <xpath expr="//button[@name='print_quotation']" position="attributes">
+                <attribute name="invisible">state == 'purchase' or (approval_required and approval_state != 'approved')</attribute>
+            </xpath>
+            <!-- Print button for purchase state (action 808) -->
+<!--            <xpath expr="//button[@name='808']" position="attributes">-->
+<!--                <attribute name="invisible">state != 'purchase' or (approval_required and approval_state != 'approved')</attribute>-->
+<!--            </xpath>-->
+            <xpath expr="//page[@name='purchase_delivery_invoice']" position="after">
+                <page string="Approval" invisible="not approval_required">
+                    <group>
+                        <field name="approval_state" readonly="1"/>
+                    </group>
+                    <group string="Approvals">
+                        <field name="pm_approved" readonly="1"/>
+                        <field name="fm_approved" readonly="1"/>
+                        <field name="ceo_approved" readonly="1"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

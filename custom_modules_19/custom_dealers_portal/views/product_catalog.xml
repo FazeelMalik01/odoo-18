@@ -38,8 +38,28 @@
                                             <t t-esc="product.get('categ_name', 'N/A')"/>
                                         </small>
                                     </p>
-                                    <p class="card-text">
-                                        <strong>$<t t-esc="'{:.2f}'.format(product.get('list_price', 0.0))"/></strong>
+                                    <p class="card-text mb-1">
+                                        <t t-set="list_price" t-value="product.get('list_price', 0.0) or 0.0"/>
+                                        <t t-set="dealer_price" t-value="product.get('dealer_price', list_price) or 0.0"/>
+                                        <t t-set="has_discount" t-value="dealer_price &lt; list_price - 0.00001"/>
+
+                                        <t t-if="has_discount">
+                                            <span class="d-block text-muted" style="font-size: 0.85rem;">
+                                                Original Price:
+                                                <span class="text-decoration-line-through">
+                                                    $<t t-esc="'{:.2f}'.format(list_price)"/>
+                                                </span>
+                                            </span>
+                                            <span class="d-block fw-semibold" style="font-size: 0.95rem;">
+                                                Discounted Price:
+                                                $<t t-esc="'{:.2f}'.format(dealer_price)"/>
+                                            </span>
+                                        </t>
+                                        <t t-if="not has_discount">
+                                            <span class="fw-semibold">
+                                                $<t t-esc="'{:.2f}'.format(list_price)"/>
+                                            </span>
+                                        </t>
                                     </p>
                                     <button type="button" 
                                             class="btn btn-primary btn-sm add-product-btn"

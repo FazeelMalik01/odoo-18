@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================
+         Tree view
+    ============================================================ -->
+    <record id="view_portal_timesheet_approval_tree" model="ir.ui.view">
+        <field name="name">portal.timesheet.approval.tree</field>
+        <field name="model">portal.timesheet.approval</field>
+        <field name="arch" type="xml">
+            <list string="Timesheet Approval Requests"
+                  decoration-warning="state == 'pending'"
+                  decoration-success="state == 'approved'"
+                  decoration-danger="state == 'rejected'">
+                <field name="date"/>
+                <field name="portal_user_id" string="Portal User"/>
+                <field name="project_id"/>
+                <field name="task_id"/>
+                <field name="name" string="Description"/>
+                <field name="unit_amount" string="Hours"/>
+                <field name="state"
+                       widget="badge"
+                       decoration-warning="state == 'pending'"
+                       decoration-success="state == 'approved'"
+                       decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ============================================================
+         Form view
+    ============================================================ -->
+    <record id="view_portal_timesheet_approval_form" model="ir.ui.view">
+        <field name="name">portal.timesheet.approval.form</field>
+        <field name="model">portal.timesheet.approval</field>
+        <field name="arch" type="xml">
+            <form string="Timesheet Approval Request">
+
+                <!-- Status bar -->
+                <header>
+                    <button name="action_approve"
+                            string="Approve"
+                            type="object"
+                            class="btn-success"
+                            invisible="state != 'pending'"/>
+                    <button name="action_reject"
+                            string="Reject"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state != 'pending'"/>
+                    <field name="state"
+                           widget="statusbar"
+                           statusbar_visible="pending,approved,rejected"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Description"/>
+                        <h1>
+                            <field name="name" placeholder="Timesheet entry description"/>
+                        </h1>
+                    </div>
+
+                    <group>
+                        <group string="Request Details">
+                            <field name="portal_user_id" string="Portal User"/>
+                            <field name="employee_id"/>
+                            <field name="task_id"/>
+                            <field name="project_id"/>
+                            <field name="date"/>
+                            <field name="unit_amount" string="Hours"/>
+                        </group>
+                        <group string="Timer Info">
+                            <field name="timer_start" readonly="1"/>
+                            <field name="timer_stop"  readonly="1"/>
+                            <field name="timesheet_id" readonly="1"
+                                   invisible="not timesheet_id"/>
+                        </group>
+                    </group>
+
+                    <!-- Rejection reason (visible and editable when rejecting) -->
+                    <group string="Rejection Reason" invisible="state != 'rejected'">
+                        <field name="rejection_reason"
+                               nolabel="1"
+                               placeholder="Enter the reason for rejection before clicking Reject…"/>
+                    </group>
+
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================================
+         Action
+    ============================================================ -->
+    <record id="action_portal_timesheet_approval" model="ir.actions.act_window">
+        <field name="name">Timesheet Approvals</field>
+        <field name="res_model">portal.timesheet.approval</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'search_default_pending': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No timesheet approval requests yet.
+            </p>
+            <p>
+                Portal users can submit timesheet entries from the task page.
+                They will appear here for your review.
+            </p>
+        </field>
+    </record>
+
+    <!-- Search view with pending filter as default -->
+    <record id="view_portal_timesheet_approval_search" model="ir.ui.view">
+        <field name="name">portal.timesheet.approval.search</field>
+        <field name="model">portal.timesheet.approval</field>
+        <field name="arch" type="xml">
+            <search string="Timesheet Approvals">
+                <field name="portal_user_id"/>
+                <field name="task_id"/>
+                <field name="project_id"/>
+                <separator/>
+                <filter string="Pending Approval" name="pending"
+                        domain="[('state', '=', 'pending')]"/>
+                <filter string="Approved" name="approved"
+                        domain="[('state', '=', 'approved')]"/>
+                <filter string="Rejected" name="rejected"
+                        domain="[('state', '=', 'rejected')]"/>
+                <group>
+                    <filter string="Portal User" name="group_user"    context="{'group_by': 'portal_user_id'}"/>
+                    <filter string="Project"     name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Task"        name="group_task"    context="{'group_by': 'task_id'}"/>
+                    <filter string="Status"      name="group_state"   context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================
+         Menu
+    ============================================================ -->
+    <!-- Parent menu entry under Timesheets app -->
+    <menuitem id="menu_portal_timesheet_approval_root"
+              name="Portal Timesheet Approvals"
+              parent="hr_timesheet.timesheet_menu_root"
+              action="action_portal_timesheet_approval"
+              sequence="20"/>
+
+</odoo>

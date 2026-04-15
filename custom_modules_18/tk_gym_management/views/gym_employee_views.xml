@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="gym_employee_form_view" model="ir.ui.view">
+            <field name="name">gym.employee.form.view</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='work_email']" position="after">
+                    <field name="is_trainer"/>
+                    <field name="working_hours_per_day" required="1"/>
+                </xpath>
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" type="object" name="gym_member"
+                            icon="fa-users">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="member_count"/>
+                            </span>
+                            <span class="o_stat_text">Members</span>
+                        </div>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+        <record id="gym_employee_action" model="ir.actions.act_window">
+            <field name="name">Gym Trainers</field>
+            <field name="res_model">hr.employee</field>
+            <field name="domain">[('is_trainer', '=', True)]</field>
+            <field name="context">{'default_is_trainer': True}</field>
+            <field name="view_mode">kanban,list,form</field>
+        </record>
+    </data>
+</odoo>

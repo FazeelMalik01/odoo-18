@@ -1,9 +1,8 @@
-/* @odoo-module */
-
 import { Component, onWillStart, onMounted, onWillUnmount, useRef, useState } from "@odoo/owl";
 import { session } from "@web/session";
 import { registry } from "@web/core/registry";
 import { useService } from '@web/core/utils/hooks';
+import { formatMonetary } from "@web/views/fields/formatters";
 import { Layout } from "@web/search/layout";
 import { uniqueId } from "@web/core/utils/functions";
 import { loadBundle } from "@web/core/assets";
@@ -47,6 +46,27 @@ export class AdvanceVehicleRepairDashboard extends Component {
             'customer_menu_open_id': null,
             'customer_menu_open_customer': null,
             'customer_menu_position': { top: 0, left: 0 },
+            'confirmed_sale_orders': 0,
+            'confirmed_sale_orders_ids': [],
+
+            'payments': [],
+            'payments_total': 0,
+            'payments_page': 1,
+            'payments_per_page': 8,
+            'payments_filter_date': new Date().toISOString().slice(0, 10),
+            'payments_filter_journal': '',
+            'payments_journals': [],
+
+            'received_payments': [],
+            'received_payments_total': 0,
+            'received_payments_page': 1,
+            'received_payments_per_page': 8,
+            'received_payments_filter_date': new Date().toISOString().slice(0, 10),
+            'received_payments_filter_journal': '',
+            'received_payments_journals': [],
+
+            'collapsed_payment_groups': {},
+            'collapsed_received_groups': {},
         });
 
         onWillStart(async () => {
@@ -77,9 +97,9 @@ export class AdvanceVehicleRepairDashboard extends Component {
         }
     }
 
-    async fetch_data () {
+    async fetch_data() {
         var self = this;
-        var result = await rpc('/advance_vehicle_repair/dashboard_data',{
+        var result = await rpc('/advance_vehicle_repair/dashboard_data', {
             user_id: session.uid || false,
         });
 
@@ -105,13 +125,22 @@ export class AdvanceVehicleRepairDashboard extends Component {
         self.state.total_todays_bookings_ids = result.total_todays_bookings_ids;
 
         self.state.groupby_advance_vehicle_repair = result.groupby_advance_vehicle_repair;
+
+        self.state.confirmed_sale_orders = result.confirmed_sale_orders;
+        self.state.confirmed_sale_orders_ids = result.confirmed_sale_orders_ids;
+
+        await this.fetch_payments();
+        await this.fetch_payment_journals();
+
+        await this.fetch_received_payments();
+        await this.fetch_received_payment_journals();
     }
 
-    render_graphs () {
+    render_graphs() {
         var self = this;
         var bar_chart_id = uniqueId('chart_');
         $(this.barChartRef.el).empty();
-        var $canvasBarChartContainer = $('<div/>', {class: 'o_graph_bar_canvas_container'});
+        var $canvasBarChartContainer = $('<div/>', { class: 'o_graph_bar_canvas_container' });
         this.$canvasBarChart = $('<canvas/>').attr('id', bar_chart_id);
         $canvasBarChartContainer.append(this.$canvasBarChart);
         $(this.barChartRef.el).append($canvasBarChartContainer);
@@ -119,11 +148,11 @@ export class AdvanceVehicleRepairDashboard extends Component {
         var bar_labels = []
         var bar_data = []
         for (var i = 0; i < self.state.groupby_advance_vehicle_repair.length; i++) {
-            if (self.state.groupby_advance_vehicle_repair[i].model_name){
+            if (self.state.groupby_advance_vehicle_repair[i].model_name) {
                 bar_labels.push(self.state.groupby_advance_vehicle_repair[i].model_name);
-                if (self.state.groupby_advance_vehicle_repair[i].model_name_count){
+                if (self.state.groupby_advance_vehicle_repair[i].model_name_count) {
                     bar_data.push(self.state.groupby_advance_vehicle_repair[i].model_name_count)
-                }else{
+                } else {
                     bar_data.push(0)
                 }
             }
@@ -160,7 +189,7 @@ export class AdvanceVehicleRepairDashboard extends Component {
 
         var pie_chart_id = uniqueId('chart_');
         $(this.pieChartRef.el).empty();
-        var $canvasPieChartContainer = $('<div/>', {class: 'o_graph_pie_canvas_container'});
+        var $canvasPieChartContainer = $('<div/>', { class: 'o_graph_pie_canvas_container' });
         this.$canvasPieChart = $('<canvas/>').attr('id', pie_chart_id);
         $canvasPieChartContainer.append(this.$canvasPieChart);
         $(this.pieChartRef.el).append($canvasPieChartContainer);
@@ -194,7 +223,7 @@ export class AdvanceVehicleRepairDashboard extends Component {
         });
     }
 
-    getbgcolor (length) {
+    getbgcolor(length) {
         var self = this;
         var colors = ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9", "#c45850"];
         var color = [];
@@ -308,21 +337,21 @@ export class AdvanceVehicleRepairDashboard extends Component {
     }
 
     async onOpenBooking(customer) {
-    this.state.customer_search = '';
-    this.state.customer_search_results = [];
-    this.state.customer_dropdown_visible = false;
-    this.state.customer_menu_open_id = null;
-    this.state.customer_menu_open_customer = null;
+        this.state.customer_search = '';
+        this.state.customer_search_results = [];
+        this.state.customer_dropdown_visible = false;
+        this.state.customer_menu_open_id = null;
+        this.state.customer_menu_open_customer = null;
 
-    const action = await this.orm.call(
-        'vehicle.booking',
-        'action_create_booking_from_customer',
-        [customer.id]
-    );
+        const action = await this.orm.call(
+            'vehicle.booking',
+            'action_create_booking_from_customer',
+            [customer.id]
+        );
 
-    this.actionService.doAction(action, {
-        on_reverse_breadcrumb: this.on_reverse_breadcrumb,
-    });
+        this.actionService.doAction(action, {
+            on_reverse_breadcrumb: this.on_reverse_breadcrumb,
+        });
     }
 
 
@@ -345,7 +374,7 @@ export class AdvanceVehicleRepairDashboard extends Component {
         });
     }
 
-    onDashboardAction(ev){
+    onDashboardAction(ev) {
         ev.preventDefault();
         var self = this;
 
@@ -354,7 +383,7 @@ export class AdvanceVehicleRepairDashboard extends Component {
 
         var domain = []
 
-        if ($action === 'total_bookings'){
+        if ($action === 'total_bookings') {
             console.log("yes")
             domain.push(['id', 'in', self.state.total_bookings_ids])
             this.actionService.doAction({
@@ -362,85 +391,291 @@ export class AdvanceVehicleRepairDashboard extends Component {
                 res_model: 'vehicle.booking',
                 name: 'Licensing Management',
                 domain: domain,
-                views: [[false, 'list'],[false, 'form']],
+                views: [[false, 'list'], [false, 'form']],
             }, {
                 on_reverse_breadcrumb: this.on_reverse_breadcrumb
             });
         }
-        else if ($action === 'total_customers'){
+        else if ($action === 'total_customers') {
             domain.push(['id', 'in', self.state.total_customers_ids])
             this.actionService.doAction({
                 type: 'ir.actions.act_window',
                 res_model: 'res.partner',
                 name: 'Licensing Management',
                 domain: domain,
-                views: [[false, 'list'],[false, 'form']],
+                views: [[false, 'list'], [false, 'form']],
             }, {
                 on_reverse_breadcrumb: this.on_reverse_breadcrumb
             });
         }
-        else if ($action === 'total_teams'){
+        else if ($action === 'total_teams') {
             domain.push(['id', 'in', self.state.total_teams_ids])
             this.actionService.doAction({
                 type: 'ir.actions.act_window',
                 res_model: 'vehicle.teams',
                 name: 'Licensing Management',
                 domain: domain,
-                views: [[false, 'list'],[false, 'form']],
+                views: [[false, 'list'], [false, 'form']],
             }, {
                 on_reverse_breadcrumb: this.on_reverse_breadcrumb
             });
         }
 
-        else if ($action === 'total_job_cards'){
+        else if ($action === 'total_job_cards') {
             domain.push(['id', 'in', self.state.total_job_cards_ids])
             this.actionService.doAction({
                 type: 'ir.actions.act_window',
                 res_model: 'vehicle.jobcard',
                 name: 'Licensing Management',
                 domain: domain,
-                views: [[false, 'list'],[false, 'form']],
+                views: [[false, 'list'], [false, 'form']],
             }, {
                 on_reverse_breadcrumb: this.on_reverse_breadcrumb
             });
         }
 
-        else if ($action === 'total_inspection_jobcards'){
+        else if ($action === 'total_inspection_jobcards') {
             domain.push(['id', 'in', self.state.total_inspection_jobcards_ids])
             this.actionService.doAction({
                 type: 'ir.actions.act_window',
                 res_model: 'vehicle.jobcard',
                 name: 'Licensing Management',
                 domain: domain,
-                views: [[false, 'list'],[false, 'form']],
+                views: [[false, 'list'], [false, 'form']],
             }, {
                 on_reverse_breadcrumb: this.on_reverse_breadcrumb
             });
         }
-        else if ($action === 'total_repair_jobcards'){
+        else if ($action === 'total_repair_jobcards') {
             domain.push(['id', 'in', self.state.total_repair_jobcards_ids])
             this.actionService.doAction({
                 type: 'ir.actions.act_window',
                 res_model: 'vehicle.jobcard',
                 name: 'Licensing Management',
                 domain: domain,
-                views: [[false, 'list'],[false, 'form']],
+                views: [[false, 'list'], [false, 'form']],
             }, {
                 on_reverse_breadcrumb: this.on_reverse_breadcrumb
             });
         }
-        else if ($action === 'total_todays_bookings'){
+        else if ($action === 'total_todays_bookings') {
             domain.push(['id', 'in', self.state.total_todays_bookings_ids])
             this.actionService.doAction({
                 type: 'ir.actions.act_window',
                 res_model: 'vehicle.booking',
                 name: 'Vehicle Repair Management',
                 domain: domain,
-                views: [[false, 'list'],[false, 'form']],
+                views: [[false, 'list'], [false, 'form']],
             }, {
                 on_reverse_breadcrumb: this.on_reverse_breadcrumb
             });
         }
+        else if ($action === 'confirmed_sale_orders') {
+            domain.push(['id', 'in', self.state.confirmed_sale_orders_ids])
+            this.actionService.doAction({
+                type: 'ir.actions.act_window',
+                res_model: 'sale.order',
+                name: 'Confirmed Sale Orders',
+                domain: domain,
+                views: [[false, 'list'], [false, 'form']],
+            }, {
+                on_reverse_breadcrumb: this.on_reverse_breadcrumb
+            });
+        }
+    }
+    async fetch_payments() {
+        const domain = [['state', 'not in', ['draft', 'cancelled']]];
+        if (this.state.payments_filter_date) {
+            domain.push(['date', '=', this.state.payments_filter_date]);
+        }
+        if (this.state.payments_filter_journal) {
+            domain.push(['journal_id', '=', parseInt(this.state.payments_filter_journal)]);
+        }
+        const page = this.state.payments_page;
+        const limit = this.state.payments_per_page;
+        const offset = (page - 1) * limit;
+
+        const result = await this.orm.searchRead(
+            'account.payment',
+            domain,
+            ['date', 'name', 'journal_id', 'payment_method_line_id', 'amount', 'currency_id', 'partner_id', 'state'],
+            { limit, offset, order: 'date desc' }
+        );
+        const total = await this.orm.searchCount('account.payment', domain);
+        this.state.payments = result;
+        this.state.payments_total = total;
+    }
+    async fetch_payment_journals() {
+        const payments = await this.orm.searchRead(
+            'account.payment',
+            [['state', 'not in', ['draft', 'cancelled']]],
+            ['journal_id'],
+            {}
+        );
+
+        const seen = new Map();
+        for (const p of payments) {
+            if (p.journal_id) seen.set(p.journal_id[0], p.journal_id[1]);
+        }
+
+        this.state.payments_journals = [...seen.entries()]
+            .map(([id, name]) => ({ id, name }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    async onPaymentFilterDate(ev) {
+        this.state.payments_filter_date = ev.target.value;
+        this.state.payments_page = 1;
+        await this.fetch_payments();
+    }
+
+    async onPaymentFilterJournal(ev) {
+        this.state.payments_filter_journal = ev.target.value;
+        this.state.payments_page = 1;
+        await this.fetch_payments();
+    }
+
+    async onPaymentPage(page) {
+        this.state.payments_page = page;
+        await this.fetch_payments();
+    }
+
+    formatAmount(amount, currency_id) {
+        if (!amount && amount !== 0) return '—';
+        const currencyId = currency_id ? currency_id[0] : false;
+        return formatMonetary(amount, { currencyId });
+    }
+
+    togglePaymentGroup(key) {
+        this.state.collapsed_payment_groups[key] = !this.state.collapsed_payment_groups[key];
+    }
+
+    toggleReceivedGroup(key) {
+        this.state.collapsed_received_groups[key] = !this.state.collapsed_received_groups[key];
+    }
+
+    groupByMethod(payments) {
+        const groups = new Map();
+        for (const p of payments) {
+            const key = p.payment_method_line_id ? p.payment_method_line_id[0] : 0;
+            const label = p.payment_method_line_id ? p.payment_method_line_id[1] : 'Other';
+            if (!groups.has(key)) {
+                groups.set(key, { key, label, payments: [], total: 0, currency_id: p.currency_id });
+            }
+            const g = groups.get(key);
+            g.payments.push(p);
+            g.total += p.amount || 0;
+        }
+        return [...groups.values()];
+    }
+
+    onOpenPayment(payment) {
+        this.actionService.doAction({
+            type: 'ir.actions.act_window',
+            res_model: 'account.payment',
+            res_id: payment.id,
+            views: [[false, 'form']],
+            view_id: 'account.view_account_payment_form',
+        });
+    }
+
+    getPaymentStateLabel(state) {
+        const map = {
+            draft: 'Draft', posted: 'Posted', sent: 'Sent',
+            reconciled: 'Reconciled', cancelled: 'Cancelled',
+        };
+        return map[state] || state;
+    }
+
+    getPaymentStateBadge(state) {
+        const map = {
+            draft: 'badge-draft', posted: 'badge-posted',
+            sent: 'badge-sent', reconciled: 'badge-reconciled',
+            cancelled: 'badge-cancelled',
+        };
+        return map[state] || '';
+    }
+    async onClearPaymentFilters() {
+        this.state.payments_filter_date = '';
+        this.state.payments_filter_journal = '';
+        this.state.payments_page = 1;
+        await this.fetch_payments();
+    }
+    getPaymentStateLabel(state) {
+        const map = {
+            draft: 'Draft',
+            posted: 'Posted',
+            sent: 'Sent',
+            reconciled: 'Reconciled',
+            cancelled: 'Cancelled',
+            in_process: 'In Process',
+        };
+        return map[state] || state;
+    }
+
+    async fetch_received_payments() {
+        const domain = [
+            ['state', 'not in', ['draft', 'cancelled']],
+            ['payment_type', '=', 'inbound'],
+        ];
+        if (this.state.received_payments_filter_date) {
+            domain.push(['date', '=', this.state.received_payments_filter_date]);
+        }
+        if (this.state.received_payments_filter_journal) {
+            domain.push(['journal_id', '=', parseInt(this.state.received_payments_filter_journal)]);
+        }
+        const page = this.state.received_payments_page;
+        const limit = this.state.received_payments_per_page;
+        const offset = (page - 1) * limit;
+
+        const result = await this.orm.searchRead(
+            'account.payment',
+            domain,
+            ['date', 'name', 'journal_id', 'payment_method_line_id', 'amount', 'currency_id', 'partner_id', 'state'],
+            { limit, offset, order: 'date desc' }
+        );
+        const total = await this.orm.searchCount('account.payment', domain);
+        this.state.received_payments = result;
+        this.state.received_payments_total = total;
+    }
+
+    async fetch_received_payment_journals() {
+        const payments = await this.orm.searchRead(
+            'account.payment',
+            [['state', 'not in', ['draft', 'cancelled']], ['payment_type', '=', 'inbound']],
+            ['journal_id'],
+            {}
+        );
+        const seen = new Map();
+        for (const p of payments) {
+            if (p.journal_id) seen.set(p.journal_id[0], p.journal_id[1]);
+        }
+        this.state.received_payments_journals = [...seen.entries()]
+            .map(([id, name]) => ({ id, name }))
+            .sort((a, b) => a.name.localeCompare(b.name));
+    }
+    async onReceivedPaymentFilterDate(ev) {
+        this.state.received_payments_filter_date = ev.target.value;
+        this.state.received_payments_page = 1;
+        await this.fetch_received_payments();
+    }
+
+    async onReceivedPaymentFilterJournal(ev) {
+        this.state.received_payments_filter_journal = ev.target.value;
+        this.state.received_payments_page = 1;
+        await this.fetch_received_payments();
+    }
+
+    async onReceivedPaymentPage(page) {
+        this.state.received_payments_page = page;
+        await this.fetch_received_payments();
+    }
+
+    async onClearReceivedPaymentFilters() {
+        this.state.received_payments_filter_date = '';
+        this.state.received_payments_filter_journal = '';
+        this.state.received_payments_page = 1;
+        await this.fetch_received_payments();
     }
 }
 AdvanceVehicleRepairDashboard.components = {

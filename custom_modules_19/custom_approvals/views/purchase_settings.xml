@@ -1,0 +1,26 @@
+<odoo>
+    <record id="res_config_settings_view_form_purchase_custom" model="ir.ui.view">
+        <field name="name">res.config.settings.purchase.custom</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="purchase.res_config_settings_view_form_purchase"/>
+        <field name="arch" type="xml">
+            <!-- Add new block AFTER connectors -->
+            <xpath expr="//block[@name='invoicing_settings_container']" position="after">
+                <block title="Purchase Approval Settings" id="purchase_approval_settings_block">
+                    <setting id="amount_setting" string="Amount Limit">
+                        <field name="purchase_amount"/>
+                    </setting>
+                    <setting id="purchase_pm_setting" string="Project Manager">
+                        <field name="purchase_pm"/>
+                    </setting>
+                    <setting id="purchase_fm_setting" string="Finance Manager">
+                        <field name="purchase_fm"/>
+                    </setting>
+                    <setting id="ceo_setting" string="CEO">
+                        <field name="purchase_ceo"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

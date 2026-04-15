@@ -1,0 +1,66 @@
+<odoo>
+    <template id="report_invoice_document_inherit_jobcard"
+              inherit_id="account.report_invoice_document">
+
+        <!-- No shipping -->
+        <xpath expr="//div[@id='partner_vat_no_shipping']" position="after">
+            <t t-if="o.jobcard_id">
+                <div style="margin-top: 4px; font-size: 12px;">
+                    <t t-if="o.jobcard_id.phone">
+                        <div><strong>Phone: </strong><span t-field="o.jobcard_id.phone"/></div>
+                    </t>
+                    <t t-if="o.jobcard_id.registration_no">
+                        <div><strong>Reg No: </strong><span t-field="o.jobcard_id.registration_no"/></div>
+                    </t>
+                    <t t-if="o.jobcard_id.brand_id">
+                        <div><strong>Brand: </strong><span t-field="o.jobcard_id.brand_id.name"/></div>
+                    </t>
+                    <t t-if="o.jobcard_id.model_id">
+                        <div><strong>Model: </strong><span t-field="o.jobcard_id.model_id.name"/></div>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+
+        <!-- Same shipping as billing -->
+        <xpath expr="//div[@id='partner_vat_address_same_as_shipping']" position="after">
+            <t t-if="o.jobcard_id">
+                <div style="margin-top: 4px; font-size: 12px;">
+                    <t t-if="o.jobcard_id.phone">
+                        <div><strong>Phone: </strong><span t-field="o.jobcard_id.phone"/></div>
+                    </t>
+                    <t t-if="o.jobcard_id.registration_no">
+                        <div><strong>Reg No: </strong><span t-field="o.jobcard_id.registration_no"/></div>
+                    </t>
+                    <t t-if="o.jobcard_id.brand_id">
+                        <div><strong>Brand: </strong><span t-field="o.jobcard_id.brand_id.name"/></div>
+                    </t>
+                    <t t-if="o.jobcard_id.model_id">
+                        <div><strong>Model: </strong><span t-field="o.jobcard_id.model_id.name"/></div>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+
+        <!-- Different shipping and billing -->
+        <xpath expr="//div[@id='partner_vat_address_not_same_as_shipping']" position="after">
+            <t t-if="o.jobcard_id">
+                <div style="margin-top: 4px; font-size: 12px;">
+                    <t t-if="o.jobcard_id.phone">
+                        <div><strong>Phone: </strong><span t-field="o.jobcard_id.phone"/></div>
+                    </t>
+                    <t t-if="o.jobcard_id.registration_no">
+                        <div><strong>Reg No: </strong><span t-field="o.jobcard_id.registration_no"/></div>
+                    </t>
+                    <t t-if="o.jobcard_id.brand_id">
+                        <div><strong>Brand: </strong><span t-field="o.jobcard_id.brand_id.name"/></div>
+                    </t>
+                    <t t-if="o.jobcard_id.model_id">
+                        <div><strong>Model: </strong><span t-field="o.jobcard_id.model_id.name"/></div>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+
+    </template>
+</odoo>

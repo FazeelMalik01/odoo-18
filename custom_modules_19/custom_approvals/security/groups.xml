@@ -1,0 +1,18 @@
+<odoo>
+
+    <!-- Project Manager -->
+    <record id="group_project_manager" model="res.groups">
+        <field name="name">Project Manager</field>
+    </record>
+
+    <!-- Finance Manager -->
+    <record id="group_finance_manager" model="res.groups">
+        <field name="name">Finance Manager</field>
+    </record>
+
+    <!-- CEO -->
+    <record id="group_ceo" model="res.groups">
+        <field name="name">CEO</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_payment_provider_ipos_pay_user,payment.provider.ipos.pay.user,payment.model_payment_provider,base.group_user,1,1,1,1
+access_payment_provider_ipos_pay_manager,payment.provider.ipos.pay.manager,payment.model_payment_provider,account.group_account_manager,1,1,1,1

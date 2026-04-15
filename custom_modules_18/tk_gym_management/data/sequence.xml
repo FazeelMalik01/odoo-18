@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="workout_list" model="ir.sequence">
+            <field name="name">Workout Schedule</field>
+            <field name="code">gym.workout</field>
+            <field name="prefix">WSCH/%(year)s/%(month)s/</field>
+            <field name="padding">3</field>
+        </record>
+        <record id="gym_ingredient" model="ir.sequence">
+            <field name="name">Gym Ingredient</field>
+            <field name="code">gym.ingredient</field>
+            <field name="prefix">INGRD/%(year)s/%(month)s/</field>
+            <field name="padding">3</field>
+        </record>
+        <record id="muscle_id" model="ir.sequence">
+            <field name="name">Gym Muscle</field>
+            <field name="code">gym.muscle</field>
+            <field name="prefix">MUSC/%(year)s/%(month)s/</field>
+            <field name="padding">3</field>
+        </record>
+        <record id="nutrition_id" model="ir.sequence">
+            <field name="name">Nutrition</field>
+            <field name="code">gym.nutrition</field>
+            <field name="prefix">NUTR/%(year)s/%(month)s/</field>
+            <field name="padding">3</field>
+        </record>
+
+        <!--Memberships Member-->
+        <record id="seq_memberships" model="ir.sequence">
+            <field name="name">memberships</field>
+            <field name="code">rest.seq.member</field>
+            <field name="padding">5</field>
+            <field name="prefix">GM/%(year)s/%(month)s/</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

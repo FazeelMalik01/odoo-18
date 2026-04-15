@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="gym_exercise_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <h1 class="text-center mb-5 display-6">
+                                <span t-field="doc.name"/>
+                            </h1>
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Exercise For</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="doc.exercise_for_id"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Equipments</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="doc.equipment_ids"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 ms-3">
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Average Time</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="doc.approx_time"/>
+                                                Minutes
+                                            </strong>
+                                        </div>
+                                    </div>
+                                    <div class="row my-1">
+                                        <div class="col-4">
+                                            <span>Calories Burn</span>
+                                        </div>
+                                        <div class="col-1">
+                                            <span>:</span>
+                                        </div>
+                                        <div class="col-7">
+                                            <strong>
+                                                <span t-field="doc.calories_burn_per_hour"/>
+                                                per Hour
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <t t-if="doc.instruction">
+                                <h6 style="background-color:#e9ecef;" class="py-1">
+                                    <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <rect opacity="0.5" x="18" y="13" width="13" height="2"
+                                                  rx="1" transform="rotate(-180 18 13)"
+                                                  fill="currentColor"/>
+                                            <path
+                                                    d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z"
+                                                    fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                    Exercise Instructions
+                                </h6>
+                                <div>
+                                    <span t-field="doc.instruction"/>
+                                </div>
+                            </t>
+                            <t t-if="doc.benefits">
+                                <h6 style="background-color:#e9ecef;" class="py-1">
+                                    <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <rect opacity="0.5" x="18" y="13" width="13" height="2"
+                                                  rx="1" transform="rotate(-180 18 13)"
+                                                  fill="currentColor"/>
+                                            <path
+                                                    d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z"
+                                                    fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                    Exercise Benefits
+                                </h6>
+                                <div>
+                                    <span t-field="doc.benefits"/>
+                                </div>
+                            </t>
+                            <t t-if="doc.exercise_step_ids">
+                                <p style="page-break-before:always;"/>
+                                <h6 style="background-color:#e9ecef;" class="py-1">
+                                    <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <rect opacity="0.5" x="18" y="13" width="13" height="2"
+                                                  rx="1" transform="rotate(-180 18 13)"
+                                                  fill="currentColor"/>
+                                            <path
+                                                    d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z"
+                                                    fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                    Exercise Steps
+                                </h6>
+                                <table class="table table-borderless" style="width: 100%; margin-top: 0px;"
+                                       t-if="doc.exercise_step_ids">
+                                    <t t-set="ap_tag" t-value="str('&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;')"/>
+                                    <t t-set="img_count" t-value="0"/>
+                                    <tr>
+                                        <td>
+                                            <t t-foreach="doc.exercise_step_ids" t-as="rec">
+                                                <t t-set="img_count" t-value="img_count + 1"/>
+                                                <div style="display: inline-block;text-align:center;" class="ms-2 me-2">
+                                                    <t t-if="rec.step_image">
+                                                        <div style=" width:250px; height:250px;"
+                                                             class="mx-auto border-bottom">
+                                                            <img t-att-src="image_data_uri(rec.step_image)"
+                                                                 style="margin: 0px; object-fit:cover !important;"
+                                                                 class="img img-responsive w-100 h-100 p-4"/>
+                                                        </div>
+                                                    </t>
+                                                    <div class="mt-2">
+                                                        <h6 t-field="rec.name"/>
+                                                    </div>
+                                                </div>
+                                                <t t-if="img_count % 3 == 0">
+                                                    <t t-raw="ap_tag"/>
+                                                </t>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </t>
+                            <t t-if="doc.video_url">
+                                <h6 style="background-color:#e9ecef;" class="py-1">
+                                    <span class="svg-icon svg-icon-muted svg-icon-2hx">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                             xmlns="http://www.w3.org/2000/svg">
+                                            <rect opacity="0.5" x="18" y="13" width="13" height="2"
+                                                  rx="1" transform="rotate(-180 18 13)"
+                                                  fill="currentColor"/>
+                                            <path
+                                                    d="M15.4343 12.5657L11.25 16.75C10.8358 17.1642 10.8358 17.8358 11.25 18.25C11.6642 18.6642 12.3358 18.6642 12.75 18.25L18.2929 12.7071C18.6834 12.3166 18.6834 11.6834 18.2929 11.2929L12.75 5.75C12.3358 5.33579 11.6642 5.33579 11.25 5.75C10.8358 6.16421 10.8358 6.83579 11.25 7.25L15.4343 11.4343C15.7467 11.7467 15.7467 12.2533 15.4343 12.5657Z"
+                                                    fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                    Exercise Video Tutorial
+                                </h6>
+                                <div class="row mt-4">
+                                    <div class="col-2">
+                                        <span>Video URL</span>
+                                    </div>
+                                    <div class="col-1">
+                                        <span>:</span>
+                                    </div>
+                                    <div class="col-7">
+                                        <a t-att-href="doc.video_url">
+                                            <span t-field="doc.name"/>
+                                        </a>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+        <record id="gym_exercise_reports_id" model="ir.actions.report">
+            <field name="name">Exercise Reports</field>
+            <field name="model">gym.exercise</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">tk_gym_management.gym_exercise_report</field>
+            <field name="report_file">tk_gym_management.gym_exercise_report</field>
+            <field name="print_report_name">'Exercise Report'</field>
+            <field name="binding_model_id" ref="model_gym_exercise"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>

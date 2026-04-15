@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="web.ListView" t-inherit="web.ListView" t-inherit-mode="extension">
+        <xpath expr="//button[hasclass('o_list_button_add')]" position="replace">
+            <!-- Rental module: "Book Now" opens the POS categories page -->
+            <button t-if="!editedRecord and activeActions.create and props.showButtons and model.root and model.root.resModel === 'sale.order' and model.root.context and model.root.context.in_rental_app"
+                type="button"
+                class="btn o_list_button_add o_rental_list_book_now"
+                data-hotkey="c"
+                t-on-click="openRentalPos"
+                data-bounce-button="">
+                <i class="fa fa-plus me-1"/> Book Now
+            </button>
+            <!-- All other list views: normal "New" button -->
+            <button t-elif="!editedRecord and activeActions.create and props.showButtons"
+                type="button"
+                class="btn btn-primary o_list_button_add"
+                data-hotkey="c"
+                t-on-click="onClickCreate"
+                data-bounce-button="">
+                New
+            </button>
+        </xpath>
+    </t>
+</templates>

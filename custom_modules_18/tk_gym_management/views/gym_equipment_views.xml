@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="gym_equipment_form_view" model="ir.ui.view">
+        <field name="name">gym.equipment.form.view</field>
+        <field name="model">gym.equipment</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="avatar" widget="image" class="oe_avatar" nolabel="1"
+                           options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Treadmills.." required="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="exercise_for" widget="many2many_tags"
+                                   options="{'color_field': 'color','no_create':True}"/>
+                            <field name="company_name"/>
+                            <field name="serial_no"/>
+                        </group>
+                        <group>
+                            <field name="units" string="Available Units"/>
+                            <field name="cost"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="equipment_details" string="Equipment Details">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="gym_equipment_tree_view" model="ir.ui.view">
+        <field name="name">gym.equipment.tree.view</field>
+        <field name="model">gym.equipment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="exercise_for"/>
+                <field name="company_name"/>
+                <field name="serial_no"/>
+                <field name="units" string="Available Units"/>
+                <field name="cost"/>
+                <field name="company_id" column_invisible="True"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+    <record id="gym_equipment_kanan_view" model="ir.ui.view">
+        <field name="name">gym.equipment.kanban.view</field>
+        <field name="model">gym.equipment</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="serial_no"/>
+                <field name="units"/>
+                <templates>
+                    <t t-name="card" class="flex-row p-1">
+                        <aside class="o_kanban_aside_full p-2">
+                            <field name="avatar" widget="image"
+                                   options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                        </aside>
+                        <main class="ms-2 mt-1">
+                            <field name="name" class="fw-bold"/>
+                            <div invisible="not serial_no">
+                                Serial No:
+                                <field name="serial_no"/>
+                            </div>
+                            <div invisible="not units">
+                                Available Units:
+                                <field name="units"/>
+                            </div>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="gym_equipment_search_view" model="ir.ui.view">
+        <field name="name">gym.equipment.search.view</field>
+        <field name="model">gym.equipment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="company_name"/>
+                <field name="serial_no"/>
+                <field name="exercise_for"/>
+                <group string="Group By">
+                    <filter name="exercise_for" string="Exercise For"
+                            context="{'group_by': 'exercise_for'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="gym_equipment_action" model="ir.actions.act_window">
+        <field name="name">Gym Equipments</field>
+        <field name="res_model">gym.equipment</field>
+        <field name="view_mode">kanban,list,form,search</field>
+    </record>
+</odoo>

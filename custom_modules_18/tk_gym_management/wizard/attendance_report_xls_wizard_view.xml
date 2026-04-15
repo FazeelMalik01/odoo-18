@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---*- coding: utf-8 -*- -->
+<!--Copyright 2020-Today
+TechKhedut.-->
+<!--Part
+of TechKhedut. See LICENSE file for full copyright and licensing details.-->
+<odoo>
+    <record id="xls_report_attendance_wizard_form_view" model="ir.ui.view">
+        <field name="name">xls.report.attendance.wizard.form.view</field>
+        <field name="model">attendance.excel.report</field>
+        <field name='arch' type='xml'>
+            <form>
+                <group>
+                    <group>
+                        <field name="attendance_of" widget="radio" options="{'horizontal': True}"
+                            required="1" />
+                    </group>
+                    <group>
+                        <field name="employee_id" invisible="attendance_of == 'member'"
+                            options="{'no_create': True}" />
+                        <field name="member_id" invisible="attendance_of == 'employee'"
+                            options="{'no_create': True}" />
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="start_date" />
+                    </group>
+                    <group>
+                        <field name="end_date" />
+                    </group>
+                </group>
+                <div class="alert alert-info" role="alert">
+                    <strong>Note:</strong>
+                    <div>1. If only the <strong>Start Date</strong> is provided, it retrieves
+                        records from the specified start date to today.</div>
+                    <div> 2. If only the <strong>End Date</strong> is provided, it retrieves records
+                        up to the specified end date.</div>
+                    <div>3. If both <strong>Start Date</strong> and <strong>End Date</strong> are
+                        provided, it retrieves records within the specified date range. </div>
+                    <div>4. If neither <strong>Start Date</strong> nor <strong>End Date</strong> is
+                        provided, all records will be displayed. </div>
+                </div>
+                <footer>
+                    <button string="Print Excel" type="object" name="print_excel"
+                        class="btn-primary" />
+                    <button string="Cancel" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="attendance_xls_report_wizard_action" model="ir.actions.act_window">
+        <field name="name">Attendance Excel Report</field>
+        <field name="res_model">attendance.excel.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="xls_report_attendance_wizard_form_view" />
+        <field name="target">new</field>
+    </record>
+</odoo>

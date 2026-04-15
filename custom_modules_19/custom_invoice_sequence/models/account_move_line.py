@@ -1,4 +1,4 @@
-from odoo import models, api
+from odoo import models, api, fields
 
 
 class AccountMoveLine(models.Model):
@@ -36,3 +36,8 @@ class AccountMoveLine(models.Model):
                 })
 
         return res
+
+class AccountMove(models.Model):
+    _inherit = 'account.move'
+
+    reference = fields.Char(string="Bill Reference")

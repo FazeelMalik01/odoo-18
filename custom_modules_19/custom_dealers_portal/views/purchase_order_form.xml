@@ -26,20 +26,53 @@
             </t>
 
             <div class="container mt-4">
-                <div class="text-end mb-2">
-                    <a href="/my/purchase_orders_form" class="btn btn-danger">
-                        Cancel
-                    </a>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h1 class="mb-0">
+                        <t t-if="is_readonly">View Purchase Order</t>
+                        <t t-if="not is_readonly and order_data">Edit Purchase Order</t>
+                        <t t-if="not is_readonly and not order_data">Create Purchase Order</t>
+                    </h1>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="/my/purchase_orders" class="btn btn-outline-secondary btn-sm">
+                            Back to List
+                        </a>
+                        <t t-if="order_data and not is_readonly">
+                            <a t-att-href="'/my/purchase_orders_form?order_id=%s&amp;view_mode=readonly' % order_data.get('id')"
+                               class="btn btn-outline-secondary btn-sm">
+                                Discard Changes
+                            </a>
+                            <button type="submit"
+                                    form="purchase_order_form"
+                                    class="btn btn-primary btn-sm">
+                                Save Changes
+                            </button>
+                        </t>
+                        <t t-if="order_data and is_readonly and can_edit_submitted">
+                            <a t-att-href="'/my/purchase_orders_form?order_id=%s&amp;edit_mode=1' % order_data.get('id')"
+                               class="btn btn-primary btn-sm">
+                                Edit
+                            </a>
+                        </t>
+                    <t t-if="order_data">
+                        <span class="badge"
+                              t-att-class="'badge ' + (
+                                  'bg-secondary' if order_data.get('portal_state') == 'to_be_approved' else
+                                  'bg-warning text-dark' if order_data.get('portal_state') == 'in_progress' else
+                                  'bg-success' if order_data.get('portal_state') == 'done' else
+                                  'bg-danger'
+                              )">
+                            <t t-if="order_data.get('portal_state') == 'to_be_approved'">To Be Approved</t>
+                            <t t-elif="order_data.get('portal_state') == 'in_progress'">In Progress</t>
+                            <t t-elif="order_data.get('portal_state') == 'done'">Done</t>
+                            <t t-elif="order_data.get('portal_state') == 'cancelled'">Cancelled</t>
+                        </span>
+                    </t>
+                    </div>
                 </div>
-
-                <h1 class="mb-4">
-                    <t t-if="is_readonly">View Purchase Order</t>
-                    <t t-if="not is_readonly">Create Purchase Order</t>
-                </h1>
 
                 <t t-if="request.params.get('success')">
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        Purchase Order created successfully!
+                        Thank you for your order. It has been submitted for approval.
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 </t>
@@ -53,6 +86,9 @@
 
                 <form action="/my/purchase_orders_form/submit" method="post" class="needs-validation" novalidate="novalidate" id="purchase_order_form">
                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <t t-if="order_data and not is_readonly">
+                        <input type="hidden" name="order_id" t-att-value="order_data.get('id')"/>
+                    </t>
 
                     <!-- Customer Field -->
                     <div class="row mb-3">
@@ -82,8 +118,8 @@
                                 <input type="text" class="form-control" t-att-value="order_data.get('invoice_address_name', '') if order_data else ''" readonly="readonly"/>
                             </t>
                             <t t-if="not is_readonly">
-                                <input type="text" class="form-control" id="invoice_address" readonly="readonly" placeholder="Auto-filled from dealer"/>
-                                <input type="hidden" id="invoice_address_id" name="invoice_address" value=""/>
+                                <input type="text" class="form-control" id="invoice_address" readonly="readonly" placeholder="Auto-filled from dealer" t-att-value="order_data.get('invoice_address_name', '') if order_data else ''"/>
+                                <input type="hidden" id="invoice_address_id" name="invoice_address" t-att-value="order_data.get('invoice_address', '') if order_data else ''"/>
                             </t>
                         </div>
                         <div class="col-md-6">
@@ -92,7 +128,7 @@
                                 <input type="text" class="form-control" t-att-value="order_data.get('delivery_address_name', '') if order_data else ''" readonly="readonly"/>
                             </t>
                             <t t-if="not is_readonly">
-                                <select class="form-select" id="delivery_address" name="delivery_address">
+                                <select class="form-select" id="delivery_address" name="delivery_address" t-att-data-selected="order_data.get('delivery_address', '') if order_data else ''">
                                     <option value="">Select Delivery Address</option>
                                 </select>
                             </t>
@@ -107,7 +143,7 @@
                                 <textarea class="form-control" readonly="readonly" rows="3" t-att-value="order_data.get('notes', '') if order_data else ''"></textarea>
                             </t>
                             <t t-if="not is_readonly">
-                                <textarea class="form-control" id="notes" name="notes" readonly="readonly" rows="3" placeholder="Auto-filled from customer"></textarea>
+                                <textarea class="form-control" id="notes" name="notes" readonly="readonly" rows="3" placeholder="Auto-filled from customer"><t t-esc="order_data.get('notes', '') if order_data else ''"/></textarea>
                             </t>
                         </div>
                     </div>
@@ -122,12 +158,12 @@
                             <t t-if="not is_readonly">
                                 <select class="form-select" id="shipping_option_dropship" name="shipping_option_dropship">
                                     <option value="">Select Shipping Option</option>
-                                    <option value="rate_quote">Provide a rate quote before shipping</option>
-                                    <option value="cheapest_rate">Please ship at cheapest rate</option>
-                                    <option value="own_carrier">Client will use their own carrier</option>
-                                    <option value="client_pickup">Client will pickup</option>
-                                    <option value="yannick_pickup">Yannick will pickup this order</option>
-                                    <option value="dhc_courier">Ship with DHC's courier and add cost to invoice</option>
+                                    <option value="rate_quote" t-att-selected="order_data and order_data.get('shipping_option_dropship') == 'rate_quote'">Provide a rate quote before shipping</option>
+                                    <option value="cheapest_rate" t-att-selected="order_data and order_data.get('shipping_option_dropship') == 'cheapest_rate'">Please ship at cheapest rate</option>
+                                    <option value="own_carrier" t-att-selected="order_data and order_data.get('shipping_option_dropship') == 'own_carrier'">Client will use their own carrier</option>
+                                    <option value="client_pickup" t-att-selected="order_data and order_data.get('shipping_option_dropship') == 'client_pickup'">Client will pickup</option>
+                                    <option value="yannick_pickup" t-att-selected="order_data and order_data.get('shipping_option_dropship') == 'yannick_pickup'">Yannick will pickup this order</option>
+                                    <option value="dhc_courier" t-att-selected="order_data and order_data.get('shipping_option_dropship') == 'dhc_courier'">Ship with DHC's courier and add cost to invoice</option>
                                 </select>
                             </t>
                         </div>
@@ -147,6 +183,7 @@
                                             <th style="width: 8%;">Unit</th>
                                             <th style="width: 10%;">Unit Price</th>
                                             <th style="width: 15%;">Taxes</th>
+                                            <th style="width: 10%;">Availability</th>
                                             <th style="width: 8%;">Amount</th>
                                             <th style="width: 6%;">Action</th>
                                         </tr>
@@ -187,6 +224,72 @@
                                         </t>
                                         <!-- Edit mode: show editable form -->
                                         <t t-if="not is_readonly">
+                                            <t t-if="order_data and order_data.get('order_lines')">
+                                                <t t-foreach="order_data.get('order_lines', [])" t-as="line">
+                                                    <tr class="order_line_row">
+                                                        <td>
+                                                            <select class="form-select form-select-sm category_select" name="category_ids[]">
+                                                                <option value="">All Categories</option>
+                                                                <t t-foreach="categories" t-as="category">
+                                                                    <option t-att-value="category.id" t-att-selected="line.get('category_id') == category.id">
+                                                                        <t t-esc="category.name"/>
+                                                                    </option>
+                                                                </t>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-select form-select-sm product_select" name="product_ids[]">
+                                                                <option value="">Select Product</option>
+                                                                <t t-foreach="products" t-as="product">
+                                                                    <option t-att-value="product.get('id')"
+                                                                            t-att-data-categ="product.get('categ_id') or ''"
+                                                                            t-att-data-uom="product.get('uom_id') or ''"
+                                                                            t-att-selected="line.get('product_id') == product.get('id')">
+                                                                        <t t-esc="product.get('display_name', product.get('name', ''))"/>
+                                                                    </option>
+                                                                </t>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" class="form-control form-control-sm quantity_input" name="quantities[]" t-att-value="line.get('quantity', 1)" min="0" step="0.01"/>
+                                                        </td>
+                                                        <td>
+                                                            <select class="form-select form-select-sm uom_select" name="uom_ids[]">
+                                                                <option value="">Select Unit</option>
+                                                                <t t-foreach="uoms" t-as="uom">
+                                                                    <option t-att-value="uom.id" t-att-selected="line.get('uom_id') == uom.id">
+                                                                        <t t-esc="uom.name"/>
+                                                                    </option>
+                                                                </t>
+                                                            </select>
+                                                        </td>
+                                                        <td>
+                                                            <input type="number" class="form-control form-control-sm price_unit_input" name="price_units[]" t-att-value="line.get('price_unit', 0)" min="0" step="0.01"/>
+                                                        </td>
+                                                        <td>
+                                                            <div class="tax_display d-flex flex-wrap gap-1">
+                                                                <t t-foreach="line.get('tax_names', [])" t-as="tax_name">
+                                                                    <span class="badge bg-secondary me-1"><t t-esc="tax_name"/></span>
+                                                                </t>
+                                                            </div>
+                                                            <input type="hidden" class="tax_ids_hidden" name="tax_ids[]" t-att-value="','.join([str(t) for t in line.get('tax_ids', [])])"/>
+                                                        </td>
+                                                        <td>
+                                                            <span class="availability_badge badge bg-secondary">--</span>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" class="form-control form-control-sm amount_display" name="amounts[]" readonly="readonly" t-att-value="line.get('price_subtotal', 0)" style="text-align: right;"/>
+                                                            <input type="hidden" class="amount_hidden" name="amounts_hidden[]" t-att-value="line.get('price_subtotal', 0)"/>
+                                                        </td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-sm btn-outline-danger remove_line_btn" title="Remove line">
+                                                                ✕
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                            <t t-if="not (order_data and order_data.get('order_lines'))">
                                             <tr class="order_line_row">
                                                 <td>
                                                     <select class="form-select form-select-sm category_select" name="category_ids[]">
@@ -230,6 +333,9 @@
                                                     <div class="tax_display d-flex flex-wrap gap-1"></div>
                                                     <input type="hidden" class="tax_ids_hidden" name="tax_ids[]" value=""/>
                                                 </td>
+                                                <td>
+                                                    <span class="availability_badge badge bg-secondary">--</span>
+                                                </td>
 
                                                 <td>
                                                     <input type="text" class="form-control form-control-sm amount_display" name="amounts[]" readonly="readonly" value="0.00" style="text-align: right;"/>
@@ -241,6 +347,7 @@
                                                     </button>
                                                 </td>
                                             </tr>
+                                            </t>
                                         </t>
                                     </tbody>
                                 </table>
@@ -271,10 +378,11 @@
                                 <input type="text" class="form-control" t-att-value="order_data.get('amount_total', '') if order_data else ''" readonly="readonly"/>
                             </div>
                         </div>
-                        <a href="/my/purchase_orders" class="btn btn-secondary">Back to List</a>
                     </t>
                     <t t-if="not is_readonly">
-                        <button type="submit" class="btn btn-primary">Create Purchase Order</button>
+                        <t t-if="not order_data">
+                            <button type="submit" class="btn btn-primary">Create Purchase Order</button>
+                        </t>
                     </t>
                 </form>
 
@@ -410,6 +518,10 @@
                                     option.textContent = addr.label || addr.name || addr.display_name;
                                     deliveryAddressSelect.appendChild(option);
                                 });
+                                const selectedDelivery = deliveryAddressSelect.getAttribute('data-selected');
+                                if (selectedDelivery) {
+                                    deliveryAddressSelect.value = selectedDelivery;
+                                }
 
                                 // Auto-patch notes from customer
                                 notesTextarea.value = notes;
@@ -428,6 +540,9 @@
                             shippingOptionSelect.value = '';
                         }
                     });
+                    if (customerSelect.value) {
+                        customerSelect.dispatchEvent(new Event('change'));
+                    }
 
                     // Add line functionality
                     const addLineBtn = document.getElementById('add_line_btn');
@@ -524,6 +639,19 @@
                                 } else {
                                     // No taxes, set tax rate to 0
                                     row.setAttribute('data-tax-rate', '0');
+                                }
+
+                                // Availability badge based on qty_available
+                                const availabilityBadge = row.querySelector('.availability_badge');
+                                if (availabilityBadge) {
+                                    const qtyAvailable = parseFloat(result.qty_available || 0);
+                                    if (qtyAvailable > 0) {
+                                        availabilityBadge.className = 'availability_badge badge bg-success';
+                                        availabilityBadge.textContent = 'Available';
+                                    } else {
+                                        availabilityBadge.className = 'availability_badge badge bg-danger';
+                                        availabilityBadge.textContent = 'Out of stock';
+                                    }
                                 }
 
                                 // Calculate amount after price is set

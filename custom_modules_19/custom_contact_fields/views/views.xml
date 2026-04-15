@@ -262,6 +262,46 @@
             </xpath>
           </field>
       </record>
+
+      <!-- International Phone Number: bypass custom phone formatting/validation -->
+      <record id="view_partner_form_add_international_phone_checkbox" model="ir.ui.view">
+          <field name="name">res.partner.form.international.phone.checkbox</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="priority">60</field>
+          <field name="arch" type="xml">
+              <!-- Place the checkbox directly under the main Phone field block (header), PERSON ONLY -->
+              <xpath expr="//div[@class='mb8']//div[.//field[@name='phone']]" position="after">
+                  <div class="d-flex align-items-baseline w-md-50 mt-1" invisible="is_company">
+                      <label for="international_phone_number"/>
+                      <field name="international_phone_number"
+                             string="International Phone Number"
+                             class="ms-1"
+                             nolabel="1"/>
+                  </div>
+              </xpath>
+          </field>
+      </record>
+
+      <!-- International Phone Number: show for Company just under Email -->
+      <record id="view_partner_form_add_international_phone_checkbox_company" model="ir.ui.view">
+          <field name="name">res.partner.form.international.phone.checkbox.company</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="priority">61</field>
+          <field name="arch" type="xml">
+              <!-- Insert after the Email row in the header; visible only for companies -->
+              <xpath expr="//div[@class='mb8']//div[.//field[@name='email']]" position="after">
+                  <div class="d-flex align-items-baseline w-md-50 mt-1" invisible="not is_company">
+                      <label for="international_phone_number"/>
+                      <field name="international_phone_number"
+                             string="International Phone Number"
+                             class="ms-1"
+                             nolabel="1"/>
+                  </div>
+              </xpath>
+          </field>
+      </record>
     
       <!-- Hide dealer field when Person is selected -->
       <record id="view_partner_form_hide_dealer_person" model="ir.ui.view">

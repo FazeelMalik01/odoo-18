@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="gym_fitness_report_form_view" model="ir.ui.view">
+        <field name="name">gym.fitness.report.form.view</field>
+        <field name="model">fitness.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="member_id"/>
+                        <h1>
+                            <field name="member_id" domain="[('is_member', '=', True)]"
+                                   options="{'no_create': True, 'no_create_edit':True}" required="1"/>
+                        </h1>
+                    </div>
+                    <group string="Measurement">
+                        <group>
+                            <label for="height" string="Height"/>
+                            <div class="address_format">
+                                <field name="height" style="width: 30%;"/>
+                                <strong>&#160;&#160;cm&#160;&#160;</strong>
+                            </div>
+                            <label for="waist" string="Waist"/>
+                            <div class="address_format">
+                                <field name="waist" style="width: 30%;"/>
+                                <strong>&#160;&#160;cm&#160;&#160;</strong>
+                            </div>
+                            <label for="neck" string="Neck"/>
+                            <div class="address_format">
+                                <field name="neck" style="width: 30%;"/>
+                                <strong>&#160;&#160;cm&#160;&#160;</strong>
+                            </div>
+                            <label for="weight" string="Weight"/>
+                            <div class="address_format">
+                                <field name="weight" style="width: 30%;"/>
+                                <strong>&#160;&#160;kg&#160;&#160;</strong>
+                            </div>
+                            <label for="hips" string="Hips" invisible="gender == 'm'"/>
+                            <div class="address_format" invisible="gender == 'm'">
+                                <field name="hips" style="width: 30%;"/>
+                                <strong>&#160;&#160;cm&#160;&#160;</strong>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="date" required="1"/>
+                            <field name="gender" widget="radio" options="{'horizontal': true}"/>
+                            <field name="age" force_save="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="BMI">
+                            <group>
+                                <group>
+                                    <field name="bmi"/>
+                                </group>
+                                <group>
+                                    <field name="bmi_categories"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="BMR">
+                            <group>
+                                <label for="bmr" class="mt-1" string="BMR"/>
+                                <div name="bmr">
+                                    <field name="bmr" class="oe_inline"/>
+                                    Calories/day
+                                </div>
+                            </group>
+                        </page>
+                        <page string="BFP">
+                            <group>
+                                <label for="bfp" class="mt-1" string="Body Fat"/>
+                                <div name="bfp">
+                                    <field name="bfp" class="oe_inline"/>
+                                    %
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="gym_fitness_report_tree_view" model="ir.ui.view">
+        <field name="name">gym.fitness.report.tree.view</field>
+        <field name="model">fitness.report</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="member_id"/>
+                <field name="date"/>
+                <field name="bmi"/>
+                <field name="bmr"/>
+                <field name="bfp"/>
+            </list>
+        </field>
+    </record>
+    <record id="fitness_report_search_view" model="ir.ui.view">
+        <field name="name">fitness.report.search.view</field>
+        <field name="model">fitness.report</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="member_id"/>
+                <group string="Group By">
+                    <filter name="member_id" string="Members"
+                            context="{'group_by': 'member_id'}"/>
+                    <filter name="bmi_categories" string="BMI Category"
+                            context="{'group_by': 'bmi_categories'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="gym_fitness_report_action" model="ir.actions.act_window">
+        <field name="name">Fitness Reports</field>
+        <field name="res_model">fitness.report</field>
+        <field name="view_mode">list,form,search</field>
+    </record>
+</odoo>

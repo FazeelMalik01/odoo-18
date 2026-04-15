@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_appointment_type_form_inherit_employee" model="ir.ui.view">
+        <field name="name">appointment.type.form.employee</field>
+        <field name="model">appointment.type</field>
+        <field name="inherit_id" ref="appointment.appointment_type_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='staff_user_ids']" position="replace">
+                <field name="staff_user_ids" widget="many2many_tags"/>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="nutrient_type_form_view" model="ir.ui.view">
+        <field name="name">nutrient.type.form.view</field>
+        <field name="model">nutrient.type</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="avatar" widget="image" class="oe_avatar" nolabel="1"
+                           options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Nutrient" required="1"/>
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="nutrient_type_tree_view" model="ir.ui.view">
+        <field name="name">nutrient.type.tree.view</field>
+        <field name="model">nutrient.type</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+    <record id="nutrient_kanan_view" model="ir.ui.view">
+        <field name="name">nutrient.kanban.view</field>
+        <field name="model">nutrient.type</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <templates>
+                    <t t-name="card" class="flex-row p-1">
+                        <aside>
+                            <field name="avatar" widget="image"
+                                   options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                        </aside>
+                        <main class="ms-2 mt-1">
+                            <field name="name" class="fw-bold"/>
+                        </main>
+                        <!--                        <div class="d-flex p-1">-->
+                        <!--                            <div style="height:100px; width:96px;">-->
+                        <!--                                <field name="avatar" widget="image"-->
+                        <!--                                       style="height:100px; width:96px;"-->
+                        <!--                                       options="{'img_class': 'w-100 h-100 object-fit-cover'}"/>-->
+                        <!--                            </div>-->
+                        <!--                            <div class="ms-2">-->
+                        <!--                                <strong class="fs-3 fw-bold">-->
+                        <!--                                    <field name="name"/>-->
+                        <!--                                </strong>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="nutrient_type_search_view" model="ir.ui.view">
+        <field name="name">nutrient.type.search.view</field>
+        <field name="model">nutrient.type</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+    <record id="nutrient_type_action" model="ir.actions.act_window">
+        <field name="name">Nutrients</field>
+        <field name="res_model">nutrient.type</field>
+        <field name="view_mode">kanban,list,form,search</field>
+    </record>
+</odoo>

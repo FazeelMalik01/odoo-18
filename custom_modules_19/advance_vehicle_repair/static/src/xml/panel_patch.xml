@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t
+        t-name="advance_vehicle_repair.ProductCatalogSearchPanelContent"
+        t-inherit="account.ProductCatalogSearchPanelContent"
+        t-inherit-mode="extension"
+    >
+        <section position="before">
+            <!-- ═══════════════════════════════════════════════
+                 VEHICLE COMPATIBILITY FILTER PANEL
+                 ═══════════════════════════════════════════════ -->
+            <section class="o_vehicle_filter_panel mt-3 mb-2">
+                <!-- Panel Header -->
+                <header
+                    class="d-flex align-items-center cursor-pointer gap-2 mb-2 px-1"
+                    t-on-click="toggleVehiclePanel"
+                >
+                    <i class="fa fa-car text-primary"/>
+                    <span class="text-uppercase fw-bold text-muted small">Vehicle Filter</span>
+                    <span
+                        t-if="this.hasVehicleFilters"
+                        class="badge bg-primary ms-1"
+                        style="font-size:10px;"
+                    >Active</span>
+                    <i
+                        class="fa ms-auto text-muted"
+                        t-att-class="this.state.vehiclePanelExpanded ? 'fa-chevron-up' : 'fa-chevron-down'"
+                    />
+                </header>
+                <!-- Collapsible Body -->
+                <div t-if="this.state.vehiclePanelExpanded" class="o_vehicle_filter_body px-1">
+                    <!-- Active filter breadcrumb -->
+                    <div
+                        t-if="this.hasVehicleFilters"
+                        class="d-flex align-items-center flex-wrap gap-1 mb-2"
+                    >
+                        <span t-if="this.selectedMakeName" class="badge rounded-pill bg-light text-dark border">
+                            <i class="fa fa-industry me-1"/>
+                            <t t-out="this.selectedMakeName"/>
+                        </span>
+                        <i t-if="this.selectedModelName" class="fa fa-chevron-right text-muted small"/>
+                        <span t-if="this.selectedModelName" class="badge rounded-pill bg-light text-dark border">
+                            <i class="fa fa-car me-1"/>
+                            <t t-out="this.selectedModelName"/>
+                        </span>
+                        <i t-if="this.selectedYearName" class="fa fa-chevron-right text-muted small"/>
+                        <span t-if="this.selectedYearName" class="badge rounded-pill bg-light text-dark border">
+                            <i class="fa fa-calendar me-1"/>
+                            <t t-out="this.selectedYearName"/>
+                        </span>
+                        <button
+                            class="btn btn-link btn-sm text-danger p-0 ms-auto"
+                            t-on-click="clearVehicleFilters"
+                            title="Clear vehicle filters"
+                        >
+                            <i class="fa fa-times-circle"/> Clear
+                        </button>
+                    </div>
+                    <!-- ── MAKE ── -->
+                    <div class="mb-2">
+                        <label class="form-label small text-muted fw-semibold mb-1">
+                            <i class="fa fa-industry me-1"/>Make
+                        </label>
+                        <select class="form-select form-select-sm" t-on-change="onMakeChange">
+                            <option value="">— All Makes —</option>
+                            <t t-foreach="this.state.vehicleMakes" t-as="make" t-key="make.id">
+                                <option
+                                    t-att-value="make.id"
+                                    t-att-selected="make.id === this.state.selectedMakeId ? true : false"
+                                    t-out="make.name"
+                                />
+                            </t>
+                        </select>
+                    </div>
+                    <!-- ── MODEL (always visible, filtered by make if selected) ── -->
+                    <div class="mb-2">
+                        <label class="form-label small text-muted fw-semibold mb-1">
+                            <i class="fa fa-car me-1"/>Model
+                        </label>
+                        <select class="form-select form-select-sm" t-on-change="onModelChange">
+                            <option value="">— All Models —</option>
+                            <t t-foreach="this.state.vehicleModels" t-as="vmodel" t-key="vmodel.id">
+                                <option
+                                    t-att-value="vmodel.id"
+                                    t-att-selected="vmodel.id === this.state.selectedModelId ? true : false"
+                                    t-out="vmodel.name"
+                                />
+                            </t>
+                        </select>
+                        <div t-if="this.state.vehicleModels.length === 0" class="mt-1">
+                            <span class="text-muted small fst-italic">No models available</span>
+                        </div>
+                    </div>
+                    <!-- ── YEAR (always visible, filtered by model if selected) ── -->
+                    <div class="mb-2">
+                        <label class="form-label small text-muted fw-semibold mb-1">
+                            <i class="fa fa-calendar me-1"/>Year
+                        </label>
+                        <select class="form-select form-select-sm" t-on-change="onYearChange">
+                            <option value="">— All Years —</option>
+                            <t t-foreach="this.state.vehicleYears" t-as="yr" t-key="yr.id">
+                                <option
+                                    t-att-value="yr.id"
+                                    t-att-selected="yr.id === this.state.selectedYearId ? true : false"
+                                    t-out="yr.name"
+                                />
+                            </t>
+                        </select>
+                        <div t-if="this.state.vehicleYears.length === 0" class="mt-1">
+                            <span class="text-muted small fst-italic">No years available</span>
+                        </div>
+                    </div>
+                    <div class="o_vehicle_filter_section o_part_condition_section mt-3">
+                        <div class="o_search_panel_section_header d-flex align-items-center justify-content-between pb-1 mb-2"
+                            style="border-bottom: 1px solid var(--o-gray-200, #dee2e6);">
+                            <b class="o_search_panel_section_title text-uppercase" style="font-size:0.75rem; letter-spacing:.05em;">
+                                Part Condition
+                            </b>
+                            <!-- Show selected condition name as a small badge -->
+                            <t t-if="state.selectedPartCondition">
+                                <span class="badge text-bg-primary" style="font-size:0.7rem;">
+                                    <t t-esc="selectedPartConditionName"/>
+                                </span>
+                            </t>
+                        </div>
+                        <div class="o_part_condition_options d-flex flex-column gap-1 ps-1">
+                            <t t-foreach="partConditionOptions" t-as="option" t-key="option.value">
+                                <label class="o_part_condition_label d-flex align-items-center gap-2"
+                                    style="cursor:pointer; user-select:none;">
+                                    <input
+                                        type="radio"
+                                        class="o_part_condition_radio"
+                                        name="part_condition"
+                                        t-att-value="option.value"
+                                        t-att-checked="state.selectedPartCondition === option.value"
+                                        t-on-click="onPartConditionChange"
+                                    />
+                                    <t t-esc="option.label"/>
+                                </label>
+                            </t>
+                        </div>
+                    </div>
+                    <!-- Active filter info -->
+                    <div
+                        t-if="this.hasVehicleFilters"
+                        class="alert alert-info py-1 px-2 mt-2 mb-0 d-flex align-items-center gap-2"
+                        style="font-size:12px;"
+                    >
+                        <i class="fa fa-info-circle"/>
+                        <span>Showing spare parts compatible with selected vehicle</span>
+                    </div>
+                </div>
+                <!-- /o_vehicle_filter_body -->
+                <hr class="my-3 opacity-25"/>
+            </section>
+        </section>
+    </t>
+</templates>

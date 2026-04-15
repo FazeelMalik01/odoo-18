@@ -15,9 +15,10 @@ Long description of module's purpose
     # for the full list
     'category': 'Uncategorized',
     'version': '0.4',
+    'license': 'LGPL-3',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'contacts', 'l10n_ca', 'sale', 'sale_stock', 'account', 'custom_dealers_portal'],
+    'depends': ['base', 'contacts', 'l10n_ca', 'sale', 'sale_stock', 'account', 'product_expiry', 'custom_dealers_portal'],
 
     # always loaded
     'data': [
@@ -26,6 +27,7 @@ Long description of module's purpose
         'views/views.xml',
         'views/contact_type_views.xml',
         'views/sale_order_ext_views.xml',
+        'views/purchase_order_ext_views.xml',
         'views/product_fields.xml',
         'views/sale_report_ext.xml',
         'views/account_invoice_report_ext.xml',

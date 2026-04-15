@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="address_form_bahrain_fields"
+              inherit_id="website_sale.address"
+              name="Bahrain Address Fields">
+
+        <!-- ── Mobile field — injected after the Phone div ───────────────── -->
+        <!--
+            Odoo renders Phone inside div#div_phone (col-lg-6 mb-2).
+            We insert a matching div immediately after so Mobile sits on the
+            same visual row pattern as Phone.
+        -->
+        <xpath expr="//div[@id='div_phone']" position="after">
+            <div id="div_mobile" class="col-lg-6 mb-2">
+                <label class="col-form-label" for="mobile">Mobile</label>
+                <input type="tel"
+                       name="mobile"
+                       id="mobile"
+                       class="form-control"
+                       placeholder="e.g. +973 3300 0000"
+                       t-att-value="partner_sudo.mobile or ''"/>
+            </div>
+        </xpath>
+
+        <!-- ── Hide Address Line 1 for Bahrain (server-side render) ─────── -->
+        <xpath expr="//div[@id='div_street']" position="attributes">
+            <attribute name="t-att-style">
+                country and country.code == 'BH' and 'display: none;' or ''
+            </attribute>
+        </xpath>
+
+        <!-- ── Hide Address Line 2 for Bahrain (server-side render) ─────── -->
+        <xpath expr="//div[@id='div_street2']" position="attributes">
+            <attribute name="t-att-style">
+                country and country.code == 'BH' and 'display: none;' or ''
+            </attribute>
+        </xpath>
+
+        <!-- ── Bahrain-specific address fields ───────────────────────────── -->
+        <xpath expr="//div[@id='div_street2']" position="after">
+            <div id="div_bahrain_fields"
+                 class="col-12 px-0"
+                 t-att-style="country and country.code == 'BH' and 'display: block;' or 'display: none;'">
+
+                <!-- Flat (Optional) -->
+                <div class="col-lg-12 mb-2">
+                    <label class="col-form-label label-optional" for="bahrain_flat">Flat</label>
+                    <input type="text"
+                           name="bahrain_flat"
+                           id="bahrain_flat"
+                           class="form-control"
+                           placeholder="e.g. Flat 3"
+                           t-att-value="partner_sudo.bahrain_flat or ''"/>
+                </div>
+
+                <!-- Building (Mandatory) -->
+                <div class="col-lg-12 mb-2">
+                    <label class="col-form-label" for="bahrain_building">
+                        Building <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           name="bahrain_building"
+                           id="bahrain_building"
+                           class="form-control bahrain-required"
+                           placeholder="e.g. Al Hamra Tower"
+                           t-att-value="partner_sudo.bahrain_building or ''"/>
+                </div>
+
+                <!-- Road (Mandatory) -->
+                <div class="col-lg-12 mb-2">
+                    <label class="col-form-label" for="bahrain_road">
+                        Road <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           name="bahrain_road"
+                           id="bahrain_road"
+                           class="form-control bahrain-required"
+                           placeholder="e.g. Road 3601"
+                           t-att-value="partner_sudo.bahrain_road or ''"/>
+                </div>
+
+                <!-- Block (Mandatory) -->
+                <div class="col-lg-12 mb-2">
+                    <label class="col-form-label" for="bahrain_block">
+                        Block <span class="text-danger">*</span>
+                    </label>
+                    <input type="text"
+                           name="bahrain_block"
+                           id="bahrain_block"
+                           class="form-control bahrain-required"
+                           placeholder="e.g. Block 436"
+                           t-att-value="partner_sudo.bahrain_block or ''"/>
+                </div>
+
+            </div>
+        </xpath>
+
+    </template>
+</odoo>

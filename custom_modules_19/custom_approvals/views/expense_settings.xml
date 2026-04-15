@@ -1,0 +1,23 @@
+<odoo>
+    <record id="res_config_settings_view_form_expense_custom" model="ir.ui.view">
+        <field name="name">res.config.settings.expense.custom</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="hr_expense.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Add new block AFTER connectors -->
+            <xpath expr="//block[@name='expenses_setting_container']" position="after">
+                <block title="Expense Approval Settings" id="expense_approval_settings_block">
+                    <setting id="expense_amount_setting" string="Amount Limit">
+                        <field name="expense_amount"/>
+                    </setting>
+                    <setting id="expense_fm_setting" string="Finance Manager">
+                        <field name="expense_fm"/>
+                    </setting>
+                    <setting id="ceo_setting" string="CEO">
+                        <field name="expense_ceo"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

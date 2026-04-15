@@ -25,12 +25,12 @@ This module provides a customized portal interface for dealers, allowing them to
     'auto_install': False,
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'portal', 'website', 'sale', 'web'],
+    # crm is required so dealer signups can automatically create a lead
+    'depends': ['base', 'portal', 'website', 'sale', 'web', 'website_sale', 'crm'],
 
     # always loaded
     'data': [
         'security/dealer_groups.xml',
-        #'security/ir.model.access.csv',
         'views/dealers_portal_card.xml',
         'views/dealers_portal_list.xml',
         'views/res_partner.xml',
@@ -42,6 +42,11 @@ This module provides a customized portal interface for dealers, allowing them to
         'views/dealer_signup.xml',
         'views/login_signup_modifications.xml',
         'views/product_catalog.xml',
+        'views/portal_pricelist_readonly.xml',
+        'views/portal_home_pricelist.xml',
+        'views/website_header_customizations.xml',
+        'views/website_footer_customizations.xml',
+        'views/website_robots_and_portal_meta.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

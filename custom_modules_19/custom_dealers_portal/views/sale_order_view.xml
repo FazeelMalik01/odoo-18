@@ -4,6 +4,39 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            <!--
+              Statusbar rules:
+              - Admin-created orders (no dealer): Draft -> Sales Order (Cancel only shows once cancelled)
+              - Dealer-created orders (dealer set): To Be Approved -> In Progress -> Sales Order (Cancel only shows once cancelled)
+            -->
+            <xpath expr="//header//field[@name='state']" position="replace">
+                <!-- Admin flow -->
+                <field name="admin_state"
+                       widget="statusbar"
+                       statusbar_visible="draft,sale"
+                       invisible="dealer or admin_state == 'cancel'"/>
+                <field name="admin_state"
+                       widget="statusbar"
+                       statusbar_visible="cancel"
+                       invisible="dealer or admin_state != 'cancel'"/>
+
+                <!-- Dealer portal flow -->
+                <field name="portal_state"
+                       widget="statusbar"
+                       statusbar_visible="to_be_approved,in_progress,done"
+                       invisible="not dealer or portal_state == 'cancelled'"/>
+                <field name="portal_state"
+                       widget="statusbar"
+                       statusbar_visible="cancelled"
+                       invisible="not dealer or portal_state != 'cancelled'"/>
+            </xpath>
+            <xpath expr="//header//button[@name='action_confirm']" position="after">
+                <button name="action_set_portal_in_progress"
+                        string="Mark as In Progress"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not dealer or portal_state != 'to_be_approved' or state in ('sale', 'done', 'cancel')"/>
+            </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="dealer"/>
             </xpath>

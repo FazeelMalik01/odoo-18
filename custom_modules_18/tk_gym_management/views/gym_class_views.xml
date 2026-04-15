@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--class attendee form view-->
+    <record id="class_attendee_form_view" model="ir.ui.view">
+        <field name="name">class.attendee.form.view</field>
+        <field name="model">class.attendee</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="member_id" />
+                        <h1>
+                            <field name="member_id" string="Member" />
+                        </h1>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--gym
+    class form view-->
+    <record id="gym_class_form_view" model="ir.ui.view">
+        <field name="name">gym.class.form.view</field>
+        <field name="model">gym.class</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar"
+                        statusbar_visible="draft,running,complete" />
+                    <button name="action_running" type="object" string="Start Class"
+                        class="btn-primary"
+                        invisible="state != 'draft'" />
+                    <button name="action_complete" type="object" string="Complete"
+                        class="btn-success"
+                        invisible="state != 'running'" />
+                    <button name="action_cancel" type="object" string="Cancel" class="btn-danger"
+                        invisible="state in ['complete', 'cancel']" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" />
+                        <h1>
+                            <field name="name" placeholder="e.g. Kick boxing.."
+                                readonly="state in ['running', 'complete', 'cancel']" required="1" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="class_type_id" options="{'no_create':True}"
+                                readonly="state in ['running', 'complete', 'cancel']" />
+                            <field name="trainer_ids" domain="[('is_trainer', '=', True)]"
+                                options="{'no_create':True}"
+                                widget="many2many_tags"
+                                readonly="state in ['running', 'complete', 'cancel']"
+                                required="1" />
+                            <field name="trainer_id" domain="[('is_trainer', '=', True)]"
+                                options="{'no_create':True}"
+                                invisible="1" />
+                            <field name="tag_ids" widget="many2many_tags"
+                                options="{'color_field': 'color','no_create':True}"
+                                readonly="state in ['running', 'complete', 'cancel']" />
+                        </group>
+                        <group>
+                            <field name="start_date"
+                                readonly="state in ['running', 'complete', 'cancel']"
+                                required="1" />
+                            <field name="end_date" required="1"
+                                readonly="state in ['running', 'complete', 'cancel']" />
+                            <field name="class_type" widget="radio" options="{'horizontal': true}"
+                                readonly="state in ['running', 'complete', 'cancel']" />
+                            <label for="class_from" />
+                            <div class="d-flex">
+                                <field name="class_from" widget="float_time"
+                                    readonly="state in ['running', 'complete', 'cancel']" />
+                                <span class="o_form_label ms-1 me-1">To</span>
+                                <field name="class_to" widget="float_time"
+                                    readonly="state in ['running', 'complete', 'cancel']" />
+                            </div>
+                            <field name="cost" invisible="class_type == 'free'"
+                                readonly="state in ['running', 'complete', 'cancel']" />
+                            <field name="currency_id" invisible="1" />
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="class_attendees" string="Class Attendees">
+                            <field name="class_attendee_ids"
+                                readonly="state in ['complete', 'cancel']">
+                                <list editable="bottom">
+                                    <field name="member_id" options="{'no_create':True}"
+                                        required="1" />
+                                    <field name="amount" readonly="1" force_save="1"
+                                        column_invisible="parent.class_type == 'free'" />
+                                    <field name="yoga_class_id" column_invisible="True" />
+                                    <field name="currency_id" column_invisible="True" />
+                                    <field name="invoice_id" readonly="1" widget="many2one_button"
+                                        column_invisible="parent.class_type == 'free'" />
+                                    <field name="invoice_payment_state" widget="badge"
+                                        column_invisible="parent.class_type == 'free'"
+                                        decoration-danger="invoice_payment_state == 'not_paid'"
+                                        decoration-info="invoice_payment_state == 'partial'"
+                                        decoration-primary="invoice_payment_state == 'reversed'"
+                                        decoration-success="invoice_payment_state in ['paid', 'in_payment']" />
+                                    <button string="Create Invoice" name="action_invoice"
+                                        type="object"
+                                        class="oe_highlight"
+                                        invisible="invoice_id != False or parent.class_type == 'free'" />
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter />
+            </form>
+        </field>
+    </record>
+    <record id="gym_class_tree_view" model="ir.ui.view">
+        <field name="name">gym.class.tree.view</field>
+        <field name="model">gym.class</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="class_type_id" />
+                <field name="trainer_id" column_invisible="True" />
+                <field name="trainer_ids" widget="many2many_tags" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
+                <field name="class_type" widget="badge" optional="show"
+                    decoration-danger="class_type == 'paid'"
+                    decoration-success="class_type == 'free'" />
+                <field name="state" decoration-danger="state == 'cancel'"
+                    decoration-success="state == 'complete'"
+                    decoration-info="state == 'draft'" decoration-warning="state == 'running'"
+                    widget="badge" />
+            </list>
+        </field>
+    </record>
+    <record id="gym_class_calendar_view" model="ir.ui.view">
+        <field name="name">gym.class.calendar.view</field>
+        <field name="model">gym.class</field>
+        <field name="arch" type="xml">
+            <calendar string="Class Schedules"
+                date_start="start_date"
+                event_open_popup="true"
+                mode="month"
+                color="trainer_ids"
+                scales="day,month,year"
+                quick_create="False">
+                <field name="name" />
+                <field name="trainer_ids" widget="many2many_tags" />
+                <field name="trainer_id" invisible="1" />
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" />
+                <field name="class_type" widget="badge" optional="show" filters="1"
+                    decoration-danger="class_type == 'paid'"
+                    decoration-success="class_type == 'free'" />
+            </calendar>
+        </field>
+    </record>
+    <record id="gym_class_search_view" model="ir.ui.view">
+        <field name="name">gym.class.search.view</field>
+        <field name="model">gym.class</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="trainer_ids" />
+                <field name="trainer_id" />
+                <group string="Group By">
+                    <filter name="trainer_id" string="Trainer"
+                        context="{'group_by': 'trainer_id'}" />
+                    <filter name="group_by_state" string="State"
+                        context="{'group_by': 'state'}" />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="gym_class_action" model="ir.actions.act_window">
+        <field name="name">Classes</field>
+        <field name="res_model">gym.class</field>
+        <field name="view_mode">list,form,calendar,activity,search</field>
+    </record>
+</odoo>

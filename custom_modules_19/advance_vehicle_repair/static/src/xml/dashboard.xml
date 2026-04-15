@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="advance_vehicle_repair.dashboard">
-        <div class="o_dashboards">
+        <div class="o_dashboards overflow-auto">
             <div class="container-fluid o_lm_dashboard">
                 <t t-call="advance_vehicle_repair.dashboard_header"/>
                 <t t-call="advance_vehicle_repair.dashboard_content"/>
+                <t t-call="advance_vehicle_repair.dashboard_payment_content"/>
             </div>
-        </div>        
+        </div>
     </t>
-
     <t t-name="advance_vehicle_repair.dashboard_header">
-        <div class="row o_dashboard_common">            
+        <div class="row o_dashboard_common">
             <div class="col-12 o_box">
                 <div class="o_inner_box o_dashboard_action" data-action="total_bookings"
                      title="Confirm orders when you get paid." t-on-click="onDashboardAction">
@@ -33,7 +33,6 @@
                     </div>
                     Total Teams
                 </div>
-
                 <div class="o_inner_box o_dashboard_action" data-action="total_job_cards"
                      title="Send a recovery email to visitors who haven't completed their order."
                      t-on-click="onDashboardAction">
@@ -42,8 +41,7 @@
                     </div>
                     Total Repairs and Inspections
                 </div>
-
-                <div class="o_inner_box o_dashboard_action" data-action="total_inspection_jobcards"
+                <div class="o_inner_box o_dashboard_action" data-action="total_inspection_jobcards" style="display: none;"
                      title="Send a recovery email to visitors who haven't completed their order."
                      t-on-click="onDashboardAction">
                     <div class="o_highlight">
@@ -51,7 +49,7 @@
                     </div>
                     Inspection Job Cards
                 </div>
-                <div class="o_inner_box o_dashboard_action" data-action="total_repair_jobcards"
+                <div class="o_inner_box o_dashboard_action" data-action="total_repair_jobcards" style="display: none;"
                      title="Send a recovery email to visitors who haven't completed their order."
                      t-on-click="onDashboardAction">
                     <div class="o_highlight">
@@ -59,7 +57,6 @@
                     </div>
                     Repair Job Cards
                 </div>
-
                 <div class="o_inner_box o_dashboard_action" data-action="total_todays_bookings"
                      title="Send a recovery email to visitors who haven't completed their order."
                      t-on-click="onDashboardAction">
@@ -67,7 +64,15 @@
                         <t t-esc="this.state.total_todays_bookings"/>
                     </div>
                     Today's Bookings
-                </div>               
+                </div>
+                <div class="o_inner_box o_dashboard_action" data-action="confirmed_sale_orders"
+                    title="Confirmed Sale Orders linked with Jobcards"
+                    t-on-click="onDashboardAction">
+                    <div class="o_highlight">
+                        <t t-esc="this.state.confirmed_sale_orders"/>
+                    </div>
+                    Confirmed Quotations
+                </div>
             </div>
         </div>
         <div class="row o_dashboard_common mt-2">
@@ -126,7 +131,6 @@
             </div>
         </div>
     </t>
-
     <t t-name="advance_vehicle_repair.dashboard_content">
         <div class="o_activity_dashboard_content">
             <div class="row o_dashboard_sales">
@@ -145,10 +149,244 @@
                              t-ref="pieChart"
                             style="width:90%;  height:100%; "/>
                     </div>
-
                 </div>
             </div>
         </div>
     </t>
-
+    <t t-name="advance_vehicle_repair.dashboard_payment_content">
+        <div class='test'>
+            <div class="col-12" style="display: flex; gap: 5px; margin-bottom: 10px; margin-top: 10px;">
+                <!-- Left Panel: All Transactions -->
+                <div class="col-6">
+                    <div class="o_payments_panel">
+                        <h3 style="font-size: 16px; font-weight: 500; margin-bottom: 12px;">Transactions</h3>
+                        <!-- Filters -->
+                        <div class="o_payment_filters">
+                            <div class="o_filter_group">
+                                <label class="o_filter_label">
+                                    <i class="fa fa-calendar o_filter_icon"/>
+                            Date
+                                </label>
+                                <input type="date"
+                            class="o_filter_input"
+                            t-att-value="state.payments_filter_date"
+                            t-on-change="onPaymentFilterDate"/>
+                            </div>
+                            <div class="o_filter_group">
+                                <label class="o_filter_label">
+                                    <i class="fa fa-book o_filter_icon"/>
+                            Journal
+                                </label>
+                                <select class="o_filter_select" t-on-change="onPaymentFilterJournal">
+                                    <option value="">All Journals</option>
+                                    <t t-foreach="state.payments_journals" t-as="journal" t-key="journal.id">
+                                        <option t-att-value="journal.id"
+                                    t-att-selected="state.payments_filter_journal == journal.id">
+                                            <t t-esc="journal.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <t t-if="state.payments_filter_date or state.payments_filter_journal">
+                                <button class="o_filter_clear" t-on-click="onClearPaymentFilters">
+                                    <i class="fa fa-times"/> Clear
+                                </button>
+                            </t>
+                        </div>
+                        <!-- Payment Rows grouped by method -->
+                        <div class="o_payment_list">
+                            <t t-if="state.payments.length === 0">
+                                <div style="padding: 24px; text-align: center; color: var(--color-text-secondary); font-size: 13px;">
+                                    No transactions found.
+                                </div>
+                            </t>
+                            <t t-foreach="this.groupByMethod(state.payments)" t-as="group" t-key="group.key">
+                                <div class="o_payment_method_group_header" t-on-click="() => this.togglePaymentGroup(group.key)">
+                                    <span class="o_payment_method_group_label">
+                                        <i class="fa fa-credit-card"/>
+                                        <t t-esc="group.label"/>
+                                    </span>
+                                    <span class="o_payment_method_group_summary">
+                                        <t t-esc="group.payments.length"/> · <t t-esc="this.formatAmount(group.total, group.currency_id)"/>
+                                        <i t-attf-class="fa fa-chevron-down o_group_chevron #{state.collapsed_payment_groups[group.key] ? 'collapsed' : ''}"/>
+                                    </span>
+                                </div>
+                                <t t-if="!state.collapsed_payment_groups[group.key]">
+                                <t t-foreach="group.payments" t-as="payment" t-key="payment.id">
+                                    <div class="o_payment_row" t-on-click="() => this.onOpenPayment(payment)">
+                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                                            <div style="flex: 1; min-width: 0;">
+                                                <div class="o_payment_row_name">
+                                                    <t t-esc="payment.name || '—'"/>
+                                                </div>
+                                                <div class="o_payment_row_partner">
+                                                    <t t-esc="payment.partner_id ? payment.partner_id[1] : '—'"/>
+                                                </div>
+                                                <div class="o_payment_row_partner">
+                                                    <t t-esc="this.formatAmount(payment.amount, payment.currency_id)"/>
+                                                </div>
+                                            </div>
+                                            <div style="text-align: right; flex-shrink: 0;">
+                                                <div class="o_payment_row_date">
+                                                    <t t-esc="payment.date"/>
+                                                </div>
+                                                <div style="margin-top: 4px;">
+                                                    <span t-attf-class="o_payment_badge o_payment_badge_#{payment.state}">
+                                                        <t t-esc="this.getPaymentStateLabel(payment.state)"/>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="o_payment_row_meta">
+                                            <span>
+                                                <i class="fa fa-book"/>
+                                                <t t-esc="payment.journal_id ? payment.journal_id[1] : '—'"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </t>
+                                </t>
+                            </t>
+                        </div>
+                        <!-- Pagination -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 13px; color: var(--color-text-secondary);">
+                            <span>
+                                <t t-esc="(state.payments_page - 1) * state.payments_per_page + 1"/> –
+                                <t t-esc="Math.min(state.payments_page * state.payments_per_page, state.payments_total)"/>
+                        of
+                                <t t-esc="state.payments_total"/>
+                            </span>
+                            <div style="display: flex; gap: 4px;">
+                                <button class="btn btn-sm btn-secondary"
+                            t-att-disabled="state.payments_page === 1"
+                            t-on-click="() => this.onPaymentPage(state.payments_page - 1)">
+                                    <i class="fa fa-chevron-left"/>
+                                </button>
+                                <button class="btn btn-sm btn-secondary"
+                            t-att-disabled="state.payments_page * state.payments_per_page >= state.payments_total"
+                            t-on-click="() => this.onPaymentPage(state.payments_page + 1)">
+                                    <i class="fa fa-chevron-right"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Panel: Received Payments Only -->
+                <div class="col-6">
+                    <div class="o_payments_panel">
+                        <h3 style="font-size: 16px; font-weight: 500; margin-bottom: 12px;">Received Payments</h3>
+                        <!-- Filters -->
+                        <div class="o_payment_filters">
+                            <div class="o_filter_group">
+                                <label class="o_filter_label">
+                                    <i class="fa fa-calendar o_filter_icon"/>
+                            Date
+                                </label>
+                                <input type="date"
+                            class="o_filter_input"
+                            t-att-value="state.received_payments_filter_date"
+                            t-on-change="onReceivedPaymentFilterDate"/>
+                            </div>
+                            <div class="o_filter_group">
+                                <label class="o_filter_label">
+                                    <i class="fa fa-book o_filter_icon"/>
+                            Journal
+                                </label>
+                                <select class="o_filter_select" t-on-change="onReceivedPaymentFilterJournal">
+                                    <option value="">All Journals</option>
+                                    <t t-foreach="state.received_payments_journals" t-as="journal" t-key="journal.id">
+                                        <option t-att-value="journal.id"
+                                    t-att-selected="state.received_payments_filter_journal == journal.id">
+                                            <t t-esc="journal.name"/>
+                                        </option>
+                                    </t>
+                                </select>
+                            </div>
+                            <t t-if="state.received_payments_filter_date or state.received_payments_filter_journal">
+                                <button class="o_filter_clear" t-on-click="onClearReceivedPaymentFilters">
+                                    <i class="fa fa-times"/> Clear
+                                </button>
+                            </t>
+                        </div>
+                        <!-- Payment Rows grouped by method -->
+                        <div class="o_payment_list">
+                            <t t-if="state.received_payments.length === 0">
+                                <div style="padding: 24px; text-align: center; color: var(--color-text-secondary); font-size: 13px;">
+                                    No received payments found.
+                                </div>
+                            </t>
+                            <t t-foreach="this.groupByMethod(state.received_payments)" t-as="group" t-key="group.key">
+                                <div class="o_payment_method_group_header" t-on-click="() => this.toggleReceivedGroup(group.key)">
+                                    <span class="o_payment_method_group_label">
+                                        <i class="fa fa-credit-card"/>
+                                        <t t-esc="group.label"/>
+                                    </span>
+                                    <span class="o_payment_method_group_summary">
+                                        <t t-esc="group.payments.length"/> · <t t-esc="this.formatAmount(group.total, group.currency_id)"/>
+                                        <i t-attf-class="fa fa-chevron-down o_group_chevron #{state.collapsed_received_groups[group.key] ? 'collapsed' : ''}"/>
+                                    </span>
+                                </div>
+                                <t t-if="!state.collapsed_received_groups[group.key]">
+                                <t t-foreach="group.payments" t-as="payment" t-key="payment.id">
+                                    <div class="o_payment_row" t-on-click="() => this.onOpenPayment(payment)">
+                                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                                            <div style="flex: 1; min-width: 0;">
+                                                <div class="o_payment_row_name">
+                                                    <t t-esc="payment.name || '—'"/>
+                                                </div>
+                                                <div class="o_payment_row_partner">
+                                                    <t t-esc="payment.partner_id ? payment.partner_id[1] : '—'"/>
+                                                </div>
+                                                <div class="o_payment_row_partner">
+                                                    <t t-esc="this.formatAmount(payment.amount, payment.currency_id)"/>
+                                                </div>
+                                            </div>
+                                            <div style="text-align: right; flex-shrink: 0;">
+                                                <div class="o_payment_row_date">
+                                                    <t t-esc="payment.date"/>
+                                                </div>
+                                                <div style="margin-top: 4px;">
+                                                    <span t-attf-class="o_payment_badge o_payment_badge_#{payment.state}">
+                                                        <t t-esc="this.getPaymentStateLabel(payment.state)"/>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="o_payment_row_meta">
+                                            <span>
+                                                <i class="fa fa-book"/>
+                                                <t t-esc="payment.journal_id ? payment.journal_id[1] : '—'"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </t>
+                                </t>
+                            </t>
+                        </div>
+                        <!-- Pagination -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px; font-size: 13px; color: var(--color-text-secondary);">
+                            <span>
+                                <t t-esc="(state.received_payments_page - 1) * state.received_payments_per_page + 1"/> –
+                                <t t-esc="Math.min(state.received_payments_page * state.received_payments_per_page, state.received_payments_total)"/>
+                                    of
+                                <t t-esc="state.received_payments_total"/>
+                            </span>
+                            <div style="display: flex; gap: 4px;">
+                                <button class="btn btn-sm btn-secondary"
+                            t-att-disabled="state.received_payments_page === 1"
+                            t-on-click="() => this.onReceivedPaymentPage(state.received_payments_page - 1)">
+                                    <i class="fa fa-chevron-left"/>
+                                </button>
+                                <button class="btn btn-sm btn-secondary"
+                            t-att-disabled="state.received_payments_page * state.received_payments_per_page >= state.received_payments_total"
+                            t-on-click="() => this.onReceivedPaymentPage(state.received_payments_page + 1)">
+                                    <i class="fa fa-chevron-right"/>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
 </templates>

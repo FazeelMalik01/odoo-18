@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="tk_gym_management.diet_dashboard" owl="1">
+        <section class="section gym_dashboard">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12 mb-4 mt32 mb16">
+                        <h4 class="section-header">Statistics</h4>
+                        <hr class="border-primary"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 mb-4 mt8 mb16" t-on-click="() => this.viewStatistic('t_members')">
+                        <div class="card purple-bg p-32">
+                            <div class="card-body purple-bg tk-card-body">
+                                <img alt="users" width="40"
+                                     src="/tk_gym_management/static/src/img/members.svg"/>
+                                <h4 class="tk-st-1 purple-bg">Members</h4>
+                                <h6 class="tk-st-2 purple-bg">
+                                    <t t-esc="state.dietData['members']"/>
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4 mt8 mb16" t-on-click="() => this.viewStatistic('web_leads')">
+                        <div class="card terminate-bg p-32">
+                            <div class="card-body terminate-bg tk-card-body">
+                                <img alt="users" width="40"
+                                     src="/tk_gym_management/static/src/img/leads.svg"/>
+                                <h4 class="tk-st-1 terminate-bg">Leads</h4>
+                                <h6 class="tk-st-2 terminate-bg">
+                                    <t t-esc="state.dietData['leads']"/>
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4 mt8 mb16" t-on-click="() => this.viewStatistic('web_opportunities')">
+                        <div class="card all-bg p-32">
+                            <div class="card-body all-bg tk-card-body">
+                                <img alt="users" width="40"
+                                     src="/tk_gym_management/static/src/img/oppo.svg"/>
+                                <h4 class="tk-st-1 all-bg">Opportunities</h4>
+                                <h6 class="tk-st-2 all-bg">
+                                    <t t-esc="state.dietData['opportunities']"/>
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4 mt8 mb16" t-on-click="() => this.viewStatistic('t_diet_plans')">
+                        <div class="card active-bg p-32">
+                            <div class="card-body active-bg tk-card-body">
+                                <img alt="users" width="40"
+                                     src="/tk_gym_management/static/src/img/diet_plan.svg"/>
+                                <h4 class="tk-st-1 active-bg">Diet Plans</h4>
+                                <h6 class="tk-st-2 active-bg">
+                                    <t t-esc="state.dietData['diet_plans']"/>
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4 mt8 mb16" t-on-click="() => this.viewStatistic('t_diet_plan_templates')">
+                        <div class="card pink-bg p-32">
+                            <div class="card-body pink-bg tk-card-body">
+                                <img alt="users" width="40"
+                                     src="/tk_gym_management/static/src/img/template.svg"/>
+                                <h4 class="tk-st-1 pink-bg">Diet Templates</h4>
+                                <h6 class="tk-st-2 pink-bg">
+                                    <t t-esc="state.dietData['diet_plan_templates']"/>
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 mb-4 mt8 mb16" t-on-click="() => this.viewStatistic('t_invoices')">
+                        <div class="card warn-bg p-32">
+                            <div class="card-body warn-bg tk-card-body">
+                                <img alt="users" width="40"
+                                     src="/tk_gym_management/static/src/img/invoice.svg"/>
+                                <h4 class="tk-st-1 warn-bg">Invoices</h4>
+                                <h6 class="tk-st-2 warn-bg">
+                                    <t t-esc="state.dietData['invoice_count']"/>
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mb-4 mt32 mb16">
+                        <div class="row">
+                            <div class="col-md-8 align-items-stretch">
+                                <h5 class="mb16">Month wise Invoice Details</h5>
+                                <hr class="border-primary"/>
+                                <div t-ref="payment_month" class="tk-os-chart">
+                                </div>
+                            </div>
+                            <div class="col-md-4 align-items-stretch">
+                                <h5 class="mb16">Gender wise Diet Plans</h5>
+                                <hr class="border-primary"/>
+                                <div t-ref="gender_diet_plan" class="tk-os-chart">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </t>
+</templates>

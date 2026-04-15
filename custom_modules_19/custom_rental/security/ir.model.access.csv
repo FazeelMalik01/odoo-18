@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_rental_zipcode_user,rental.zipcode.user,custom_rental.model_rental_zipcode,base.group_user,1,1,1,1
+access_rental_section_user,rental.section.user,custom_rental.model_rental_section,base.group_user,1,0,0,0
+access_rental_section_manager,rental.section.manager,custom_rental.model_rental_section,sales_team.group_sale_manager,1,1,1,1

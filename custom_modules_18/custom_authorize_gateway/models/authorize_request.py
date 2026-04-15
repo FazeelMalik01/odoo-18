@@ -109,3 +109,54 @@ class CustomAuthorizeAPI(AuthorizeAPI):
             payload['refId'] = ref_id
         response = self._make_request('createTransactionRequest', payload)
         return self._format_response(response, 'prior_auth_capture')
+
+    def charge_opaque_data(self, partner, amount, descriptor, value, transaction_type='auth_capture'):
+        """
+        Charge a card using an opaque data nonce from Accept.js, without
+        requiring an existing payment.transaction record.
+
+        :param partner: res.partner record (for billTo info)
+        :param float amount: amount to charge
+        :param str descriptor: opaqueData.dataDescriptor from Accept.js
+        :param str value: opaqueData.dataValue from Accept.js
+        :param str transaction_type: 'auth_capture' or 'auth_only'
+        :return: dict with x_response_code, x_trans_id, x_response_reason_text
+        """
+        tx_type = 'authCaptureTransaction' if transaction_type == 'auth_capture' else 'authOnlyTransaction'
+
+        opaque_data = {
+            'dataDescriptor': descriptor,
+            'dataValue': value,
+        }
+
+        payload = {
+            'transactionRequest': {
+                'transactionType': tx_type,
+                'amount': str(round(amount, 2)),
+                'payment': {
+                    'opaqueData': opaque_data,
+                },
+                'billTo': {
+                    'firstName': (partner.name or '').split(' ')[0][:50],
+                    'lastName': ' '.join((partner.name or '').split(' ')[1:])[:50] or '.',
+                    'address': (partner.street or '')[:60],
+                    'city': (partner.city or '')[:40],
+                    'state': (partner.state_id.code or '')[:40],
+                    'zip': (partner.zip or '')[:20],
+                    'country': (partner.country_id.code or '')[:60],
+                    'email': (partner.email or '')[:255],
+                },
+            }
+        }
+
+        response = self._make_request('createTransactionRequest', payload)
+        result = self._format_response(response, 'auth_capture' if transaction_type == 'auth_capture' else 'auth_only')
+
+        # Surface transaction-level errors if any
+        errors = response.get('transactionResponse', {}).get('errors')
+        if errors:
+            result['error'] = '\n'.join(e.get('errorText', '') for e in errors)
+        elif result.get('x_response_code') not in ('1',):
+            result['error'] = result.get('x_response_reason_text') or 'Transaction declined.'
+
+        return result

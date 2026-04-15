@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <!--workout exercise form view-->
+    <record id="workout_exercise_form_view" model="ir.ui.view">
+        <field name="name">workout.exercise.form.view</field>
+        <field name="model">workout.exercise</field>
+        <field name="arch" type="xml">
+            <form create="0" edit="0">
+                <sheet>
+                    <group string="Workout Exercises Details">
+                        <group>
+                            <field name="exercise_id"/>
+                            <field name="exercise_for_id" widget="many2many_tags"
+                                   options="{'color_field': 'color','no_create':True}"/>
+                            <field name="equipment_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color','no_create':True}"/>
+                        </group>
+                        <group>
+                            <field name="exercise_sets"/>
+                            <field name="sets_repeat"/>
+                            <field name="weight"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <!--gym workout form view-->
+    <record id="gym_workout_form_view" model="ir.ui.view">
+        <field name="name">gym.workout.form.view</field>
+        <field name="model">gym.workout</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="avatar" widget="image" class="oe_avatar" nolabel="1"
+                           options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Strength Training Workouts.." required="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="trainer_id" domain="[('is_trainer', '=', True)]" options="{'no_create':True}"
+                                   required="1"/>
+                            <field name="calories_burn"/>
+                        </group>
+                        <group>
+                            <field name="workout_day_ids" widget="many2many_tags"
+                                   options="{'color_field': 'color','no_create':True}"/>
+                            <field name="number_of_days"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Workout Exercises">
+                            <field name="workout_exercise_ids">
+                                <list editable="bottom">
+                                    <field name="exercise_id" options="{'no_create':True}"/>
+                                    <field name="exercise_for_id" widget="many2many_tags"
+                                           options="{'color_field': 'color','no_create':True}"/>
+                                    <field name="equipment_ids" widget="many2many_tags"
+                                           options="{'color_field': 'color','no_create':True}"/>
+                                    <field name="exercise_sets"/>
+                                    <field name="sets_repeat"/>
+                                    <field name="weight" class="oe_inline"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+    <record id="gym_workout_tree_view" model="ir.ui.view">
+        <field name="name">gym.workout.tree.view</field>
+        <field name="model">gym.workout</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="trainer_id"/>
+                <field name="calories_burn"/>
+                <field name="number_of_days"/>
+            </list>
+        </field>
+    </record>
+    <record id="gym_workout_kanan_view" model="ir.ui.view">
+        <field name="name">gym.workout.kanban.view</field>
+        <field name="model">gym.workout</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="avatar"/>
+                <templates>
+                    <t t-name="card" class="flex-row p-1">
+                        <aside>
+                            <field name="avatar" widget="image"
+                                   options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                        </aside>
+                        <main class="ms-2 mt-1">
+                            <field name="name" class="fw-bold"/>
+                            <div>
+                                Trainer:
+                                <field name="trainer_id"/>
+                            </div>
+                            <div>
+                                Calories:
+                                <field name="calories_burn"/>
+                            </div>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="gym_workout_search_view" model="ir.ui.view">
+        <field name="name">gym.workout.search.view</field>
+        <field name="model">gym.workout</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="trainer_id"/>
+                <group string="Group By">
+                    <filter name="trainer_id" string="Support Trainers"
+                            context="{'group_by': 'trainer_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="gym_workout_action" model="ir.actions.act_window">
+        <field name="name">Gym Workouts</field>
+        <field name="res_model">gym.workout</field>
+        <field name="view_mode">kanban,list,form,activity,search</field>
+    </record>
+</odoo>

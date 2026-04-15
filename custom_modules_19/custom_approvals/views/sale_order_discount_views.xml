@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sale_order_line_wizard_form_inherit" model="ir.ui.view">
+        <field name="name">sale.order.discount.form.inherit</field>
+        <field name="model">sale.order.discount</field>
+        <field name="inherit_id" ref="sale.sale_order_line_wizard_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Hide Global Discount and Fixed Amount radio buttons -->
+            <xpath expr="//field[@name='discount_type']" position="replace">
+                <field name="discount_type" widget="radio"/>
+            </xpath>
+            
+            <!-- Hide the amount field since we're not using Fixed Amount -->
+            <xpath expr="//label[@for='discount_amount']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='discount_amount']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            
+        </field>
+    </record>
+
+</odoo>

@@ -64,12 +64,17 @@
             </p>
         </field>
     </record>
+    <menuitem 
+    id="menu_services_root"
+    name="Services"
+    parent="root_vehicle_repair"
+    sequence="10"/>
 
     <menuitem 
         id="menu_services"
         name="Services"
-        parent="root_vehicle_repair"
+        parent="menu_services_root"
         action="action_vehicle_services"
         groups="advance_vehicle_repair.group_vehicle_repair_manager"
-        sequence="10"/>
+        sequence="1"/>
 </odoo>

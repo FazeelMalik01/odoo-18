@@ -10,9 +10,19 @@
             <xpath expr="//group[@name='partner_details']" position="inside">
                 <field name="jobcard_id" readonly="1" invisible="jobcard_id == False"/>
             </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button type="object"
+                        name="action_open_jobcard"
+                        class="oe_stat_button"
+                        icon="fa-wrench"
+                        invisible="jobcard_id == False">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Job Card</span>
+                    </div>
+                </button>
+            </xpath>
         </field>
     </record>
-
 </odoo>
 
 

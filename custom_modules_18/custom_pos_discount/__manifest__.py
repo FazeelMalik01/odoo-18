@@ -32,6 +32,7 @@ This module provides additional discount functionality in Point of Sale.
             "custom_pos_discount/static/src/xml/discount_button.xml",
             "custom_pos_discount/static/src/xml/orderline_ui.xml",
             "custom_pos_discount/static/src/xml/receipt_template.xml",
+            'custom_pos_discount/static/src/js/numpad.js',
         ],
     },
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_company_webflow_fields" model="ir.ui.view">
+        <field name="name">res.company.form.webflow</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add a Webflow tab inside the existing notebook -->
+            <notebook position="inside">
+                <page string="Webflow" name="webflow_info">
+                    <group string="Webflow IDs" col="2">
+                        <field name="webflow_location_id"   readonly="1"/>
+                        <field name="webflow_collection_id" readonly="1"/>
+                        <field name="webflow_locale_id"     readonly="1"/>
+                        <field name="webflow_zips"/>
+                    </group>
+                </page>
+            </notebook>
+
+        </field>
+    </record>
+</odoo>

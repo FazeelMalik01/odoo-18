@@ -19,7 +19,7 @@ It is useful for creating specialized numbering formats for invoices.
     'version': '0.1',
 
     # Dependencies: other modules required for this one to work
-    'depends': ['base', 'account'],
+    'depends': ['base', 'account', 'purchase'],
 
     # Data files loaded always
     'data': [

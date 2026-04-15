@@ -15,7 +15,8 @@ class LicensingManagementDashboard(http.Controller):
         Booking = request.env['vehicle.booking'].sudo()
         JobCard = request.env['vehicle.jobcard'].sudo()
         Teams = request.env['vehicle.teams'].sudo()
-
+        SaleOrder = request.env['sale.order'].sudo()
+        
         booking_domain = [('state', '=', 'create')]
         if has_group_user and not has_group_manager:
             booking_domain.append(('responsible_id', '=', user.id))
@@ -67,6 +68,19 @@ class LicensingManagementDashboard(http.Controller):
                 'model_name': model.display_name if model else '',
                 'model_name_count': count,
             })
+        
+        sale_order_domain = [
+            ('state', '=', 'sale'),           # confirmed orders
+            ('jobcard_id', '!=', False)       # linked with jobcard
+        ]
+
+        if has_group_user and not has_group_manager:
+            sale_order_domain.append(('user_id', '=', user.id))
+
+        sale_orders = SaleOrder.search(sale_order_domain)
+
+        confirmed_sale_orders_ids = sale_orders.ids
+        confirmed_sale_orders_count = len(sale_orders)
 
         results = {
             'total_bookings': total_bookings_count,
@@ -84,25 +98,12 @@ class LicensingManagementDashboard(http.Controller):
             'total_todays_bookings': total_todays_bookings,
             'total_todays_bookings_ids': total_todays_bookings_ids,
             'groupby_advance_vehicle_repair': groupby_advance_vehicle_repair,
+            'confirmed_sale_orders': confirmed_sale_orders_count,
+            'confirmed_sale_orders_ids': confirmed_sale_orders_ids,
         }
 
         return results
 
-    # @http.route('/advance_vehicle_repair/search_customers', type="json", auth='user')
-    # def search_customers(self, term='', limit=15):
-    #     """Search partners (customers) by name or phone for dashboard dropdown."""
-    #     # Params may come as single dict from jsonrpc
-    #     if isinstance(term, dict):
-    #         limit = term.get('limit', 15)
-    #         term = term.get('term', '')
-    #     term = (term or '').strip() if isinstance(term, str) else ''
-    #     if not term or len(term) < 1:
-    #         return []
-    #     limit = int(limit) if limit else 15
-    #     Partner = request.env['res.partner'].with_context(active_test=False)
-    #     domain = ['|', ('name', 'ilike', term), ('phone', 'ilike', term)]
-    #     partners = Partner.search(domain, limit=limit)
-    #     return [{'id': p.id, 'name': p.name or '', 'phone': p.phone or ''} for p in partners]
     @http.route('/advance_vehicle_repair/search_customers', type="json", auth='user')
     def search_customers(self, term='', limit=15):
         """Search partners (customers) by name, phone or vehicle registration_no for dashboard dropdown."""

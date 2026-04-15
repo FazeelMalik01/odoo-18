@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Add task_id after project_id in every planning slot view that shows project_id.
+        project_id is injected by project_forecast; we piggyback on its XPath anchors.
+    -->
+
+    <!-- ── Regular form view ── -->
+    <record id="planning_slot_task_view_form" model="ir.ui.view">
+        <field name="name">planning.slot.form.task</field>
+        <field name="model">planning.slot</field>
+        <field name="inherit_id" ref="project_forecast.planning_slot_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='project_id'][1]" position="after">
+                <field name="task_id"
+                       options="{'no_create': True, 'no_open': True}"
+                       invisible="not project_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ── Gantt "New" dialog (the popup opened when clicking New in the gantt/planning view) ── -->
+    <record id="planning_slot_task_view_form_gantt" model="ir.ui.view">
+        <field name="name">planning.slot.form.gantt.task</field>
+        <field name="model">planning.slot</field>
+        <field name="inherit_id" ref="project_forecast.planning_slot_view_form"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='project_id'][1]" position="after">
+                <field name="task_id"
+                       options="{'no_create': True, 'no_open': True}"
+                       invisible="not project_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ── List view ── -->
+    <record id="planning_slot_task_view_list" model="ir.ui.view">
+        <field name="name">planning.slot.list.task</field>
+        <field name="model">planning.slot</field>
+        <field name="inherit_id" ref="project_forecast.planning_slot_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='project_id']" position="after">
+                <field name="task_id" optional="show" options="{'no_open': True}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

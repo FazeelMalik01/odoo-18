@@ -5,7 +5,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='lang']" position="after">
-                <field name="dealer"/>
+                <field name="dealer" invisible="company_type != 'company'"/>
             </xpath>
             <xpath expr="//page[@name='internal_notes']" position="before">
                 <page string="Customer Info" name="customer_info">

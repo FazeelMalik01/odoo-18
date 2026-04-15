@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="action_gym_dashboard" model="ir.actions.client">
+        <field name="name">Gym Statistics</field>
+        <field name="tag">gym_dashboard</field>
+    </record>
+    <record id="action_diet_dashboard" model="ir.actions.client">
+        <field name="name">Diet Statistics</field>
+        <field name="tag">diet_dashboard</field>
+    </record>
+</odoo>

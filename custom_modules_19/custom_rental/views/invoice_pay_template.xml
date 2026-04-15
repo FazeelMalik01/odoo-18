@@ -2,10 +2,8 @@
 <odoo>
     <template id="invoice_pay_public" name="Public Invoice Payment">
         <t t-call="web.layout">
-
             <div style="background:#f8f9fa; min-height:100vh; padding:40px 16px;">
                 <div style="max-width:640px; margin:0 auto;">
-
                     <!-- Header -->
                     <div style="background:#875A7B; color:white; padding:24px 32px;
                                 border-radius:8px 8px 0 0; text-align:center;">
@@ -14,12 +12,10 @@
                             <t t-esc="invoice.name"/>
                         </p>
                     </div>
-
                     <!-- Invoice Summary + Payment -->
                     <div style="background:white; padding:32px;
                                 border:1px solid #e0e0e0; border-top:none;
                                 border-radius:0 0 8px 8px;">
-
                         <!-- Invoice Details Table -->
                         <table style="width:100%; border-collapse:collapse; margin-bottom:28px;">
                             <tr style="background:#f9f9f9;">
@@ -40,7 +36,7 @@
                                 <td style="padding:10px 14px; border:1px solid #e0e0e0;
                                            font-weight:bold;">Reference</td>
                                 <td style="padding:10px 14px; border:1px solid #e0e0e0;">
-                                    <t t-esc="invoice.invoice_origin"/>
+                                    <t t-esc="invoice_ref or ''"/>
                                 </td>
                             </tr>
                             <tr>
@@ -52,7 +48,10 @@
                             </tr>
                             <tr style="background:#fff3f3;">
                                 <td style="padding:12px 14px; border:1px solid #e0e0e0;
-                                           font-weight:bold; font-size:16px;">Amount Due</td>
+                                           font-weight:bold; font-size:16px;">
+                                    <t t-if="show_deposit_option">Grand Total</t>
+                                    <t t-else="">Remaining Balance</t>
+                                </td>
                                 <td style="padding:12px 14px; border:1px solid #e0e0e0;
                                            color:#e74c3c; font-weight:bold; font-size:20px;">
                                     <t t-esc="currency.symbol"/>
@@ -60,13 +59,79 @@
                                 </td>
                             </tr>
                         </table>
-
+                        <!-- Payment Amount Selector -->
+                        <div style="margin-bottom:24px;">
+                            <t t-if="show_deposit_option">
+                                <!-- Quote flow: customer chooses Pay in Full OR 30% Deposit -->
+                                <h5 style="margin:0 0 12px; color:#333; font-size:15px;">
+                                    How much would you like to pay today?
+                                </h5>
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                    <!-- Option A: Pay in Full -->
+                                    <div id="opt-full"
+                                         onclick="selectPaymentOption('full')"
+                                         style="border:2px solid #875A7B; border-radius:8px;
+                                                padding:16px 12px; text-align:center;
+                                                cursor:pointer; background:#fdf6ff;
+                                                transition:all 0.15s;">
+                                        <div style="font-size:13px; color:#555; margin-bottom:4px;">
+                                            Pay in Full
+                                        </div>
+                                        <div style="font-size:20px; font-weight:bold; color:#875A7B;">
+                                            <t t-esc="currency.symbol"/>
+                                            <t t-esc="'%.2f' % amount"/>
+                                        </div>
+                                        <div style="font-size:11px; color:#888; margin-top:4px;">
+                                            100% — locks your booking
+                                        </div>
+                                    </div>
+                                    <!-- Option B: Pay 30% Deposit -->
+                                    <div id="opt-deposit"
+                                         onclick="selectPaymentOption('deposit')"
+                                         style="border:2px solid #e0e0e0; border-radius:8px;
+                                                padding:16px 12px; text-align:center;
+                                                cursor:pointer; background:white;
+                                                transition:all 0.15s;">
+                                        <div style="font-size:13px; color:#555; margin-bottom:4px;">
+                                            Pay 30% Deposit
+                                        </div>
+                                        <div style="font-size:20px; font-weight:bold; color:#e65100;">
+                                            <t t-esc="currency.symbol"/>
+                                            <t t-esc="'%.2f' % deposit_amount"/>
+                                        </div>
+                                        <div style="font-size:11px; color:#888; margin-top:4px;">
+                                            Reserve your date now
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <!-- Remaining-balance flow: only the outstanding amount is shown -->
+                                <h5 style="margin:0 0 12px; color:#333; font-size:15px;">
+                                    Remaining Balance Due
+                                </h5>
+                                <div id="opt-full"
+                                     style="border:2px solid #875A7B; border-radius:8px;
+                                            padding:16px 12px; text-align:center;
+                                            background:#fdf6ff;">
+                                    <div style="font-size:13px; color:#555; margin-bottom:4px;">
+                                        Pay Remaining Balance
+                                    </div>
+                                    <div style="font-size:20px; font-weight:bold; color:#875A7B;">
+                                        <t t-esc="currency.symbol"/>
+                                        <t t-esc="'%.2f' % amount"/>
+                                    </div>
+                                    <div style="font-size:11px; color:#888; margin-top:4px;">
+                                        Completes your booking
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
                         <!-- Payment Providers -->
                         <t t-if="providers">
                             <h5 style="margin-bottom:16px; color:#333; font-size:15px;">
                                 Select Payment Method
                             </h5>
-
                             <t t-foreach="providers" t-as="provider">
                                 <div style="border:2px solid #e0e0e0; border-radius:6px;
                                             padding:14px 16px; margin-bottom:10px;
@@ -75,7 +140,6 @@
                                      t-att-id="'provider-%d' % provider.id"
                                      t-att-data-provider-id="provider.id"
                                      t-att-data-provider-code="provider.code"
-                                     t-att-data-provider-key="provider.stripe_publishable_key if provider.code == 'stripe' else ''"
                                      onclick="selectProvider(this)">
                                     <div style="display:flex; align-items:center; gap:12px;">
                                         <t t-if="provider.image_128">
@@ -88,26 +152,29 @@
                                     </div>
                                 </div>
                             </t>
-
-                            <!-- Stripe Card Element — shown when Stripe selected -->
-                            <div id="stripe-card-container"
-                                 style="display:none; margin:16px 0;">
-                                <label style="font-size:13px; color:#555;
-                                              font-weight:bold; margin-bottom:8px;
-                                              display:block;">
+                            <!-- IPOS FTD Card Fields -->
+                            <div id="ipos-card-container" style="display:block; margin:16px 0;">
+                                <label style="font-size:13px; color:#555; font-weight:bold; margin-bottom:8px; display:block;">
                                     Card Details
                                 </label>
-                                <div id="stripe-card-element"
-                                     style="border:1px solid #ccc; border-radius:6px;
-                                            padding:14px 12px; background:white;">
-                                    <!-- Stripe.js injects the card form here -->
+                                <div style="display:grid; grid-template-columns:1fr 120px 100px; gap:10px;">
+                                    <input id="ccnumber" type="text" placeholder="0000 0000 0000 0000"
+                                           maxlength="19" inputmode="numeric" autocomplete="cc-number"
+                                           oninput="_formatCardNumber(this)"
+                                           style="border:1px solid #ccc; border-radius:6px; padding:12px; background:white; letter-spacing:0.1em;"/>
+                                    <input id="ccexpiry" type="text" placeholder="MM/YY"
+                                           maxlength="5" inputmode="numeric" autocomplete="cc-exp"
+                                           oninput="_formatExpiry(this, event)"
+                                           onkeydown="if(event.key==='Backspace') setTimeout(function(){_formatExpiry(document.getElementById('ccexpiry'), event);},0)"
+                                           style="border:1px solid #ccc; border-radius:6px; padding:12px; background:white;"/>
+                                    <input id="cccvv" type="password" placeholder="CVV"
+                                           maxlength="4" inputmode="numeric" autocomplete="cc-csc"
+                                           oninput="_digitsOnly(this,4)"
+                                           style="border:1px solid #ccc; border-radius:6px; padding:12px; background:white;"/>
                                 </div>
-                                <div id="stripe-card-errors"
-                                     style="color:#e74c3c; margin-top:8px;
-                                            font-size:13px; min-height:18px;">
-                                </div>
+                                <div id="ipos-card-errors"
+                                     style="color:#e74c3c; margin-top:8px; font-size:13px; min-height:18px;"></div>
                             </div>
-
                             <!-- Pay Button -->
                             <div style="margin-top:24px;">
                                 <button id="pay-btn"
@@ -118,50 +185,86 @@
                                                cursor:pointer; width:100%;
                                                letter-spacing:0.3px;">
                                     Pay
-                                    <t t-esc="currency.symbol"/>
-                                    <t t-esc="'%.2f' % amount"/>
+                                    <span id="pay-btn-amount">
+                                        <t t-esc="currency.symbol"/>
+                                        <t t-esc="'%.2f' % amount"/>
+                                    </span>
                                 </button>
                             </div>
-
                             <p style="color:#999; font-size:11px; text-align:center;
                                       margin-top:16px;">
                                 Your payment is secured and encrypted.
                             </p>
                         </t>
-
                         <!-- No payment providers configured -->
                         <t t-else="">
                             <div style="background:#fff3cd; border:1px solid #ffc107;
                                         border-radius:6px; padding:16px; text-align:center;">
                                 <p style="margin:0; color:#856404;">
-                                    <strong>No online payment methods available.</strong><br/>
+                                    <strong>No online payment methods available.</strong>
+                                    <br/>
                                     Please contact us to arrange payment for invoice
-                                    <strong><t t-esc="invoice.name"/></strong>.
+                                    <strong>
+                                        <t t-esc="invoice.name"/>
+                                    </strong>.
                                 </p>
                             </div>
                         </t>
-
                     </div>
                 </div>
             </div>
-
             <!-- Hidden fields -->
-            <input type="hidden" id="hid-invoice-id"   t-att-value="invoice.id"/>
-            <input type="hidden" id="hid-amount"       t-att-value="amount"/>
-            <input type="hidden" id="hid-currency-id"  t-att-value="currency.id"/>
-            <input type="hidden" id="hid-partner-id"   t-att-value="partner.id"/>
-            <input type="hidden" id="hid-access-token" t-att-value="access_token"/>
-            <input type="hidden" id="hid-stripe-key"   t-att-value="stripe_publishable_key"/>
-
-            <!-- Stripe.js -->
-            <script src="https://js.stripe.com/v3/"></script>
-
+            <input type="hidden" id="hid-invoice-id"      t-att-value="invoice.id"/>
+            <input type="hidden" id="hid-amount"           t-att-value="amount"/>
+            <input type="hidden" id="hid-deposit-amount"   t-att-value="deposit_amount"/>
+            <input type="hidden" id="hid-currency-id"      t-att-value="currency.id"/>
+            <input type="hidden" id="hid-currency-symbol"  t-att-value="currency.symbol"/>
+            <input type="hidden" id="hid-partner-id"       t-att-value="partner.id"/>
+            <input type="hidden" id="hid-access-token"     t-att-value="access_token"/>
             <script type="text/javascript">
-            <![CDATA[
+                <![CDATA[
+                function IPOS_LOG() {
+                    var args = Array.prototype.slice.call(arguments);
+                    args.unshift('[RentalInvoicePay]');
+                    console.log.apply(console, args);
+                }
+                function IPOS_ERR() {
+                    var args = Array.prototype.slice.call(arguments);
+                    args.unshift('[RentalInvoicePay]');
+                    console.error.apply(console, args);
+                }
+
                 var selectedProviderId   = null;
                 var selectedProviderCode = null;
-                var stripe               = null;
-                var stripeCard           = null;
+                var ftdLoadPromise       = null;
+
+                // Payment option: 'full' or 'deposit'
+                var selectedPaymentOption = 'full';
+
+                function selectPaymentOption(option) {
+                    selectedPaymentOption = option;
+                    var fullEl    = document.getElementById('opt-full');
+                    var depositEl = document.getElementById('opt-deposit');
+                    var sym       = document.getElementById('hid-currency-symbol').value;
+                    var fullAmt   = parseFloat(document.getElementById('hid-amount').value);
+                    var depAmt    = parseFloat(document.getElementById('hid-deposit-amount').value);
+                    var btnLabel  = document.getElementById('pay-btn-amount');
+
+                    if (option === 'full') {
+                        fullEl.style.borderColor    = '#875A7B';
+                        fullEl.style.background     = '#fdf6ff';
+                        depositEl.style.borderColor = '#e0e0e0';
+                        depositEl.style.background  = 'white';
+                        if (btnLabel) btnLabel.textContent = sym + fullAmt.toFixed(2);
+                    } else {
+                        depositEl.style.borderColor = '#e65100';
+                        depositEl.style.background  = '#fff8f0';
+                        fullEl.style.borderColor    = '#e0e0e0';
+                        fullEl.style.background     = 'white';
+                        if (btnLabel) btnLabel.textContent = sym + depAmt.toFixed(2);
+                    }
+                    IPOS_LOG('selectPaymentOption', option);
+                }
 
                 function selectProvider(el) {
                     // Reset all cards
@@ -176,144 +279,242 @@
 
                     selectedProviderId   = parseInt(el.getAttribute('data-provider-id'));
                     selectedProviderCode = el.getAttribute('data-provider-code');
-                    var providerKey      = el.getAttribute('data-provider-key') || '';
-
-                    var stripeContainer = document.getElementById('stripe-card-container');
-
-                    if (selectedProviderCode === 'stripe') {
-                        stripeContainer.style.display = 'block';
-
-                        // Init Stripe Elements only once
-                        if (!stripe) {
-                            var pubKey = providerKey || document.getElementById('hid-stripe-key').value;
-                            if (!pubKey) {
-                                document.getElementById('stripe-card-errors').textContent =
-                                    'Stripe publishable key not configured.';
-                                return;
-                            }
-                            stripe = Stripe(pubKey);
-                            var elements = stripe.elements();
-                            stripeCard = elements.create('card', {
-                                hidePostalCode: true,
-                                style: {
-                                    base: {
-                                        fontSize: '16px',
-                                        color: '#333333',
-                                        fontFamily: 'Arial, sans-serif',
-                                        '::placeholder': { color: '#aaaaaa' }
-                                    },
-                                    invalid: { color: '#e74c3c' }
-                                }
-                            });
-                            stripeCard.mount('#stripe-card-element');
-                            stripeCard.on('change', function(event) {
-                                document.getElementById('stripe-card-errors').textContent =
-                                    event.error ? event.error.message : '';
-                            });
-                        }
-                    } else {
-                        stripeContainer.style.display = 'none';
+                    IPOS_LOG('selectProvider', {
+                        selectedProviderId: selectedProviderId,
+                        selectedProviderCode: selectedProviderCode,
+                        elementId: el && el.id,
+                    });
+                    var iposContainer = document.getElementById('ipos-card-container');
+                    if (iposContainer) {
+                        iposContainer.style.display = 'block';
+                        IPOS_LOG('ipos-card-container visible', {
+                            display: iposContainer.style.display,
+                            existsCcNumber: !!document.getElementById('ccnumber'),
+                            existsCcExpiry: !!document.getElementById('ccexpiry'),
+                            existsCcCvv: !!document.getElementById('cccvv'),
+                        });
                     }
                 }
 
+                // ── Card field formatting ─────────────────────────────────
+                function _formatCardNumber(input) {
+                    var digits = input.value.replace(/\D/g, '').substring(0, 16);
+                    var groups = [];
+                    for (var i = 0; i < digits.length; i += 4) {
+                        groups.push(digits.substring(i, i + 4));
+                    }
+                    input.value = groups.join(' ');
+                }
+
+                function _formatExpiry(input, e) {
+                    var val = input.value;
+                    // Backspace on "MM/" — strip the slash so the user can delete the month
+                    if (e && (e.key === 'Backspace' || e.inputType === 'deleteContentBackward')) {
+                        if (val.length === 3 && val[2] === '/') {
+                            input.value = val.substring(0, 2);
+                            return;
+                        }
+                    }
+                    var raw = val.replace(/\D/g, '').substring(0, 4);
+                    if (raw.length >= 3) {
+                        input.value = raw.substring(0, 2) + '/' + raw.substring(2, 4);
+                    } else if (raw.length === 2 && !(e && (e.key === 'Backspace' || e.inputType === 'deleteContentBackward'))) {
+                        input.value = raw + '/';
+                    } else {
+                        input.value = raw;
+                    }
+                }
+
+                function _digitsOnly(input, max) {
+                    input.value = input.value.replace(/\D/g, '').substring(0, max);
+                }
+
+                function _wireCardFormatting() {
+                    var ccn = document.getElementById('ccnumber');
+                    var cce = document.getElementById('ccexpiry');
+                    var ccv = document.getElementById('cccvv');
+                    if (ccn && !ccn._formatted) {
+                        ccn._formatted = true;
+                        ccn.addEventListener('input', function() { _formatCardNumber(ccn); });
+                        ccn.addEventListener('paste', function() { setTimeout(function() { _formatCardNumber(ccn); }, 0); });
+                    }
+                    if (cce && !cce._formatted) {
+                        cce._formatted = true;
+                        cce.addEventListener('input', function(e) { _formatExpiry(cce, e); });
+                        cce.addEventListener('keydown', function(e) {
+                            if (e.key === 'Backspace') { setTimeout(function() { _formatExpiry(cce, e); }, 0); }
+                        });
+                    }
+                    if (ccv && !ccv._formatted) {
+                        ccv._formatted = true;
+                        ccv.addEventListener('input', function() { _digitsOnly(ccv, 4); });
+                    }
+                }
+
+                document.addEventListener('DOMContentLoaded', _wireCardFormatting);
+                _wireCardFormatting();
+                // ─────────────────────────────────────────────────────────────
+
+                async function _rpcJson(url, params) {
+                    IPOS_LOG('RPC request', { url: url, params: params });
+                    var response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ jsonrpc: '2.0', method: 'call', id: Date.now(), params: params || {} })
+                    });
+                    var data = await response.json();
+                    IPOS_LOG('RPC response', { url: url, ok: response.ok, data: data });
+                    if (data.error) throw new Error(data.error.data && data.error.data.message ? data.error.data.message : data.error.message);
+                    return data.result;
+                }
+
+                async function _ensureFtdLoaded(providerId) {
+                    var cfg = await _rpcJson('/payment/ipos_pay/get_config', { provider_id: providerId });
+                    IPOS_LOG('FTD config', cfg);
+                    if (!cfg || !cfg.data_token || !cfg.data_src) {
+                        throw new Error('IPOS configuration missing.');
+                    }
+                    var ftdSrc = cfg.ftd_src || (cfg.data_src + '/ftd/v1/freedomtodesign.js');
+
+                    var script = document.getElementById('ftd');
+                    if (!script) {
+                        IPOS_LOG('Creating #ftd script');
+                        script = document.createElement('script');
+                        script.id = 'ftd';
+                        script.async = false;
+                        script.setAttribute('security_key', cfg.data_token);
+                        script.setAttribute('data-src', cfg.data_src);
+                        script.src = ftdSrc;
+                        ftdLoadPromise = new Promise(function(resolve, reject) {
+                            script.addEventListener('load', function() { resolve(); }, { once: true });
+                            script.addEventListener('error', function() { reject(new Error('Failed to load FTD script.')); }, { once: true });
+                        });
+                        document.head.appendChild(script);
+                        await ftdLoadPromise;
+                        IPOS_LOG('#ftd loaded');
+                    } else {
+                        IPOS_LOG('Reusing #ftd script');
+                        script.setAttribute('security_key', cfg.data_token);
+                        script.setAttribute('data-src', cfg.data_src);
+                        if (!script.getAttribute('src')) script.setAttribute('src', ftdSrc);
+                    }
+
+                    var alias = document.getElementById('myScript');
+                    if (!alias) {
+                        IPOS_LOG('Creating #myScript alias');
+                        alias = document.createElement('script');
+                        alias.id = 'myScript';
+                        alias.type = 'text/plain';
+                        document.head.appendChild(alias);
+                    }
+                    alias.setAttribute('security_key', cfg.data_token);
+                    alias.setAttribute('data-src', cfg.data_src);
+                    alias.setAttribute('src', ftdSrc);
+
+                    if (typeof window.postData !== 'function') {
+                        throw new Error('FTD script loaded but postData() not available.');
+                    }
+                    IPOS_LOG('FTD ready', { hasPostData: typeof window.postData === 'function' });
+                }
+
+                async function _generateFtdToken(providerId) {
+                    await _ensureFtdLoaded(providerId);
+                    IPOS_LOG('Calling postData()');
+                    var tokenData = await new Promise(function(resolve, reject) {
+                        try {
+                            var ret = window.postData(function(data) { resolve(data); });
+                            if (ret && typeof ret.then === 'function') ret.then(resolve, reject);
+                        } catch (err) {
+                            reject(err);
+                        }
+                    });
+                    var token = (tokenData && (tokenData.payment_token_id || tokenData.paymentTokenId || tokenData.payment_token || tokenData.token)) || '';
+                    if (!token) throw new Error('FTD did not return payment token.');
+                    IPOS_LOG('FTD token generated', { tokenLength: token.length });
+                    return token;
+                }
+
                 async function submitPayment() {
-                    if (!selectedProviderId) {
-                        alert('Please select a payment method.');
+                    IPOS_LOG('submitPayment clicked', {
+                        selectedProviderId: selectedProviderId,
+                        selectedProviderCode: selectedProviderCode,
+                        selectedPaymentOption: selectedPaymentOption,
+                    });
+                    if (!selectedProviderId || selectedProviderCode !== 'ipos_pay') {
+                        alert('Please select IPOS Pay.');
                         return;
                     }
 
                     var btn = document.getElementById('pay-btn');
-                    btn.disabled    = true;
+                    btn.disabled = true;
+                    var origLabel = btn.innerHTML;
                     btn.textContent = 'Processing...';
+                    document.getElementById('ipos-card-errors').textContent = '';
 
                     var invoiceId   = parseInt(document.getElementById('hid-invoice-id').value);
-                    var amount      = parseFloat(document.getElementById('hid-amount').value);
-                    var currencyId  = parseInt(document.getElementById('hid-currency-id').value);
-                    var partnerId   = parseInt(document.getElementById('hid-partner-id').value);
                     var accessToken = document.getElementById('hid-access-token').value;
+                    var fullAmt     = parseFloat(document.getElementById('hid-amount').value);
+                    var depAmt      = parseFloat(document.getElementById('hid-deposit-amount').value);
+                    var paymentAmount = selectedPaymentOption === 'deposit' ? depAmt : fullAmt;
 
                     try {
-                        // ── Step 1: Create transaction on server ──────────
-                        var response = await fetch('/rental/pay/create-transaction', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                jsonrpc: '2.0',
-                                method:  'call',
-                                id:      1,
-                                params: {
-                                    invoice_id:  invoiceId,
-                                    access_token: accessToken,
-                                    provider_id: selectedProviderId,
-                                }
-                            })
+                        // 1) Create Odoo payment.transaction
+                        var result = await _rpcJson('/rental/pay/create-transaction', {
+                            invoice_id: invoiceId,
+                            access_token: accessToken,
+                            provider_id: selectedProviderId,
+                            payment_amount: paymentAmount,
                         });
-
-                        var data   = await response.json();
-                        var result = data.result;
-
                         if (!result || result.error) {
                             throw new Error(result && result.error ? result.error : 'Transaction creation failed');
                         }
-
-                        // ── Step 2: Handle by provider ────────────────────
-                        if (selectedProviderCode === 'stripe') {
-
-                            if (!result.client_secret) {
-                                throw new Error('Stripe client secret not received. Check Stripe API keys.');
-                            }
-
-                            // Confirm card payment via Stripe.js
-                            var confirmResult = await stripe.confirmCardPayment(
-                                result.client_secret,
-                                { payment_method: { card: stripeCard } }
-                            );
-
-                            if (confirmResult.error) {
-                                throw new Error(confirmResult.error.message);
-                            }
-
-                            // ── Step 3: Notify Odoo that payment succeeded ─
-                            await fetch('/rental/pay/stripe-confirm', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    jsonrpc: '2.0',
-                                    method:  'call',
-                                    id:      1,
-                                    params: {
-                                        tx_id:              result.tx_id,
-                                        access_token:       accessToken,
-                                        payment_intent_id:  confirmResult.paymentIntent.id,
-                                    }
-                                })
-                            });
-
-                            // ── Step 4: Redirect to status page ───────────
-                            window.location.href = '/rental/pay/status?tx_id='
-                                + result.tx_id + '&access_token=' + accessToken;
-
-                        } else if (result.redirect_url) {
-                            window.location.href = result.redirect_url;
-
-                        } else {
-                            window.location.href = '/rental/pay/status?tx_id='
-                                + result.tx_id + '&access_token=' + accessToken;
+                        if (!result.reference) {
+                            throw new Error('Transaction reference missing.');
                         }
 
+                        // 2) Generate FTD payment token from card fields
+                        var paymentTokenId = await _generateFtdToken(selectedProviderId);
+
+                        // 3) Charge via IPOS transact
+                        var charge = await _rpcJson('/payment/ipos_pay/charge_token', {
+                            reference: result.reference,
+                            payment_token_id: paymentTokenId,
+                        });
+                        IPOS_LOG('charge response', charge);
+                        if (!charge || charge.state !== 'done') {
+                            throw new Error((charge && charge.message) || 'IPOS charge failed.');
+                        }
+
+                        // 4) Go to payment status page
+                        window.location.href = '/rental/pay/status?tx_id=' + result.tx_id + '&access_token=' + accessToken;
                     } catch(e) {
-                        document.getElementById('stripe-card-errors').textContent = e.message || 'Payment failed.';
+                        IPOS_ERR('submitPayment failed', e);
+                        document.getElementById('ipos-card-errors').textContent = e.message || 'Payment failed.';
                         alert('Payment error: ' + (e.message || 'Unknown error'));
-                        btn.disabled    = false;
-                        btn.textContent = 'Pay';
+                        btn.disabled   = false;
+                        btn.innerHTML  = origLabel;
                     }
                 }
+
+                // Auto-select first provider and default payment option on load.
+                document.addEventListener('DOMContentLoaded', function () {
+                    IPOS_LOG('DOMContentLoaded', {
+                        providerCount: document.querySelectorAll('[data-provider-id]').length,
+                    });
+                    var firstProvider = document.querySelector('[data-provider-id]');
+                    if (firstProvider) {
+                        IPOS_LOG('Auto-selecting provider', { id: firstProvider.id });
+                        selectProvider(firstProvider);
+                    } else {
+                        IPOS_ERR('No provider elements found on page');
+                    }
+                    // Default to "Pay in Full"
+                    selectPaymentOption('full');
+                });
             ]]>
             </script>
-
         </t>
     </template>
-
     <!-- ── Payment Status Page ── -->
     <template id="invoice_pay_status" name="Invoice Payment Status">
         <t t-call="web.layout">
@@ -321,13 +522,11 @@
                 <div style="max-width:500px; margin:0 auto; background:white;
                             border-radius:8px; padding:48px 40px; text-align:center;
                             border:1px solid #e0e0e0; box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-
                     <t t-if="not tx">
                         <div style="font-size:56px;">&#x26A0;</div>
                         <h2 style="color:#dc3545;">Payment Not Found</h2>
                         <p style="color:#666;">Unable to find your payment. Please contact us.</p>
                     </t>
-
                     <t t-elif="tx.state == 'done'">
                         <div style="font-size:56px;">&#x2705;</div>
                         <h2 style="color:#28a745; margin:16px 0 8px;">Payment Successful!</h2>
@@ -341,7 +540,10 @@
                         </p>
                         <t t-if="invoice">
                             <p style="color:#888; font-size:14px;">
-                                Invoice <strong><t t-esc="invoice.name"/></strong>
+                                Invoice
+                                <strong>
+                                    <t t-esc="invoice.name"/>
+                                </strong>
                                 <t t-if="invoice.payment_state == 'paid'"> is fully paid.</t>
                                 <t t-else=""> has been partially paid.</t>
                             </p>
@@ -353,7 +555,6 @@
                             </p>
                         </div>
                     </t>
-
                     <t t-elif="tx.state == 'pending'">
                         <div style="font-size:56px;">&#x23F3;</div>
                         <h2 style="color:#f57c00; margin:16px 0 8px;">Payment Pending</h2>
@@ -362,7 +563,6 @@
                             confirmation shortly.
                         </p>
                     </t>
-
                     <t t-elif="tx.state == 'cancel'">
                         <div style="font-size:56px;">&#x274C;</div>
                         <h2 style="color:#dc3545; margin:16px 0 8px;">Payment Cancelled</h2>
@@ -371,7 +571,6 @@
                             contact us for assistance.
                         </p>
                     </t>
-
                     <t t-elif="tx.state == 'error'">
                         <div style="font-size:56px;">&#x26A0;</div>
                         <h2 style="color:#dc3545; margin:16px 0 8px;">Payment Error</h2>
@@ -380,12 +579,1419 @@
                             Please try again or contact us.
                         </p>
                     </t>
-
                     <t t-else="">
                         <div style="font-size:56px;">&#x23F3;</div>
                         <h2 style="color:#666; margin:16px 0 8px;">Processing...</h2>
                         <p style="color:#555;">Your payment is being processed.</p>
                     </t>
+                </div>
+            </div>
+        </t>
+    </template>
+    <!-- Public quote acceptance: same access_token as /rental/pay/... -->
+    <template id="quote_accept_public" name="Accept and Sign Quote — Rental Terms">
+        <t t-call="web.layout">
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&amp;family=DM+Sans:wght@300;400;500;600&amp;display=swap');
+
+                * { box-sizing: border-box; margin: 0; padding: 0; }
+
+                body {
+                    background: #f0f4f6;
+                    font-family: 'DM Sans', Arial, sans-serif;
+                    color: #1c1917;
+                }
+
+                .page-wrap {
+                    min-height: 100vh;
+                    padding: 32px 16px 64px;
+                    background:
+                        radial-gradient(ellipse at 0% 0%, rgba(5,102,144,0.07) 0%, transparent 55%),
+                        radial-gradient(ellipse at 100% 100%, rgba(253,205,21,0.08) 0%, transparent 55%),
+                        #f0f4f6;
+                }
+
+                .card-shell {
+                    max-width: 780px;
+                    margin: 0 auto;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    box-shadow:
+                        0 0 0 1px rgba(0,0,0,0.07),
+                        0 4px 8px rgba(0,0,0,0.05),
+                        0 20px 48px rgba(0,0,0,0.10);
+                }
+
+                /* ── HEADER ───────────────────────────────────────── */
+                .card-header {
+                    background: #056690;
+                    padding: 28px 36px 24px;
+                    position: relative;
+                    overflow: hidden;
+                }
+                .card-header::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -50px; right: -50px;
+                    width: 180px; height: 180px;
+                    border-radius: 50%;
+                    background: rgba(253,205,21,0.10);
+                    pointer-events: none;
+                }
+                .header-company {
+                    font-size: 11px;
+                    font-weight: 600;
+                    letter-spacing: 0.16em;
+                    text-transform: uppercase;
+                    color: #fdcd15;
+                    margin-bottom: 8px;
+                }
+                .header-title {
+                    font-family: 'DM Serif Display', serif;
+                    font-size: 26px;
+                    color: #ffffff;
+                    line-height: 1.2;
+                    margin-bottom: 4px;
+                }
+                .header-meta {
+                    font-size: 13px;
+                    color: rgba(255,255,255,0.55);
+                    font-weight: 300;
+                }
+                .header-meta strong { color: rgba(255,255,255,0.85); font-weight: 500; }
+
+                /* ── INTRO BANNER ─────────────────────────────────── */
+                .intro-banner {
+                    background: #fdcd15;
+                    padding: 16px 36px;
+                    font-size: 13.5px;
+                    color: #056690;
+                    font-weight: 500;
+                    line-height: 1.6;
+                    border-bottom: 2px solid #e6b800;
+                }
+
+                /* ── SECTION PANELS ───────────────────────────────── */
+                .panel {
+                    background: #ffffff;
+                    border-bottom: 1px solid #e8eef1;
+                    padding: 28px 36px;
+                }
+                .panel-alt { background: #f8fbfd; }
+
+                .panel-title {
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 0.13em;
+                    text-transform: uppercase;
+                    color: #056690;
+                    margin-bottom: 16px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+                .panel-title::after {
+                    content: '';
+                    flex: 1;
+                    height: 1px;
+                    background: linear-gradient(to right, #056690, transparent);
+                    opacity: 0.25;
+                }
+
+                /* ── CUSTOMER INFO GRID ───────────────────────────── */
+                .info-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 8px 24px;
+                }
+                .info-row { display: flex; flex-direction: column; gap: 2px; }
+                .info-label {
+                    font-size: 10px;
+                    font-weight: 600;
+                    letter-spacing: 0.09em;
+                    text-transform: uppercase;
+                    color: #9bb5c2;
+                }
+                .info-value { font-size: 13.5px; color: #1c2a32; font-weight: 500; }
+
+                /* ── PRODUCTS TABLE ───────────────────────────────── */
+                .items-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 13.5px;
+                }
+                .items-table thead tr {
+                    background: #056690;
+                    color: #ffffff;
+                }
+                .items-table thead th {
+                    padding: 10px 14px;
+                    text-align: left;
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 0.09em;
+                    text-transform: uppercase;
+                }
+                .items-table thead th.right { text-align: right; }
+                .items-table thead th.center { text-align: center; }
+                .items-table tbody tr { border-bottom: 1px solid #e8eef1; }
+                .items-table tbody tr:last-child { border-bottom: none; }
+                .items-table tbody td { padding: 12px 14px; vertical-align: top; }
+                .item-name { font-weight: 600; color: #1c2a32; font-size: 14px; }
+                .item-date { font-size: 12px; color: #6b8898; margin-top: 3px; }
+                .item-code { font-size: 11px; color: #aac0cb; margin-top: 2px; }
+                .duration-badge {
+                    display: inline-block;
+                    background: #056690;
+                    color: #ffffff;
+                    font-size: 10px;
+                    font-weight: 700;
+                    padding: 2px 7px;
+                    border-radius: 3px;
+                    margin-left: 6px;
+                    vertical-align: middle;
+                    letter-spacing: 0.04em;
+                }
+                .td-center { text-align: center; color: #556b78; }
+                .td-right { text-align: right; font-weight: 600; color: #1c2a32; }
+
+                /* ── TOTALS TABLE ─────────────────────────────────── */
+                .totals-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 0;
+                }
+                .totals-table td {
+                    padding: 8px 14px;
+                    font-size: 13px;
+                    border-bottom: 1px solid #e8eef1;
+                }
+                .totals-table .t-label { text-align: right; color: #556b78; }
+                .totals-table .t-val { text-align: right; font-weight: 600; width: 110px; color: #1c2a32; }
+                .totals-table .t-discount .t-label,
+                .totals-table .t-discount .t-val { color: #c0392b; }
+                .totals-table .t-fee .t-label,
+                .totals-table .t-fee .t-val { color: #056690; }
+                .totals-grand td {
+                    background: #056690;
+                    color: #ffffff !important;
+                    font-size: 15px;
+                    font-weight: 700;
+                    border-bottom: none;
+                    padding: 12px 14px;
+                }
+                .totals-deposit td {
+                    background: #fdcd15;
+                    color: #056690 !important;
+                    font-size: 13px;
+                    font-weight: 600;
+                    border-bottom: none;
+                    padding: 10px 14px;
+                }
+
+                /* ── WAIVER SECTION ───────────────────────────────── */
+                .waiver-panel {
+                    background: #ffffff;
+                    padding: 28px 36px 0;
+                    border-bottom: 1px solid #e8eef1;
+                }
+                .waiver-intro {
+                    font-size: 13px;
+                    color: #6b8898;
+                    line-height: 1.7;
+                    padding-bottom: 24px;
+                    border-bottom: 1px solid #e8eef1;
+                    margin-bottom: 28px;
+                }
+                .doc-heading {
+                    font-family: 'DM Serif Display', serif;
+                    font-size: 18px;
+                    color: #1c2a32;
+                    margin-bottom: 20px;
+                }
+                .warning-callout {
+                    background: #fff8e6;
+                    border-left: 3px solid #fdcd15;
+                    border-radius: 0 8px 8px 0;
+                    padding: 14px 18px;
+                    margin-bottom: 28px;
+                }
+                .warning-callout .w-label {
+                    font-size: 10px;
+                    font-weight: 700;
+                    letter-spacing: 0.13em;
+                    text-transform: uppercase;
+                    color: #b07d00;
+                    margin-bottom: 5px;
+                }
+                .warning-callout p { font-size: 13px; color: #7a5700; line-height: 1.7; }
+
+                .w-section { margin-bottom: 24px; }
+                .w-label-sm {
+                    font-size: 10px;
+                    font-weight: 700;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    color: #056690;
+                    margin-bottom: 6px;
+                }
+                .w-text { font-size: 13px; color: #44505a; line-height: 1.75; }
+                .w-text strong { color: #1c2a32; font-weight: 600; }
+                .w-divider { height: 1px; background: #e8eef1; margin: 22px 0; }
+
+                /* ── FOOTER ───────────────────────────────────────── */
+                .card-footer {
+                    background: #f8fbfd;
+                    border-top: 2px solid #e8eef1;
+                    padding: 32px 36px 36px;
+                }
+
+                .amt-label {
+                    font-size: 10px;
+                    font-weight: 700;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    color: #9bb5c2;
+                    margin-bottom: 4px;
+                }
+                .amt-total {
+                    font-family: 'DM Serif Display', serif;
+                    font-size: 38px;
+                    color: #056690;
+                    line-height: 1;
+                    margin-bottom: 6px;
+                }
+                .amt-sub {
+                    font-size: 13px;
+                    color: #6b8898;
+                    margin-bottom: 28px;
+                    line-height: 1.6;
+                }
+                .amt-sub strong { color: #056690; font-weight: 600; }
+
+                /* Checkbox */
+                .agree-box {
+                    display: flex;
+                    gap: 14px;
+                    align-items: flex-start;
+                    background: #ffffff;
+                    border: 1.5px solid #d0dde3;
+                    border-radius: 10px;
+                    padding: 16px 18px;
+                    margin-bottom: 22px;
+                    transition: border-color 0.2s, background 0.2s;
+                }
+                .agree-box.checked {
+                    border-color: #056690;
+                    background: #f0f8fc;
+                }
+                .agree-box input[type="checkbox"] {
+                    width: 18px; height: 18px;
+                    flex-shrink: 0; margin-top: 2px;
+                    accent-color: #056690; cursor: pointer;
+                }
+                .agree-box label {
+                    font-size: 13.5px; color: #44505a;
+                    line-height: 1.6; cursor: pointer;
+                }
+                .agree-box label strong { color: #1c2a32; }
+                .legal-caps {
+                    font-size: 11px; font-weight: 700;
+                    letter-spacing: 0.04em; color: #b45309;
+                }
+
+                /* Buttons */
+                .btn-row { display: flex; flex-direction: column; gap: 12px; }
+
+                .btn-primary {
+                    display: block; width: 100%; text-align: center;
+                    background: #056690; color: #ffffff;
+                    font-family: 'DM Sans', Arial, sans-serif;
+                    font-size: 16px; font-weight: 700;
+                    letter-spacing: 0.03em;
+                    padding: 18px 32px; border-radius: 8px;
+                    text-decoration: none;
+                    opacity: 0.3; pointer-events: none; cursor: not-allowed;
+                    transition: background 0.2s, opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+                }
+                .btn-primary.active { opacity: 1; cursor: pointer; pointer-events: auto; }
+                .btn-primary.active:hover {
+                    background: #044e6e;
+                    transform: translateY(-1px);
+                    box-shadow: 0 8px 24px rgba(5,102,144,0.30);
+                }
+                .btn-primary.active:active { transform: translateY(0); }
+
+                .btn-secondary {
+                    display: block; width: 100%; text-align: center;
+                    background: transparent; color: #6b8898;
+                    font-family: 'DM Sans', Arial, sans-serif;
+                    font-size: 14px; font-weight: 500;
+                    padding: 14px 32px; border-radius: 8px;
+                    text-decoration: none;
+                    border: 1.5px solid #d0dde3;
+                    opacity: 0.35; pointer-events: none; cursor: not-allowed;
+                    transition: all 0.2s;
+                }
+                .btn-secondary.active { opacity: 1; cursor: pointer; pointer-events: auto; color: #44505a; }
+                .btn-secondary.active:hover { border-color: #056690; color: #056690; }
+
+                .footer-note {
+                    font-size: 11.5px; color: #9bb5c2;
+                    text-align: center; margin-top: 18px; line-height: 1.6;
+                }
+
+                /* ── RESPONSIVE ───────────────────────────────────── */
+                @media (max-width: 600px) {
+                    .card-header, .panel, .waiver-panel, .card-footer,
+                    .intro-banner { padding-left: 18px; padding-right: 18px; }
+                    .header-title { font-size: 21px; }
+                    .amt-total { font-size: 30px; }
+                    .info-grid { grid-template-columns: 1fr; }
+                    .btn-primary { font-size: 14px; padding: 16px 20px; }
+                }
+            </style>
+
+            <div class="page-wrap">
+                <div class="card-shell">
+
+                    <!-- ══ HEADER ══ -->
+                    <div class="card-header">
+                        <div class="header-company">Freedom Fun Franchising LLC</div>
+                        <div class="header-title">Your Rental Quote</div>
+                        <div class="header-meta">
+                            Quote <strong><t t-esc="invoice.name"/></strong>
+                            <t t-if="invoice_ref"> &#160;·&#160; Ref. <strong><t t-esc="invoice_ref"/></strong></t>
+                        </div>
+                    </div>
+
+                    <!-- ══ INTRO BANNER ══ -->
+                    <div class="intro-banner">
+                        &#x1F4CB; Review your quote details below, read and accept the rental agreement, then click
+                        <strong>Accept &amp; Pay</strong> to confirm your booking.
+                    </div>
+
+                    <!-- ══ CUSTOMER INFO ══ -->
+                    <div class="panel panel-alt">
+                        <div class="panel-title">Customer Information</div>
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <span class="info-label">Name</span>
+                                <span class="info-value">
+                                    <t t-esc="invoice.partner_id.name"/>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Email</span>
+                                <span class="info-value">
+                                    <t t-esc="invoice.partner_id.email or '—'"/>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Phone</span>
+                                <span class="info-value">
+                                    <t t-esc="invoice.partner_id.phone or '—'"/>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Address</span>
+                                <span class="info-value">
+                                    <t t-if="invoice.partner_id.street">
+                                        <t t-esc="invoice.partner_id.street"/>,&#160;
+                                    </t>
+                                    <t t-if="invoice.partner_id.city">
+                                        <t t-esc="invoice.partner_id.city"/>&#160;
+                                    </t>
+                                    <t t-if="invoice.partner_id.state_id">
+                                        <t t-esc="invoice.partner_id.state_id.name"/>&#160;
+                                    </t>
+                                    <t t-if="invoice.partner_id.zip">
+                                        <t t-esc="invoice.partner_id.zip"/>
+                                    </t>
+                                    <t t-if="not invoice.partner_id.street and not invoice.partner_id.city">—</t>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Quote #</span>
+                                <span class="info-value"><t t-esc="invoice.name"/></span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Prepared By</span>
+                                <span class="info-value">
+                                    <t t-esc="invoice.user_id.name if invoice.user_id else '—'"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══ EVENT INFO ══ -->
+                    <div class="panel">
+                        <div class="panel-title">Event Details</div>
+                        <div class="info-grid">
+                            <div class="info-row">
+                                <span class="info-label">Event Location</span>
+                                <span class="info-value">
+                                    <t t-esc="invoice.event_location_name or '—'"/>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Event Address</span>
+                                <span class="info-value">
+                                    <t t-if="invoice.event_street">
+                                        <t t-esc="invoice.event_street"/>,&#160;<t t-esc="invoice.event_city or ''"/>&#160;<t t-esc="invoice.event_zip or ''"/>
+                                    </t>
+                                    <t t-if="not invoice.event_street">—</t>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Setup Surface</span>
+                                <span class="info-value">
+                                    <t t-esc="invoice.setup_surface or '—'"/>
+                                </span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Event Type</span>
+                                <span class="info-value">
+                                    <t t-esc="(invoice.event_type or '—').replace('_',' ').title()"/>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══ PRODUCTS TABLE ══ -->
+                    <div class="panel panel-alt">
+                        <div class="panel-title">Equipment &amp; Services</div>
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th class="center" style="width:60px;">Qty</th>
+                                    <th class="right" style="width:120px;">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="invoice.order_line" t-as="line">
+                                    <t t-if="line.product_id and line.product_uom_qty != 0 and line.price_unit != 0 and line.display_type not in ('line_section','line_note')">
+                                        <tr>
+                                            <td>
+                                                <div class="item-name">
+                                                    <t t-esc="line.product_id.name"/>
+                                                    <t t-if="line.start_date and line.return_date">
+                                                        <span class="duration-badge">
+                                                            <t t-esc="int((line.return_date - line.start_date).total_seconds() // 3600)"/> hrs
+                                                        </span>
+                                                    </t>
+                                                </div>
+                                                <t t-if="line.start_date">
+                                                    <div class="item-date">
+                                                        <t t-esc="line.start_date.strftime('%a, %b %d  %I:%M %p')"/>
+                                                        <t t-if="line.return_date">
+                                                            &#8594; <t t-esc="line.return_date.strftime('%I:%M %p')"/>
+                                                        </t>
+                                                    </div>
+                                                </t>
+                                                <t t-if="line.product_id.default_code">
+                                                    <div class="item-code"><t t-esc="line.product_id.default_code"/></div>
+                                                </t>
+                                            </td>
+                                            <td class="td-center">
+                                                x <t t-esc="int(line.product_uom_qty)"/>
+                                            </td>
+                                            <td class="td-right">
+                                                <t t-esc="currency.symbol"/><t t-esc="'%.2f' % (line.price_unit * line.product_uom_qty)"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- TOTALS -->
+                        <table class="totals-table">
+                            <!-- Subtotal -->
+                            <tr>
+                                <td class="t-label">SubTotal</td>
+                                <td class="t-val">
+                                    <t t-esc="currency.symbol"/><t t-esc="'%.2f' % invoice.amount_untaxed"/>
+                                </td>
+                            </tr>
+                            <!-- Discount -->
+                            <t t-if="invoice.general_discount and invoice.general_discount > 0">
+                                <tr class="t-discount">
+                                    <td class="t-label">
+                                        Discount (<t t-esc="invoice.general_discount"/>%)
+                                    </td>
+                                    <td class="t-val">
+                                        - <t t-esc="currency.symbol"/><t t-esc="'%.2f' % (invoice.amount_untaxed * invoice.general_discount / 100)"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <!-- Damage Waiver -->
+                            <t t-if="invoice.damage_waiver == 'yes'">
+                                <tr class="t-fee">
+                                    <td class="t-label">&#x1F6E1; Damage Waiver (10%)</td>
+                                    <td class="t-val">
+                                        <t t-esc="currency.symbol"/><t t-esc="'%.2f' % (invoice.amount_untaxed * 0.10)"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <!-- Non-Residential Fee -->
+                            <t t-if="invoice.event_location == 'yes_20'">
+                                <tr class="t-fee">
+                                    <td class="t-label">&#x1F4CD; Non-Residential Location Fee</td>
+                                    <td class="t-val"><t t-esc="currency.symbol"/>20.00</td>
+                                </tr>
+                            </t>
+                            <!-- Setup Surface Fee -->
+                            <t t-if="invoice.setup_surface in ('asphalt_35', 'concrete_35', 'turf_35')">
+                                <tr class="t-fee">
+                                    <td class="t-label">&#x1F6E0; Setup Surface Fee</td>
+                                    <td class="t-val"><t t-esc="currency.symbol"/>35.00</td>
+                                </tr>
+                            </t>
+                            <t t-if="invoice.setup_surface == 'drive_in_movie_asphalt_100'">
+                                <tr class="t-fee">
+                                    <td class="t-label">&#x1F6E0; Setup Surface Fee (Drive In Movie Asphalt)</td>
+                                    <td class="t-val"><t t-esc="currency.symbol"/>100.00</td>
+                                </tr>
+                            </t>
+                            <!-- Travel Fee -->
+                            <t t-if="invoice.override_travel_fee and invoice.override_travel_fee > 0">
+                                <tr>
+                                    <td class="t-label">&#x1F697; Travel Fee</td>
+                                    <td class="t-val">
+                                        <t t-esc="currency.symbol"/><t t-esc="'%.2f' % invoice.override_travel_fee"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <!-- Misc Fees -->
+                            <t t-if="invoice.miscellaneous_fees and invoice.miscellaneous_fees > 0">
+                                <tr>
+                                    <td class="t-label">Miscellaneous Fees</td>
+                                    <td class="t-val">
+                                        <t t-esc="currency.symbol"/><t t-esc="'%.2f' % invoice.miscellaneous_fees"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <!-- Tax -->
+                            <tr>
+                                <td class="t-label">Tax</td>
+                                <td class="t-val">
+                                    <t t-esc="currency.symbol"/><t t-esc="'%.2f' % invoice.amount_tax"/>
+                                </td>
+                            </tr>
+                            <!-- Grand Total -->
+                            <tr class="totals-grand">
+                                <td class="t-label" style="color:#ffffff !important;">Grand Total</td>
+                                <td class="t-val" style="color:#ffffff !important; font-size:16px;">
+                                    <t t-esc="currency.symbol"/><t t-esc="'%.2f' % amount"/>
+                                </td>
+                            </tr>
+                            <!-- Deposit Option -->
+                            <tr class="totals-deposit">
+                                <td class="t-label" style="color:#056690 !important;">
+                                    Or pay 30% deposit to reserve your date
+                                </td>
+                                <td class="t-val" style="color:#056690 !important;">
+                                    <t t-esc="currency.symbol"/><t t-esc="'%.2f' % deposit_amount"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- ══ WAIVER ══ -->
+                    <div class="waiver-panel">
+                        <p class="waiver-intro">
+                            Please read the full rental contract carefully before proceeding. It contains important
+                            legal terms covering lease conditions, delivery &amp; payment policies, safety rules,
+                            hold harmless provisions, and breach/arbitration terms.
+                            Check the box at the bottom to confirm you have read and understood all terms.
+                        </p>
+
+                        <div class="doc-heading">Rental Contract Terms &amp; Conditions</div>
+
+                        <!-- 1. Terms of Lease -->
+                        <div class="w-section">
+                            <div class="w-label-sm">Terms of Lease</div>
+                            <p class="w-text">
+                                In addition to terms below &amp; operation guidelines on rented items, Lessee (customer)
+                                agrees to supervise operation of rented items &amp; agrees if the item is damaged that
+                                he/she will reimburse Freedom Fun USA for the full price to fix the damage and/or the
+                                full replacement value of the rented item. If customer has purchased damage waiver and
+                                damage is deemed to be accidental, then Freedom Fun will cover cost of damage. This is
+                                the sole discretion of Freedom Fun and customer agrees to this policy. Before signing the
+                                contract, Lessee agrees that he/she has read the entire contract, has agreed to all terms
+                                &amp; conditions herein &amp; has had all questions he/she may have answered to the
+                                Lessee's full satisfaction &amp; understanding.
+                            </p>
+                        </div>
+                        <div class="w-divider"/>
+
+                        <!-- 2. Delivery / Operations / Payment -->
+                        <div class="w-section">
+                            <div class="w-label-sm">Delivery / Operations / Payment</div>
+                            <p class="w-text">
+                                Lessee grants Freedom Fun USA &amp; its employees/contractors the right to enter said
+                                property (address specified by Lessee) for delivery &amp; return of rented equipment at
+                                appropriate times. All payments must be made at time of delivery. No refunds will be made
+                                after equipment has been delivered. Customer agrees to full payment &amp; refund policy
+                                on website. Lessee agrees to provide <strong>one electrical outlet within 50 feet at
+                                115 volts with 20 amperes capacity</strong> for each event and/or blower. If blower
+                                stops working, remove all users immediately &amp; check on problem. Ensure air tubes for
+                                inflatables are secured to the blower. <strong>The electrical cord should be plugged into
+                                an outlet and be the only thing operating on that electrical circuit.</strong> Circuit
+                                breakers should also be checked. Customer is subject to an additional charge of
+                                <strong>$50.00</strong> for all service calls due to electricity.
+                            </p>
+                        </div>
+                        <div class="w-divider"/>
+
+                        <!-- 3. General Rules for Safety -->
+                        <div class="w-section">
+                            <div class="w-label-sm">General Rules for Safety</div>
+                            <p class="w-text">
+                                Inflatable units must be operated over a smooth, compatible surface such as grass or hard
+                                top surface. The units may <strong>NOT</strong> be operated on rough surfaces such as
+                                rocks, brick, glass, or any jagged objects. Units <strong>MUST BE</strong> properly
+                                anchored prior to use per instructions provided by Freedom Fun USA.
+                                <strong>Never</strong> use during high winds, gusty winds, thunderstorms or lightning.
+                                The unit can turn over in high winds, even if anchored, and this could result in severe
+                                injuries to the users. <strong>DO NOT</strong> resume use until adverse weather conditions
+                                have ceased. <strong>ALWAYS</strong> follow the manufacturer's guidelines located on the
+                                unit itself. <strong>Never play on, jump or climb on inflatable units.</strong> Always
+                                follow the number of players and rules posted on the unit itself &amp; per instructions
+                                provided by delivery personnel. Do not plug or unplug the motor repeatedly as this will
+                                cause the unit to burn up and you will be responsible for any resulting damage. Always
+                                have an adult present, who has reviewed and understands both this contract and the rules
+                                posted on the unit itself, who can supervise the players. Never allow the users to be
+                                unsupervised. Never allow more users than the maximum number of users per age group as
+                                described within this lease and on the units itself. Do not allow horseplay on, in, or
+                                around the units. Always follow the directions for use on the unit itself. Only children
+                                of the same age group are to play on the unit at the same time.
+                            </p>
+                        </div>
+                        <div class="w-divider"/>
+
+                        <!-- 4. Drop-Off / Overnight / Pickup -->
+                        <div class="w-section">
+                            <div class="w-label-sm">Drop-Off, Overnight &amp; Pickup Rentals Only — NON-NEGOTIABLE</div>
+                            <p class="w-text">
+                                Lessee agrees that equipment will be cleaned &amp; stored in a protective area &amp; out
+                                of the elements. <strong>$75 per hour cleaning charge</strong> for any dirty equipment
+                                that is not in the condition dropped off. <strong>$75 charge</strong> if equipment is not
+                                ready for pickup &amp; our personnel has to package up the equipment. For large jumps
+                                &amp; slides, please ensure that they are clean and dry (if possible). Pickup crew will
+                                roll and pack.
+                            </p>
+                        </div>
+                        <div class="w-divider"/>
+
+                        <!-- 5. Additional Terms -->
+                        <div class="w-section">
+                            <div class="w-label-sm">Additional Terms of Lease</div>
+                            <p class="w-text">
+                                Freedom Fun USA is not responsible for bad weather, disruption of electrical service
+                                and/or unfavorable conditions that may arise and no charges or fees will be reimbursed
+                                as a result. <strong>ABSOLUTELY NO silly string</strong> or similar items, such as, but
+                                not limited to, food, drinks, confetti, foam or trash, in or around the rentals at any
+                                time. Silly string and like objects will cause permanent damage to vinyl inflatables and
+                                lessee will be responsible for the full replacement value of the rented unit and/or
+                                assessed a <strong>$75.00 cleaning fee</strong> if the unit is determined not to be
+                                permanently damaged. Lessee agrees not to operate the unit(s) in a manner contrary to
+                                this contract and the rules of use on each unit. Lessee agrees that the equipment leased
+                                is for Lessee's own use and said equipment is not to be loaned, sub-let, mortgaged or in
+                                any other manner disposed of by Lessee. Lessee further agrees to be liable for any loss
+                                of said equipment by reason of fire, theft, or any other cause.
+                            </p>
+                        </div>
+                        <div class="w-divider"/>
+
+                        <!-- 6. Hold Harmless -->
+                        <div class="w-section">
+                            <div class="w-label-sm">Hold Harmless Provisions</div>
+                            <p class="w-text">
+                                Lessee agrees to indemnify and hold Freedom Fun USA harmless from any and all claims,
+                                actions, suits, proceedings, costs, expenses, fees, damages and liabilities, including,
+                                but not limited to, reasonable attorney's fees and costs, arising by reason of injury,
+                                damage, or death to persons or property, in connection with or resulting from the use of
+                                the leased equipment. This includes, but is not limited to, the manufacture, selection,
+                                delivery, possession, use, operation, or return of the equipment. Lessee hereby releases
+                                and holds harmless Freedom Fun USA from injuries or damages incurred as a result of the
+                                use of the leased equipment. Freedom Fun USA cannot, under any circumstances, be held
+                                liable for injuries as a result of inappropriate use, God, nature, or other conditions
+                                beyond its control or knowledge. Lessee also agrees to indemnify and hold harmless
+                                Freedom Fun USA from any loss, damage, theft or destruction of the equipment during the
+                                term of the lease and any extensions thereof.
+                            </p>
+                        </div>
+                        <div class="w-divider"/>
+
+                        <!-- 7. Disclaimer of Warranties -->
+                        <div class="w-section">
+                            <div class="w-label-sm">Disclaimer of Warranties</div>
+                            <p class="w-text">
+                                Freedom Fun USA makes no warranty of any kind, either express or implied, as to the
+                                condition of or performance of any leased equipment and Lessee agrees to immediately
+                                cease use of the equipment and contact Freedom Fun USA if any of the leased equipment
+                                develops any indication of defect or improper working conditions. Lessee agrees to use
+                                the equipment at Lessee's own risk.
+                            </p>
+                        </div>
+                        <div class="w-divider"/>
+
+                        <!-- 8. Breach / Indemnity / Arbitration -->
+                        <div class="w-section">
+                            <div class="w-label-sm">Breach / Indemnity / Arbitration</div>
+                            <p class="w-text">
+                                In the event that Lessee breaches any of the terms of this lease, Lessee will pay for
+                                all consequential damages and further indemnify Freedom Fun USA for all costs incurred
+                                in enforcing the terms of the lease or in defending any claim or lawsuit arising out of
+                                the operation of said equipment, including the amount of any judgment, attorney's fees
+                                and costs. If Freedom Fun USA determines, within its own discretion, that Lessee has
+                                failed in any way to observe or comply with the conditions of this lease, Freedom Fun USA
+                                may exercise any of the following remedies: termination of this agreement; reenter
+                                property and retake the equipment; declare any outstanding rent and charges immediately
+                                due and payable and initiate whatever legal proceedings necessary to recover said
+                                equipment or monies; and/or pursue any additional remedies available by law. If a
+                                conflict arises, Freedom Fun USA and Lessee will abide by the <strong>Texas state
+                                laws</strong> and forgo filing a lawsuit to solve the dispute.
+                            </p>
+                        </div>
+                        <div class="w-divider"/>
+
+                        <!-- 9. Acknowledgement -->
+                        <div class="w-section" style="padding-bottom:28px;">
+                            <div class="w-label-sm">Lessee Acknowledgement</div>
+                            <p class="w-text">
+                                <strong>BY ACCEPTING THIS CONTRACT I, BEING THE LESSEE, CONTACT PERSON, LESSEE
+                                REPRESENTATIVE, OR OTHER INDIVIDUAL ASSUMING THE ROLE OF LESSEE, ACKNOWLEDGE THAT I
+                                HAVE COMPLETELY READ AND UNDERSTAND THIS CONTRACT AND ANY AND ALL ACCOMPANIED
+                                ADDENDUM(S). I HAVE BEEN FULLY INSTRUCTED BY FREEDOM FUN USA PERSONNEL AS A TRAINED
+                                OPERATOR FOR THE AFOREMENTIONED EQUIPMENT AND HAVE HAD ALL OF MY QUESTIONS ANSWERED TO
+                                MY SATISFACTION. I UNDERSTAND THAT I AM SOLELY RESPONSIBLE FOR ADHERING TO THE TERMS
+                                SET FORTH BY THIS RENTAL CONTRACT AGREEMENT AND ANY AND ALL ACCOMPANIED ADDENDUM(S).</strong>
+                            </p>
+                        </div>
+                    </div><!-- /waiver-panel -->
+
+                    <!-- ══ FOOTER / PAYMENT ══ -->
+                    <div class="card-footer">
+
+                        <div class="amt-label">Quote Total</div>
+                        <div class="amt-total">
+                            <t t-esc="currency.symbol"/><t t-esc="'%.2f' % amount"/>
+                        </div>
+                        <p class="amt-sub">
+                            Pay in full to confirm immediately, or pay a
+                            <strong>30% deposit (<t t-esc="currency.symbol"/><t t-esc="'%.2f' % deposit_amount"/>)</strong>
+                            to reserve your date. You choose on the next page.
+                        </p>
+
+                        <!-- Checkbox -->
+                        <div class="agree-box" id="agree_wrap">
+                            <input type="checkbox" id="agree_cb"/>
+                            <label for="agree_cb">
+                                I have read and understand the Terms of Lease, Delivery/Operations/Payment,
+                                General Rules for Safety, Drop-Off &amp; Pickup Terms, Additional Terms,
+                                Hold Harmless Provisions, Disclaimer of Warranties, and Breach/Arbitration terms above.
+                                I understand that by accepting this contract
+                                <span class="legal-caps">I MAY BE WAIVING LEGAL RIGHTS</span>
+                                and I accept freely and without inducement. Proceeding constitutes my
+                                <strong>electronic acceptance and signature</strong> of this rental contract agreement.
+                            </label>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="btn-row">
+                            <a id="btn_pay" t-att-href="payment_url" class="btn-primary">
+                                &#x2705; Accept &amp; Pay — <t t-esc="currency.symbol"/><t t-esc="'%.2f' % amount"/>
+                            </a>
+                            <a id="btn_deposit" t-att-href="payment_url" class="btn-secondary">
+                                Pay 30% Deposit Only — <t t-esc="currency.symbol"/><t t-esc="'%.2f' % deposit_amount"/>
+                            </a>
+                        </div>
+
+                        <p class="footer-note">
+                            Both buttons open the same secure payment page for this quote.
+                            &#x1F512; Do not share this link — it is unique to your booking.
+                        </p>
+
+                    </div><!-- /card-footer -->
+
+                </div><!-- /card-shell -->
+            </div><!-- /page-wrap -->
+
+            <script type="text/javascript"><![CDATA[
+                (function () {
+                    var cb     = document.getElementById('agree_cb');
+                    var wrap   = document.getElementById('agree_wrap');
+                    var btnPay = document.getElementById('btn_pay');
+                    var btnDep = document.getElementById('btn_deposit');
+                    if (!cb) return;
+
+                    function sync() {
+                        var ok = cb.checked;
+                        if (wrap) wrap.classList.toggle('checked', ok);
+                        [btnPay, btnDep].forEach(function (btn) {
+                            if (btn) btn.classList.toggle('active', ok);
+                        });
+                    }
+
+                    cb.addEventListener('change', sync);
+                    sync();
+                })();
+            ]]></script>
+        </t>
+    </template>
+    <!-- ── Quote payment page (order-based, invoice created on payment) ── -->
+    <template id="quote_pay_public" name="Quote Payment (Order-based)">
+        <t t-call="web.layout">
+            <div style="background:#f8f9fa; min-height:100vh; padding:40px 16px;">
+                <div style="max-width:640px; margin:0 auto;">
+                    <!-- Header -->
+                    <div style="background:#875A7B; color:white; padding:24px 32px;
+                                border-radius:8px 8px 0 0; text-align:center;">
+                        <h2 style="margin:0; font-size:22px;">Confirm Your Booking</h2>
+                        <p style="margin:8px 0 0; opacity:0.85;">
+                            Quote
+                            <t t-esc="order.name"/>
+                        </p>
+                    </div>
+                    <div style="background:white; padding:32px;
+                                border:1px solid #e0e0e0; border-top:none;
+                                border-radius:0 0 8px 8px;">
+                        <!-- Order Details Table -->
+                        <table style="width:100%; border-collapse:collapse; margin-bottom:28px;">
+                            <tr style="background:#f9f9f9;">
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;
+                                           font-weight:bold; width:45%;">Quote</td>
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;">
+                                    <t t-esc="order.name"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;
+                                           font-weight:bold;">Customer</td>
+                                <td style="padding:10px 14px; border:1px solid #e0e0e0;">
+                                    <t t-esc="partner.name"/>
+                                </td>
+                            </tr>
+                            <tr style="background:#fff3f3;">
+                                <td style="padding:12px 14px; border:1px solid #e0e0e0;
+                                           font-weight:bold; font-size:16px;">Grand Total</td>
+                                <td style="padding:12px 14px; border:1px solid #e0e0e0;
+                                           color:#e74c3c; font-weight:bold; font-size:20px;">
+                                    <t t-esc="currency.symbol"/>
+                                    <t t-esc="'%.2f' % amount"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- Payment Amount Selector -->
+                        <div style="margin-bottom:24px;">
+                            <h5 style="margin:0 0 12px; color:#333; font-size:15px;">
+                                How much would you like to pay today?
+                            </h5>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <!-- Option A: Pay in Full -->
+                                <div id="opt-full"
+                                     onclick="selectPaymentOption('full')"
+                                     style="border:2px solid #875A7B; border-radius:8px;
+                                            padding:16px 12px; text-align:center;
+                                            cursor:pointer; background:#fdf6ff;
+                                            transition:all 0.15s;">
+                                    <div style="font-size:13px; color:#555; margin-bottom:4px;">
+                                        Pay in Full
+                                    </div>
+                                    <div style="font-size:20px; font-weight:bold; color:#875A7B;">
+                                        <t t-esc="currency.symbol"/>
+                                        <t t-esc="'%.2f' % amount"/>
+                                    </div>
+                                    <div style="font-size:11px; color:#888; margin-top:4px;">
+                                        100% — locks your booking
+                                    </div>
+                                </div>
+                                <!-- Option B: Pay 30% Deposit -->
+                                <div id="opt-deposit"
+                                     onclick="selectPaymentOption('deposit')"
+                                     style="border:2px solid #e0e0e0; border-radius:8px;
+                                            padding:16px 12px; text-align:center;
+                                            cursor:pointer; background:white;
+                                            transition:all 0.15s;">
+                                    <div style="font-size:13px; color:#555; margin-bottom:4px;">
+                                        Pay 30% Deposit
+                                    </div>
+                                    <div style="font-size:20px; font-weight:bold; color:#e65100;">
+                                        <t t-esc="currency.symbol"/>
+                                        <t t-esc="'%.2f' % deposit_amount"/>
+                                    </div>
+                                    <div style="font-size:11px; color:#888; margin-top:4px;">
+                                        Reserve your date now
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Payment Providers -->
+                        <t t-if="providers">
+                            <h5 style="margin-bottom:16px; color:#333; font-size:15px;">
+                                Select Payment Method
+                            </h5>
+                            <t t-foreach="providers" t-as="provider">
+                                <div style="border:2px solid #e0e0e0; border-radius:6px;
+                                            padding:14px 16px; margin-bottom:10px;
+                                            cursor:pointer; background:white;
+                                            transition:all 0.15s;"
+                                     t-att-id="'provider-%d' % provider.id"
+                                     t-att-data-provider-id="provider.id"
+                                     t-att-data-provider-code="provider.code"
+                                     onclick="selectProvider(this)">
+                                    <div style="display:flex; align-items:center; gap:12px;">
+                                        <t t-if="provider.image_128">
+                                            <img t-att-src="'/web/image/payment.provider/%s/image_128' % provider.id"
+                                                 style="height:28px; width:auto;"/>
+                                        </t>
+                                        <strong style="font-size:15px; color:#333;">
+                                            <t t-esc="provider.name"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </t>
+                            <!-- Card Fields -->
+                            <div id="ipos-card-container" style="display:block; margin:16px 0;">
+                                <label style="font-size:13px; color:#555; font-weight:bold; margin-bottom:8px; display:block;">
+                                    Card Details
+                                </label>
+                                <div style="display:grid; grid-template-columns:1fr 120px 100px; gap:10px;">
+                                    <input id="ccnumber" type="text" placeholder="0000 0000 0000 0000"
+                                           maxlength="19" inputmode="numeric" autocomplete="cc-number"
+                                           oninput="_formatCardNumber(this)"
+                                           style="border:1px solid #ccc; border-radius:6px; padding:12px; background:white; letter-spacing:0.1em;"/>
+                                    <input id="ccexpiry" type="text" placeholder="MM/YY"
+                                           maxlength="5" inputmode="numeric" autocomplete="cc-exp"
+                                           oninput="_formatExpiry(this, event)"
+                                           onkeydown="if(event.key==='Backspace') setTimeout(function(){_formatExpiry(document.getElementById('ccexpiry'), event);},0)"
+                                           style="border:1px solid #ccc; border-radius:6px; padding:12px; background:white;"/>
+                                    <input id="cccvv" type="password" placeholder="CVV"
+                                           maxlength="4" inputmode="numeric" autocomplete="cc-csc"
+                                           oninput="_digitsOnly(this,4)"
+                                           style="border:1px solid #ccc; border-radius:6px; padding:12px; background:white;"/>
+                                </div>
+                                <div id="ipos-card-errors"
+                                     style="color:#e74c3c; margin-top:8px; font-size:13px; min-height:18px;"></div>
+                            </div>
+                            <!-- Pay Button -->
+                            <div style="margin-top:24px;">
+                                <button id="pay-btn"
+                                        onclick="submitPayment()"
+                                        style="background:#875A7B; color:white; border:none;
+                                               padding:14px 24px; border-radius:6px;
+                                               font-size:17px; font-weight:bold;
+                                               cursor:pointer; width:100%;
+                                               letter-spacing:0.3px;">
+                                    Pay
+                                    <span id="pay-btn-amount">
+                                        <t t-esc="currency.symbol"/>
+                                        <t t-esc="'%.2f' % amount"/>
+                                    </span>
+                                </button>
+                            </div>
+                            <p style="color:#999; font-size:11px; text-align:center; margin-top:16px;">
+                                Your payment is secured and encrypted.
+                            </p>
+                        </t>
+                        <t t-else="">
+                            <div style="background:#fff3cd; border:1px solid #ffc107;
+                                        border-radius:6px; padding:16px; text-align:center;">
+                                <p style="margin:0; color:#856404;">
+                                    <strong>No online payment methods available.</strong>
+                                    <br/>
+                                    Please contact us to arrange payment for quote
+                                    <strong>
+                                        <t t-esc="order.name"/>
+                                    </strong>.
+                                </p>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+            <!-- Hidden fields -->
+            <input type="hidden" id="hid-order-id"         t-att-value="order.id"/>
+            <input type="hidden" id="hid-amount"            t-att-value="amount"/>
+            <input type="hidden" id="hid-deposit-amount"    t-att-value="deposit_amount"/>
+            <input type="hidden" id="hid-currency-symbol"   t-att-value="currency.symbol"/>
+            <input type="hidden" id="hid-access-token"      t-att-value="access_token"/>
+            <script type="text/javascript">
+                <![CDATA[
+                function IPOS_LOG() {
+                    var args = Array.prototype.slice.call(arguments);
+                    args.unshift('[RentalQuotePay]');
+                    console.log.apply(console, args);
+                }
+                function IPOS_ERR() {
+                    var args = Array.prototype.slice.call(arguments);
+                    args.unshift('[RentalQuotePay]');
+                    console.error.apply(console, args);
+                }
+
+                var selectedProviderId   = null;
+                var selectedProviderCode = null;
+                var ftdLoadPromise       = null;
+                var selectedPaymentOption = 'full';
+
+                function selectPaymentOption(option) {
+                    selectedPaymentOption = option;
+                    var fullEl    = document.getElementById('opt-full');
+                    var depositEl = document.getElementById('opt-deposit');
+                    var sym       = document.getElementById('hid-currency-symbol').value;
+                    var fullAmt   = parseFloat(document.getElementById('hid-amount').value);
+                    var depAmt    = parseFloat(document.getElementById('hid-deposit-amount').value);
+                    var btnLabel  = document.getElementById('pay-btn-amount');
+
+                    if (option === 'full') {
+                        fullEl.style.borderColor    = '#875A7B';
+                        fullEl.style.background     = '#fdf6ff';
+                        depositEl.style.borderColor = '#e0e0e0';
+                        depositEl.style.background  = 'white';
+                        if (btnLabel) btnLabel.textContent = sym + fullAmt.toFixed(2);
+                    } else {
+                        depositEl.style.borderColor = '#e65100';
+                        depositEl.style.background  = '#fff8f0';
+                        fullEl.style.borderColor    = '#e0e0e0';
+                        fullEl.style.background     = 'white';
+                        if (btnLabel) btnLabel.textContent = sym + depAmt.toFixed(2);
+                    }
+                }
+
+                function selectProvider(el) {
+                    document.querySelectorAll('[data-provider-id]').forEach(function(e) {
+                        e.style.borderColor = '#e0e0e0';
+                        e.style.background  = 'white';
+                    });
+                    el.style.borderColor = '#875A7B';
+                    el.style.background  = '#fdf6ff';
+                    selectedProviderId   = parseInt(el.getAttribute('data-provider-id'));
+                    selectedProviderCode = el.getAttribute('data-provider-code');
+                    IPOS_LOG('selectProvider', selectedProviderId, selectedProviderCode);
+                    var iposContainer = document.getElementById('ipos-card-container');
+                    if (iposContainer) iposContainer.style.display = 'block';
+                }
+
+                // ── Card field formatting ─────────────────────────────────
+                function _formatCardNumber(input) {
+                    var digits = input.value.replace(/\D/g, '').substring(0, 16);
+                    var groups = [];
+                    for (var i = 0; i < digits.length; i += 4) {
+                        groups.push(digits.substring(i, i + 4));
+                    }
+                    input.value = groups.join(' ');
+                }
+
+                function _formatExpiry(input, e) {
+                    var val = input.value;
+                    if (e && (e.key === 'Backspace' || e.inputType === 'deleteContentBackward')) {
+                        if (val.length === 3 && val[2] === '/') {
+                            input.value = val.substring(0, 2);
+                            return;
+                        }
+                    }
+                    var raw = val.replace(/\D/g, '').substring(0, 4);
+                    if (raw.length >= 3) {
+                        input.value = raw.substring(0, 2) + '/' + raw.substring(2, 4);
+                    } else if (raw.length === 2 && !(e && (e.key === 'Backspace' || e.inputType === 'deleteContentBackward'))) {
+                        input.value = raw + '/';
+                    } else {
+                        input.value = raw;
+                    }
+                }
+
+                function _digitsOnly(input, max) {
+                    input.value = input.value.replace(/\D/g, '').substring(0, max);
+                }
+                // ─────────────────────────────────────────────────────────────
+
+                async function _rpcJson(url, params) {
+                    var response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ jsonrpc: '2.0', method: 'call', id: Date.now(), params: params || {} })
+                    });
+                    var data = await response.json();
+                    if (data.error) throw new Error(data.error.data && data.error.data.message ? data.error.data.message : data.error.message);
+                    return data.result;
+                }
+
+                async function _ensureFtdLoaded(providerId) {
+                    var cfg = await _rpcJson('/payment/ipos_pay/get_config', { provider_id: providerId });
+                    if (!cfg || !cfg.data_token || !cfg.data_src) throw new Error('IPOS configuration missing.');
+                    var ftdSrc = cfg.ftd_src || (cfg.data_src + '/ftd/v1/freedomtodesign.js');
+                    var script = document.getElementById('ftd');
+                    if (!script) {
+                        script = document.createElement('script');
+                        script.id = 'ftd';
+                        script.async = false;
+                        script.setAttribute('security_key', cfg.data_token);
+                        script.setAttribute('data-src', cfg.data_src);
+                        script.src = ftdSrc;
+                        ftdLoadPromise = new Promise(function(resolve, reject) {
+                            script.addEventListener('load', function() { resolve(); }, { once: true });
+                            script.addEventListener('error', function() { reject(new Error('Failed to load FTD script.')); }, { once: true });
+                        });
+                        document.head.appendChild(script);
+                        await ftdLoadPromise;
+                    } else {
+                        script.setAttribute('security_key', cfg.data_token);
+                        script.setAttribute('data-src', cfg.data_src);
+                        if (!script.getAttribute('src')) script.setAttribute('src', ftdSrc);
+                    }
+                    var alias = document.getElementById('myScript');
+                    if (!alias) {
+                        alias = document.createElement('script');
+                        alias.id = 'myScript';
+                        alias.type = 'text/plain';
+                        document.head.appendChild(alias);
+                    }
+                    alias.setAttribute('security_key', cfg.data_token);
+                    alias.setAttribute('data-src', cfg.data_src);
+                    alias.setAttribute('src', ftdSrc);
+                    if (typeof window.postData !== 'function') throw new Error('FTD script loaded but postData() not available.');
+                }
+
+                async function _generateFtdToken(providerId) {
+                    await _ensureFtdLoaded(providerId);
+                    var tokenData = await new Promise(function(resolve, reject) {
+                        try {
+                            var ret = window.postData(function(data) { resolve(data); });
+                            if (ret && typeof ret.then === 'function') ret.then(resolve, reject);
+                        } catch (err) { reject(err); }
+                    });
+                    var token = (tokenData && (tokenData.payment_token_id || tokenData.paymentTokenId || tokenData.payment_token || tokenData.token)) || '';
+                    if (!token) throw new Error('FTD did not return payment token.');
+                    return token;
+                }
+
+                async function submitPayment() {
+                    IPOS_LOG('submitPayment clicked', selectedProviderId, selectedProviderCode, selectedPaymentOption);
+                    if (!selectedProviderId || selectedProviderCode !== 'ipos_pay') {
+                        alert('Please select IPOS Pay.');
+                        return;
+                    }
+                    var btn = document.getElementById('pay-btn');
+                    btn.disabled = true;
+                    var origLabel = btn.innerHTML;
+                    btn.textContent = 'Processing...';
+                    document.getElementById('ipos-card-errors').textContent = '';
+
+                    var orderId     = parseInt(document.getElementById('hid-order-id').value);
+                    var accessToken = document.getElementById('hid-access-token').value;
+                    var fullAmt     = parseFloat(document.getElementById('hid-amount').value);
+                    var depAmt      = parseFloat(document.getElementById('hid-deposit-amount').value);
+                    var paymentAmount = selectedPaymentOption === 'deposit' ? depAmt : fullAmt;
+
+                    try {
+                        // 1) Confirm order + create invoice + create transaction
+                        var result = await _rpcJson('/rental/quote/pay/create-order-transaction', {
+                            order_id: orderId,
+                            access_token: accessToken,
+                            provider_id: selectedProviderId,
+                            payment_amount: paymentAmount,
+                        });
+                        if (!result || result.error) throw new Error(result && result.error ? result.error : 'Transaction creation failed');
+                        if (!result.reference) throw new Error('Transaction reference missing.');
+
+                        // 2) Generate FTD payment token
+                        var paymentTokenId = await _generateFtdToken(selectedProviderId);
+
+                        // 3) Charge via IPOS transact
+                        var charge = await _rpcJson('/payment/ipos_pay/charge_token', {
+                            reference: result.reference,
+                            payment_token_id: paymentTokenId,
+                        });
+                        IPOS_LOG('charge response', charge);
+                        if (!charge || charge.state !== 'done') throw new Error((charge && charge.message) || 'IPOS charge failed.');
+
+                        // 4) Go to payment status page
+                        window.location.href = '/rental/pay/status?tx_id=' + result.tx_id + '&access_token=' + accessToken;
+                    } catch(e) {
+                        IPOS_ERR('submitPayment failed', e);
+                        document.getElementById('ipos-card-errors').textContent = e.message || 'Payment failed.';
+                        alert('Payment error: ' + (e.message || 'Unknown error'));
+                        btn.disabled  = false;
+                        btn.innerHTML = origLabel;
+                    }
+                }
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    var firstProvider = document.querySelector('[data-provider-id]');
+                    if (firstProvider) selectProvider(firstProvider);
+                    selectPaymentOption('full');
+                });
+            ]]>
+            </script>
+        </t>
+    </template>
+
+    <!-- ── Legal Waiver / Liability Release ── -->
+    <template id="rental_waiver_public" name="Rental Waiver &amp; Liability Release">
+        <t t-call="web.layout">
+            <div style="background:#f0f4f8; min-height:100vh; padding:40px 16px; font-family:Arial,sans-serif;">
+                <div style="max-width:760px; margin:0 auto;">
+
+                    <!-- Header -->
+                    <div style="background:#056690; color:white; padding:28px 36px;
+                                border-radius:8px 8px 0 0; text-align:center;">
+                        <h1 style="margin:0; font-size:22px; letter-spacing:0.5px;">
+                            <t t-if="company" t-esc="company.name"/>
+                            <t t-else="">Freedom Fun Franchising LLC</t>
+                        </h1>
+                        <p style="margin:8px 0 0; opacity:0.88; font-size:13px;">
+                            <t t-if="order">Order <t t-esc="order.name"/></t>
+                        </p>
+                        <p style="margin:6px 0 0; opacity:0.78; font-size:13px;">
+                            Acknowledgement of Risks, Assumption of Risks &amp; Responsibility,
+                            and Release of Liability
+                        </p>
+                    </div>
+
+                    <!-- Customer greeting -->
+                    <t t-if="partner">
+                        <div style="background:#e8f4fb; border-left:4px solid #056690;
+                                    padding:14px 24px; font-size:14px; color:#056690;">
+                            Prepared for: <strong><t t-esc="partner.name"/></strong>
+                        </div>
+                    </t>
+
+                    <!-- Body -->
+                    <div style="background:#ffffff; padding:36px 40px;
+                                border:1px solid #d0dce6; border-top:none;
+                                border-radius:0 0 8px 8px; color:#333; font-size:14px; line-height:1.8;">
+
+                        <p style="margin:0 0 18px; color:#444;">
+                            <strong>Freedom Fun Franchising LLC</strong>, its parent companies, its affiliates,
+                            its subsidiaries, and/or franchisees
+                        </p>
+
+                        <!-- Warning -->
+                        <div style="background:#fff8e1; border-left:4px solid #875A7B;
+                                    padding:16px 20px; margin:0 0 24px; border-radius:0 6px 6px 0;">
+                            <p style="margin:0; color:#5d3a00;">
+                                <strong>Warning:</strong> There are elements of risk in any adventure, sports or
+                                activity associated with the indoor or outdoor use of Freedom Party Rentals LLC
+                                games &amp; rental equipment and activities incidental thereto
+                                ("referred to herein as activity"). Although we have taken reasonable steps to
+                                provide you with appropriate equipment and/or skilled staff, this activity is not
+                                without risk. Certain risks cannot be eliminated without destroying the unique
+                                character of the activity. For your safety, and that of other participants, we
+                                think it is important for you to know in advance what to expect and to be informed
+                                of the inherent risks.
+                            </p>
+                        </div>
+
+                        <!-- Section: Acknowledgement of Risks -->
+                        <h3 style="color:#056690; font-size:15px; margin:0 0 10px;
+                                   border-bottom:2px solid #056690; padding-bottom:6px;">
+                            Acknowledgement of Risks
+                        </h3>
+                        <p style="margin:0 0 24px; color:#444;">
+                            I acknowledge that the following describes some, <strong>BUT NOT ALL</strong>,
+                            of those risk(s) of personal injury, accidents and/or illness, including but not
+                            limited to sprains, torn muscles and/or ligaments, fractured or broken bones, eye
+                            damage, cuts, wounds, scrapes, abrasions and/or contusions, dehydration, oxygen
+                            shortage (anoxia), and/or exposure, head, neck, and/or spine injuries, allergic
+                            reaction, shock paralysis or death. I/We understand the description of these risks
+                            is not complete and that unknown or unanticipated risks may result in injury,
+                            illness or death.
+                        </p>
+
+                        <!-- Section: Express Assumption -->
+                        <h3 style="color:#056690; font-size:15px; margin:0 0 10px;
+                                   border-bottom:2px solid #056690; padding-bottom:6px;">
+                            Express Assumption of Risk and Responsibility
+                        </h3>
+                        <p style="margin:0 0 24px; color:#444;">
+                            I/We agree to assume responsibility for the risks identified herein and those risks
+                            not specifically identified. My/our participation in these activities is purely
+                            voluntary. No one is forcing me/us to participate. I verify that I am physically fit,
+                            not under the influence of alcohol or drugs at this time, and sufficiently qualified,
+                            trained and capable to participate in these activities. Therefore, I assume full
+                            responsibility for myself/organization I present, including any minor children, for
+                            which I am responsible for bodily injury, accidents, illness, death, loss of personal
+                            property, and expenses thereof as a result of any accident which may occur. I/We
+                            elect to participate in spite of the risks.
+                        </p>
+
+                        <!-- Section: Authorization -->
+                        <h3 style="color:#056690; font-size:15px; margin:0 0 10px;
+                                   border-bottom:2px solid #056690; padding-bottom:6px;">
+                            Authorization
+                        </h3>
+                        <p style="margin:0 0 24px; color:#444;">
+                            I/We hereby authorize any medical treatment deemed necessary in the event of any
+                            injury while participating in the activity. I/We either have appropriate insurance
+                            or in its absence agree to pay all costs of rescue and/or medical services as may
+                            be incurred on my/our (organization's) behalf. I/We agree to any film or photographs
+                            of me/us as a participant becomes your property and may be used for promotional
+                            purposes.
+                        </p>
+
+                        <!-- Section: Release of Liability -->
+                        <h3 style="color:#056690; font-size:15px; margin:0 0 10px;
+                                   border-bottom:2px solid #056690; padding-bottom:6px;">
+                            Release of Liability
+                        </h3>
+                        <p style="margin:0 0 24px; color:#444;">
+                            I hereby release, discharge, and covenant not to sue Freedom Party Rentals LLC, its
+                            respective administrators, directors, agents, officers, volunteers, and employees,
+                            other participants, any sponsors, advertisers, and in applicable, owners and lessors
+                            or premises on which the activity takes place, (each considered one of the
+                            "RELEASES" herein) from all liability, claims, demands, losses, or damages on my
+                            account caused or alleged to be caused in whole or in part by the negligence or the
+                            "releases" or otherwise, included negligent rescue operations; I further agree that
+                            if, despite this release, waiver or liability, and assumption of risk I, or anyone
+                            on my behalf, makes a claim against any of the RELEASES, I will indemnify, save,
+                            and hold harmless each of the RELEASES from any loss, liability, damage, or cost
+                            which any may incur as the result of such claim.
+                        </p>
+
+                        <!-- Section: Third Party Notice -->
+                        <p style="margin:0 0 24px; color:#444;">
+                            Freedom Party Rentals, LLC's services may have been identified and/or reserved
+                            through the website(s) owned and operated by Sock Hop &amp; Party N Jump. Customer
+                            acknowledges that Sock Hop &amp; Party N Jump are separate and independently owned
+                            companies and that Freedom is solely responsible for providing laser tag, archery
+                            games, foam parties, water tag and other mobile games and all associated services to
+                            Customer. Customer acknowledges that it has not relied upon any representation by
+                            Sock Hop &amp; Party N Jump including any agent thereof.
+                        </p>
+
+                        <!-- Section: Parent Consent -->
+                        <div style="background:#f0f4f8; border:1px solid #d0dce6;
+                                    border-radius:6px; padding:20px 24px; margin:0 0 24px;">
+                            <h3 style="color:#875A7B; font-size:15px; margin:0 0 12px;
+                                       border-bottom:2px solid #875A7B; padding-bottom:6px;">
+                                Parent Consent
+                            </h3>
+                            <p style="margin:0; color:#444;">
+                                I, the minor's parent and/or legal guardian, understand the nature of the above
+                                referenced activities and the minor's experience and capabilities and believe the
+                                minor to be qualified to participate in such activity. I hereby release,
+                                discharge, covenant not to sue and <strong>AGREE TO INDEMNIFY AND SAVE AND HOLD
+                                HARMLESS</strong> each of the RELEASES from all liability, claims, demands,
+                                losses, or damages on the minor's account caused or alleged to have been caused
+                                in whole or in part by the negligence of the RELEASES or otherwise, including
+                                negligent rescue operations, and further agree that if, despite this release, I,
+                                the minor, or anyone on the minor's behalf makes a claim against any of the above
+                                RELEASES, I <strong>WILL INDEMNIFY, SAVE AND HOLD HARMLESS</strong> each of the
+                                RELEASES from any litigation expenses, attorney fees, loss liability, damage, or
+                                cost any RELEASES may incur as the result of any such claim.
+                            </p>
+                        </div>
+
+                        <!-- Footer note -->
+                        <p style="margin:0; font-size:12px; color:#888; text-align:center;
+                                  border-top:1px solid #e0e0e0; padding-top:18px;">
+                            Freedom Fun Franchising LLC &#x2014; All Rights Reserved
+                        </p>
+                    </div>
 
                 </div>
             </div>

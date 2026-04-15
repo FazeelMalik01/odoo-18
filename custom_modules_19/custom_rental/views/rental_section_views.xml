@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="rental_section_view_list" model="ir.ui.view">
+        <field name="name">rental.section.list</field>
+        <field name="model">rental.section</field>
+        <field name="arch" type="xml">
+            <list string="Sections" create="1" edit="1" delete="1">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="rental_section_view_form" model="ir.ui.view">
+        <field name="name">rental.section.form</field>
+        <field name="model">rental.section</field>
+        <field name="arch" type="xml">
+            <form string="Section">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rental_section" model="ir.actions.act_window">
+        <field name="name">Sections</field>
+        <field name="res_model">rental.section</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first section.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_rental_section"
+        name="Sections"
+        parent="sale_renting.menu_rental_config"
+        action="action_rental_section"
+        groups="sales_team.group_sale_manager"
+        sequence="16"/>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="custom_rental_sale_order_calendar" model="ir.ui.view">
+            <field name="name">sale.order.calendar.rental.ux</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_renting.rental_order_view_calendar"/>
+            <field name="arch" type="xml">
+                <xpath expr="//calendar" position="attributes">
+                    <attribute name="create_name_field">rental_calendar_title</attribute>
+                    <attribute name="color">rental_calendar_color_hex</attribute>
+                </xpath>
+                <xpath expr="//field[@name='rental_status']" position="replace">
+                    <field name="ui_booking_status" filters="1" string="Booking Status" invisible="1"/>
+                    <field name="ui_sales_health" filters="1" string="Sales Health" invisible="1"/>
+                    <field name="user_id" filters="1" avatar_field="avatar_128" invisible="1"/>
+                    <field name="event_type" filters="1" string="Event Type" invisible="1"/>
+                </xpath>
+                <xpath expr="//calendar" position="inside">
+                    <field name="rental_calendar_title" invisible="1"/>
+                    <field name="rental_calendar_color_hex" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                    <field name="date_order" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

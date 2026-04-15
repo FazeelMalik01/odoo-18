@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="gym_diet_food_form_view" model="ir.ui.view">
+        <field name="name">gym.diet.food.form.view</field>
+        <field name="model">food.item</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="avatar" widget="image" class="oe_avatar" nolabel="1"
+                           options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Food" required="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="food_type" required="1"/>
+                        </group>
+                        <group>
+                            <label for="calories"/>
+                            <div class="d-flex">
+                                <field name="calories"/>
+                                <span class="oe_inline o_form_label mx-3">/</span>
+                                <field name="unit_id" required="1" options="{'no_create':True}"/>
+                            </div>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="gym_diet_food_tree_view" model="ir.ui.view">
+        <field name="name">gym.diet.food.tree.view</field>
+        <field name="model">food.item</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="food_type"/>
+            </list>
+        </field>
+    </record>
+    <record id="diet_food_kanan_view" model="ir.ui.view">
+        <field name="name">diet.food.kanban.view</field>
+        <field name="model">food.item</field>
+        <field name="priority">10</field>
+        <field name="arch" type="xml">
+            <kanban sample="1">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="food_type"/>
+                <field name="avatar"/>
+                <templates>
+                    <t t-name="card" class="flex-row p-1">
+                        <aside>
+                            <field name="avatar" widget="image"
+                                   options="{'img_class': 'object-fit-cover', 'zoom': true, 'zoom_delay': 1000}"/>
+                        </aside>
+                        <main class="ms-2 mt-1">
+                            <field name="name" class="fw-bold"/>
+                            <div>
+                                Food Type:
+                                <field name="food_type" class="d-inline" widget="label_selection"
+                                       options="{'classes': {'Vegetables': 'success', 'Fruits': 'warning', 'Cereals': 'info', 'Tubers': 'danger', 'Legumes': 'light', 'Dairy': 'success', 'Meat': 'danger', 'Sweet': 'warning', 'Processed Food': 'info'}}"/>
+                            </div>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    <record id="food_item_search_view" model="ir.ui.view">
+        <field name="name">food.item.search.view</field>
+        <field name="model">food.item</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <group string="Group By">
+                    <filter name="food_type" string="Food Types"
+                            context="{'group_by': 'food_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="gym_diet_food_action" model="ir.actions.act_window">
+        <field name="name">Foods</field>
+        <field name="res_model">food.item</field>
+        <field name="view_mode">kanban,list,form,search</field>
+    </record>
+</odoo>

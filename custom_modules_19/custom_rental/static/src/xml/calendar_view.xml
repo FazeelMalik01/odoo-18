@@ -1,0 +1,41 @@
+<templates>
+    <t t-name="web.CalendarController" t-inherit="web.CalendarController" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('o_calendar_header')]/h5" position="after">
+            <button t-if="model.meta.resModel === 'sale.order' and model.meta.context and model.meta.context.in_rental_app"
+                class="btn ms-1 d-print-none o_rental_cal_book_now"
+                t-on-click="openRentalPos">
+                <i class="fa fa-plus me-1"/> Book Now
+            </button>
+        </xpath>
+    </t>
+
+    <t t-name="web.CalendarSidePanel" t-inherit="web.CalendarSidePanel" t-inherit-mode="extension">
+        <xpath expr="//DatePicker" position="after">
+            <div t-if="props.model.resModel === 'sale.order' and props.model.meta.context and props.model.meta.context.in_rental_app and rentalQuoteFollowUps.length"
+                class="o_rental_cal_followups d-print-none">
+                <div class="o_rental_cal_followups_title">Quote follow-ups past due</div>
+                <ul class="list-unstyled mb-0">
+                    <li t-foreach="rentalQuoteFollowUps" t-as="row" t-key="row.id">
+                        <span class="text-truncate me-1" t-esc="row.label"/>
+                        <span class="o_rental_cal_followups_days" t-esc="row.daysLate + ' days'"/>
+                    </li>
+                </ul>
+            </div>
+            <div t-if="props.model.resModel === 'sale.order' and props.model.meta.context and props.model.meta.context.in_rental_app" class="o_rental_cal_legend d-print-none">
+                <div class="o_rental_cal_legend_title">Sales health</div>
+                <div class="o_rental_cal_legend_row">
+                    <span class="o_rental_dot o_rental_dot_green"/>
+                    <span><span class="fw-semibold text-success">Green</span> — all clear: deposit paid, final payment received, pre-event call confirmed.</span>
+                </div>
+                <div class="o_rental_cal_legend_row">
+                    <span class="o_rental_dot o_rental_dot_yellow"/>
+                    <span><span class="fw-semibold" style="color:#ed6c02">Yellow</span> — action needed: deposit or final payment or pre-event call not complete.</span>
+                </div>
+                <div class="o_rental_cal_legend_row">
+                    <span class="o_rental_dot o_rental_dot_red"/>
+                    <span><span class="fw-semibold text-danger">Red</span> — <em class="text-danger">past due:</em> event within 48h and a step is still incomplete.</span>
+                </div>
+            </div>
+        </xpath>
+    </t>
+</templates>

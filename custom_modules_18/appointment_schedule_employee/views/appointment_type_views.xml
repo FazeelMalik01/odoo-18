@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_appointment_type_form_inherit_employee" model="ir.ui.view">
+        <field name="name">appointment.type.form.portal.users</field>
+        <field name="model">appointment.type</field>
+        <field name="inherit_id" ref="appointment.appointment_type_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Override staff_user_ids to allow portal users -->
+            <xpath expr="//field[@name='staff_user_ids']" position="replace">
+                <field name="staff_user_ids"
+                       widget="many2many_tags_avatar"
+                       options="{'no_create': False}"
+                       placeholder="Select Users (including portal users)..."
+                       help="Select users available for this appointment. Portal users are now supported."/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

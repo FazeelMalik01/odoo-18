@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         Action: All expenses (no domain filter — shows every expense
+         regardless of who created it).  We inherit the standard list/form
+         views so nothing extra is needed there.
+    ══════════════════════════════════════════════════════════════════ -->
+    <record id="action_hr_expense_all_approvals" model="ir.actions.act_window">
+        <field name="name">Expense Approvals</field>
+        <field name="res_model">hr.expense</field>
+        <field name="view_mode">list,form</field>
+        <!-- No domain → all expenses visible -->
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No expenses found.
+            </p>
+        </field>
+    </record>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         Menu: Expense Approvals  (child of the root Expenses menu)
+         Placed at sequence 2 so it sits just after "My Expenses" (seq 1)
+         and before "Reporting" (seq 4).
+         Restricted to expense approvers / managers so regular employees
+         don't see it.
+    ══════════════════════════════════════════════════════════════════ -->
+    <menuitem
+        id="menu_hr_expense_approvals"
+        name="Expense Approvals"
+        parent="hr_expense.menu_hr_expense_root"
+        sequence="2"
+        groups="hr_expense.group_hr_expense_team_approver"/>
+
+    <menuitem
+        id="menu_hr_expense_approvals_all"
+        name="All Expenses"
+        parent="menu_hr_expense_approvals"
+        sequence="1"
+        action="action_hr_expense_all_approvals"
+        groups="hr_expense.group_hr_expense_team_approver"/>
+
+</odoo>

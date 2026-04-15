@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Each company can only read/write its own zip codes -->
+    <record id="rental_zipcode_company_rule" model="ir.rule">
+        <field name="name">Rental Zipcode: company isolation</field>
+        <field name="model_id" ref="custom_rental.model_rental_zipcode"/>
+        <field name="domain_force">[('company_id', '=', company_id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+</odoo>

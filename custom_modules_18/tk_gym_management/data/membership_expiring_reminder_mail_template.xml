@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="membership_expiring_reminder_mail_template" model="mail.template">
+            <field name="name">Gym Management: Membership Expiring Reminder Mail Template</field>
+            <field name="model_id" ref="tk_gym_management.model_memberships_member"/>
+            <field name="subject">Gym Membership Expires Reminder</field>
+            <field name="partner_to">{{ object.gym_member_id.id }}</field>
+            <field name="body_html" type="html">
+                <table style="width:100%">
+                    <tr>
+                        <td>
+                            Dear
+                            <strong><t t-out="object.gym_member_id.name"/>,
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                <hr/>
+                <p>
+                    We hope you're doing well! Just a quick reminder that your gym membership is expiring soon:
+                    <br/>
+                    <br/>
+                    Membership Expiration Date:
+                    <strong>
+                        <span t-field="object.end_date"/>
+                    </strong>
+                    <br/>
+                    Membership Type:
+                    <strong>
+                        <span t-field="object.gym_membership_type_id.name"/>
+                    </strong>
+                </p>
+                <p>
+                    Got questions? Contact us at
+                    <t t-out="object.company_id.phone"/>
+                    or
+                    <t t-out="object.company_id.email"/>.
+                    <br/>
+                    <br/>
+                    Keep up the great work!
+                </p>
+                <h4>
+                    Best regards,
+                </h4>
+                <hr/>
+                <span>
+                    <h4>
+                        <t t-out="object.company_id.name"/>
+                    </h4>
+                    <t t-out="object.company_id.phone"/>
+                    <br/>
+                    <t t-out="object.company_id.email"/>
+                    <br/>
+                    <t t-out="object.company_id.website"/>
+                </span>
+            </field>
+        </record>
+    </data>
+</odoo>

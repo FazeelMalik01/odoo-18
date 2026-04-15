@@ -1,0 +1,88 @@
+<odoo>
+    <data>
+        <template id="report_purchasequotation_document_billing_address_label"
+                  inherit_id="purchase.report_purchasequotation_document">
+            <xpath expr="//t[@t-set='address']" position="replace">
+                <t t-set="address">
+                    <strong class="d-block">Vendor</strong>
+                    <div t-field="o.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;, &quot;vat&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="report_purchaseorder_document_billing_address_label"
+                  inherit_id="purchase.report_purchaseorder_document">
+            <xpath expr="//t[@t-set='address']" position="replace">
+                <t t-set="address">
+                    <strong class="d-block">Vendor</strong>
+                    <div t-field="o.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;, &quot;vat&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="report_saleorder_document_billing_address_label"
+                  inherit_id="sale.report_saleorder_document">
+            <xpath expr="//t[@t-set='address']" position="replace">
+                <t t-set="address">
+                    <strong class="d-block">Billing Address</strong>
+                    <div t-field="doc.partner_invoice_id" class="mb-0"
+                         t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                    <p t-if="doc.partner_invoice_id.vat" class="mb-0">
+                        <t t-if="doc.company_id.account_fiscal_country_id.vat_label" t-out="doc.company_id.account_fiscal_country_id.vat_label"/>
+                        <t t-else="">Tax ID</t>: <span t-field="doc.partner_invoice_id.vat"/>
+                    </p>
+                </t>
+            </xpath>
+            <xpath expr="//div[@name='informations_reference']/strong" position="replace">
+                <strong>PO Number</strong>
+            </xpath>
+            <xpath expr="//t[@t-if='doc.partner_shipping_id == doc.partner_invoice_id                              and doc.partner_invoice_id != doc.partner_id                              or doc.partner_shipping_id != doc.partner_invoice_id']" position="replace">
+                <t t-set="information_block">
+                    <strong class="d-block">Shipping Address</strong>
+                    <div t-field="doc.partner_shipping_id"
+                         t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                </t>
+            </xpath>
+        </template>
+
+        <template id="report_invoice_document_billing_address_po_number"
+                  inherit_id="account.report_invoice_document">
+            <xpath expr="//div[@name='address_not_same_as_shipping']//address[@t-field='o.partner_id']" position="before">
+                <strong class="d-block">Billing Address</strong>
+            </xpath>
+            <xpath expr="//div[@name='address_same_as_shipping']//address[@t-field='o.partner_id']" position="before">
+                <strong class="d-block">Billing Address</strong>
+            </xpath>
+            <xpath expr="//div[@name='no_shipping']//address[@t-field='o.partner_id']" position="before">
+                <strong class="d-block">Billing Address</strong>
+            </xpath>
+            <xpath expr="//div[@name='reference']/strong" position="replace">
+                <strong>PO Number</strong>
+            </xpath>
+        </template>
+
+        <template id="report_delivery_document_billing_shipping_labels"
+                  inherit_id="stock.report_delivery_document">
+            <xpath expr="//t[@t-set='address']" position="replace">
+                <t t-set="address">
+                    <div name="div_outgoing_address">
+                        <strong class="d-block mt-3">Billing Address</strong>
+                        <div t-out="(o.move_ids and o.move_ids[0].partner_id) or o.partner_id or partner"
+                             t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;, &quot;vat&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                    </div>
+                </t>
+            </xpath>
+            <xpath expr="//t[@t-set='information_block']" position="replace">
+                <t t-set="information_block">
+                    <div class="row">
+                        <div class="col-7" name="div_incoming_address">
+                            <strong>Shipping address</strong>
+                            <div t-out="(partner and (partner.commercial_partner_id or partner))"
+                                 t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                        </div>
+                    </div>
+                </t>
+            </xpath>
+        </template>
+    </data>
+</odoo>

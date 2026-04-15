@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+
+    <record id="mail_template_timesheet_approval_request" model="mail.template">
+        <field name="name">Timesheet Approval: Request Notification</field>
+        <field name="model_id" ref="custom_approvals.model_portal_timesheet_approval"/>
+        <field name="subject">Timesheet Approval Required — {{ object.portal_user_id.name }}</field>
+        <field name="email_from" eval="False"/>
+        <field name="email_to" eval="False"/>
+        <field name="body_html" type="html">
+            <div style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+                <p>Hello,</p>
+                <p>
+                    A new timesheet entry from portal user
+                    <strong><t t-out="object.portal_user_id.name"/></strong>
+                    requires your approval.
+                </p>
+                <table style="border-collapse: collapse; width: 100%; max-width: 500px;">
+                    <tr>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Task</td>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd;"><t t-out="object.task_id.name"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Project</td>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd;"><t t-out="object.project_id.name or '—'"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Description</td>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd;"><t t-out="object.name if object.name != '/' else '(no description)'"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Date</td>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd;"><t t-out="object.date"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd; background: #f5f5f5; font-weight: bold;">Hours</td>
+                        <td style="padding: 6px 12px; border: 1px solid #ddd;"><t t-out="'%.2f' % object.unit_amount"/> h</td>
+                    </tr>
+                </table>
+                <p style="margin-top: 16px;">
+                    Please review this request in the backend under
+                    <strong>Timesheets → Portal Timesheet Approvals</strong>.
+                </p>
+                <p>Thank you.</p>
+            </div>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+</odoo>

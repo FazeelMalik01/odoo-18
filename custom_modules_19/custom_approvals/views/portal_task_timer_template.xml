@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--
+        Extends the standard portal task page (/my/tasks/<id>) to add:
+          • A live timer (Start / Stop) that runs server-side
+          • A manual timesheet entry form
+          • A list of the portal user's timesheet approval requests for this task
+    -->
+    <template id="portal_task_timer_section" inherit_id="project.portal_my_task" name="Portal Task Timer &amp; Timesheet">
+
+        <!-- Inject timer section just before the chatter (#task_chat) -->
+        <xpath expr="//div[@id='task_content']" position="inside">
+            <t t-if="show_timesheet_section">
+
+                <div id="portal_timesheet_section" class="mt-4">
+                    <h4 class="mb-3">
+                        <i class="fa fa-clock-o me-2"/>Time Tracking
+                    </h4>
+
+                    <!-- ========== LIVE TIMER CARD ========== -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+
+                            <t t-if="running_timer">
+                                <!-- Timer is already running -->
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <span class="badge bg-success fs-6 px-3 py-2">
+                                        <i class="fa fa-circle me-1"/>Timer Running
+                                    </span>
+                                    <span class="text-muted">
+                                        Started at
+                                        <!-- JS will overwrite this with local time -->
+                                        <strong id="timer_start_display">...</strong>
+                                    </span>
+                                    <span class="fw-bold fs-5" id="elapsed_display">00:00:00</span>
+                                    <button id="btn_stop_timer"
+                                            class="btn btn-danger"
+                                            t-att-data-task-id="task.id"
+                                            t-att-data-timer-start-ms="timer_start_ms">
+                                        <i class="fa fa-stop me-1"/>Stop Timer
+                                    </button>
+                                </div>
+                                <!-- Description for the timesheet entry -->
+                                <div class="mt-3">
+                                    <input type="text"
+                                           id="timer_stop_description"
+                                           class="form-control"
+                                           placeholder="What did you work on? (optional)"/>
+                                </div>
+                            </t>
+
+                            <t t-else="">
+                                <!-- No timer running -->
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <button id="btn_start_timer"
+                                            class="btn btn-success"
+                                            t-att-data-task-id="task.id">
+                                        <i class="fa fa-play me-1"/>Start Timer
+                                    </button>
+                                    <span class="text-muted small">
+                                        Start a timer to automatically log time on this task.
+                                    </span>
+                                </div>
+                            </t>
+
+                        </div>
+                    </div>
+
+                    <!-- ========== MANUAL TIMESHEET ENTRY ========== -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <strong><i class="fa fa-pencil me-1"/>Log Time Manually</strong>
+                        </div>
+                        <div class="card-body">
+                            <div id="manual_ts_alert" class="alert d-none" role="alert"/>
+                            <div class="row g-2">
+                                <div class="col-12 col-md-5">
+                                    <input type="text"
+                                           id="manual_ts_desc"
+                                           class="form-control"
+                                           placeholder="Description *"/>
+                                </div>
+                                <div class="col-6 col-md-2">
+                                    <input type="number"
+                                           id="manual_ts_hours"
+                                           class="form-control"
+                                           placeholder="Hours *"
+                                           min="0.01"
+                                           step="0.25"/>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <input type="date"
+                                           id="manual_ts_date"
+                                           class="form-control"/>
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <button id="btn_manual_submit"
+                                            class="btn btn-primary w-100"
+                                            t-att-data-task-id="task.id">
+                                        <i class="fa fa-paper-plane me-1"/>Submit
+                                    </button>
+                                </div>
+                            </div>
+                            <p class="text-muted small mt-2 mb-0">
+                                Submitted entries require approval from the Timesheet Manager before they are recorded.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ========== APPROVAL REQUESTS TABLE ========== -->
+                    <t t-if="approval_requests">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <strong><i class="fa fa-list me-1"/>My Timesheet Requests</strong>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th class="text-end">Hours</th>
+                                            <th>Status</th>
+                                            <th>Note</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="approval_requests" t-as="req">
+                                            <tr>
+                                                <td>
+                                                    <t t-esc="req.date"/>
+                                                </td>
+                                                <td>
+                                                    <t t-esc="req.name if req.name != '/' else ''"/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <t t-esc="'%.2f' % req.unit_amount"/>
+                                                </td>
+                                                <td>
+                                                    <t t-if="req.state == 'pending'">
+                                                        <span class="badge bg-warning text-dark">Pending Approval</span>
+                                                    </t>
+                                                    <t t-elif="req.state == 'approved'">
+                                                        <span class="badge bg-success">Approved</span>
+                                                    </t>
+                                                    <t t-elif="req.state == 'rejected'">
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    </t>
+                                                </td>
+                                                <td>
+                                                    <t t-if="req.state == 'rejected' and req.rejection_reason">
+                                                        <span class="text-danger small">
+                                                            <t t-esc="req.rejection_reason"/>
+                                                        </span>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+
+                </div>
+
+                <!-- ========== JAVASCRIPT ========== -->
+                <script type="text/javascript">
+                (function () {
+                    'use strict';
+
+                    /* ----------------------------------------------------------------
+                     * JSON-RPC helper
+                     * type='jsonrpc' routes in Odoo 19 do NOT require a CSRF token —
+                     * they are protected by the session cookie + Content-Type check.
+                     * ---------------------------------------------------------------- */
+                    function jsonRpc(url, params) {
+                        return fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                jsonrpc: '2.0',
+                                method:  'call',
+                                id:      Date.now(),
+                                params:  params || {},
+                            }),
+                        })
+                        .then(function (r) { return r.json(); })
+                        .then(function (r) {
+                            if (r.error) {
+                                /* Surface a readable message from JSON-RPC error */
+                                var msg = (r.error.data &amp;&amp; r.error.data.message)
+                                        || r.error.message
+                                        || 'Server error';
+                                return { error: msg };
+                            }
+                            return r.result;
+                        });
+                    }
+
+                    /* ----------------------------------------------------------------
+                     * Elapsed formatter — always receives UTC epoch ms
+                     * ---------------------------------------------------------------- */
+                    function formatElapsed(startMs) {
+                        var diff = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
+                        var h = Math.floor(diff / 3600);
+                        var m = Math.floor((diff % 3600) / 60);
+                        var s = diff % 60;
+                        return [h, m, s].map(function (v) {
+                            return String(v).padStart(2, '0');
+                        }).join(':');
+                    }
+
+                    /* ---- Live timer tick ---- */
+                    var timerInterval = null;
+
+                    function startElapsedTick(startMs) {
+                        var el = document.getElementById('elapsed_display');
+                        if (!el) return;
+                        el.textContent = formatElapsed(startMs);
+                        clearInterval(timerInterval);
+                        timerInterval = setInterval(function () {
+                            el.textContent = formatElapsed(startMs);
+                        }, 1000);
+                    }
+
+                    /* ---- Start timer ---- */
+                    var btnStart = document.getElementById('btn_start_timer');
+                    if (btnStart) {
+                        btnStart.addEventListener('click', function () {
+                            var taskId = btnStart.getAttribute('data-task-id');
+                            btnStart.disabled = true;
+                            jsonRpc('/my/tasks/' + taskId + '/timer/start', {})
+                                .then(function (res) {
+                                    if (res &amp;&amp; res.success) {
+                                        window.location.reload();
+                                    } else {
+                                        alert((res &amp;&amp; res.error) || 'Could not start timer.');
+                                        btnStart.disabled = false;
+                                    }
+                                })
+                                .catch(function () {
+                                    alert('An error occurred. Please try again.');
+                                    btnStart.disabled = false;
+                                });
+                        });
+                    }
+
+                    /* ---- Auto-start tick if timer already running ---- */
+                    var btnStop = document.getElementById('btn_stop_timer');
+                    if (btnStop) {
+                        /* epoch ms passed from server — always UTC, always correct */
+                        var startMs = parseInt(btnStop.getAttribute('data-timer-start-ms'), 10);
+
+                        /* Show "Started at" in the user's local clock time */
+                        var startEl = document.getElementById('timer_start_display');
+                        if (startEl &amp;&amp; startMs) {
+                            startEl.textContent = new Date(startMs).toLocaleTimeString();
+                        }
+
+                        /* Begin ticking */
+                        if (startMs) {
+                            startElapsedTick(startMs);
+                        }
+
+                        /* ---- Stop timer ---- */
+                        btnStop.addEventListener('click', function () {
+                            var taskId      = btnStop.getAttribute('data-task-id');
+                            var descEl      = document.getElementById('timer_stop_description');
+                            var description = descEl ? descEl.value : '';
+                            btnStop.disabled = true;
+                            clearInterval(timerInterval);
+
+                            jsonRpc('/my/tasks/' + taskId + '/timer/stop', { description: description })
+                                .then(function (res) {
+                                    if (res &amp;&amp; res.success) {
+                                        window.location.reload();
+                                    } else {
+                                        alert((res &amp;&amp; res.error) || 'Could not stop timer.');
+                                        btnStop.disabled = false;
+                                        startElapsedTick(startMs);
+                                    }
+                                })
+                                .catch(function () {
+                                    alert('An error occurred. Please try again.');
+                                    btnStop.disabled = false;
+                                    startElapsedTick(startMs);
+                                });
+                        });
+                    }
+
+                    /* ---- Manual timesheet submit ---- */
+                    var btnManual = document.getElementById('btn_manual_submit');
+                    if (btnManual) {
+                        var dateInput = document.getElementById('manual_ts_date');
+                        if (dateInput &amp;&amp; !dateInput.value) {
+                            dateInput.value = new Date().toISOString().slice(0, 10);
+                        }
+
+                        btnManual.addEventListener('click', function () {
+                            var taskId  = btnManual.getAttribute('data-task-id');
+                            var desc    = document.getElementById('manual_ts_desc').value;
+                            var hours   = document.getElementById('manual_ts_hours').value;
+                            var date    = document.getElementById('manual_ts_date').value;
+                            var alertEl = document.getElementById('manual_ts_alert');
+
+                            function showAlert(msg, type) {
+                                alertEl.textContent = msg;
+                                alertEl.className = 'alert alert-' + type;
+                            }
+
+                            if (!desc.trim()) {
+                                return showAlert('Please enter a description.', 'warning');
+                            }
+                            if (!hours || parseFloat(hours) &lt;= 0) {
+                                return showAlert('Please enter a valid number of hours.', 'warning');
+                            }
+
+                            btnManual.disabled = true;
+                            jsonRpc('/my/tasks/' + taskId + '/timesheet/submit', {
+                                description: desc,
+                                hours:       parseFloat(hours),
+                                date:        date || null,
+                            })
+                            .then(function (res) {
+                                if (res &amp;&amp; res.success) {
+                                    showAlert('Timesheet submitted — awaiting manager approval.', 'success');
+                                    document.getElementById('manual_ts_desc').value  = '';
+                                    document.getElementById('manual_ts_hours').value = '';
+                                    setTimeout(function () { window.location.reload(); }, 1500);
+                                } else {
+                                    showAlert((res &amp;&amp; res.error) || 'Submission failed.', 'danger');
+                                    btnManual.disabled = false;
+                                }
+                            })
+                            .catch(function () {
+                                showAlert('An error occurred. Please try again.', 'danger');
+                                btnManual.disabled = false;
+                            });
+                        });
+                    }
+
+                }());
+                </script>
+
+            </t>
+        </xpath>
+
+    </template>
+
+</odoo>

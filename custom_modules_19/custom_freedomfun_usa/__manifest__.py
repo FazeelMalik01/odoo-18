@@ -23,8 +23,14 @@ and automatically creates CRM leads in Odoo.
     ],
 
     'data': [
+        'security/category_rule.xml',
+        'security/crm_salesperson_group.xml',
         'security/ir.model.access.csv',
         'views/crm_lead_form.xml',
+        'views/res_settings.xml',
+        'views/res_company.xml',
+        'views/category.xml',
+        'views/product_template.xml',
         'data/cron.xml'
     ],
 

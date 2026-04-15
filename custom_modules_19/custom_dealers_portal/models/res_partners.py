@@ -4,6 +4,17 @@ from odoo import models, fields
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    has_customer_company = fields.Boolean(
+        string='Customer Has Company',
+        help='Set when this customer is associated with their own company.',
+    )
+    customer_company_name = fields.Char(
+        string='Customer Company Name',
+    )
+    customer_company_address = fields.Char(
+        string='Customer Company Address',
+    )
+
     dealer = fields.Many2one(
         'res.partner',          # model to select from
         string='Dealer',

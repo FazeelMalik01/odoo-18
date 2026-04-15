@@ -84,6 +84,27 @@
                                         <option value="dhc_courier">Ship with DHC's courier and add cost to invoice</option>
                                     </select>
                                 </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Customer Has Company?</label>
+                                    <select id="customer_has_company" class="form-select">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 customer-company-fields d-none">
+                                    <label class="form-label">Customer Company Name</label>
+                                    <input type="text"
+                                           id="customer_company_name"
+                                           class="form-control"
+                                           placeholder="Company Name"/>
+                                </div>
+                                <div class="col-md-5 customer-company-fields d-none">
+                                    <label class="form-label">Customer Company Address</label>
+                                    <input type="text"
+                                           id="customer_company_address"
+                                           class="form-control"
+                                           placeholder="Street, City, ZIP, State, Country"/>
+                                </div>
                                 <div class="col-md-12 mt-3">
                                     <button class="btn btn-success me-2"
                                         id="save_customer_btn">
@@ -116,7 +137,10 @@
                         <tbody>
                             <t t-foreach="customers" t-as="customer">
                                 <t t-set="row_id" t-value="'customer_row_' + str(customer.id)"/>
-                                <tr t-att-id="row_id">
+                                <tr t-att-id="row_id"
+                                    t-att-data-has-company="'true' if customer.has_customer_company else 'false'"
+                                    t-att-data-company-name="customer.customer_company_name or ''"
+                                    t-att-data-company-address="customer.customer_company_address or ''">
                                     <td class="customer-name">
                                         <t t-esc="customer.name"/>
                                     </td>

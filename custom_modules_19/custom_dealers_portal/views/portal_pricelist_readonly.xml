@@ -1,0 +1,23 @@
+<odoo>
+    <!-- Show dealer's assigned pricelist on portal contact details (My Account) as read-only -->
+    <template id="portal_address_form_fields_inherit_pricelist" inherit_id="portal.address_form_fields">
+        <xpath expr="//div[@id='div_phone']" position="after">
+            <div t-if="is_main_address" id="div_pricelist" class="col-lg-6 mb-2">
+                <label class="col-form-label" for="o_pricelist">
+                    Price List
+                </label>
+                <input
+                    id="o_pricelist"
+                    type="text"
+                    name="pricelist"
+                    t-att-value="(request.env.user.sudo().partner_id.commercial_partner_id.property_product_pricelist.display_name
+                                   if request.env.user.sudo().partner_id.commercial_partner_id.property_product_pricelist
+                                   else '')"
+                    class="form-control"
+                    readonly="readonly"
+                />
+            </div>
+        </xpath>
+    </template>
+</odoo>
+

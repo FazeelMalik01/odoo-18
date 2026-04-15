@@ -25,6 +25,10 @@
         const saveBtn = document.getElementById('save_customer_btn');
         const cancelBtn = document.getElementById('cancel_customer_btn');
         const customerIdInput = document.getElementById('customer_id');
+        const hasCompanySelect = document.getElementById('customer_has_company');
+        const companyFields = document.querySelectorAll('.customer-company-fields');
+        const companyNameInput = document.getElementById('customer_company_name');
+        const companyAddressInput = document.getElementById('customer_company_address');
 
         if (!addBtn || !formRow || !saveBtn) {
             console.warn('Customer form elements not found');
@@ -33,12 +37,28 @@
 
         console.log('✅ Customers portal JS loaded');
 
+        function toggleCompanyFields() {
+            const showCompanyFields = hasCompanySelect && hasCompanySelect.value === 'true';
+            companyFields.forEach(function (field) {
+                field.classList.toggle('d-none', !showCompanyFields);
+            });
+            if (!showCompanyFields) {
+                if (companyNameInput) companyNameInput.value = '';
+                if (companyAddressInput) companyAddressInput.value = '';
+            }
+        }
+
+        if (hasCompanySelect) {
+            hasCompanySelect.addEventListener('change', toggleCompanyFields);
+        }
+
         // Show add form
         addBtn.addEventListener('click', function () {
             resetForm();
             document.getElementById('form_title').textContent = 'Add New Customer';
             formRow.classList.remove('d-none');
             addBtn.classList.add('d-none');
+            toggleCompanyFields();
         });
 
         // Cancel form
@@ -59,9 +79,20 @@
             const mobile_number = document.getElementById('customer_mobile').value.trim();
             const comment = document.getElementById('customer_comment').value.trim();
             const shipping_option = document.getElementById('customer_shipping_option').value;
+            const has_customer_company = hasCompanySelect ? hasCompanySelect.value === 'true' : false;
+            const customer_company_name = companyNameInput ? companyNameInput.value.trim() : '';
+            const customer_company_address = companyAddressInput ? companyAddressInput.value.trim() : '';
 
             if (!name) {
                 alert('Customer name is required');
+                return;
+            }
+            if (has_customer_company && !customer_company_name) {
+                alert('Company name is required when customer has a company');
+                return;
+            }
+            if (has_customer_company && !customer_company_address) {
+                alert('Company address is required when customer has a company');
                 return;
             }
 
@@ -71,7 +102,10 @@
                 phone: phone || '',
                 mobile_number: mobile_number || '',
                 comment: comment || '',
-                shipping_option_dropship: shipping_option || ''
+                shipping_option_dropship: shipping_option || '',
+                has_customer_company: has_customer_company,
+                customer_company_name: customer_company_name || '',
+                customer_company_address: customer_company_address || '',
             };
 
             let url = '/my/add_customer';
@@ -169,6 +203,9 @@
                 const currentPhone = phoneCell ? (phoneCell.textContent.trim() === 'N/A' ? '' : phoneCell.textContent.trim()) : '';
                 const currentMobile = mobileCell ? (mobileCell.textContent.trim() === 'N/A' ? '' : mobileCell.textContent.trim()) : '';
                 const currentComment = commentCell ? (commentCell.textContent.trim() === 'N/A' ? '' : commentCell.textContent.trim()) : '';
+                const rowHasCompany = row.getAttribute('data-has-company') === 'true';
+                const rowCompanyName = row.getAttribute('data-company-name') || '';
+                const rowCompanyAddress = row.getAttribute('data-company-address') || '';
                 
                 // Get shipping option - need to map display text back to value
                 let currentShippingOption = '';
@@ -193,6 +230,10 @@
                 document.getElementById('customer_mobile').value = currentMobile;
                 document.getElementById('customer_comment').value = currentComment;
                 document.getElementById('customer_shipping_option').value = currentShippingOption;
+                if (hasCompanySelect) hasCompanySelect.value = rowHasCompany ? 'true' : 'false';
+                if (companyNameInput) companyNameInput.value = rowCompanyName;
+                if (companyAddressInput) companyAddressInput.value = rowCompanyAddress;
+                toggleCompanyFields();
 
                 // Show form
                 document.getElementById('form_title').textContent = 'Edit Customer';
@@ -292,6 +333,10 @@
             if (mobileInput) mobileInput.value = '';
             if (commentInput) commentInput.value = '';
             if (shippingOptionInput) shippingOptionInput.value = '';
+            if (hasCompanySelect) hasCompanySelect.value = 'false';
+            if (companyNameInput) companyNameInput.value = '';
+            if (companyAddressInput) companyAddressInput.value = '';
+            toggleCompanyFields();
             
             if (saveBtn) {
                 saveBtn.disabled = false;

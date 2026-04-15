@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="gym_tag_form_view" model="ir.ui.view">
+        <field name="name">gym.tag.form.view</field>
+        <field name="model">gym.tag</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="oe_title">
+                                <label for="name"/>
+                                <h1>
+                                    <field name="name" placeholder="e.g. Gym Tag" required="1"/>
+                                </h1>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="oe_title">
+                                <field name="color" widget="color_picker"/>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="gym_tag_tree_view" model="ir.ui.view">
+        <field name="name">gym.tag.tree.view</field>
+        <field name="model">gym.tag</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name" required="1"/>
+                <field name="color" widget="color_picker"/>
+            </list>
+        </field>
+    </record>
+    <record id="gym_tag_action" model="ir.actions.act_window">
+        <field name="name">Tags</field>
+        <field name="res_model">gym.tag</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

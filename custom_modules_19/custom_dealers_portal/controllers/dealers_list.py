@@ -27,7 +27,8 @@ class DealerPortal(http.Controller):
         partner = request.env.user.partner_id
 
         customers = request.env['res.partner'].sudo().search([
-            ('dealer', '=', partner.id)
+            ('dealer', '=', partner.id),
+            ('is_company', '=', False),
         ])
 
         return request.render(
@@ -56,6 +57,31 @@ class DealerPortal(http.Controller):
                 )
 
             dealer = request.env.user.partner_id
+            has_customer_company = str(post.get('has_customer_company', '')).lower() in ('1', 'true', 'yes', 'on')
+            customer_company_name = (post.get('customer_company_name') or '').strip()
+            customer_company_address = (post.get('customer_company_address') or '').strip()
+
+            if has_customer_company and not customer_company_name:
+                return request.make_response(
+                    json.dumps({'success': False, 'error': 'Company name is required when customer has a company'}),
+                    headers=[('Content-Type', 'application/json')]
+                )
+            if has_customer_company and not customer_company_address:
+                return request.make_response(
+                    json.dumps({'success': False, 'error': 'Company address is required when customer has a company'}),
+                    headers=[('Content-Type', 'application/json')]
+                )
+
+            parent_id = dealer.id
+            if has_customer_company:
+                company_partner = request.env['res.partner'].sudo().create({
+                    'name': customer_company_name,
+                    'street': customer_company_address,
+                    'is_company': True,
+                    'company_type': 'company',
+                    'dealer': dealer.id,
+                })
+                parent_id = company_partner.id
 
             customer = request.env['res.partner'].sudo().create({
                 'name': name,
@@ -66,8 +92,11 @@ class DealerPortal(http.Controller):
                 'comment': post.get('comment'),
                 'shipping_option_dropship': post.get('shipping_option_dropship') or False,
                 'company_type': 'person',
-                'parent_id': dealer.id,
+                'parent_id': parent_id,
                 'type': 'contact',
+                'has_customer_company': has_customer_company,
+                'customer_company_name': customer_company_name if has_customer_company else False,
+                'customer_company_address': customer_company_address if has_customer_company else False,
             })
 
             _logger.info(f"Created customer ID: {customer.id}, Name: {customer.name}")
@@ -113,7 +142,8 @@ class DealerPortal(http.Controller):
             # First, let's check if the customer exists and belongs to this dealer
             customer = request.env['res.partner'].sudo().search([
                 ('id', '=', int(customer_id)),
-                ('dealer', '=', dealer.id)
+                ('dealer', '=', dealer.id),
+                ('is_company', '=', False),
             ], limit=1)
 
             _logger.info(f"Customer search result: {customer}")
@@ -150,6 +180,45 @@ class DealerPortal(http.Controller):
             if 'shipping_option_dropship' in post:
                 update_vals['shipping_option_dropship'] = post.get('shipping_option_dropship') or False
                 _logger.info(f"Updating shipping_option_dropship to: {post.get('shipping_option_dropship')}")
+            has_customer_company = str(post.get('has_customer_company', '')).lower() in ('1', 'true', 'yes', 'on')
+            customer_company_name = (post.get('customer_company_name') or '').strip()
+            customer_company_address = (post.get('customer_company_address') or '').strip()
+
+            if has_customer_company and not customer_company_name:
+                return request.make_response(
+                    json.dumps({'success': False, 'error': 'Company name is required when customer has a company'}),
+                    headers=[('Content-Type', 'application/json')]
+                )
+            if has_customer_company and not customer_company_address:
+                return request.make_response(
+                    json.dumps({'success': False, 'error': 'Company address is required when customer has a company'}),
+                    headers=[('Content-Type', 'application/json')]
+                )
+
+            update_vals['has_customer_company'] = has_customer_company
+            update_vals['customer_company_name'] = customer_company_name if has_customer_company else False
+            update_vals['customer_company_address'] = customer_company_address if has_customer_company else False
+
+            # Keep person parent hierarchy aligned with company/dealer selection.
+            if has_customer_company:
+                company_partner = customer.parent_id if customer.parent_id and customer.parent_id != dealer else None
+                if company_partner:
+                    company_partner.write({
+                        'name': customer_company_name,
+                        'street': customer_company_address,
+                        'dealer': dealer.id,
+                    })
+                else:
+                    company_partner = request.env['res.partner'].sudo().create({
+                        'name': customer_company_name,
+                        'street': customer_company_address,
+                        'is_company': True,
+                        'company_type': 'company',
+                        'dealer': dealer.id,
+                    })
+                update_vals['parent_id'] = company_partner.id
+            else:
+                update_vals['parent_id'] = dealer.id
 
             _logger.info(f"Update values: {update_vals}")
 
@@ -193,7 +262,8 @@ class DealerPortal(http.Controller):
 
             customer = request.env['res.partner'].sudo().search([
                 ('id', '=', int(customer_id)),
-                ('dealer', '=', dealer.id)
+                ('dealer', '=', dealer.id),
+                ('is_company', '=', False),
             ], limit=1)
 
             if not customer:

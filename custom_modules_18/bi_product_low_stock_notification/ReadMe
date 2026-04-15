@@ -1,0 +1,1 @@
+18.0.0.1 ==> Fixed issue of when we delete product and rum schedual action for low stock mail at that time trace back occurs.

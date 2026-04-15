@@ -11,9 +11,10 @@ class VehicleRepairServicesLine(models.Model):
     jobcard_id = fields.Many2one('vehicle.jobcard', string="Job card Id", ondelete='cascade')
     service_id = fields.Many2one('vehicle.services', string="Service")
     product_id = fields.Many2one('product.product', string='Product', store=True)
+    quantity = fields.Float(string="Quantity", default=1.0)
     start_date = fields.Date(string="Start Date", required=True)
     end_date = fields.Date(string="End Date", required=True)
-    service_cost = fields.Float(string="Service Cost", compute='_compute_service_amount', store=True)
+    service_cost = fields.Float(string="Service Cost", default=0.0)
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -54,6 +55,9 @@ class VehicleRepairServicesLine(models.Model):
 
     current_employee_id = fields.Many2one('hr.employee', string="Current Employee Timer")
 
+    from_bundle = fields.Boolean(string="Added From Bundle", default=False)
+    from_spare = fields.Boolean(string="Added From Spare Part", default=False)
+
     @api.depends('assigners')
     def _compute_assigners_user_ids(self):
         for record in self:
@@ -81,10 +85,10 @@ class VehicleRepairServicesLine(models.Model):
         for record in self:
             record.title = record.service_id.name
 
-    @api.depends('service_id')
-    def _compute_service_amount(self):
-        for record in self:
-            record.service_cost = record.service_id.service_amount
+    @api.onchange('service_id')
+    def _onchange_service_cost(self):
+        if self.service_id:
+            self.service_cost = self.service_id.service_amount
 
     def action_progress(self):
         self.ensure_one()
@@ -156,20 +160,37 @@ class VehicleRepairServicesLine(models.Model):
     def _compute_total_duration(self):
         for record in self:
             record.total_duration = sum(record.timesheet_ids.mapped('unit_amount'))
+    
+    def _get_current_employee(self):
+        # Only trust context if came via PIN wizard
+        employee_id = self.env.context.get('authenticated_employee_id')
+        if employee_id:
+            return self.env['hr.employee'].browse(employee_id)
+        return None  # DO NOT fall back to env.user here
 
     def action_start_timer(self):
         self.ensure_one()
-        
-        employees = self.assigners.mapped('employee_id')
-        
-        # No assigners or multiple assigners → open wizard
-        if not employees or len(employees) > 1:
-            return self._open_technician_wizard()
-        
-        # Only one assigner → start timer directly
-        self._start_employee_timer(employees[0])
 
+        assigned_employees = self.assigners.mapped('employee_id')
+
+        # Route 1: Came via PIN wizard — context has authenticated_employee_id
+        if self.env.context.get('authenticated_employee_id'):
+            current_employee = self._get_current_employee()
+            if current_employee and current_employee in assigned_employees:
+                self._start_employee_timer(current_employee)
+                return
+            else:
+                raise ValidationError(_("Authenticated employee is not assigned to this task."))
+
+        if len(assigned_employees) == 1:
+            self._start_employee_timer(assigned_employees[0])
+            return
+
+        # Multiple assigners — must open wizard to select who
+        return self._open_technician_wizard()
+    
     def _open_technician_wizard(self):
+        assigned_employees = self.assigners.mapped('employee_id')
         return {
             'type': 'ir.actions.act_window',
             'name': 'Select Technician',
@@ -178,9 +199,12 @@ class VehicleRepairServicesLine(models.Model):
             'target': 'new',
             'context': {
                 'default_repair_line_id': self.id,
+                'allowed_employee_ids': assigned_employees.ids,  # restrict dropdown
             }
         }
+    
     def _start_employee_timer(self, employee):
+        self.ensure_one()
         self.timer_start = fields.Datetime.now()
         self.is_timer_running = True
         self.state = 'in_progress'
@@ -200,7 +224,11 @@ class VehicleRepairServicesLine(models.Model):
         self.timer_start = False
         self.is_timer_running = False
 
-        employee = self.current_employee_id
+        # Same logic — PIN context or env.user
+        employee = self._get_current_employee() or self.current_employee_id
+
+        if not employee:
+            raise ValidationError(_("Cannot determine the technician for this timesheet entry."))
 
         self.env['account.analytic.line'].create({
             'name': self.title,
@@ -219,13 +247,35 @@ class VehicleRepairServicesLine(models.Model):
             self.action_pause_timer()
 
         self.state = 'done'
+    
+    def write(self, vals):
+        res = super().write(vals)
+
+        if 'state' in vals and vals.get('state') == 'done':
+            for rec in self:
+                service = rec.service_id
+
+                if service and service.is_recurring and service.recurring_days:
+                    done_date = rec.end_date or fields.Date.today()
+                    next_date = done_date + timedelta(days=service.recurring_days)
+
+                    self.env['vehicle.service.reminder'].create({
+                        'customer_id': rec.jobcard_id.customer_id.id,
+                        'jobcard_id': rec.jobcard_id.id,
+                        'service_id': service.id,
+                        'done_date': done_date,
+                        'next_due_date': next_date,
+                        'recurring_days': service.recurring_days,
+                    })
+
+        return res
 class VehicleRepairPartsLine(models.Model):
     _name = 'vehicle.repair.parts.line'
     _description = "Vehicle Repair Spare Parts"
-
+    _inherit = ['product.catalog.mixin']
     jobcard_id = fields.Many2one('vehicle.jobcard', string="Job card Id")
 
-    spare_id = fields.Many2one('product.product', string='Spare Part', domain=[('spare_part', '=', True)])
+    spare_id = fields.Many2one('product.product', string='Spare Part', domain="[('id','in',spare_domain)]")
     quantity = fields.Integer(string="Quantity", default=1)
     unit_price = fields.Float(string="Unit Price", compute='_compute_unit_price', store=True)
     sub_total = fields.Float(string="Sub Total", compute='_compute_sub_total', store=True)
@@ -236,6 +286,13 @@ class VehicleRepairPartsLine(models.Model):
 
     #Consumption
     consume = fields.Boolean(string="Consumed")
+
+    from_bundle = fields.Boolean(string="Added From Bundle", default=False)
+    
+    spare_domain = fields.Many2many(
+        'product.product',
+        compute='_compute_spare_domain'
+    )
 
     @api.depends('spare_id.list_price')
     def _compute_unit_price(self):
@@ -249,7 +306,48 @@ class VehicleRepairPartsLine(models.Model):
                 line.sub_total = line.unit_price * line.quantity
             else:
                 line.sub_total = 0.0
+    
+    @api.onchange('jobcard_id.brand_id', 'jobcard_id.model_id', 'jobcard_id.filter_spare_parts')
+    def _compute_spare_domain(self):
+        for line in self:
+            if line.jobcard_id.filter_spare_parts and line.jobcard_id.brand_id and line.jobcard_id.model_id:
+                line.spare_domain = self.env['product.product'].search([
+                    ('spare_part', '=', True),
+                    ('vehicle_compatibility_ids.make_id', '=', line.jobcard_id.brand_id.id),
+                    ('vehicle_compatibility_ids.model_id', '=', line.jobcard_id.model_id.id)
+                ])
+            else:
+                line.spare_domain = self.env['product.product'].search([('spare_part', '=', True)])
+    @api.readonly
+    def action_add_from_catalog(self):
+        # Get the parent jobcard from context
+        jobcard = self.env['vehicle.jobcard'].browse(
+            self.env.context.get('order_id')  # 'order_id' key is standard in catalog mixin
+        )
+        return jobcard.with_context(
+            child_field='repair_parts_line'  # your O2M field name on jobcard
+        ).action_add_from_catalog()
 
+    def _get_product_catalog_lines_data(self, **kwargs):
+        if len(self) == 1:
+            return {
+                'quantity': self.quantity,
+                'price': self.unit_price,
+                'readOnly': False,
+                'uomDisplayName': self.spare_id.uom_id.display_name if self.spare_id else '',
+            }
+        elif self:
+            self.spare_id.ensure_one()
+            return {
+                'readOnly': True,
+                'price': self[0].unit_price,
+                'quantity': sum(self.mapped('quantity')),
+                'uomDisplayName': self.spare_id.uom_id.display_name,
+            }
+        else:
+            return {
+                'quantity': 0,
+            }
 
 class VechicleRepairImage(models.Model):
     _name = 'vehicle.repair.image'

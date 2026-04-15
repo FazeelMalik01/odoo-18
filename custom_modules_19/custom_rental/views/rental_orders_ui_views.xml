@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <!-- Remove default overlay helper to keep list screen clean -->
+        <record id="sale_renting.rental_order_action" model="ir.actions.act_window">
+            <field name="help" type="html">
+                <p></p>
+            </field>
+        </record>
+
+        <!-- Replace base rental list view completely to avoid duplicated columns -->
+        <record id="sale_renting.rental_order_view_tree" model="ir.ui.view">
+            <field name="name">rental.order.list</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+                <list sample="0" class="custom_rental_orders_list" decoration-muted="rental_status == 'cancel'">
+                    <field name="name" string="Order Reference" readonly="1" decoration-bf="1"/>
+                    <field name="rental_start_date" string="Event Date" options="{'show_time': false}"/>
+                    <field name="duration_days" string="Duration"/>
+                    <field name="partner_id" string="Customer" readonly="1"/>
+                    <field name="ui_booking_status"
+                           string="Status"
+                           widget="badge"
+                           decoration-warning="ui_booking_status == 'quote'"
+                           decoration-primary="ui_booking_status == 'booked'"/>
+                    <field name="ui_sales_health"
+                           string="Health"
+                           widget="badge"
+                           decoration-success="ui_sales_health == 'green'"
+                           decoration-warning="ui_sales_health == 'yellow'"
+                           decoration-danger="ui_sales_health == 'red'"/>
+                    <field name="ui_action_needed_level" column_invisible="True"/>
+                    <field name="ui_action_needed"
+                           string="Action Needed"
+                           decoration-success="ui_action_needed_level == 'green'"
+                           decoration-warning="ui_action_needed_level == 'yellow'"
+                           decoration-danger="ui_action_needed_level == 'red'"/>
+                    <field name="user_id" string="Sales Rep" widget="many2one_avatar_user"/>
+                    <field name="amount_total"
+                           string="Total"
+                           sum="Total Tax Included"
+                           widget="monetary"
+                           decoration-bf="1"
+                           decoration-success="invoice_status == 'invoiced'"
+                           decoration-info="invoice_status == 'to invoice'"/>
+                    <field name="currency_id" column_invisible="True"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="rental_order_view_search_inherit_sales_health" model="ir.ui.view">
+            <field name="name">rental.order.search.sales.health</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_renting.rental_order_view_search"/>
+            <field name="arch" type="xml">
+                <searchpanel position="inside">
+                    <field name="ui_sales_health" string="Sales Health" icon="fa-heartbeat" enable_counters="1"/>
+                </searchpanel>
+            </field>
+        </record>
+
+        <record id="rental_order_view_search_booking_status_label" model="ir.ui.view">
+            <field name="name">rental.order.search.booking.status.label</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_renting.rental_order_view_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//searchpanel/field[@name='rental_status']" position="attributes">
+                    <attribute name="string">BOOKING STATUS</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
